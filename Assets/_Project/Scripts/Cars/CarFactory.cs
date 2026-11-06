@@ -11,7 +11,7 @@ namespace UncannyValet.Cars
     {
         [SerializeField] private CarDefinition _defaultDefinition;
 
-        [SerializeField, Range(0.1f, 1f)] private float _labelHeight = 0.6f;
+        [SerializeField, Range(0.1f, 1f)] private float _labelHeight = 0.55f;
         [SerializeField] private Color _labelColor = new Color(0.1f, 0.1f, 0.1f, 1f);
 
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();

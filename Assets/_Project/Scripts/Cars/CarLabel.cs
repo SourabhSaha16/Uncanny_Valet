@@ -18,8 +18,9 @@ namespace UncannyValet.Cars
             var text = go.AddComponent<TextMesh>();
             text.font = font;
             text.text = id.Value.ToString();
-            text.fontSize = 100;
-            text.characterSize = Mathf.Max(0.01f, carSize.x * heightFraction);
+            text.fontSize = CarLabelMath.FontSize;
+            text.characterSize = CarLabelMath.CharacterSizeFor(
+                CarLabelMath.TargetHeight(carSize.x, heightFraction));
             text.anchor = TextAnchor.MiddleCenter;
             text.alignment = TextAlignment.Center;
             text.color = color;
