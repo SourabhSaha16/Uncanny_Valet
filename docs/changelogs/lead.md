@@ -123,3 +123,9 @@ Date: 2026-11-05
 Files: merged branch agent/lot (see docs/changelogs/lot.md)
 Why: QA review finding for lot fixed by its owner and merged (design.md section 10).
 Tests: Full EditMode suite run after all three fix merges (see next entry).
+
+## lead: merge patrons fix
+Date: 2026-11-05
+Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
+Why: QA review finding for patrons fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).
