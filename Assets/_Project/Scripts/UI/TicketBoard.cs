@@ -27,6 +27,9 @@ namespace UncannyValet.UI
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<TicketTimerStopped>(OnTimerStopped);
             _bus.Subscribe<TicketClosed>(OnClosed);
+            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Subscribe<CarChargeChanged>(OnCharge);
+            _bus.Subscribe<CarCleaned>(OnCleaned);
         }
 
         public void Dispose()
@@ -40,6 +43,9 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<TicketTimerStopped>(OnTimerStopped);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
+            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Unsubscribe<CarChargeChanged>(OnCharge);
+            _bus.Unsubscribe<CarCleaned>(OnCleaned);
         }
 
         public void AppendLines(StringBuilder text, int maxLines)
@@ -62,6 +68,25 @@ namespace UncannyValet.UI
             var row = new TicketRow { Car = e.Car.Value };
             if (_letters.TryGetValue(e.Car.Value, out var letter)) row.Letter = letter;
             _rows[e.Ticket.Value] = row;
+        }
+
+        private void OnTraits(TicketTraitsAssigned e)
+        {
+            if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
+            row.IsEv = e.IsEv;
+            row.IsDirty = e.IsDirty;
+        }
+
+        private void OnCharge(CarChargeChanged e)
+        {
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Charge01 = e.Charge01;
+        }
+
+        private void OnCleaned(CarCleaned e)
+        {
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Washed = true;
         }
 
         private void OnLetter(CarLetterAssigned e)

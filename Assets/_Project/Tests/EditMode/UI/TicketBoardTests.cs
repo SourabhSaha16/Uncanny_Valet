@@ -76,6 +76,29 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
+        public void EvTraits_ShowChargeFromEvents()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarLetterAssigned(C, 'A'));
+            _bus.Publish(new TicketTraitsAssigned(T, C, true, false));
+            Assert.AreEqual("  A  Waiting EV", Lines());
+            _bus.Publish(new CarChargeChanged(C, 0.45f));
+            Assert.AreEqual("  A  Waiting EV 45%", Lines());
+        }
+
+        [Test]
+        public void DirtyTrait_ClearsToCleanWhenWashed()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarLetterAssigned(C, 'A'));
+            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
+            _bus.Publish(new CarCleanChanged(C, 0.5f));
+            Assert.AreEqual("  A  Waiting DIRTY", Lines());
+            _bus.Publish(new CarCleaned(C));
+            Assert.AreEqual("  A  Waiting clean", Lines());
+        }
+
+        [Test]
         public void ParkExpiryClose_RemovesRow()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));

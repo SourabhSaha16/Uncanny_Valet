@@ -1,3 +1,4 @@
+using System.Collections;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
@@ -21,6 +22,7 @@ namespace UncannyValet.Bootstrap
     {
         [SerializeField] private RunConfig _runConfig;
         [SerializeField] private TipConfig _tipConfig;
+        [SerializeField] private NightPlanConfig _planConfig;
         [SerializeField] private CarFactory _carFactory;
         [SerializeField] private LotLayoutBuilder _lot;
         [SerializeField] private NightClock _clock;
@@ -41,7 +43,8 @@ namespace UncannyValet.Bootstrap
             var bus = new EventBus();
             var input = _valet.GetComponent<KeyboardInputSource>();
             _debt = new RunDebt(bus, _runConfig.StartingDebt);
-            _recorder = new NightTallyRecorder(bus, _debt, _runConfig.Nights);
+            _recorder = new NightTallyRecorder(bus, _debt, _runConfig.Nights,
+                n => _planConfig.For(n).NewTonight);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
@@ -55,14 +58,22 @@ namespace UncannyValet.Bootstrap
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
-            _clock.Initialize(bus, _runConfig.NightLengthMinutes);
+            _clock.Initialize(bus, _runConfig.NightLengthMinutes, _runConfig.GameMinutesPerSecond, _planConfig);
             SpawnValet();
+            _spawner.Random = new UnityPatronRandom();
             _spawner.gameObject.SetActive(true);
             StartOverlay();
             _summaryCard.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
             _flow = new NightFlow(bus, new ClockNightStarter(_clock),
                 new ValetPlacer(_valet, _lot, _camera), _debt, _runConfig.Nights);
+        }
+
+        // One frame later, so every component activated above has run Start (StationSwitch subscribes to
+        // NightPlanChanged there) before night 1's plan is published.
+        private IEnumerator Start()
+        {
+            yield return null;
             _flow.StartFirstNight();
         }
 

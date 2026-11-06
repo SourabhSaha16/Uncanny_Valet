@@ -17,6 +17,16 @@ namespace UncannyValet.UI
         public float Elapsed01;
         public bool Expired;
 
+        /// <summary>Charge shown when an EV's level is not known yet.</summary>
+        public const float UnknownCharge = -1f;
+
+        public bool IsEv;
+        /// <summary>0 empty, 1 full, <see cref="UnknownCharge"/> until the first CarChargeChanged.</summary>
+        public float Charge01 = UnknownCharge;
+        public bool IsDirty;
+        /// <summary>True once a dirty car has been washed.</summary>
+        public bool Washed;
+
         public void StartTimer(TimerKind kind, float elapsed01)
         {
             HasTimer = true;

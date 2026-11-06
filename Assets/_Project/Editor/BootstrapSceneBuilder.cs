@@ -42,6 +42,7 @@ namespace UncannyValet.EditorTools
             var so = new SerializedObject(bootstrap);
             so.FindProperty("_runConfig").objectReferenceValue = Load<RunConfig>("Assets/_Project/Data/Economy/RunConfig.asset");
             so.FindProperty("_tipConfig").objectReferenceValue = Load<TipConfig>("Assets/_Project/Data/Economy/TipConfig.asset");
+            so.FindProperty("_planConfig").objectReferenceValue = RequireAsset<NightPlanConfig>(ProjectSetup.NightPlanConfigPath);
             so.FindProperty("_carFactory").objectReferenceValue = factory;
             so.FindProperty("_lot").objectReferenceValue = lot;
             so.FindProperty("_clock").objectReferenceValue = clock;
@@ -101,7 +102,7 @@ namespace UncannyValet.EditorTools
         private static CameraFollow BuildCamera()
         {
             var go = new GameObject("Main Camera") { tag = "MainCamera" };
-            go.transform.position = new Vector3(-9f, 0f, -10f);
+            go.transform.position = new Vector3(-9f, 0f, -10f); // valet start; CameraFollow snaps here
             var cam = go.AddComponent<Camera>();
             go.AddComponent<AudioListener>();
             cam.orthographic = true;

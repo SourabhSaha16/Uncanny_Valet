@@ -10,13 +10,13 @@ namespace UncannyValet.Bootstrap
     public sealed class CameraFollow : MonoBehaviour
     {
         [SerializeField] private Transform _target;
-        /// <summary>Half the visible height in world units. 8.5 at 16:9 shows the curb and all three queue slots from the valet start.</summary>
+        /// <summary>Half the visible height in world units. 8.5 at 16:9 shows the queue below, the curb and the stations above from the valet start.</summary>
         public const float DefaultOrthographicSize = 8.5f;
 
         [SerializeField, Min(1f)] private float _orthographicSize = DefaultOrthographicSize;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
-        [SerializeField, Tooltip("Shifts the view from the target. Negative y shows more of the queue below the curb.")]
-        private Vector2 _focusOffset = new Vector2(0f, -0.5f);
+        [SerializeField, Tooltip("Shifts the view from the target. At the valet start (y 0) a y offset between -0.3 and 0.2 keeps both the queue cars (down to y -8.3) and the stations (up to y 8.2) in view.")]
+        private Vector2 _focusOffset = Vector2.zero;
 
         public void SetTarget(Transform target)
         {
