@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  73fac77
-Subject: lead: merge integration summary card, night flow and audio wiring
-Date:    2026-11-06 11:12:09 -0800
+Commit:  8696aa4
+Subject: lead: merge station label fit
+Date:    2026-11-06 12:57:50 -0800

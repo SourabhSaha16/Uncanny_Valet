@@ -1,4 +1,21 @@
 === Last 50 commits ===
+8696aa4  2026-11-06  lead: merge station label fit
+18cd43d  2026-11-06  lot: fit station labels inside their bays
+25013eb  2026-11-06  lead: merge integration end card, overlay tags and wiring
+b7dcace  2026-11-06  integration: round-4 wiring, tip calculation card, trait tags, camera centre
+df91473  2026-11-06  lead: merge round-4 module work and pin the test harness clock
+87dbc53  2026-11-06  lead: merge worktree-agent-a7a5f896664c79e56
+a5217cb  2026-11-06  lead: merge worktree-agent-a3506ef6e3c7a49e3
+308cec8  2026-11-06  lead: merge worktree-agent-a5810ce02ec054298
+1355832  2026-11-06  lead: merge worktree-agent-a028528ae8495cfd3
+754048c  2026-11-06  lead: merge worktree-agent-ae4c8bc8613d8eb05
+4e414fa  2026-11-06  patrons: apply night plan, EV charging, washing and tip breakdown
+38116db  2026-11-06  lot: charging bays and wash slot stations
+50c9217  2026-11-06  cars: mirrors, EV look with charge bar, mud overlay
+aa00edf  2026-11-06  economy-night: night plans, tip breakdown, richer summary
+14868ee  2026-11-06  audio: add charge, wash and station sounds
+d026c06  2026-11-06  lead: add round-4 contracts for nights, stations and tip breakdown
+8c6f3e3  2026-11-06  lead: publish round-3 build with audio, night summary and side-by-side queue
 73fac77  2026-11-06  lead: merge integration summary card, night flow and audio wiring
 a9df51f  2026-11-06  integration: night summary card, night flow, audio wiring, camera 8.5
 b928fbd  2026-11-06  lead: merge audio button click
@@ -32,23 +49,6 @@ a60f886  2026-11-06  lot: arrival queue slots, vertical CURB label, release dest
 43fc295  2026-11-06  lead: add round-2 contracts and engineering standards
 9ebad66  2026-11-05  lead: log missing changelog entries for two meta commits
 fb14ef8  2026-11-05  lead: publish prototype build with numbered spots and arrival gate
-2a49481  2026-11-05  lead: add meta files for label fixes
-11f21c7  2026-11-05  lead: merge integration overlay fit
-471a632  2026-11-05  lead: merge cars car label size
-60ff9d2  2026-11-05  cars: fix car number label size
-a3c6d97  2026-11-05  integration: fit overlay box to its text
-a5d3a17  2026-11-05  lead: add meta files for round 1 scripts
-9211a0f  2026-11-05  lead: merge integration overlay spot column
-7ffba6d  2026-11-05  lead: merge cars car numbers
-3b48b68  2026-11-05  lead: merge lot spot numbers
-e144077  2026-11-05  lead: merge patrons arrival gate
-2ccb67f  2026-11-05  patrons: add arrival gate against stacking cars
-c535e09  2026-11-05  integration: show parking spot in the overlay
-d9d676f  2026-11-05  cars: show car number on each car
-7e70eef  2026-11-05  lot: draw spot numbers
-9f6c2c9  2026-11-05  lead: record play-test round 1 and assign tasks
-3806ce6  2026-11-05  lead: publish first playable prototype build
-6f6000a  2026-11-05  lead: merge patrons fix
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -66,6 +66,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Audio/SfxEventRouter.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
 Why: Core now has NextNightRequested; the summary-card Next button plays SfxId.ButtonClick (design.md section 10 audio).
 Tests: Router test extended to cover NextNightRequested and unsubscribe. Not run (Unity not launched). Checked the Audio files for duplicate members by inspection and grep: none.
+
+## audio: add charge, wash and station sounds
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Audio/{SfxStations,SfxId,SfxRecipeBook,SfxEventRouter}.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
+Why: Round-4 stations: CarFullyCharged plays a zap and chime, CarCleaned a splash with sparkle and ding, CarEnteredStation a click and low hum.
+Tests: Router mapping test extended with the three events; the existing every-effect length and peak test covers the new clips automatically. Not run (Unity not launched). Duplicate-member grep on edited files: none.
 
 === docs/changelogs/cars.md ===
 # Cars changelog
@@ -102,6 +108,12 @@ Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver}.cs, Assets/_Projec
 Why: Fix compile break from af46781, where an edit script had applied twice: duplicate fields/properties in CarDefinition, duplicate ApplyDrag in CarDriver, duplicate asset keys. Each member now exists once; other Cars files checked by grep.
 Tests: None run (Unity not run); checked by inspection.
 
+## cars: mirrors, EV look with charge bar, mud overlay
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarFactory,CarSorting}.cs, new Assets/_Project/Scripts/Cars/{CarMirrorStyle,CarChargeBarStyle,CarMirrorMath,CarMirrors,CarChargeBarMath,CarMudMath,CarChargeBar,CarMudOverlay,CarTraitLook}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/CarLooksMathTests.cs (+ .meta)
+Why: design.md section 10 challenge schedule. Two front mirrors on every car; TicketTraitsAssigned (via CarTraitLook) turns EVs blue and activates a charge bar driven by CarChargeChanged/CarFullyCharged (lighter tint when full), and activates a brown mud overlay for dirty cars that fades with CarCleanChanged and hides on CarCleaned. Bar and mud children start inactive so they only subscribe once needed. Tunables live in CarDefinition (nested CarMirrorStyle, CarChargeBarStyle, EvBodyColor, MudColor); Sedan.asset keeps the code defaults for the new fields. Smoothing reuses CarTimerFillMath. Sorting: mirrors 9, body 10, mud 11, timer fill 12, charge track 13, charge fill 14, label 15.
+Tests: 7 new EditMode tests (mirror placement, charge fill geometry, mud alpha); Unity not run.
+
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
 
@@ -118,6 +130,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder,RunConfig}.cs, Assets/_Project/Scripts/Night/NightClock.cs, Assets/_Project/Data/Economy/RunConfig.asset, Assets/_Project/Tests/EditMode/Economy/NightTallyTests.cs, Assets/_Project/Tests/EditMode/Night/ClockTests.cs
 Why: design.md section 10 (night length and summary). RunConfig.NightLengthMinutes = 180; NightClock default 180 and Initialize(bus, nightLengthMinutes) lets Bootstrap pass RunConfig's value. NightTally is the pure counter; NightTallyRecorder subscribes to the bus and publishes NightSummaryReady once per night. Bootstrap: `new NightTallyRecorder(bus, ledger, runConfig.Nights)` (ledger is the IDebtView) created before the first StartNight, `clock.Initialize(bus, runConfig.NightLengthMinutes)`, and `recorder.Dispose()` on teardown. Debt left = max(0, debt at NightStarted - tips), independent of DebtLedger order; tickets closing after NightEnded are ignored so nothing double counts.
 Tests: NightTallyTests (counts, debt floor, both close orders, reset, dispose) and clock tests (180 min, ends once, restarts) added; not run (Unity not launched).
+
+## economy-night: night plans, tip breakdown and richer summary
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Economy/{TipCalculator,TipConfig,RunConfig,NightTally,NightTallyRecorder}.cs, Assets/_Project/Scripts/Night/{NightClock,NightPlanConfig,NightPlanEntry,NightPlanDefaults}.cs, Assets/_Project/Data/Economy/{RunConfig,TipConfig}.asset, Assets/_Project/Tests/EditMode/{Economy,Night}/*
+Why: design.md section 10 (challenge schedule). RunConfig.GameMinutesPerSecond 1.5; clock publishes NightPlanChanged before NightStarted; TipCalculator.Explain with charge/clean bonuses (forced-zero tips have all parts 0 so base+speed+charge+clean equals tips when nothing is zeroed); the summary carries the breakdown and the next night note. Bootstrap wiring: clock.Initialize(bus, run.NightLengthMinutes, run.GameMinutesPerSecond, planConfig); new NightTallyRecorder(bus, ledger, run.Nights, n => planConfig.For(n).NewTonight). NightPlanConfig has no asset yet: create one via the Create menu (fills the default table) or pass null to use built-in defaults.
+Tests: tip branches, breakdown sums and note, clock speed, plan order and defaults added; not run (Unity not launched).
 
 === docs/changelogs/integration.md ===
 # Integration changelog
@@ -153,6 +171,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/UI/ (NightSummaryCard, SummaryCardFormatter, SummaryCardContent, SummaryCardLayout, UI asmdef), Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, NightFlow, INightStarter, IValetPlacer, IRunReset, ClockNightStarter, ValetPlacer, RunDebt, CameraFollow, Bootstrap asmdef), Assets/_Project/Editor/ (BootstrapSceneBuilder, ProjectSetup, Editor asmdef), Assets/_Project/Scenes/Bootstrap.unity (camera size only), Assets/_Project/Tests/EditMode/ (UI/SummaryCardFormatterTests, UI/NightFlowTests, UI/TicketBoardTests, Tests asmdef)
 Why: design.md section 10 (night length and summary, audio). Camera back to 8.5 with a (0,-0.5) focus offset so all three queue slots show from the valet start. IMGUI summary card on NightSummaryReady with Next/New run (button, Enter, Space) publishing NextNightRequested. Bootstrap creates NightTallyRecorder, initializes the clock from RunConfig; NightFlow starts the next night or a new run; RunDebt owns the DebtLedger and swaps in a fresh one for a new run (no Economy edit). AudioDirector child plus AudioListener on the camera; ProjectSetup creates AudioConfig before the scene is built.
 Tests: added SummaryCardFormatterTests, NightFlowTests and a three-car ticket board test (not run; Unity not launched).
+
+## integration: round-4 wiring, tip calculation card, trait tags, camera centre
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, CameraFollow), Assets/_Project/Scripts/UI/ (NightSummaryCard, SummaryCardStyles, SummaryCardContent, SummaryCardFormatter, SummaryCardLayout, TicketBoard, TicketRow, TicketRowFormatter), Assets/_Project/Editor/ (ProjectSetup, BootstrapSceneBuilder), Assets/_Project/Tests/EditMode/UI/ (SummaryCardFormatterTests, TicketRowFormatterTests, TicketBoardTests)
+Why: design.md section 10 (night length, challenge schedule). NightPlanConfig asset is created by ProjectSetup and passed to NightClock.Initialize (with RunConfig speed) and, via n => plan.For(n).NewTonight, to NightTallyRecorder. PatronSpawner.Random is set before the spawner activates. First night now starts one frame after Awake so StationSwitch (subscribes in Start) hears night 1's NightPlanChanged. End card gains a Tip calculation block (Base, signed Speed, Charge/Clean when any bonus is non-zero, = total, Zeroed tips when > 0) and a highlighted wrapped "Tomorrow:" block; the card grows to fit and scales down to fit the screen (font 18). Ticket rows get " EV 45%" and " DIRTY"/" clean" tags. Camera focus offset y -0.5 -> 0: view y is -8.5..8.5, queue cars reach y -8.3 and stations y 8.2, so both fit (-0.5 cut the station tops at 8.0); size unchanged.
+Tests: added formatter, layout, wrap, fit and ticket-board trait tests (not run; Unity not launched).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -377,6 +401,24 @@ Files: Assets/_Project/Tests/EditMode/Integration/EventContractTests.cs, docs/ch
 Why: Merged round-3 branches (shorter nights, summary tally, audio, queue side by side, tickets close at night end). The old test expected an open ticket to survive NightEnded; design.md section 10 now closes every ticket with $0.
 Tests: Full EditMode run: 160 of 162 passed before this edit; the two failures were this test (fixed here) and a valet test that OnDestroy cannot satisfy in EditMode (sent back to the valet agent).
 
+## lead: publish round-3 build with audio, night summary and side-by-side queue
+Date: 2026-11-06
+Files: site/*, Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Audio/*, new .meta files, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs, docs/changelogs/lead.md
+Why: Round-3 play-test: shorter nights (180 min), end-of-night summary card with Next, generated music and sound effects, queue slots side by side at camera size 8.5 (design.md section 10). Scene and audio config regenerated with ProjectSetup.RunBatch. Test fix: reset the exit counter in SetUp.
+Tests: Full EditMode run: 176 of 176 passed. Web build loaded locally (cache disabled): three cars queued A, B, C side by side in view, timers and vanishing working, night 1 ended with the summary card (12 not parked, nothing played), Next started night 2 clean. Audio is not heard or verified by ear; no console errors. Not verified: parking, pickup and tip path in this build.
+
+## lead: add round-4 contracts for nights, stations and tip breakdown
+Date: 2026-11-06
+Files: docs/design.md, docs/decisions.md, docs/status.md, docs/changelogs/lead.md, Assets/_Project/Scripts/Core/Contracts/ITipCalculator.cs, Assets/_Project/Scripts/Core/Contracts/TipInput.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs, Assets/_Project/Scripts/Core/Events/NightPlan.cs, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/StationEvents.cs, Assets/_Project/Scripts/Core/Events/StationKind.cs, Assets/_Project/Scripts/Core/Events/TicketEvents.cs, Assets/_Project/Scripts/Core/Events/TipBreakdown.cs, Assets/_Project/Scripts/Core/Events/TipZeroReason.cs
+Why: Play-test round 4: seven nights with one new challenge each, EV charging and car wash stations, mirrors, faster clock (design.md section 10, Challenge schedule).
+Tests: None run. ITipCalculator gains Explain, so main does not compile until economy-night implements it and fakes are updated.
+
+## lead: merge round-4 module work and pin the test harness clock
+Date: 2026-11-06
+Files: Assets/_Project/Tests/EditMode/Integration/NightHarness.cs, generated .meta files, docs/changelogs/lead.md
+Why: Merged economy-night, patrons, lot, cars and audio round-4 work (design.md section 10, Challenge schedule). The clock now defaults to 1.5 game minutes per second, so the integration test harness pins it at 1.0 to keep its minute maths exact.
+Tests: Full EditMode suite 223 of 223 passed on merged main (4 integration tests failed before the harness fix).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -412,10 +454,28 @@ Files: Assets/_Project/Scripts/Lot/{ArrivalQueue,LotConfig,LotLayoutBuilder}.cs,
 Why: the 3 waiting cars were 5.5 units apart in a vertical line and did not fit the camera. They now sit in adjacent bays (pitch car width + 0.6 gap) in a row going -X from the curb column, nose towards the curb (rotation 0, configurable); the ground and walls grow to fit (design.md section 10).
 Tests: ArrivalQueueTests rewritten (slot 0 = first point, pitch, no overlapping car rectangles, all slots inside the 4:3 camera extent, footprint rotation); Unity not run per request.
 
+## lot: charging bays and wash slot stations
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LotGeometry,StationZone,StationBuilder,StationSwitch,StopZone,ZoneRoster,LotConfig,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{LotGeometryTests,ZoneRosterTests}.cs
+Why: design.md section 10 challenges. Two charging bays and one wash slot are stop zones that publish CarEnteredStation/CarLeftStation; StationSwitch shows them per NightPlanChanged and releases cars (CarLeftStation) when one closes. They take no spot ids. Placement maths moved into pure LotGeometry; stations sit above the curb and the lot bounds grow to contain them.
+Tests: LotGeometryTests (no overlaps, inside bounds, walkway) and 3 ZoneRoster tests (drain, destroyed in station once); Unity not run per request.
+
+## lot: fit station labels inside their bays
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LabelFit,StationBuilder,LotConfig}.cs, Assets/_Project/Tests/EditMode/Lot/LabelFitTests.cs
+Why: Web build: the CHARGE labels were wider than their 2.6 bays and ran together. The size is now computed by the pure LabelFit helper from the bay width, a generous per-character width (0.9 x size) and a 70% fill, capped by StationLabelSize (now 0.45). Stations were not moved.
+Tests: 3 LabelFitTests (cap, shrink with margin, default config fits CHARGE and WASH); Unity not run per request.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
+
+## patrons: apply night plan, EV charging, washing and tip breakdown
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ServiceProgress,ChargeRule,WashRule,ServiceTuning,IPatronRandom,UnityPatronRandom,PatronPlan,PatronRequestRoller,StationService,TicketSettler,Ticket,TicketBook,TicketRegistry,PatronRequest,PatronConfig,PatronSpawner}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ServiceRules,TicketRegistryService,TicketRegistryNight,TicketRegistry,TicketRegistryTimer}Tests.cs
+Why: design.md section 10. NightPlanChanged sets the waiting cap, arrival gap scale and EV/dirty odds (injectable random). EVs charge and dirty cars wash only while stopped in their bay; any station pauses the park timer. Arrival events are published in the order CarSpawned, TicketOpened, CarLetterAssigned, TicketTraitsAssigned, then initial charge/clean. Delivered tickets use ITipCalculator.Explain and publish TipExplained before TicketClosed; forced closes publish an all-zero breakdown (reason None).
+Tests: new EditMode tests for the rules, plan, trait rolls, arrival order, station pause and tip flags; fakes updated for Explain; not run, Unity not run per instruction.
 
 ## patrons: close tickets and stop spawning at night end
 Date: 2026-11-06
