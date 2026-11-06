@@ -153,3 +153,9 @@ Date: 2026-11-05
 Files: merged branch agent/lot (see docs/changelogs/lot.md)
 Why: Play-test round 1: spot numbers (design.md section 10; decisions.md 2026-11-05).
 Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge cars car numbers
+Date: 2026-11-05
+Files: merged branch agent/cars (see docs/changelogs/cars.md)
+Why: Play-test round 1: car numbers (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
