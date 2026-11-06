@@ -27,3 +27,9 @@ Date: 2026-11-05
 Files: site/*, ProjectSettings/URPProjectSettings.asset, ProjectSettings/PackageManagerSettings.asset, docs/changelogs/lead.md
 Why: First Web (WebGL) build of the empty SampleScene, built locally with tools/build-web.ps1 and published from site/ to GitHub Pages (design.md section 1, Platform). Editor-written settings files from opening the project are included.
 Tests: Web player served locally and loaded in a browser with no console errors; EditMode tests passed earlier (3 of 3).
+
+## lead: update docs for the local Web build route
+Date: 2026-11-05
+Files: README.md, CLAUDE.md, KICKOFF.md, docs/design.md, docs/decisions.md, docs/status.md, .claude/agents/integration.md, docs/changelogs/lead.md
+Why: Docs still described CI building the Web player with Unity secrets. They now describe the local build into site/ and the Unity 6000.2.5f1 decision (design.md section 1).
+Tests: Not applicable (docs only).

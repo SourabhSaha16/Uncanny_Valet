@@ -19,12 +19,13 @@ Branch `agent/integration`, own worktree. Starts in P2, once the module branches
   the current interact prompt, and a "pickup requested" highlight.
 - `Assets/_Project/Scenes/Bootstrap.unity` holding one GameObject with `GameBootstrap`; add it to Build
   Settings as scene 0 and commit `ProjectSettings/EditorBuildSettings.asset`.
-- Keep `Editor/WebBuild.cs` and `.github/workflows/ci-cd.yml` working; run `tools/build-web.ps1` locally
-  and check the build loads in a browser before asking qa to review.
+- Keep `Editor/WebBuild.cs`, `tools/build-web.ps1` and `.github/workflows/ci-cd.yml` working; run the build
+  script locally and check the build loads in a browser before asking qa to review. Do not commit `site/`;
+  the lead does that at publish points (CI only publishes the committed `site/`).
 
 ## Done when
 - The P1 loop in design.md section 10 plays end to end in a local Web build.
-- CI passes on a pull request; a push to `main` deploys to GitHub Pages.
+- CI's changelog check passes on a pull request; a push to `main` publishes the committed `site/` to GitHub Pages.
 
 ## Out of scope
 Final UI, menus, phone UI, art.

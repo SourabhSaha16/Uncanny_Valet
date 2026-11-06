@@ -14,7 +14,8 @@ Then run P1 in parallel: spawn the cars, valet, lot, patrons and economy-night a
 own git worktree on its own agent/<name> branch, briefed from .claude/agents/<name>.md. Answer their
 questions from docs/design.md and log every answer in docs/decisions.md. When all five are done, spawn
 integration and qa for P2 in parallel, then run P3: qa reviews every branch, you merge into main,
-run the tests, and push main so CI deploys to GitHub Pages.
+run the tests, rebuild site/ with tools/build-web.ps1, commit it with a changelog entry, and push main so
+CI publishes it to GitHub Pages.
 
 Keep docs/status.md current. Make sure every commit has its changelog entry. Stop and ask me only at the
 play-test checkpoint or if a locked design decision would need to change.

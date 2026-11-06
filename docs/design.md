@@ -19,8 +19,8 @@ out the boss's dirty jobs, which pay nothing but get you killed if you botch the
 | Genre | Arcade time-management + driving, with a light crime layer |
 | Perspective | Top-down, early-GTA style |
 | Art style | 2D pixel art |
-| Engine | Unity 6.3 LTS, Universal 2D template |
-| Platform | Web (WebGL) first, deployed to GitHub Pages |
+| Engine | Unity 6000.2.5f1, Universal 2D template |
+| Platform | Web (WebGL) first, built locally and deployed to GitHub Pages from `site/` |
 | Session shape | One night = one level; a run = X nights |
 
 **The title:** the valet is not what he seems. To the patrons he is a smiling, helpful valet; behind their

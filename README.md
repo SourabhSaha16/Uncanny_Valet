@@ -1,8 +1,9 @@
 # Uncanny Valet: start here
 
 This kit turns a new Unity project into one that a team of Claude Code agents builds in parallel. Each
-push to `main` builds the game for the web and publishes it to GitHub Pages. You set things up once
-(about an hour, mostly downloads), paste one prompt, and come back at two checkpoints.
+push to `main` publishes the game's web build (the committed `site/` folder) to GitHub Pages. The build
+itself is made on your PC with `tools/build-web.ps1`; CI needs no Unity licence or secrets. You set things
+up once, paste one prompt, and come back at two checkpoints.
 
 The first goal is a **pick-up and drop-off prototype**: walk to a car, drive it into a spot, bring it back
 when the patron asks, earn a tip. No real UI or art yet (see `docs/design.md`, section 10).
@@ -33,7 +34,9 @@ Reopen the terminal, then check: `git --version`, `gh --version`, `claude --vers
 
 ## Step 2. Create the Unity project
 
-1. In Unity Hub, sign in and install **Unity 6.3 LTS** with the **Web Build Support** module.
+1. In Unity Hub, sign in and install **Unity 6000.2.5f1** with the **Web Build Support** module (the
+   local build needs it; if the Hub's gear menu has no "Add modules", reinstall the editor from the Hub with
+   WebGL ticked).
 2. **New project** → **Universal 2D** → name `UncannyValet` → a folder such as `C:\Dev` → **Create**.
 3. Open `Packages/manifest.json` and check it lists `com.unity.inputsystem` and `com.unity.test-framework`.
    (The template normally includes both. If not, add them in Window → Package Manager.)
@@ -45,13 +48,10 @@ Copy everything in this folder into `C:\Dev\UncannyValet`, including the hidden 
 folders. Let `.gitignore` replace the existing one. Then open the project in Unity once so it creates
 `.meta` files for the new scripts, check the Console has no errors, and close it again.
 
-## Step 4. Get your Unity licence file (for CI)
+## Step 4. Check Unity is activated on this PC
 
-Unity Hub → Preferences → Licenses → **Add** → **Get a free personal license**. Even if a licence is
-already listed, click Add so the file is created. It is at:
-
-- Windows: `C:\ProgramData\Unity\Unity_lic.ulf`
-- macOS: `/Library/Application Support/Unity/Unity_lic.ulf`
+Open the project once in Unity Hub with your signed-in account. No licence file or secrets are needed for
+GitHub: Unity only runs on your PC.
 
 ## Step 5. Create the public GitHub repo (in the project folder)
 
@@ -63,22 +63,21 @@ git commit -m "lead: add Uncanny Valet starter kit"
 gh repo create uncanny-valet --public --source=. --remote=origin
 ```
 
-The commit subject matches the entry already in `docs/changelogs/lead.md`, so the first CI run passes the
-changelog check. Don't push yet.
+The commit subject matches the entry already in `docs/changelogs/lead.md`, so the CI changelog check
+passes. Don't push yet.
 
-## Step 6. Add secrets and turn on Pages (human checkpoint 1)
+## Step 6. Build the site and turn on Pages (human checkpoint 1)
 
-```bash
-gh secret set UNITY_LICENSE < "C:\ProgramData\Unity\Unity_lic.ulf"
-gh secret set UNITY_EMAIL      # type your Unity email when asked
-gh secret set UNITY_PASSWORD   # type your Unity password when asked
-```
+1. Close the Unity editor, then run `pwsh tools/build-web.ps1` (about two minutes). It builds the Web player
+   and copies it into `site/` with `build-info.txt` and `changelog.txt`.
+2. Test it: `npx http-server site`, then open http://localhost:8080.
+3. Commit `site/` with a `docs/changelogs/` entry (for example `lead: add first Web build in site/`).
+4. On GitHub: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+5. Push: `git push -u origin main`. Watch it with `gh run watch`. CI checks the changelog and publishes
+   `site/`; it takes about half a minute. The game is then at `https://<your-user>.github.io/<repo>/`.
 
-Then on GitHub: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-
-Now push: `git push -u origin main`. Watch it with `gh run watch`. The first run takes 20–40 minutes
-while CI downloads Unity; later runs are faster thanks to the cache. When it finishes, the game is at
-`https://<your-user>.github.io/uncanny-valet/` (at first, just the template's sample scene).
+To publish an update later: close the editor, run `tools/build-web.ps1`, commit `site/` with a changelog
+entry, push `main`. Each build adds roughly 58 MB to git history, so rebuild only when you want to publish.
 
 ## Step 7. Start the agents
 
@@ -91,7 +90,7 @@ In the project folder run `claude`, then paste prompt 1 from `KICKOFF.md`.
 | P0 | Lead checks Core compiles and tests pass | — |
 | P1 | cars, valet, lot, patrons, economy-night | All five at once |
 | P2 | integration + qa | Both at once |
-| P3 | qa reviews, lead merges, push deploys | — |
+| P3 | qa reviews, lead merges, lead rebuilds `site/`, push deploys | — |
 
 Every module depends only on `Core` (shared events and interfaces), so P1 agents never wait on each other.
 Each agent works on its own branch in its own git worktree, and only touches its own folder.
@@ -104,7 +103,7 @@ last 50 commits) and `build-info.txt` (which commit is live).
 
 ## The two times you're needed
 
-1. **Step 6** above (secrets and Pages).
+1. **Step 6** above (Pages setting and first push).
 2. **Play test:** when the lead says P1 is deployed, play it in the browser and say what feels wrong.
    Then paste prompt 3 from `KICKOFF.md`.
 
@@ -120,7 +119,8 @@ last 50 commits) and `build-info.txt` (which commit is live).
 | `.claude/settings.json` | Turns on agent teams; allows build/test/git commands; blocks force-push |
 | `Assets/_Project/Scripts/Core/` | Shared events, ids, interfaces and the service registry |
 | `Assets/_Project/Scripts/<Module>/` | One folder and assembly per module |
-| `Assets/_Project/Editor/WebBuild.cs` | Web build used by CI and the local script |
+| `Assets/_Project/Editor/WebBuild.cs` | Web build used by the local script |
 | `Assets/_Project/Tests/EditMode/` | Tests, starting with the event bus |
-| `.github/workflows/ci-cd.yml` | Changelog check → tests → Web build → GitHub Pages |
+| `.github/workflows/ci-cd.yml` | Changelog check → publish the committed `site/` to GitHub Pages |
+| `site/` | The built Web player that GitHub Pages serves (made by `tools/build-web.ps1`) |
 | `tools/` | Local test and build scripts, changelog check |

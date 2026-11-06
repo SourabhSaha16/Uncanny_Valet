@@ -48,6 +48,11 @@ An agent edits only its own folders and its own changelog. Anything else is a re
 The target is Unity Web (WebGL) on GitHub Pages. No threads or `Task.Run`, no `System.IO` file access,
 no blocking waits. Keep build compression disabled. Use the Input System package for input.
 
+The Web player is built **locally** with `tools/build-web.ps1`, which writes it to the committed `site/` folder.
+CI does not run Unity and has no secrets; it checks changelogs and publishes `site/` to GitHub Pages.
+Only the lead rebuilds and commits `site/` (about 58 MB per build, so only at publish points), with a
+`docs/changelogs/lead.md` entry. The Unity editor must be closed first.
+
 ## Parallel work and git
 
 - Each agent works on its own branch `agent/<name>` in its own git worktree, so agents never write the
@@ -85,7 +90,7 @@ the human once, records the answer in `docs/decisions.md`, and updates design.md
 | P0 | Lead checks Core compiles and the sample test passes in batch mode | No |
 | P1 | cars, valet, lot, patrons, economy-night build their modules against Core | Yes, all five |
 | P2 | integration wires the Bootstrap scene, debug overlay and Web build; qa writes tests | Yes, two |
-| P3 | qa reviews every module; lead merges; push to `main` deploys to GitHub Pages | No |
+| P3 | qa reviews every module; lead merges, rebuilds `site/` locally, pushes `main` to deploy to GitHub Pages | No |
 
-**Human checkpoints:** (1) GitHub secrets and Pages settings, before the first push;
+**Human checkpoints:** (1) GitHub Pages source set to "GitHub Actions", before the first push;
 (2) play the P1 build in the browser and say what feels wrong.
