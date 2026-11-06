@@ -32,7 +32,8 @@ namespace UncannyValet.Lot
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, area.size, line, -7);
             rects.Make(root.transform, "Fill", Vector2.zero, area.size - Vector2.one * 0.3f, fill, -6);
-            SpotLabel.Create(root.transform, text, Vector2.zero, c, -5, c.StationLabelSize);
+            var size = LabelFit.Size(text.Length, area.width, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
+            SpotLabel.Create(root.transform, text, Vector2.zero, c, -5, size);
             root.AddComponent<BoxCollider2D>();
             var zone = root.AddComponent<StationZone>();
             zone.Init(kind, c);

@@ -54,8 +54,12 @@ namespace UncannyValet.Lot
         [SerializeField] private float _stationGap = 0.4f;
         [Tooltip("Centre of the first charging bay. Default: above the curb, clear of the curb zone and the spots.")]
         [SerializeField] private Vector2 _stationsFirstCenter = new Vector2(-17.5f, 6f);
-        [Min(0.1f), Tooltip("Size of the CHARGE / WASH text; must fit inside the station width.")]
-        [SerializeField] private float _stationLabelSize = 0.7f;
+        [Min(0.1f), Tooltip("Largest size of the CHARGE / WASH text; it shrinks to fit the station width.")]
+        [SerializeField] private float _stationLabelSize = 0.45f;
+        [Min(0.1f), Tooltip("Estimated width of one label character per unit of label size (generous).")]
+        [SerializeField] private float _labelCharWidth = 0.9f;
+        [Range(0.3f, 1f), Tooltip("Share of the station width the label may use; the rest is margin.")]
+        [SerializeField] private float _stationLabelFill = 0.7f;
 
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
@@ -72,6 +76,8 @@ namespace UncannyValet.Lot
         public float StationGap => _stationGap;
         public Vector2 StationsFirstCenter => _stationsFirstCenter;
         public float StationLabelSize => _stationLabelSize;
+        public float LabelCharWidth => _labelCharWidth;
+        public float StationLabelFill => _stationLabelFill;
         public Vector2 QueueCarSize => _queueCarSize;
         public float QueueSlotGap => _queueSlotGap;
         public Vector2 QueueDirection => _queueDirection;
