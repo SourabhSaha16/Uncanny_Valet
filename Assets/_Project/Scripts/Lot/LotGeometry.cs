@@ -38,6 +38,7 @@ namespace UncannyValet.Lot
 
         public static Rect Box(Vector2 center, Vector2 size) => new Rect(center - size * 0.5f, size);
 
+        /// <summary>Spots are listed column by column from the curb, so index + 1 is the spot id.</summary>
         private static Rect[] BuildSpots(LotConfig c, float left, float top)
         {
             var spots = new Rect[c.Rows * c.SpotsPerRow];
@@ -46,7 +47,7 @@ namespace UncannyValet.Lot
             {
                 var x = left + c.SpotSize.x * 0.5f + i * (c.SpotSize.x + c.SpotGap);
                 var y = top - c.SpotSize.y * 0.5f - r * (c.SpotSize.y + c.AisleWidth);
-                spots[r * c.SpotsPerRow + i] = Box(new Vector2(x, y), c.SpotSize);
+                spots[i * c.Rows + r] = Box(new Vector2(x, y), c.SpotSize);
             }
             return spots;
         }

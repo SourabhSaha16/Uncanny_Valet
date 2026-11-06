@@ -14,14 +14,22 @@ namespace UncannyValet.Lot
             foreach (var id in spotIds) _known.Add(id);
         }
 
-        public bool IsFree(int spotId) => _known.Contains(spotId) && !_cars.ContainsKey(spotId);
+        /// <summary>Highest spot id open for parking (spots above it are closed).</summary>
+        public int OpenLimit { get; private set; } = int.MaxValue;
+
+        /// <summary>Opens spots 1..<paramref name="activeSpots"/> only. 0 (or less) opens them all.</summary>
+        public void SetActiveSpots(int activeSpots) => OpenLimit = OpenSpotRule.Limit(activeSpots);
+
+        public bool IsOpen(int spotId) => _known.Contains(spotId) && spotId <= OpenLimit;
+
+        public bool IsFree(int spotId) => IsOpen(spotId) && !_cars.ContainsKey(spotId);
 
         public bool TryGetCar(int spotId, out CarId car) => _cars.TryGetValue(spotId, out car);
 
-        /// <summary>Returns false if the spot is unknown or taken by another car.</summary>
+        /// <summary>Returns false if the spot is unknown, closed or taken by another car.</summary>
         public bool Park(int spotId, CarId car)
         {
-            if (!_known.Contains(spotId)) return false;
+            if (!IsOpen(spotId)) return false;
             if (_cars.TryGetValue(spotId, out var current)) return current == car;
             _cars[spotId] = car;
             return true;
