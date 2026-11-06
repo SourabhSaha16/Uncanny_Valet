@@ -29,6 +29,8 @@ namespace UncannyValet.Patrons
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Subscribe<CarEntered>(OnCarEntered);
             _bus.Subscribe<CarExited>(OnCarExited);
+            _bus.Subscribe<NightEnded>(OnNightEnded);
+            _bus.Subscribe<NightStarted>(OnNightStarted);
         }
 
         public void Dispose()
@@ -38,6 +40,8 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Unsubscribe<CarEntered>(OnCarEntered);
             _bus.Unsubscribe<CarExited>(OnCarExited);
+            _bus.Unsubscribe<NightEnded>(OnNightEnded);
+            _bus.Unsubscribe<NightStarted>(OnNightStarted);
         }
 
         public bool TryGet(TicketId id, out Ticket ticket) => _book.TryGet(id, out ticket);
@@ -121,6 +125,29 @@ namespace UncannyValet.Patrons
             t.MarkAbandoned();
             _book.Remove(t);
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));
+        }
+
+        private void OnNightEnded(NightEnded e) => CloseAllUnpaid();
+
+        // A new shift starts clean: nothing should be left, but make sure of it and restart the letters.
+        private void OnNightStarted(NightStarted e)
+        {
+            CloseAllUnpaid();
+            _book.ResetLetters();
+        }
+
+        /// <summary>Night over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>
+        private void CloseAllUnpaid()
+        {
+            _book.CopyTo(_scratch);
+            foreach (var t in _scratch)
+            {
+                if (!t.MarkForceClosed()) continue;
+                _timers.Stop(t, TimerKind.Park);
+                _timers.Stop(t, TimerKind.Pickup);
+                _book.Remove(t);
+                _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));
+            }
         }
     }
 }

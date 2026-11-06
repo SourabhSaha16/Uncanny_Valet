@@ -21,6 +21,7 @@ namespace UncannyValet.Patrons
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
         private int _nextCarId = 1;
+        private bool _nightOpen = true;
 
         public TicketRegistry Registry { get; private set; }
 
@@ -36,6 +37,7 @@ namespace UncannyValet.Patrons
             _departure = new PatronDeparture(_bus, _cars);
             _bus.Subscribe<NightStarted>(OnNightStarted);
             _bus.Subscribe<NightTick>(OnNightTick);
+            _bus.Subscribe<NightEnded>(OnNightEnded);
         }
 
         private void OnDisable()
@@ -43,6 +45,7 @@ namespace UncannyValet.Patrons
             if (_bus == null) return;
             _bus.Unsubscribe<NightStarted>(OnNightStarted);
             _bus.Unsubscribe<NightTick>(OnNightTick);
+            _bus.Unsubscribe<NightEnded>(OnNightEnded);
             Registry.Dispose();
             _departure.Dispose();
         }
@@ -54,6 +57,7 @@ namespace UncannyValet.Patrons
         public bool TrySpawn(PatronRequest request, out Ticket ticket)
         {
             ticket = null;
+            if (!_nightOpen) return false;
             var blocked = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _config.MaxWaitingCars);
             var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _config.MaxWaitingCars, blocked);
             if (slot == ArrivalGate.NoSlot) return false;
@@ -65,7 +69,13 @@ namespace UncannyValet.Patrons
             return true;
         }
 
-        private void OnNightStarted(NightStarted e) => _nextArrivalMinute = 0f;
+        private void OnNightStarted(NightStarted e)
+        {
+            _nightOpen = true;
+            _nextArrivalMinute = 0f;
+        }
+
+        private void OnNightEnded(NightEnded e) => _nightOpen = false;
 
         private void OnNightTick(NightTick e)
         {

@@ -23,6 +23,9 @@ namespace UncannyValet.Patrons
             return Overflow;
         }
 
+        /// <summary>Frees every letter.</summary>
+        public void Reset() => System.Array.Clear(_taken, 0, Count);
+
         /// <summary>Frees a letter so the next car can use it. Unknown characters are ignored.</summary>
         public void Release(char letter)
         {

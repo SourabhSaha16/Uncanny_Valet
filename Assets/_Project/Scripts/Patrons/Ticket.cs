@@ -54,6 +54,14 @@ namespace UncannyValet.Patrons
             if (State == TicketState.PickupRequested) State = TicketState.Closed;
         }
 
+        /// <summary>The night ended with this ticket open. Returns false if it was already closed.</summary>
+        public bool MarkForceClosed()
+        {
+            if (State == TicketState.Closed) return false;
+            State = TicketState.Closed;
+            return true;
+        }
+
         /// <summary>The patron gave up waiting for a spot and took the car.</summary>
         public void MarkAbandoned()
         {
