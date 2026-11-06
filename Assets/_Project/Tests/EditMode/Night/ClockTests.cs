@@ -89,25 +89,27 @@ namespace UncannyValet.Tests.Night
         {
             var n1 = NightPlanDefaults.For(1);
             Assert.AreEqual(1, n1.MaxWaitingCars);
-            Assert.AreEqual(3.7f, n1.ArrivalGapScale);
+            Assert.AreEqual(2.0f, n1.ArrivalGapScale);
             var n3 = NightPlanDefaults.For(3);
             Assert.IsTrue(n3.ChargingOpen);
             Assert.IsFalse(n3.WashOpen);
-            Assert.AreEqual(0.4f, n3.EvChance);
+            Assert.AreEqual(0.35f, n3.EvChance);
+            Assert.AreEqual(0.75f, n3.LateEvChance);
+            Assert.AreEqual(0.6f, n3.LateEvStart);
             var n4 = NightPlanDefaults.For(4);
             Assert.IsTrue(n4.WashOpen);
-            Assert.IsFalse(n4.ChargingOpen);
-            Assert.AreEqual(0f, n4.EvChance);
+            Assert.IsTrue(n4.ChargingOpen, "unlocks never go away");
+            Assert.AreEqual(0.3f, n4.EvChance);
             Assert.AreEqual(0.4f, n4.DirtyChance);
             Assert.AreEqual(NightPlanDefaults.For(7).NewTonight, NightPlanDefaults.For(5).NewTonight);
         }
 
         [Test]
-        public void PlanDefaults_MatchScheduleA()
+        public void PlanDefaults_MatchPacingTable()
         {
             var waiting = new[] { 1, 3, 3, 3, 3, 3, 3 };
-            var gap = new[] { 3.7f, 3.2f, 2.5f, 2.4f, 2.3f, 2.2f, 2.0f };
-            var spots = new[] { 4, 4, 5, 5, 5, 5, 5 };
+            var gap = new[] { 2.0f, 1.5f, 1.3f, 1.2f, 1.1f, 1.0f, 0.9f };
+            var spots = new[] { 4, 5, 6, 6, 7, 7, 8 };
             var previousSpots = 0;
             for (var night = 1; night <= 7; night++)
             {
