@@ -198,7 +198,7 @@ calculation (base, speed, charge bonus, clean bonus, zeroed tips).
 | 1 | Simple: one car at a time. A new car arrives only after the previous one is parked |
 | 2 | Messy: up to 3 cars waiting, parallel pickups and drop-offs, busier arrivals |
 | 3 | EV charging: some cars are EVs (blue body, small blue charge bar). A charging station (2 bays) is unlocked |
-| 4 | Dirty cars (muddy) must be washed, then parked. One car wash slot, with a timer. No EVs tonight |
+| 4 | Dirty cars (muddy) must be washed, then parked. One car wash slot, with a timer. Charging and EVs stay on (unlocks layer, never leave) |
 | 5 | Everything at once: parallel cars, several EVs and several dirty cars |
 | 6 | Same as night 5 |
 | 7 | Same as night 5 |
@@ -210,10 +210,16 @@ calculation (base, speed, charge bonus, clean bonus, zeroed tips).
   **clean bonus**. Handed back dirty = $0 tip (design.md section 5: required, a miss can zero the tip). The
   slot frees as soon as the washed car drives out; the next dirty car can then go in.
 - The park timer pauses while a car is being driven or is stopped in a station, and resumes after.
-- **Pacing and lot size (balance simulation, docs/balance.md Schedule A):** per night, waiting cap /
-  arrival gap scale / open spots: N1 1/3.7/4, N2 3/3.2/4, N3 3/2.5/5, N4 3/2.4/5, N5 3/2.3/5, N6 3/2.2/5,
-  N7 3/2.0/5. Spots beyond the night's `ActiveSpots` are closed (dimmed, no number); numbering runs column
-  by column from the curb. Starting debt is $250 (a competent player earns about $225 over 7 nights).
+- **Pacing and lot size (round 5, tunable live):** per night, arrival gap scale / waiting cap / open regular
+  spots: N1 2.0/1/4, N2 1.5/3/5, N3 1.3/3/6, N4 1.2/3/6, N5 1.1/3/7, N6 1.0/3/7, N7 0.9/3/8. These sit between
+  the too-easy balance.md Schedule A and the too-hard original; the debug panel (F2) tunes them. Spots that are not open
+  do not exist: the lot and its walls grow when more open, numbered column by column from the curb. Starting debt is $250.
+- **Charging spots:** two numbered spots (ids after the regular ones) while charging is unlocked, not counted in the
+  open-spot number. Any car may park in one; only EVs charge there. A charged EV must be moved out to free it.
+- **EV surge:** from `LateEvStart` (0.6 of the night) the EV chance ramps from `EvChance` to `LateEvChance` (0.75)
+  on nights 3-7, so the player has to move a charged EV to a regular spot.
+- **Urgency audio:** the music tempo rises with the number of cars waiting to be parked or picked up.
+- **Live tuning:** every pacing number is an `ITuning` key; F2 opens a panel over the running game (sliders, per-row reset, Reset all).
 - Sabotage jobs stay off.
 - **Mirrors:** every car has two small side mirrors at the front as a visual cue for which end is the front.
 

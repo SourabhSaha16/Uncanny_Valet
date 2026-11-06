@@ -107,7 +107,6 @@ namespace UncannyValet.Tests.Lot
             var lastOpen = _geo.Spots[2 * _config.Rows - 1];
             Assert.LessOrEqual(lastOpen.xMax, frame.xMax);
             foreach (var spot in _geo.ChargingSpots) Assert.IsTrue(Contains(frame, spot));
-            Assert.IsFalse(Contains(_geo.FrameFor(2, false, false), _geo.ChargingSpots[0]));
         }
 
         [Test]

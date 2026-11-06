@@ -273,3 +273,9 @@ Date: 2026-11-06
 Files: Core/Contracts/ITuning.cs, TuningStore.cs, TuningCatalog.cs, TuningInfo.cs; Core/Events/TuningKey.cs, TuningEvents.cs, NightPlan.cs
 Why: user asked for every pacing number to be tunable live from a debug panel and for a late-night EV surge.
 Tests: none yet; module agents add theirs.
+
+## lead: merge round 5 (pacing, layered unlocks, charge spots, expanding lot, urgency audio, tuning panel)
+Date: 2026-11-06
+Files: merges of economy-night, patrons, lot, audio, integration branches; Bootstrap.unity regenerated; docs/design.md, docs/decisions.md; LotGeometryTests.cs (removed a wrong assertion)
+Why: user feedback round 5.
+Tests: EditMode 281 of 281 passed in batch mode.
