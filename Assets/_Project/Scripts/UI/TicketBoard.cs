@@ -40,10 +40,16 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<TicketClosed>(OnClosed);
         }
 
-        public void AppendLines(StringBuilder text)
+        public void AppendLines(StringBuilder text, int maxLines)
         {
+            var shown = 0;
             foreach (var pair in _rows)
             {
+                if (shown++ >= maxLines)
+                {
+                    text.AppendLine($"  +{_rows.Count - maxLines} more");
+                    break;
+                }
                 var r = pair.Value;
                 var spot = r.Spot != 0 ? (r.State == "Parked" ? " in spot " + r.Spot : " (spot " + r.Spot + ")") : "";
                 text.AppendLine($"  #{pair.Key} Car#{r.Car}: {r.State}{spot}");

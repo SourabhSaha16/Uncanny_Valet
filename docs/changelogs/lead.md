@@ -171,3 +171,9 @@ Date: 2026-11-05
 Files: merged branch agent/cars (see docs/changelogs/cars.md)
 Why: Play-test round 1 visual fix: car label size (decisions.md 2026-11-05).
 Tests: Full EditMode suite run after both merges (see next entry).
+
+## lead: merge integration overlay fit
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: Play-test round 1 visual fix: overlay fit (decisions.md 2026-11-05).
+Tests: Full EditMode suite run after both merges (see next entry).
