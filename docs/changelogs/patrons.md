@@ -19,3 +19,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Patrons/{PatronConfig,PatronRequest,Ticket,TicketState,TicketRegistry,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryTests.cs
 Why: P1 patron loop (design.md sections 5 and 10): arrive, park, stay, pickup request, close with tip, depart.
 Tests: 4 EditMode tests for TicketRegistry (whole ticket, early curb ignored, no pickup before park, unknown car); all 7 EditMode tests pass.
+
+## patrons: add arrival queue, car letters and park/pickup timers
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,ArrivalSlotScanner,LetterPool,PatronConfig,PatronRequest,PatronSpawner,PatronDeparture,Ticket,TicketBook,TicketRegistry,TicketTimer,TicketTimerPublisher}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ArrivalGate,LetterPool,TicketTimer,TicketRegistryTimer,TicketRegistry}Tests.cs
+Why: design.md section 10 pressure rules. Up to 3 cars queue in ILotLayout.ArrivalSlots; each ticket gets the lowest free letter; the park timer (45 min, pauses while the valet drives) makes the patron take the car for $0, no penalty; the pickup timer (60 min) zeroes the tip via TipInput.PickupExpired but the car is still owed. PatronSpawner.Spawn is now TrySpawn(request, out ticket).
+Tests: new EditMode tests for the gate, letter pool, timer and registry timers (expiry, pause, stop, vanished car frees letter and ticket); one existing registry test adjusted for park expiry. Unity not run.

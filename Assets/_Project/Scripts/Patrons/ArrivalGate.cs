@@ -1,11 +1,24 @@
+using System;
+using System.Collections.Generic;
+
 namespace UncannyValet.Patrons
 {
-    /// <summary>Pure rule: a new patron car may arrive only if few are waiting and the arrival point is clear.</summary>
+    /// <summary>Pure rule: which queue slot a new patron car takes, if any.</summary>
     public static class ArrivalGate
     {
-        public static bool CanArrive(int waitingTickets, int maxWaiting, bool arrivalPointBlocked)
+        public const int NoSlot = -1;
+
+        /// <summary>
+        /// Returns the first clear slot among the first <paramref name="maxWaiting"/> slots, or
+        /// <see cref="NoSlot"/> when the waiting cap is reached or every usable slot is blocked.
+        /// </summary>
+        public static int FirstFreeSlot(int waitingTickets, int maxWaiting, IReadOnlyList<bool> slotBlocked)
         {
-            return waitingTickets < maxWaiting && !arrivalPointBlocked;
+            if (waitingTickets >= maxWaiting) return NoSlot;
+            var usable = Math.Min(maxWaiting, slotBlocked.Count);
+            for (var i = 0; i < usable; i++)
+                if (!slotBlocked[i]) return i;
+            return NoSlot;
         }
     }
 }

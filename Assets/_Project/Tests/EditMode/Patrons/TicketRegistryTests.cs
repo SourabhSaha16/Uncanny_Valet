@@ -125,8 +125,9 @@ namespace UncannyValet.Tests.Patrons
         public void NightTick_BeforePark_DoesNotRequestPickup()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));
-            Tick(100f);
+            Tick(10f);
             Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
+            Assert.AreEqual(0, _log.Count);
         }
 
         [Test]
