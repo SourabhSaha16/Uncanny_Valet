@@ -28,6 +28,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<TipEarned>(OnTipEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<NightEnded>(OnNightEnded);
+            _bus.Subscribe<NextNightRequested>(OnNextNightRequested);
         }
 
         public void Unsubscribe()
@@ -42,6 +43,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<TipEarned>(OnTipEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<NightEnded>(OnNightEnded);
+            _bus.Unsubscribe<NextNightRequested>(OnNextNightRequested);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -52,5 +54,6 @@ namespace UncannyValet.Audio
         private void OnTipEarned(TipEarned e) { if (e.Amount > 0) _play(SfxId.TipEarned); }
         private void OnTimerExpired(TicketTimerExpired e) => _play(SfxId.CarVanished);
         private void OnNightEnded(NightEnded e) => _play(SfxId.NightEnded);
+        private void OnNextNightRequested(NextNightRequested e) => _play(SfxId.ButtonClick);
     }
 }
