@@ -49,6 +49,14 @@ namespace UncannyValet.Cars
 
         private void Awake() => EnsureBody();
 
+        // Despawned while someone sits in it: tell the seated valet so it can get out (no double publish).
+        private void OnDestroy()
+        {
+            if (!HasDriver) return;
+            HasDriver = false;
+            if (Services.TryGet<IEventBus>(out var bus)) bus.Publish(new CarExited(_id));
+        }
+
         private void EnsureBody()
         {
             if (_body == null) _body = GetComponent<Rigidbody2D>();

@@ -19,3 +19,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Valet/{FrameGuard,Interactor,SeatController}.cs, Assets/_Project/Tests/EditMode/Valet/ValetTests.cs
 Why: exiting re-enabled the Interactor while E was still pressed, so the valet re-entered the car the same frame (design.md section 10).
 Tests: added FrameGuard_BlocksOnlyTheBlockedFrame; not run (Unity not run per instruction).
+
+## valet: leave a car that is despawned while driven
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Valet/{ExitPlacement,SeatController}.cs, Assets/_Project/Scripts/Cars/CarDriver.cs (approved single-method cross-module edit), Assets/_Project/Tests/EditMode/Valet/ValetTests.cs, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs
+Why: Patrons despawns every car at night end, possibly with the valet inside; CarDriver.OnDestroy now publishes CarExited if driven, and SeatController reappears on foot beside the last position (design.md sections 9, 10).
+Tests: added ExitPlacement and CarDriver destroy tests; not run (Unity not run per instruction).
