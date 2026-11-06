@@ -11,10 +11,13 @@ namespace UncannyValet.Cars
     {
         [SerializeField] private CarDefinition _defaultDefinition;
 
+        [SerializeField, Range(0.1f, 1f)] private float _labelHeight = 0.6f;
+        [SerializeField] private Color _labelColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
         private Sprite _sprite;
 
-        /// <summary>Optional bus; needed only for the publishSpawned overload. Set by the bootstrap.</summary>
+        /// <summary>Optional bus for the publishSpawned overload. Set by the bootstrap.</summary>
         public IEventBus Bus { get; set; }
 
         public IDrivable Spawn(CarId id, Vector2 position, float rotationDegrees)
@@ -67,6 +70,7 @@ namespace UncannyValet.Cars
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
+            CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);
             return driver;
         }
 
