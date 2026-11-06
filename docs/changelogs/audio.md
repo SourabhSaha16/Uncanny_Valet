@@ -19,3 +19,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Audio/{SfxStations,SfxId,SfxRecipeBook,SfxEventRouter}.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
 Why: Round-4 stations: CarFullyCharged plays a zap and chime, CarCleaned a splash with sparkle and ding, CarEnteredStation a click and low hum.
 Tests: Router mapping test extended with the three events; the existing every-effect length and peak test covers the new clips automatically. Not run (Unity not launched). Duplicate-member grep on edited files: none.
+
+## audio: tempo rises with waiting cars
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Audio/{UrgencyRule,PendingCarTracker,AudioConfig,AudioDirector}.cs, Assets/_Project/Data/Audio/AudioConfig.asset, Assets/_Project/Tests/EditMode/Audio/UrgencyTests.cs
+Why: Play-test round 5: the funk groove speeds up as more cars wait to be parked or handed back, and relaxes as the queue clears (design.md section 10). PendingCarTracker counts waiting cars from TicketOpened, CarParked, PickupRequested, TicketClosed, park-timer expiry and night start/end; UrgencyRule maps the count to a smoothed multiplier applied to the music AudioSource pitch each frame (no allocation, no clip regeneration, no click). SFX sources and M mute are untouched.
+Tests: UrgencyTests (curve, smoothing, tracker counts, resets, unsubscribe). Not run (Unity not launched).
