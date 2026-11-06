@@ -159,3 +159,9 @@ Date: 2026-11-05
 Files: merged branch agent/cars (see docs/changelogs/cars.md)
 Why: Play-test round 1: car numbers (design.md section 10; decisions.md 2026-11-05).
 Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge integration overlay spot column
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: Play-test round 1: overlay spot column (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
