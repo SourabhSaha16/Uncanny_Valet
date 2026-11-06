@@ -37,3 +37,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Lot/{LotGeometry,StationZone,StationBuilder,StationSwitch,StopZone,ZoneRoster,LotConfig,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{LotGeometryTests,ZoneRosterTests}.cs
 Why: design.md section 10 challenges. Two charging bays and one wash slot are stop zones that publish CarEnteredStation/CarLeftStation; StationSwitch shows them per NightPlanChanged and releases cars (CarLeftStation) when one closes. They take no spot ids. Placement maths moved into pure LotGeometry; stations sit above the curb and the lot bounds grow to contain them.
 Tests: LotGeometryTests (no overlaps, inside bounds, walkway) and 3 ZoneRoster tests (drain, destroyed in station once); Unity not run per request.
+
+## lot: fit station labels inside their bays
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LabelFit,StationBuilder,LotConfig}.cs, Assets/_Project/Tests/EditMode/Lot/LabelFitTests.cs
+Why: Web build: the CHARGE labels were wider than their 2.6 bays and ran together. The size is now computed by the pure LabelFit helper from the bay width, a generous per-character width (0.9 x size) and a 70% fill, capped by StationLabelSize (now 0.45). Stations were not moved.
+Tests: 3 LabelFitTests (cap, shrink with margin, default config fits CHARGE and WASH); Unity not run per request.
