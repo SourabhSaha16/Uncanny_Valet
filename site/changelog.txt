@@ -1,4 +1,23 @@
 === Last 50 commits ===
+73fac77  2026-11-06  lead: merge integration summary card, night flow and audio wiring
+a9df51f  2026-11-06  integration: night summary card, night flow, audio wiring, camera 8.5
+b928fbd  2026-11-06  lead: merge audio button click
+f46dad0  2026-11-06  audio: play button click on next night
+df193e6  2026-11-06  lead: merge valet destroy-release fix
+6738562  2026-11-06  valet: make destroy-release testable
+1f2db95  2026-11-06  lead: update night-end integration test for round-3 rule
+ea59b41  2026-11-06  lead: merge worktree-agent-a7a5f896664c79e56
+ee02cfa  2026-11-06  lead: merge worktree-agent-a5810ce02ec054298
+410833e  2026-11-06  lead: merge worktree-agent-ae4c8bc8613d8eb05
+27016d9  2026-11-06  lead: merge worktree-agent-a028528ae8495cfd3
+6b8cafd  2026-11-06  lead: merge worktree-agent-aedba899768d0bd8f
+04cf4a9  2026-11-06  audio: add synthesised funk loop and sound effects
+917d4f6  2026-11-06  lot: arrival slots side by side below the curb
+affeae6  2026-11-06  economy-night: 180-minute nights and end-of-night tally
+9a6a1da  2026-11-06  patrons: close tickets and stop spawning at night end
+24c3852  2026-11-06  valet: leave a car that is despawned while driven
+c3099c6  2026-11-06  lead: add night summary contracts and Audio module ownership
+c1ac5c7  2026-11-06  lead: publish round-2 build with queue, letters and timers
 9bc78c2  2026-11-06  lead: merge integration overlay and camera
 a165113  2026-11-06  integration: ticket board shows car letter and live timers
 0b72110  2026-11-06  lead: add meta files for round-2 scripts and log merges
@@ -30,25 +49,23 @@ d9d676f  2026-11-05  cars: show car number on each car
 9f6c2c9  2026-11-05  lead: record play-test round 1 and assign tasks
 3806ce6  2026-11-05  lead: publish first playable prototype build
 6f6000a  2026-11-05  lead: merge patrons fix
-3f14e04  2026-11-05  lead: merge lot fix
-936a821  2026-11-05  lead: merge valet fix
-8d2bc38  2026-11-05  patrons: close ticket when car already at curb at pickup
-eb98da1  2026-11-05  lot: guard destroyed cars in stop zones
-3175a9e  2026-11-05  valet: guard same-frame re-entry after exit
-9b29aa8  2026-11-05  lead: merge agent/qa
-c016fa1  2026-11-05  qa: add cross-module integration tests
-6272f36  2026-11-05  lead: generate Bootstrap scene and config assets
-de436ed  2026-11-05  lead: merge agent/integration
-124d1ee  2026-11-05  integration: add GameBootstrap, overlay, camera and scene builder
-d503d0a  2026-11-05  lead: merge agent/valet
-1e7d052  2026-11-05  lead: record P1 merge status
-57f1f14  2026-11-05  valet: stop double-publishing CarExited
-9fc273b  2026-11-05  lead: add Unity-generated meta files for P1 modules
-b141d63  2026-11-05  lead: stop tracking agent worktrees
-e09445c  2026-11-05  lead: merge agent/economy-night
-cff6648  2026-11-05  lead: merge agent/patrons
-31590a7  2026-11-05  lead: merge agent/lot
-1bd934f  2026-11-05  lead: merge agent/valet
+
+=== docs/changelogs/audio.md ===
+# Audio changelog
+
+Entries are added by the audio agent, one per commit. Format in docs/changelogs/README.md.
+
+## audio: add synthesised funk loop and sound effects
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Audio/*.cs and UncannyValet.Audio.asmdef (synth maths, FunkLoopBuilder, SfxBank, SfxEventRouter, AudioDirector, AudioConfig), Assets/_Project/Tests/EditMode/Audio/*.cs, Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef (added UncannyValet.Audio reference)
+Why: Audio module with no audio files; everything is generated in code at Start (design.md section 10 listed audio as out of scope for P1, this is the first audio milestone).
+Tests: EditMode tests for oscillators, ADSR, noise, low-pass, pitch, mute state, loop length and peak, loop point, every SFX length and peak, and event routing. Not run (Unity not launched, per request).
+
+## audio: play button click on next night
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Audio/SfxEventRouter.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
+Why: Core now has NextNightRequested; the summary-card Next button plays SfxId.ButtonClick (design.md section 10 audio).
+Tests: Router test extended to cover NextNightRequested and unsubscribe. Not run (Unity not launched). Checked the Audio files for duplicate members by inspection and grep: none.
 
 === docs/changelogs/cars.md ===
 # Cars changelog
@@ -96,6 +113,12 @@ Files: Assets/_Project/Scripts/Economy/{TipConfig,RunConfig,TipCalculator,DebtLe
 Why: P1 build of design.md sections 2, 5 and 9. Tuning numbers live in config assets.
 Tests: EditMode tests for tip floor, impatient bonus, penalty curve, ledger night-end maths and clock format incl. midnight wrap.
 
+## economy-night: 180-minute nights and end-of-night tally
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder,RunConfig}.cs, Assets/_Project/Scripts/Night/NightClock.cs, Assets/_Project/Data/Economy/RunConfig.asset, Assets/_Project/Tests/EditMode/Economy/NightTallyTests.cs, Assets/_Project/Tests/EditMode/Night/ClockTests.cs
+Why: design.md section 10 (night length and summary). RunConfig.NightLengthMinutes = 180; NightClock default 180 and Initialize(bus, nightLengthMinutes) lets Bootstrap pass RunConfig's value. NightTally is the pure counter; NightTallyRecorder subscribes to the bus and publishes NightSummaryReady once per night. Bootstrap: `new NightTallyRecorder(bus, ledger, runConfig.Nights)` (ledger is the IDebtView) created before the first StartNight, `clock.Initialize(bus, runConfig.NightLengthMinutes)`, and `recorder.Dispose()` on teardown. Debt left = max(0, debt at NightStarted - tips), independent of DebtLedger order; tickets closing after NightEnded are ignored so nothing double counts.
+Tests: NightTallyTests (counts, debt floor, both close orders, reset, dispose) and clock tests (180 min, ends once, restarts) added; not run (Unity not launched).
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
@@ -124,6 +147,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/UI/TicketBoard.cs, TicketRow.cs, TicketRowState.cs, TicketRowFormatter.cs (+ .meta), Assets/_Project/Tests/EditMode/UI/ (TicketRowFormatterTests, TicketBoardTests, + metas), Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef, Assets/_Project/Scripts/Bootstrap/CameraFollow.cs, Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Scenes/Bootstrap.unity
 Why: design.md section 10 pressure rules. Rows show the car letter (CarLetterAssigned) and Park/Pickup timer percent left, "LATE: tip $0" after pickup expiry; text formatting is a pure class. Camera size 8.5 -> 11 so the curb and queue slots 0-1 are visible together (slot 2 comes into view as the valet walks down). Tests asmdef now references UncannyValet.UI. Bootstrap checked: IEventBus and ILotLayout are registered before cars and PatronSpawner activate; no references to ArrivalInset or CanArrive outside Lot/Patrons.
 Tests: added TicketRowFormatterTests and TicketBoardTests (not run; Unity not launched).
+
+## integration: night summary card, night flow, audio wiring, camera 8.5
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/UI/ (NightSummaryCard, SummaryCardFormatter, SummaryCardContent, SummaryCardLayout, UI asmdef), Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, NightFlow, INightStarter, IValetPlacer, IRunReset, ClockNightStarter, ValetPlacer, RunDebt, CameraFollow, Bootstrap asmdef), Assets/_Project/Editor/ (BootstrapSceneBuilder, ProjectSetup, Editor asmdef), Assets/_Project/Scenes/Bootstrap.unity (camera size only), Assets/_Project/Tests/EditMode/ (UI/SummaryCardFormatterTests, UI/NightFlowTests, UI/TicketBoardTests, Tests asmdef)
+Why: design.md section 10 (night length and summary, audio). Camera back to 8.5 with a (0,-0.5) focus offset so all three queue slots show from the valet start. IMGUI summary card on NightSummaryReady with Next/New run (button, Enter, Space) publishing NextNightRequested. Bootstrap creates NightTallyRecorder, initializes the clock from RunConfig; NightFlow starts the next night or a new run; RunDebt owns the DebtLedger and swaps in a fresh one for a new run (no Economy edit). AudioDirector child plus AudioListener on the camera; ProjectSetup creates AudioConfig before the scene is built.
+Tests: added SummaryCardFormatterTests, NightFlowTests and a three-car ticket board test (not run; Unity not launched).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -330,6 +359,24 @@ Files: Assets/_Project/Scripts/Core/Events/TimerKind.cs.meta, Assets/_Project/Sc
 Why: Merged lot, patrons, cars and economy-night round-2 work (design.md section 10, Pressure rules). Cars first arrived with duplicated members that broke compilation; the cars agent fixed them and they were re-merged. These are the Unity-generated meta files for the new scripts.
 Tests: Full EditMode suite 120 of 120 passed on merged main.
 
+## lead: publish round-2 build with queue, letters and timers
+Date: 2026-11-06
+Files: site/*, docs/changelogs/lead.md
+Why: Web build after play-test round 2: queue of 3, car letters, park and pickup timers with dark fill, heavy cars, vertical CURB, overlay with letters and timers (design.md section 10, Pressure rules).
+Tests: Full EditMode run on merged main: 130 of 130 passed. Web build loaded locally: CURB fits vertically, three cars queued as A, B, C with park timers counting down in the overlay and a fill on the car. Not verified in play: pickup timer, park expiry vanish, shoving a car.
+
+## lead: add night summary contracts and Audio module ownership
+Date: 2026-11-06
+Files: CLAUDE.md, docs/design.md, docs/decisions.md, docs/status.md, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs
+Why: Round-3 play-test: shorter nights, end-of-night summary card, audio (design.md section 10, Night length and summary, Audio). CLAUDE.md gets an owner row for the new Audio module.
+Tests: None run; Core additions are plain structs.
+
+## lead: update night-end integration test for round-3 rule
+Date: 2026-11-06
+Files: Assets/_Project/Tests/EditMode/Integration/EventContractTests.cs, docs/changelogs/lead.md
+Why: Merged round-3 branches (shorter nights, summary tally, audio, queue side by side, tickets close at night end). The old test expected an open ticket to survive NightEnded; design.md section 10 now closes every ticket with $0.
+Tests: Full EditMode run: 160 of 162 passed before this edit; the two failures were this test (fixed here) and a valet test that OnDestroy cannot satisfy in EditMode (sent back to the valet agent).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -359,10 +406,22 @@ Files: Assets/_Project/Scripts/Lot/{ArrivalQueue,WallBuilder,ZoneRoster,StopZone
 Why: design.md section 10 pressure rules. ArrivalSlots: 3 slots in a line below the curb (count, spacing, gaps in LotConfig; ArrivalInset replaced); ground grows to fit them. CURB text is one letter per line and sized to fit the curb box. A car destroyed while settled in a spot now frees the spot and publishes CarLeftSpot (StopZone logic moved into pure ZoneRoster, keyed by CarId).
 Tests: 9 EditMode tests added (ArrivalQueue, ZoneRoster); Unity not run per request.
 
+## lot: arrival slots side by side below the curb
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{ArrivalQueue,LotConfig,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/ArrivalQueueTests.cs
+Why: the 3 waiting cars were 5.5 units apart in a vertical line and did not fit the camera. They now sit in adjacent bays (pitch car width + 0.6 gap) in a row going -X from the curb column, nose towards the curb (rotation 0, configurable); the ground and walls grow to fit (design.md section 10).
+Tests: ArrivalQueueTests rewritten (slot 0 = first point, pitch, no overlapping car rectangles, all slots inside the 4:3 camera extent, footprint rotation); Unity not run per request.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
+
+## patrons: close tickets and stop spawning at night end
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{TicketRegistry,Ticket,TicketBook,LetterPool,PatronSpawner}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryNightTests.cs
+Why: design.md section 10. On NightEnded every open ticket closes with wait 0 and tip 0 (no TipEarned), timers stop, letters free, and PatronDeparture removes the car; the spawner stops until NightStarted, which resets its arrival timer, leftover tickets and letters.
+Tests: 4 EditMode tests added (close all, timers stopped, double close safe, two-night clean state with letters from A); not run, Unity not run per instruction.
 
 ## patrons: add arrival gate against stacking cars
 Date: 2026-11-05
@@ -421,3 +480,15 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Valet/{FrameGuard,Interactor,SeatController}.cs, Assets/_Project/Tests/EditMode/Valet/ValetTests.cs
 Why: exiting re-enabled the Interactor while E was still pressed, so the valet re-entered the car the same frame (design.md section 10).
 Tests: added FrameGuard_BlocksOnlyTheBlockedFrame; not run (Unity not run per instruction).
+
+## valet: leave a car that is despawned while driven
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Valet/{ExitPlacement,SeatController}.cs, Assets/_Project/Scripts/Cars/CarDriver.cs (approved single-method cross-module edit), Assets/_Project/Tests/EditMode/Valet/ValetTests.cs, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs
+Why: Patrons despawns every car at night end, possibly with the valet inside; CarDriver.OnDestroy now publishes CarExited if driven, and SeatController reappears on foot beside the last position (design.md sections 9, 10).
+Tests: added ExitPlacement and CarDriver destroy tests; not run (Unity not run per instruction).
+
+## valet: make destroy-release testable
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/CarDriver.cs, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs
+Why: OnDestroy does not run on DestroyImmediate in EditMode, so the body moved to public ReleaseDriverOnDestroy() which OnDestroy calls (design.md section 9).
+Tests: tests now call ReleaseDriverOnDestroy: driven publishes once, undriven none, twice still once; not run (Unity not run per instruction).

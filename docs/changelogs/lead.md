@@ -219,3 +219,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Tests/EditMode/Integration/EventContractTests.cs, docs/changelogs/lead.md
 Why: Merged round-3 branches (shorter nights, summary tally, audio, queue side by side, tickets close at night end). The old test expected an open ticket to survive NightEnded; design.md section 10 now closes every ticket with $0.
 Tests: Full EditMode run: 160 of 162 passed before this edit; the two failures were this test (fixed here) and a valet test that OnDestroy cannot satisfy in EditMode (sent back to the valet agent).
+
+## lead: publish round-3 build with audio, night summary and side-by-side queue
+Date: 2026-11-06
+Files: site/*, Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Audio/*, new .meta files, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs, docs/changelogs/lead.md
+Why: Round-3 play-test: shorter nights (180 min), end-of-night summary card with Next, generated music and sound effects, queue slots side by side at camera size 8.5 (design.md section 10). Scene and audio config regenerated with ProjectSetup.RunBatch. Test fix: reset the exit counter in SetUp.
+Tests: Full EditMode run: 176 of 176 passed. Web build loaded locally (cache disabled): three cars queued A, B, C side by side in view, timers and vanishing working, night 1 ended with the summary card (12 not parked, nothing played), Next started night 2 clean. Audio is not heard or verified by ear; no console errors. Not verified: parking, pickup and tip path in this build.

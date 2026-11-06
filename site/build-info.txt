@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  9bc78c2
-Subject: lead: merge integration overlay and camera
-Date:    2026-11-06 10:22:56 -0800
+Commit:  73fac77
+Subject: lead: merge integration summary card, night flow and audio wiring
+Date:    2026-11-06 11:12:09 -0800

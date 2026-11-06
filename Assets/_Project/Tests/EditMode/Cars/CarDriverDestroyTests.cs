@@ -16,6 +16,7 @@ namespace UncannyValet.Tests.Cars
         public void SetUp()
         {
             Services.Reset();
+            _exited = 0;
             var bus = new EventBus();
             Services.Register<IEventBus>(bus);
             bus.Subscribe<CarExited>(e => { _exited++; _lastId = e.Car; });
