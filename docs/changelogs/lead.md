@@ -177,3 +177,9 @@ Date: 2026-11-05
 Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
 Why: Play-test round 1 visual fix: overlay fit (decisions.md 2026-11-05).
 Tests: Full EditMode suite run after both merges (see next entry).
+
+## lead: publish prototype build with numbered spots and arrival gate
+Date: 2026-11-05
+Files: site/*, docs/changelogs/lead.md
+Why: Web build after play-test round 1: arrival gate against stacking cars, numbered spots, car numbers, overlay shows spot, label and box sizes fixed (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode run on merged main: 81 of 81 passed. Web build loaded locally: spots 1-10 and CURB labelled, car number fits the car, overlay fits its text, one car waiting at the arrival point instead of stacking. Full park-and-return loop not played end to end.

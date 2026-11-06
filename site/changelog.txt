@@ -1,4 +1,20 @@
 === Last 50 commits ===
+2a49481  2026-11-05  lead: add meta files for label fixes
+11f21c7  2026-11-05  lead: merge integration overlay fit
+471a632  2026-11-05  lead: merge cars car label size
+60ff9d2  2026-11-05  cars: fix car number label size
+a3c6d97  2026-11-05  integration: fit overlay box to its text
+a5d3a17  2026-11-05  lead: add meta files for round 1 scripts
+9211a0f  2026-11-05  lead: merge integration overlay spot column
+7ffba6d  2026-11-05  lead: merge cars car numbers
+3b48b68  2026-11-05  lead: merge lot spot numbers
+e144077  2026-11-05  lead: merge patrons arrival gate
+2ccb67f  2026-11-05  patrons: add arrival gate against stacking cars
+c535e09  2026-11-05  integration: show parking spot in the overlay
+d9d676f  2026-11-05  cars: show car number on each car
+7e70eef  2026-11-05  lot: draw spot numbers
+9f6c2c9  2026-11-05  lead: record play-test round 1 and assign tasks
+3806ce6  2026-11-05  lead: publish first playable prototype build
 6f6000a  2026-11-05  lead: merge patrons fix
 3f14e04  2026-11-05  lead: merge lot fix
 936a821  2026-11-05  lead: merge valet fix
@@ -42,6 +58,18 @@ Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarPhysicsMath,CarDriver,CarI
 Why: P1 Cars module (design.md sections 8, 9, 10): top-down Rigidbody2D driving, enter-car interaction via CarEntered, generated-rectangle car factory.
 Tests: 8 EditMode tests for CarPhysicsMath added; Unity batch run was blocked by the permission system, so not yet run.
 
+## cars: show car number on each car
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Cars/CarLabel.cs (+ .meta), Assets/_Project/Scripts/Cars/CarFactory.cs
+Why: Play-test: the player must match cars to ticket list and numbered spots (design.md section 10). TextMesh child with built-in LegacyRuntime font, sorted above the sprite.
+Tests: None run (Unity not run, per request).
+
+## cars: fix car number label size
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Cars/{CarLabelMath,CarLabel,CarFactory}.cs, Assets/_Project/Tests/EditMode/Cars/CarLabelMathTests.cs
+Why: Label digit was about 4 units tall; characterSize now derived from a calibrated digit-height constant so the digit is 0.55 x car width (about 1 unit).
+Tests: 3 EditMode tests for CarLabelMath added; Unity not run.
+
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
 
@@ -63,6 +91,18 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Bootstrap/GameBootstrap.cs, CameraFollow.cs, PlaceholderSprite.cs; Assets/_Project/Scripts/UI/DebugOverlay.cs; Assets/_Project/Editor/ProjectSetup.cs, BootstrapSceneBuilder.cs, UncannyValet.Editor.asmdef
 Why: P2 wiring for the design.md section 10 loop. Editor script creates LotConfig, PatronConfig and Bootstrap.unity (scene 0). Scene not yet generated: Unity batch launch was blocked in this run.
 Tests: none run; code not yet compiled in Unity.
+
+## integration: show parking spot in the overlay
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/UI/DebugOverlay.cs, Assets/_Project/Scripts/UI/TicketBoard.cs
+Why: play-test request; ticket lines show the spot from CarParked/CarLeftSpot events (Core-only). Larger font and dark background, sizes serialized. design.md section 10.
+Tests: none run (Unity not launched).
+
+## integration: fit overlay box to its text
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/UI/DebugOverlay.cs, Assets/_Project/Scripts/UI/TicketBoard.cs
+Why: the fixed-size overlay box covered the curb area. The box now sizes to the measured text (serialized padding) and shows at most 8 ticket lines then "+N more".
+Tests: none run (Unity not launched).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -197,6 +237,54 @@ Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patro
 Why: QA review finding for patrons fixed by its owner and merged (design.md section 10).
 Tests: Full EditMode suite run after all three fix merges (see next entry).
 
+## lead: publish first playable prototype build
+Date: 2026-11-05
+Files: site/*, ProjectSettings/ProjectSettings.asset, ProjectSettings/UnityConnectSettings.asset, Assets/_Project/Scripts/Valet/FrameGuard.cs.meta, docs/changelogs/lead.md
+Why: Web build of the P1 prototype loop (Bootstrap scene, lot, patrons, valet, cars, economy) rebuilt from merged main after the qa fixes; publishes to GitHub Pages (design.md section 10). Settings files changed because the build switched the active target to WebGL and turned analytics off.
+Tests: Full EditMode run on merged main: 75 of 75 passed. Web build loaded locally with no exceptions; the full park-and-return loop has not been played end to end.
+
+## lead: record play-test round 1 and assign tasks
+Date: 2026-11-05
+Files: docs/decisions.md, docs/status.md, docs/changelogs/lead.md
+Why: Human play-test notes (stacking cars, numbered spots) turned into decisions and tasks (design.md sections 8 and 10).
+Tests: Not applicable (docs only).
+
+## lead: merge patrons arrival gate
+Date: 2026-11-05
+Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
+Why: Play-test round 1: arrival gate (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge lot spot numbers
+Date: 2026-11-05
+Files: merged branch agent/lot (see docs/changelogs/lot.md)
+Why: Play-test round 1: spot numbers (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge cars car numbers
+Date: 2026-11-05
+Files: merged branch agent/cars (see docs/changelogs/cars.md)
+Why: Play-test round 1: car numbers (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge integration overlay spot column
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: Play-test round 1: overlay spot column (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).
+
+## lead: merge cars car label size
+Date: 2026-11-05
+Files: merged branch agent/cars (see docs/changelogs/cars.md)
+Why: Play-test round 1 visual fix: car label size (decisions.md 2026-11-05).
+Tests: Full EditMode suite run after both merges (see next entry).
+
+## lead: merge integration overlay fit
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: Play-test round 1 visual fix: overlay fit (decisions.md 2026-11-05).
+Tests: Full EditMode suite run after both merges (see next entry).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -214,10 +302,22 @@ Files: Assets/_Project/Scripts/Lot/StopZone.cs, LotConfig.cs, LotLayoutBuilder.c
 Why: qa finding: a car despawned inside the curb zone made StopZone.Update throw every frame. Destroyed cars are now pruned; arrival inset and valet start offset moved into LotConfig (design.md section 9).
 Tests: none added (Unity-null check is not a pure helper); Unity not run per request.
 
+## lot: draw spot numbers
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Lot/SpotLabel.cs, LotConfig.cs, LotLayoutBuilder.cs
+Why: play-test: players could not tell which car is in which spot. World-space TextMesh labels (built-in LegacyRuntime font, WebGL safe) show each SpotId and a CURB label; size and colour are LotConfig fields.
+Tests: none (rendering only); Unity not run per request.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
+
+## patrons: add arrival gate against stacking cars
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,PatronConfig,PatronSpawner,TicketRegistry}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalGateTests.cs
+Why: Play-test: arriving cars stacked. A car now arrives only if fewer than MaxWaitingCars tickets await parking and the arrival point is clear; otherwise retry next minute (docs/decisions.md).
+Tests: 3 ArrivalGate EditMode tests added; not run, Unity not run per instruction.
 
 ## patrons: close ticket when car already at curb at pickup
 Date: 2026-11-05
