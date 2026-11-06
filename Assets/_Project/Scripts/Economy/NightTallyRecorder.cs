@@ -10,13 +10,22 @@ namespace UncannyValet.Economy
         private readonly IEventBus _bus;
         private readonly IDebtView _debt;
         private readonly NightTally _tally;
+        private readonly Func<int, string> _nextNote;
+        private readonly int _totalNights;
 
-        /// <summary>Create from Bootstrap with the shared bus, the debt view and RunConfig.Nights. Call Dispose on teardown.</summary>
-        public NightTallyRecorder(IEventBus bus, IDebtView debt, int totalNights)
+        /// <summary>
+        /// Create from Bootstrap with the shared bus, the debt view, RunConfig.Nights and nextNote, which maps a
+        /// 1-based night to its "what is new tonight" text (e.g. n => plans.For(n).NewTonight). Null means no
+        /// notes. Call Dispose on teardown.
+        /// </summary>
+        public NightTallyRecorder(IEventBus bus, IDebtView debt, int totalNights, Func<int, string> nextNote = null)
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _debt = debt ?? throw new ArgumentNullException(nameof(debt));
             _tally = new NightTally(totalNights);
+            _totalNights = totalNights;
+            _nextNote = nextNote;
+            _bus.Subscribe<TipExplained>(OnTipExplained);
             _bus.Subscribe<NightStarted>(OnNightStarted);
             _bus.Subscribe<TicketOpened>(OnTicketOpened);
             _bus.Subscribe<CarParked>(OnCarParked);
@@ -26,6 +35,7 @@ namespace UncannyValet.Economy
 
         public void Dispose()
         {
+            _bus.Unsubscribe<TipExplained>(OnTipExplained);
             _bus.Unsubscribe<NightStarted>(OnNightStarted);
             _bus.Unsubscribe<TicketOpened>(OnTicketOpened);
             _bus.Unsubscribe<CarParked>(OnCarParked);
@@ -38,10 +48,13 @@ namespace UncannyValet.Economy
         private void OnCarParked(CarParked e) => _tally.RecordCarParked(e.Car);
         private void OnTicketClosed(TicketClosed e) => _tally.RecordTicketClosed(e.Ticket, e.Car, e.Tip);
 
+        private void OnTipExplained(TipExplained e) => _tally.RecordTipExplained(e.Breakdown);
+
         private void OnNightEnded(NightEnded e)
         {
             if (!_tally.IsActive) return;
-            _bus.Publish(new NightSummaryReady(_tally.End()));
+            var note = _nextNote != null && e.Night < _totalNights ? _nextNote(e.Night + 1) : "";
+            _bus.Publish(new NightSummaryReady(_tally.End(note)));
         }
     }
 }

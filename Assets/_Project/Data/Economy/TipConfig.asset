@@ -16,3 +16,5 @@ MonoBehaviour:
   _speedBonus: 2
   _impatientSpeedBonus: 6
   _penaltyPerMinute: 0.5
+  _chargeBonus: 15
+  _cleanBonus: 15

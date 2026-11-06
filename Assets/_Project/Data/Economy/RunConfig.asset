@@ -15,3 +15,4 @@ MonoBehaviour:
   _nights: 7
   _startingDebt: 1500
   _nightLengthMinutes: 180
+  _gameMinutesPerSecond: 1.5

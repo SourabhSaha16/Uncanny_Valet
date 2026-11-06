@@ -10,10 +10,16 @@ namespace UncannyValet.Economy
         [SerializeField, Min(0)] private int _speedBonus = 2;
         [SerializeField, Min(0)] private int _impatientSpeedBonus = 6;
         [SerializeField, Min(0f)] private float _penaltyPerMinute = 0.5f;
+        [SerializeField, Min(0), Tooltip("Dollars added for an EV handed back fully charged.")]
+        private int _chargeBonus = 15;
+        [SerializeField, Min(0), Tooltip("Dollars added for a dirty car that was washed.")]
+        private int _cleanBonus = 15;
 
         public float SpeedBonusWindowMinutes => _speedBonusWindowMinutes;
         public int SpeedBonus => _speedBonus;
         public int ImpatientSpeedBonus => _impatientSpeedBonus;
         public float PenaltyPerMinute => _penaltyPerMinute;
+        public int ChargeBonus => _chargeBonus;
+        public int CleanBonus => _cleanBonus;
     }
 }
