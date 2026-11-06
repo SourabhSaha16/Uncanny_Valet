@@ -15,7 +15,7 @@ The lead keeps this current. Agents read it when they are (re)spawned.
 | P3 | Reviews, merge, first Pages deploy | qa + lead | todo |
 | Human | Pages source set to GitHub Actions | you | done |
 | Done | Unity project, git repo, first Web build live on GitHub Pages (empty scene) | lead | done |
-| Human | Play the P1 build in a browser | you | todo |
+| Human | Play the P1 build in a browser | you | done (notes in decisions.md) |
 
 ## Notes
 
@@ -23,3 +23,5 @@ The lead keeps this current. Agents read it when they are (re)spawned.
 - Integration must create the missing assets: `LotConfig` (Data/Lot) and `PatronConfig` (Data/Patrons) via an Editor script; `Sedan`, `TipConfig` and `RunConfig` already exist.
 - Integration must wire: `NightClock.StartNight`, `new DebtLedger(bus, runConfig.StartingDebt)` as `IDebtView`, `CarFactory.Bus`, register `ILotLayout`, `IEventBus`, `IInputSource` before zones/valet start.
 - Not yet verified in play: trigger behaviour in the lot (CarParked / CarLeftSpot / CarAtCurb), car driving feel, enter/exit flow.
+
+- 2026-11-05 play-test round 1: handling and camera fine. Tasks: (patrons) ArrivalGate to stop car stacking; (lot) draw spot numbers on spots; (cars) show car number on each car; (integration) overlay shows which spot each parked car is in.

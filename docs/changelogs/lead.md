@@ -135,3 +135,9 @@ Date: 2026-11-05
 Files: site/*, ProjectSettings/ProjectSettings.asset, ProjectSettings/UnityConnectSettings.asset, Assets/_Project/Scripts/Valet/FrameGuard.cs.meta, docs/changelogs/lead.md
 Why: Web build of the P1 prototype loop (Bootstrap scene, lot, patrons, valet, cars, economy) rebuilt from merged main after the qa fixes; publishes to GitHub Pages (design.md section 10). Settings files changed because the build switched the active target to WebGL and turned analytics off.
 Tests: Full EditMode run on merged main: 75 of 75 passed. Web build loaded locally with no exceptions; the full park-and-return loop has not been played end to end.
+
+## lead: record play-test round 1 and assign tasks
+Date: 2026-11-05
+Files: docs/decisions.md, docs/status.md, docs/changelogs/lead.md
+Why: Human play-test notes (stacking cars, numbered spots) turned into decisions and tasks (design.md sections 8 and 10).
+Tests: Not applicable (docs only).
