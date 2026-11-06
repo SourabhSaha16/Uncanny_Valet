@@ -1,4 +1,18 @@
 === Last 50 commits ===
+9bc78c2  2026-11-06  lead: merge integration overlay and camera
+a165113  2026-11-06  integration: ticket board shows car letter and live timers
+0b72110  2026-11-06  lead: add meta files for round-2 scripts and log merges
+f197b0d  2026-11-06  lead: merge cars duplicate-member fix
+8ed4e5d  2026-11-06  cars: remove duplicated members
+986f27e  2026-11-06  lead: merge worktree-agent-ab94e3fc8c3c0eb75
+39192c9  2026-11-06  lead: merge worktree-agent-aadecca71375c975c
+1cde6ef  2026-11-06  lead: merge worktree-agent-a3506ef6e3c7a49e3
+910a58e  2026-11-06  patrons: add arrival queue, car letters and park/pickup timers
+af46781  2026-11-06  cars: heavy cars, letter labels, timer fill overlay
+a60f886  2026-11-06  lot: arrival queue slots, vertical CURB label, release destroyed cars
+43fc295  2026-11-06  lead: add round-2 contracts and engineering standards
+9ebad66  2026-11-05  lead: log missing changelog entries for two meta commits
+fb14ef8  2026-11-05  lead: publish prototype build with numbered spots and arrival gate
 2a49481  2026-11-05  lead: add meta files for label fixes
 11f21c7  2026-11-05  lead: merge integration overlay fit
 471a632  2026-11-05  lead: merge cars car label size
@@ -35,17 +49,6 @@ e09445c  2026-11-05  lead: merge agent/economy-night
 cff6648  2026-11-05  lead: merge agent/patrons
 31590a7  2026-11-05  lead: merge agent/lot
 1bd934f  2026-11-05  lead: merge agent/valet
-c24c61a  2026-11-05  lead: merge agent/cars
-c189656  2026-11-05  lot: build lot layout, spots, curb zone and parked rule
-db1be20  2026-11-05  patrons: add tickets, registry, spawner and departure
-1a61970  2026-11-05  economy-night: add tips, debt ledger and night clock
-2ff213f  2026-11-05  cars: add driver, interaction, factory and physics maths
-9c7da42  2026-11-05  valet: add input, walking, interaction and seat control
-723c4da  2026-11-05  lead: start P1 module work
-82f38fc  2026-11-05  lead: update docs for the local Web build route
-b23d473  2026-11-05  lead: add first Web build in site/
-ad601a3  2026-11-05  lead: switch to local Web build published from site/
-fe416a4  2026-11-05  lead: add Unity 6000.2.5f1 project and git repo
 
 === docs/changelogs/cars.md ===
 # Cars changelog
@@ -69,6 +72,18 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Cars/{CarLabelMath,CarLabel,CarFactory}.cs, Assets/_Project/Tests/EditMode/Cars/CarLabelMathTests.cs
 Why: Label digit was about 4 units tall; characterSize now derived from a calibrated digit-height constant so the digit is 0.55 x car width (about 1 unit).
 Tests: 3 EditMode tests for CarLabelMath added; Unity not run.
+
+## cars: heavy cars, letter labels, timer fill overlay
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver,CarFactory,CarLabel,CarLabelMath}.cs, new Assets/_Project/Scripts/Cars/{CarSorting,CarTimerFill,CarTimerFillMath}.cs (+ .meta), Assets/_Project/Data/Cars/Sedan.asset, Assets/_Project/Tests/EditMode/Cars/{CarLabelMathTests,CarTimerFillMathTests}.cs (+ .meta)
+Why: design.md section 10 pressure rules. (1) Heavy cars: CarDefinition gains Mass (20), ParkedLinearDrag and ParkedAngularDrag (8). The body stays Dynamic so spot/curb triggers are untouched (switching body type was rejected as riskier). Mass is set on the Rigidbody2D and damping is applied only while no driver is seated; seated damping is 0 so handling is unchanged. CarDriver sets velocity directly from CarPhysicsMath, so driving does not depend on mass and no force scaling was needed. (2) CarLabel is now a component subscribed to CarLetterAssigned (OnEnable/OnDisable), filtered by CarId, blank until assigned. (3) CarTimerFill listens to TicketTimerChanged/Expired/Stopped for its car and eases a bottom-up overlay (shared cached 1x1 sprite, child scaled in car-local space, park dark, pickup red) using CarTimerFillMath; sorting is body 10, fill 11, label 12 (CarSorting).
+Tests: 8 new EditMode tests (CarTimerFillMath x6, CarLabelMath.LetterText x2); Unity not run, compiled by inspection.
+
+## cars: remove duplicated members
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver}.cs, Assets/_Project/Data/Cars/Sedan.asset
+Why: Fix compile break from af46781, where an edit script had applied twice: duplicate fields/properties in CarDefinition, duplicate ApplyDrag in CarDriver, duplicate asset keys. Each member now exists once; other Cars files checked by grep.
+Tests: None run (Unity not run); checked by inspection.
 
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
@@ -103,6 +118,12 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/UI/DebugOverlay.cs, Assets/_Project/Scripts/UI/TicketBoard.cs
 Why: the fixed-size overlay box covered the curb area. The box now sizes to the measured text (serialized padding) and shows at most 8 ticket lines then "+N more".
 Tests: none run (Unity not launched).
+
+## integration: ticket board shows car letter and live timers
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/UI/TicketBoard.cs, TicketRow.cs, TicketRowState.cs, TicketRowFormatter.cs (+ .meta), Assets/_Project/Tests/EditMode/UI/ (TicketRowFormatterTests, TicketBoardTests, + metas), Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef, Assets/_Project/Scripts/Bootstrap/CameraFollow.cs, Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Scenes/Bootstrap.unity
+Why: design.md section 10 pressure rules. Rows show the car letter (CarLetterAssigned) and Park/Pickup timer percent left, "LATE: tip $0" after pickup expiry; text formatting is a pure class. Camera size 8.5 -> 11 so the curb and queue slots 0-1 are visible together (slot 2 comes into view as the valet walks down). Tests asmdef now references UncannyValet.UI. Bootstrap checked: IEventBus and ILotLayout are registered before cars and PatronSpawner activate; no references to ArrivalInset or CanArrive outside Lot/Patrons.
+Tests: added TicketRowFormatterTests and TicketBoardTests (not run; Unity not launched).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -285,6 +306,30 @@ Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integ
 Why: Play-test round 1 visual fix: overlay fit (decisions.md 2026-11-05).
 Tests: Full EditMode suite run after both merges (see next entry).
 
+## lead: publish prototype build with numbered spots and arrival gate
+Date: 2026-11-05
+Files: site/*, docs/changelogs/lead.md
+Why: Web build after play-test round 1: arrival gate against stacking cars, numbered spots, car numbers, overlay shows spot, label and box sizes fixed (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode run on merged main: 81 of 81 passed. Web build loaded locally: spots 1-10 and CURB labelled, car number fits the car, overlay fits its text, one car waiting at the arrival point instead of stacking. Full park-and-return loop not played end to end.
+
+## lead: log missing changelog entries for two meta commits
+Date: 2026-11-05
+Files: docs/changelogs/lead.md
+Why: Commits a5d3a17 (lead: add meta files for round 1 scripts) and 2a49481 (lead: add meta files for label fixes) added only Unity-generated .meta files and were pushed without a changelog entry, which fails tools/check-changelog.sh for that push. History is not rewritten; this entry records them (CLAUDE.md, Changelog rule).
+Tests: Full EditMode suite 81 of 81 passed on the merged code those meta files belong to.
+
+## lead: add round-2 contracts and engineering standards
+Date: 2026-11-06
+Files: CLAUDE.md, docs/design.md, docs/decisions.md, docs/status.md, Assets/_Project/Scripts/Core/Contracts/ILotLayout.cs, Assets/_Project/Scripts/Core/Contracts/TipInput.cs, Assets/_Project/Scripts/Core/Events/CarEvents.cs, Assets/_Project/Scripts/Core/Events/TicketEvents.cs, Assets/_Project/Scripts/Core/Events/TimerKind.cs
+Why: Play-test round 2 needs a queue of 3, park and pickup timers and car letters (design.md section 10, Pressure rules). CLAUDE.md now holds Unity and software engineering standards for every agent.
+Tests: None run. ILotLayout gains ArrivalSlots, so main does not compile until the lot agent implements it.
+
+## lead: merge round-2 agent branches and add generated meta files
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Core/Events/TimerKind.cs.meta, Assets/_Project/Scripts/Lot/*.cs.meta, Assets/_Project/Scripts/Patrons/*.cs.meta, Assets/_Project/Tests/EditMode/Lot/*.cs.meta, Assets/_Project/Tests/EditMode/Patrons/*.cs.meta, docs/changelogs/lead.md
+Why: Merged lot, patrons, cars and economy-night round-2 work (design.md section 10, Pressure rules). Cars first arrived with duplicated members that broke compilation; the cars agent fixed them and they were re-merged. These are the Unity-generated meta files for the new scripts.
+Tests: Full EditMode suite 120 of 120 passed on merged main.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -308,6 +353,12 @@ Files: Assets/_Project/Scripts/Lot/SpotLabel.cs, LotConfig.cs, LotLayoutBuilder.
 Why: play-test: players could not tell which car is in which spot. World-space TextMesh labels (built-in LegacyRuntime font, WebGL safe) show each SpotId and a CURB label; size and colour are LotConfig fields.
 Tests: none (rendering only); Unity not run per request.
 
+## lot: arrival queue slots, vertical CURB label, release destroyed cars
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{ArrivalQueue,WallBuilder,ZoneRoster,StopZone,ParkingSpot,CurbZone,LotConfig,LotLayoutBuilder,SpotLabel}.cs, Assets/_Project/Tests/EditMode/Lot/{ArrivalQueueTests,ZoneRosterTests}.cs
+Why: design.md section 10 pressure rules. ArrivalSlots: 3 slots in a line below the curb (count, spacing, gaps in LotConfig; ArrivalInset replaced); ground grows to fit them. CURB text is one letter per line and sized to fit the curb box. A car destroyed while settled in a spot now frees the spot and publishes CarLeftSpot (StopZone logic moved into pure ZoneRoster, keyed by CarId).
+Tests: 9 EditMode tests added (ArrivalQueue, ZoneRoster); Unity not run per request.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
@@ -330,6 +381,12 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Patrons/{PatronConfig,PatronRequest,Ticket,TicketState,TicketRegistry,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryTests.cs
 Why: P1 patron loop (design.md sections 5 and 10): arrive, park, stay, pickup request, close with tip, depart.
 Tests: 4 EditMode tests for TicketRegistry (whole ticket, early curb ignored, no pickup before park, unknown car); all 7 EditMode tests pass.
+
+## patrons: add arrival queue, car letters and park/pickup timers
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,ArrivalSlotScanner,LetterPool,PatronConfig,PatronRequest,PatronSpawner,PatronDeparture,Ticket,TicketBook,TicketRegistry,TicketTimer,TicketTimerPublisher}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ArrivalGate,LetterPool,TicketTimer,TicketRegistryTimer,TicketRegistry}Tests.cs
+Why: design.md section 10 pressure rules. Up to 3 cars queue in ILotLayout.ArrivalSlots; each ticket gets the lowest free letter; the park timer (45 min, pauses while the valet drives) makes the patron take the car for $0, no penalty; the pickup timer (60 min) zeroes the tip via TipInput.PickupExpired but the car is still owed. PatronSpawner.Spawn is now TrySpawn(request, out ticket).
+Tests: new EditMode tests for the gate, letter pool, timer and registry timers (expiry, pause, stop, vanished car frees letter and ticket); one existing registry test adjusted for park expiry. Unity not run.
 
 === docs/changelogs/qa.md ===
 # QA changelog

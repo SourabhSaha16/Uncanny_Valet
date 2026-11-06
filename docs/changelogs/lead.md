@@ -201,3 +201,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Core/Events/TimerKind.cs.meta, Assets/_Project/Scripts/Lot/*.cs.meta, Assets/_Project/Scripts/Patrons/*.cs.meta, Assets/_Project/Tests/EditMode/Lot/*.cs.meta, Assets/_Project/Tests/EditMode/Patrons/*.cs.meta, docs/changelogs/lead.md
 Why: Merged lot, patrons, cars and economy-night round-2 work (design.md section 10, Pressure rules). Cars first arrived with duplicated members that broke compilation; the cars agent fixed them and they were re-merged. These are the Unity-generated meta files for the new scripts.
 Tests: Full EditMode suite 120 of 120 passed on merged main.
+
+## lead: publish round-2 build with queue, letters and timers
+Date: 2026-11-06
+Files: site/*, docs/changelogs/lead.md
+Why: Web build after play-test round 2: queue of 3, car letters, park and pickup timers with dark fill, heavy cars, vertical CURB, overlay with letters and timers (design.md section 10, Pressure rules).
+Tests: Full EditMode run on merged main: 130 of 130 passed. Web build loaded locally: CURB fits vertically, three cars queued as A, B, C with park timers counting down in the overlay and a fill on the car. Not verified in play: pickup timer, park expiry vanish, shoving a car.

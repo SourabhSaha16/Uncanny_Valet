@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  2a49481
-Subject: lead: add meta files for label fixes
-Date:    2026-11-05 21:48:02 -0800
+Commit:  9bc78c2
+Subject: lead: merge integration overlay and camera
+Date:    2026-11-06 10:22:56 -0800
