@@ -183,3 +183,9 @@ Date: 2026-11-05
 Files: site/*, docs/changelogs/lead.md
 Why: Web build after play-test round 1: arrival gate against stacking cars, numbered spots, car numbers, overlay shows spot, label and box sizes fixed (design.md section 10; decisions.md 2026-11-05).
 Tests: Full EditMode run on merged main: 81 of 81 passed. Web build loaded locally: spots 1-10 and CURB labelled, car number fits the car, overlay fits its text, one car waiting at the arrival point instead of stacking. Full park-and-return loop not played end to end.
+
+## lead: log missing changelog entries for two meta commits
+Date: 2026-11-05
+Files: docs/changelogs/lead.md
+Why: Commits a5d3a17 (lead: add meta files for round 1 scripts) and 2a49481 (lead: add meta files for label fixes) added only Unity-generated .meta files and were pushed without a changelog entry, which fails tools/check-changelog.sh for that push. History is not rewritten; this entry records them (CLAUDE.md, Changelog rule).
+Tests: Full EditMode suite 81 of 81 passed on the merged code those meta files belong to.
