@@ -2,6 +2,12 @@
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
 
+## patrons: add arrival gate against stacking cars
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,PatronConfig,PatronSpawner,TicketRegistry}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalGateTests.cs
+Why: Play-test: arriving cars stacked. A car now arrives only if fewer than MaxWaitingCars tickets await parking and the arrival point is clear; otherwise retry next minute (docs/decisions.md).
+Tests: 3 ArrivalGate EditMode tests added; not run, Unity not run per instruction.
+
 ## patrons: close ticket when car already at curb at pickup
 Date: 2026-11-05
 Files: Assets/_Project/Scripts/Patrons/{Ticket,TicketRegistry}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryTests.cs

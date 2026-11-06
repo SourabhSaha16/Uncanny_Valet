@@ -141,3 +141,9 @@ Date: 2026-11-05
 Files: docs/decisions.md, docs/status.md, docs/changelogs/lead.md
 Why: Human play-test notes (stacking cars, numbered spots) turned into decisions and tasks (design.md sections 8 and 10).
 Tests: Not applicable (docs only).
+
+## lead: merge patrons arrival gate
+Date: 2026-11-05
+Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
+Why: Play-test round 1: arrival gate (design.md section 10; decisions.md 2026-11-05).
+Tests: Full EditMode suite run after all four merges (see next entry).

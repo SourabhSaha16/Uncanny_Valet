@@ -10,6 +10,7 @@ namespace UncannyValet.Patrons
     public class PatronSpawner : MonoBehaviour
     {
         [SerializeField] private PatronConfig _config;
+        [SerializeField] private Vector2 _arrivalClearSize = new Vector2(2.5f, 1.5f);
 
         private IEventBus _bus;
         private ICarFactory _cars;
@@ -54,6 +55,8 @@ namespace UncannyValet.Patrons
         private void OnNightTick(NightTick e)
         {
             if (e.MinuteOfNight < _nextArrivalMinute) return;
+            var blocked = Physics2D.OverlapBox(_lot.ArrivalPoint, _arrivalClearSize, _lot.ArrivalRotationDegrees) != null;
+            if (!ArrivalGate.CanArrive(Registry.AwaitingParkCount, _config.MaxWaitingCars, blocked)) return;
             Spawn(RollRequest());
             var gap = Random.Range(_config.ArrivalIntervalRange.x, _config.ArrivalIntervalRange.y);
             _nextArrivalMinute = e.MinuteOfNight + gap;

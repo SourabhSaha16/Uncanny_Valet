@@ -18,6 +18,17 @@ namespace UncannyValet.Patrons
 
         public int OpenCount { get; private set; }
 
+        /// <summary>Tickets whose car has not been parked yet.</summary>
+        public int AwaitingParkCount
+        {
+            get
+            {
+                var n = 0;
+                foreach (var t in _byTicket.Values) if (t.State == TicketState.AwaitingPark) n++;
+                return n;
+            }
+        }
+
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips)
         {
             _bus = bus; _clock = clock; _tips = tips;
