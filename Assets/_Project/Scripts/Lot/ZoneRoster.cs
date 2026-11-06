@@ -34,6 +34,14 @@ namespace UncannyValet.Lot
             return timer.IsDone;
         }
 
+        /// <summary>Removes every car. Adds the ones that had settled (a leave event is due for each) to <paramref name="settled"/>.</summary>
+        public void Drain(List<CarId> settled)
+        {
+            foreach (var pair in _timers)
+                if (pair.Value.IsDone) settled.Add(pair.Key);
+            _timers.Clear();
+        }
+
         /// <summary>Advances every car. Fills <paramref name="settled"/> and <paramref name="gone"/> (id, had settled).</summary>
         public void Tick(float dt, Func<CarId, CarReading> read, List<CarId> settled, List<(CarId id, bool wasSettled)> gone)
         {

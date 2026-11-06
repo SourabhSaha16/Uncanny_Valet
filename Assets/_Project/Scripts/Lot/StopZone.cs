@@ -52,6 +52,16 @@ namespace UncannyValet.Lot
             _cars.Remove(car.Id);
         }
 
+        /// <summary>Treats every car inside as having left (used when the zone is switched off).</summary>
+        public void ReleaseAll()
+        {
+            if (_roster == null) return;
+            _roster.Drain(_settled);
+            _cars.Clear();
+            foreach (var id in _settled) OnLeft(id);
+            _settled.Clear();
+        }
+
         private CarReading Read(CarId id)
         {
             var car = _cars[id];

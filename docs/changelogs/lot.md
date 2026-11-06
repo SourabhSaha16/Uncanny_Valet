@@ -31,3 +31,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Lot/{ArrivalQueue,LotConfig,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/ArrivalQueueTests.cs
 Why: the 3 waiting cars were 5.5 units apart in a vertical line and did not fit the camera. They now sit in adjacent bays (pitch car width + 0.6 gap) in a row going -X from the curb column, nose towards the curb (rotation 0, configurable); the ground and walls grow to fit (design.md section 10).
 Tests: ArrivalQueueTests rewritten (slot 0 = first point, pitch, no overlapping car rectangles, all slots inside the 4:3 camera extent, footprint rotation); Unity not run per request.
+
+## lot: charging bays and wash slot stations
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LotGeometry,StationZone,StationBuilder,StationSwitch,StopZone,ZoneRoster,LotConfig,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{LotGeometryTests,ZoneRosterTests}.cs
+Why: design.md section 10 challenges. Two charging bays and one wash slot are stop zones that publish CarEnteredStation/CarLeftStation; StationSwitch shows them per NightPlanChanged and releases cars (CarLeftStation) when one closes. They take no spot ids. Placement maths moved into pure LotGeometry; stations sit above the curb and the lot bounds grow to contain them.
+Tests: LotGeometryTests (no overlaps, inside bounds, walkway) and 3 ZoneRoster tests (drain, destroyed in station once); Unity not run per request.

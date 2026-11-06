@@ -40,10 +40,22 @@ namespace UncannyValet.Lot
         [SerializeField] private Vector2 _queueDirection = Vector2.left;
         [Min(0f), Tooltip("Gap between the curb's lower edge and the nose of the car in slot 0.")]
         [SerializeField] private float _queueStartGap = 0.8f;
-        [Min(0f), Tooltip("Space kept between the waiting cars and the lot walls.")]
+        [Min(0f), Tooltip("Space kept between the waiting cars or stations and the lot walls.")]
         [SerializeField] private float _queuePadding = 0.5f;
         [Tooltip("Heading of waiting cars; 0 = facing +Y, towards the curb.")]
         [SerializeField] private float _queueRotationDegrees;
+
+        [Header("Stations")]
+        [Min(0), Tooltip("Charging bays. They sit in a row left to right, followed by the single wash slot.")]
+        [SerializeField] private int _chargingBays = 2;
+        [Tooltip("Footprint of each station (width, length).")]
+        [SerializeField] private Vector2 _stationSize = new Vector2(2.6f, 4.4f);
+        [Min(0f), Tooltip("Gap between neighbouring stations.")]
+        [SerializeField] private float _stationGap = 0.4f;
+        [Tooltip("Centre of the first charging bay. Default: above the curb, clear of the curb zone and the spots.")]
+        [SerializeField] private Vector2 _stationsFirstCenter = new Vector2(-17.5f, 6f);
+        [Min(0.1f), Tooltip("Size of the CHARGE / WASH text; must fit inside the station width.")]
+        [SerializeField] private float _stationLabelSize = 0.7f;
 
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
@@ -55,6 +67,11 @@ namespace UncannyValet.Lot
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
+        public int ChargingBays => Mathf.Max(0, _chargingBays);
+        public Vector2 StationSize => _stationSize;
+        public float StationGap => _stationGap;
+        public Vector2 StationsFirstCenter => _stationsFirstCenter;
+        public float StationLabelSize => _stationLabelSize;
         public Vector2 QueueCarSize => _queueCarSize;
         public float QueueSlotGap => _queueSlotGap;
         public Vector2 QueueDirection => _queueDirection;
