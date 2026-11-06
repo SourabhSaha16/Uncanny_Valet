@@ -27,7 +27,7 @@ namespace UncannyValet.Lot
 
         public Vector2 ArrivalPoint => _arrivalSlots[0];
         public IReadOnlyList<Vector2> ArrivalSlots => _arrivalSlots;
-        public float ArrivalRotationDegrees => 0f;
+        public float ArrivalRotationDegrees => _config.QueueRotationDegrees;
         public Vector2 ValetStartPoint { get; private set; }
         public IReadOnlyList<int> SpotIds => _spotIds;
 
@@ -45,10 +45,7 @@ namespace UncannyValet.Lot
             var spotsLeft = c.CurbPosition.x + c.CurbSize.x * 0.5f + c.CurbToSpotsGap;
             var right = spotsLeft + rowWidth + c.Margin;
             var half = spotsHeight * 0.5f + c.Margin;
-            var firstSlot = new Vector2(c.CurbPosition.x, c.CurbPosition.y - c.CurbSize.y * 0.5f - c.QueueStartGap);
-            _arrivalSlots = ArrivalQueue.Slots(firstSlot, c.QueueSlotCount, c.QueueSlotSpacing);
-            var bottom = Mathf.Min(-half, _arrivalSlots[_arrivalSlots.Length - 1].y - c.QueueEndPadding);
-            var bounds = new Rect(left, bottom, right - left, half - bottom);
+            var bounds = BuildQueue(new Rect(left, -half, right - left, half * 2f));
 
             _rects.Make(transform, "Ground", bounds.center, bounds.size, Ground, -10);
             BuildSpots(spotsLeft, spotsHeight * 0.5f);
@@ -57,6 +54,19 @@ namespace UncannyValet.Lot
             _occupancy = new SpotOccupancy(_spotIds);
             InitSpots();
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
+        }
+
+        /// <summary>Places the arrival slots below the curb and grows the lot bounds to contain them.</summary>
+        private Rect BuildQueue(Rect lot)
+        {
+            var c = _config;
+            var noseToCentre = ArrivalQueue.Footprint(Vector2.zero, c.QueueCarSize, c.QueueRotationDegrees).height * 0.5f;
+            var first = new Vector2(c.CurbPosition.x, c.CurbPosition.y - c.CurbSize.y * 0.5f - c.QueueStartGap - noseToCentre);
+            var pitch = ArrivalQueue.Pitch(c.QueueCarSize.x, c.QueueSlotGap);
+            _arrivalSlots = ArrivalQueue.Slots(first, c.QueueSlotCount, c.QueueDirection, pitch);
+            var q = ArrivalQueue.Bounds(_arrivalSlots, c.QueueCarSize, c.QueueRotationDegrees);
+            return Rect.MinMaxRect(Mathf.Min(lot.xMin, q.xMin - c.QueuePadding), Mathf.Min(lot.yMin, q.yMin - c.QueuePadding),
+                Mathf.Max(lot.xMax, q.xMax + c.QueuePadding), Mathf.Max(lot.yMax, q.yMax + c.QueuePadding));
         }
 
         private void BuildSpots(float spotsLeft, float top)
