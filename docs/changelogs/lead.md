@@ -75,3 +75,9 @@ Date: 2026-11-05
 Files: .gitignore, docs/changelogs/lead.md (removed .claude/worktrees/* from the index)
 Why: The cars merge commit accidentally recorded the agents' worktree folders as embedded repos; they are local scratch space.
 Tests: Not applicable.
+
+## lead: add Unity-generated meta files for P1 modules
+Date: 2026-11-05
+Files: Assets/_Project/**/*.meta (Cars, Valet, Data, Tests folders and files)
+Why: Unity generates .meta files on first import; the cars and valet agents could not run Unity, so these were missing.
+Tests: Full EditMode run on merged main: 52 of 52 passed, no compile errors.
