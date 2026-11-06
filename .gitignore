@@ -30,3 +30,6 @@ crashlytics-build.properties
 
 # Claude Code personal settings
 .claude/settings.local.json
+
+# Agent worktrees created by Claude Code
+/.claude/worktrees/

@@ -69,3 +69,9 @@ Date: 2026-11-05
 Files: merged branch worktree-agent-a04e0f3931e473e2f (see docs/changelogs/economy-night.md)
 Why: P1 module work for economy-night merged into main after lead review of folder ownership (CLAUDE.md, Phases).
 Tests: Agent reported 27 of 27 (24 new); re-run on merged main.
+
+## lead: stop tracking agent worktrees
+Date: 2026-11-05
+Files: .gitignore, docs/changelogs/lead.md (removed .claude/worktrees/* from the index)
+Why: The cars merge commit accidentally recorded the agents' worktree folders as embedded repos; they are local scratch space.
+Tests: Not applicable.
