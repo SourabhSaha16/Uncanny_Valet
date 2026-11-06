@@ -39,3 +39,9 @@ Date: 2026-11-05
 Files: docs/status.md, docs/changelogs/lead.md
 Why: P0 is done (EventBusTests 3 of 3 in batch mode), so the five P1 module agents start (CLAUDE.md, Phases).
 Tests: EventBusTests run earlier: 3 of 3 passed.
+
+## lead: merge agent/cars
+Date: 2026-11-05
+Files: merged branch agent/cars (see docs/changelogs/cars.md)
+Why: P1 module work for cars merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent could not run tests; run on merged main.
