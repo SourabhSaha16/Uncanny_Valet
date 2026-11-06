@@ -39,46 +39,28 @@ namespace UncannyValet.Lot
         {
             _rects = new RectFactory();
             var c = _config;
-            var rowWidth = c.SpotsPerRow * (c.SpotSize.x + c.SpotGap) - c.SpotGap;
-            var spotsHeight = c.Rows * c.SpotSize.y + (c.Rows - 1) * c.AisleWidth;
-            var left = c.CurbPosition.x - c.CurbSize.x * 0.5f - c.Margin;
-            var spotsLeft = c.CurbPosition.x + c.CurbSize.x * 0.5f + c.CurbToSpotsGap;
-            var right = spotsLeft + rowWidth + c.Margin;
-            var half = spotsHeight * 0.5f + c.Margin;
-            var bounds = BuildQueue(new Rect(left, -half, right - left, half * 2f));
+            var g = new LotGeometry(c);
+            var bounds = g.Bounds;
+            _arrivalSlots = g.QueueSlots;
 
             _rects.Make(transform, "Ground", bounds.center, bounds.size, Ground, -10);
-            BuildSpots(spotsLeft, spotsHeight * 0.5f);
+            BuildSpots(g.Spots);
             BuildCurb();
+            var stations = StationBuilder.Build(_rects, transform, c, g.Stations);
+            gameObject.AddComponent<StationSwitch>().Init(stations);
             WallBuilder.Build(_rects, transform, bounds, c.WallThickness, Wall);
             _occupancy = new SpotOccupancy(_spotIds);
             InitSpots();
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 
-        /// <summary>Places the arrival slots below the curb and grows the lot bounds to contain them.</summary>
-        private Rect BuildQueue(Rect lot)
+        private void BuildSpots(Rect[] areas)
         {
             var c = _config;
-            var noseToCentre = ArrivalQueue.Footprint(Vector2.zero, c.QueueCarSize, c.QueueRotationDegrees).height * 0.5f;
-            var first = new Vector2(c.CurbPosition.x, c.CurbPosition.y - c.CurbSize.y * 0.5f - c.QueueStartGap - noseToCentre);
-            var pitch = ArrivalQueue.Pitch(c.QueueCarSize.x, c.QueueSlotGap);
-            _arrivalSlots = ArrivalQueue.Slots(first, c.QueueSlotCount, c.QueueDirection, pitch);
-            var q = ArrivalQueue.Bounds(_arrivalSlots, c.QueueCarSize, c.QueueRotationDegrees);
-            return Rect.MinMaxRect(Mathf.Min(lot.xMin, q.xMin - c.QueuePadding), Mathf.Min(lot.yMin, q.yMin - c.QueuePadding),
-                Mathf.Max(lot.xMax, q.xMax + c.QueuePadding), Mathf.Max(lot.yMax, q.yMax + c.QueuePadding));
-        }
-
-        private void BuildSpots(float spotsLeft, float top)
-        {
-            var c = _config;
-            for (var r = 0; r < c.Rows; r++)
-            for (var i = 0; i < c.SpotsPerRow; i++)
+            foreach (var area in areas)
             {
                 var id = _spotIds.Count + 1;
-                var x = spotsLeft + c.SpotSize.x * 0.5f + i * (c.SpotSize.x + c.SpotGap);
-                var y = top - c.SpotSize.y * 0.5f - r * (c.SpotSize.y + c.AisleWidth);
-                var pos = new Vector2(x, y);
+                var pos = area.center;
                 _rects.Make(transform, "Spot Line " + id, pos, c.SpotSize, Line, -7);
                 _rects.Make(transform, "Spot Fill " + id, pos, c.SpotSize - Vector2.one * 0.16f, SpotFill, -6);
                 SpotLabel.Create(transform, id.ToString(), pos, c, -5);

@@ -65,6 +65,46 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void Drain_ReturnsOnlySettledCars_AndEmptiesTheRoster()
+        {
+            var roster = new ZoneRoster(0.5f);
+            var other = new CarId(8);
+            roster.Enter(Car);
+            roster.Enter(other);
+            roster.Tick(0.6f, id => id.Equals(Car) ? CarReading.Stopped : CarReading.Active, _settled, _gone);
+            var released = new List<CarId>();
+            roster.Drain(released);
+            Assert.AreEqual(new[] { Car }, released);
+            Assert.AreEqual(0, roster.Count);
+        }
+
+        [Test]
+        public void Drain_ThenExit_GivesNoSecondLeave()
+        {
+            var roster = new ZoneRoster(0.5f);
+            roster.Enter(Car);
+            Tick(roster, 0.6f, CarReading.Stopped);
+            roster.Drain(new List<CarId>());
+            Assert.IsFalse(roster.Exit(Car));
+        }
+
+        [Test]
+        public void StationCar_SettlesOnce_ThenDestroyedInside_LeavesExactlyOnce()
+        {
+            var roster = new ZoneRoster(0.5f);
+            roster.Enter(Car);
+            Tick(roster, 0.6f, CarReading.Stopped);
+            Assert.AreEqual(1, _settled.Count);
+            Tick(roster, 0.1f, CarReading.Stopped);
+            Assert.IsEmpty(_settled);
+            Tick(roster, 0.1f, CarReading.Gone);
+            Assert.AreEqual(1, _gone.Count);
+            Assert.IsTrue(_gone[0].wasSettled);
+            Tick(roster, 0.1f, CarReading.Gone);
+            Assert.IsEmpty(_gone);
+        }
+
+        [Test]
         public void ReleasedSpot_IsFreeAgainThroughOccupancy()
         {
             var occupancy = new SpotOccupancy(new[] { 1 });
