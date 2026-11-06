@@ -2,6 +2,12 @@
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
 
+## patrons: apply night plan, EV charging, washing and tip breakdown
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ServiceProgress,ChargeRule,WashRule,ServiceTuning,IPatronRandom,UnityPatronRandom,PatronPlan,PatronRequestRoller,StationService,TicketSettler,Ticket,TicketBook,TicketRegistry,PatronRequest,PatronConfig,PatronSpawner}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ServiceRules,TicketRegistryService,TicketRegistryNight,TicketRegistry,TicketRegistryTimer}Tests.cs
+Why: design.md section 10. NightPlanChanged sets the waiting cap, arrival gap scale and EV/dirty odds (injectable random). EVs charge and dirty cars wash only while stopped in their bay; any station pauses the park timer. Arrival events are published in the order CarSpawned, TicketOpened, CarLetterAssigned, TicketTraitsAssigned, then initial charge/clean. Delivered tickets use ITipCalculator.Explain and publish TipExplained before TicketClosed; forced closes publish an all-zero breakdown (reason None).
+Tests: new EditMode tests for the rules, plan, trait rolls, arrival order, station pause and tip flags; fakes updated for Explain; not run, Unity not run per instruction.
+
 ## patrons: close tickets and stop spawning at night end
 Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{TicketRegistry,Ticket,TicketBook,LetterPool,PatronSpawner}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryNightTests.cs

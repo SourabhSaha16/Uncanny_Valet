@@ -10,9 +10,10 @@ namespace UncannyValet.Patrons
     {
         private readonly IEventBus _bus;
         private readonly IGameClock _clock;
-        private readonly ITipCalculator _tips;
         private readonly TicketTimerPublisher _timers;
-        private readonly TicketBook _book = new TicketBook();
+        private readonly TicketBook _book;
+        private readonly TicketSettler _settler;
+        private readonly StationService _stations;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         public int OpenCount => _book.Count;
@@ -21,9 +22,15 @@ namespace UncannyValet.Patrons
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips)
+            : this(bus, clock, tips, ServiceTuning.Default) { }
+
+        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning)
         {
-            _bus = bus; _clock = clock; _tips = tips;
+            _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
+            _book = new TicketBook(tuning);
+            _settler = new TicketSettler(bus, clock, tips, _timers, _book);
+            _stations = new StationService(bus, clock, _book);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<NightTick>(OnNightTick);
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
@@ -35,6 +42,7 @@ namespace UncannyValet.Patrons
 
         public void Dispose()
         {
+            _stations.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<NightTick>(OnNightTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
@@ -49,10 +57,30 @@ namespace UncannyValet.Patrons
         /// <summary>Opens a ticket for a car, gives it a letter and starts its park timer.</summary>
         public Ticket Open(CarId car, PatronRequest request)
         {
-            var ticket = _book.Add(car, request);
-            ticket.ParkTimer.Start(_clock.MinuteOfNight);
+            var ticket = Create(car, request);
             _bus.Publish(new TicketOpened(ticket.TicketId, car, request.StayMinutes));
             return ticket;
+        }
+
+        /// <summary>Like <see cref="Open"/> but announces nothing; follow with <see cref="AnnounceArrival"/>.</summary>
+        public Ticket Create(CarId car, PatronRequest request)
+        {
+            var ticket = _book.Add(car, request);
+            ticket.ParkTimer.Start(_clock.MinuteOfNight);
+            return ticket;
+        }
+
+        /// <summary>
+        /// Announces a created ticket in the order listeners rely on: CarSpawned, TicketOpened, CarLetterAssigned,
+        /// TicketTraitsAssigned, and only then the initial charge and clean levels.
+        /// </summary>
+        public void AnnounceArrival(Ticket t)
+        {
+            _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
+            _bus.Publish(new TicketOpened(t.TicketId, t.CarId, t.StayMinutes));
+            _bus.Publish(new CarLetterAssigned(t.CarId, t.Letter));
+            _bus.Publish(new TicketTraitsAssigned(t.TicketId, t.CarId, t.IsEv, t.IsDirty));
+            _stations.Announce(t);
         }
 
         private void OnCarParked(CarParked e)
@@ -68,12 +96,15 @@ namespace UncannyValet.Patrons
         {
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
-            t.ParkTimer.Pause(_clock.MinuteOfNight);
+            t.Driven = true;
+            t.SyncParkTimer(_clock.MinuteOfNight);
         }
 
         private void OnCarExited(CarExited e)
         {
-            if (_book.TryGetByCar(e.Car, out var t)) t.ParkTimer.Resume(_clock.MinuteOfNight);
+            if (!_book.TryGetByCar(e.Car, out var t)) return;
+            t.Driven = false;
+            t.SyncParkTimer(_clock.MinuteOfNight);
         }
 
         private void OnCarAtCurb(CarAtCurb e)
@@ -108,23 +139,13 @@ namespace UncannyValet.Patrons
             }
         }
 
-        private void Close(Ticket t)
-        {
-            var wait = _clock.MinuteOfNight - t.PickupRequestMinute;
-            var tip = _tips.Calculate(new TipInput(t.Request.BaseTip, wait, t.Request.Impatient, t.PickupExpired));
-            t.MarkClosed();
-            _timers.Stop(t, TimerKind.Pickup);
-            _book.Remove(t);
-            _bus.Publish(new TicketClosed(t.TicketId, t.CarId, wait, tip));
-            _bus.Publish(new TipEarned(t.TicketId, tip));
-        }
+        private void Close(Ticket t) => _settler.Pay(t);
 
         /// <summary>The park window ran out: the patron takes the car. No tip, no penalty.</summary>
         private void Abandon(Ticket t)
         {
             t.MarkAbandoned();
-            _book.Remove(t);
-            _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));
+            _settler.Void(t);
         }
 
         private void OnNightEnded(NightEnded e) => CloseAllUnpaid();
@@ -145,8 +166,7 @@ namespace UncannyValet.Patrons
                 if (!t.MarkForceClosed()) continue;
                 _timers.Stop(t, TimerKind.Park);
                 _timers.Stop(t, TimerKind.Pickup);
-                _book.Remove(t);
-                _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));
+                _settler.Void(t);
             }
         }
     }

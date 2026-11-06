@@ -19,3 +19,6 @@ MonoBehaviour:
   _maxWaitingCars: 3
   _parkWindowMinutes: 45
   _pickupWindowMinutes: 60
+  _evStartCharge: 0.2
+  _chargeMinutes: 20
+  _washMinutes: 15

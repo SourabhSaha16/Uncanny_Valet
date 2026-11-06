@@ -26,11 +26,35 @@ namespace UncannyValet.Patrons
 
         public float StayMinutes => Request.StayMinutes;
 
-        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, char letter)
+        public bool IsEv => Request.IsEv;
+        public bool IsDirty => Request.IsDirty;
+        public ChargeRule Charge { get; }
+        public WashRule Wash { get; }
+
+        /// <summary>A valet is driving the car.</summary>
+        public bool Driven { get; set; }
+        public bool InChargingBay { get; set; }
+        public bool InWashBay { get; set; }
+
+        public bool InStation => InChargingBay || InWashBay;
+        public bool ChargedEv => IsEv && Charge.IsFull;
+        public bool CleanedDirty => IsDirty && Wash.IsClean;
+        public bool UncleanedDirty => IsDirty && !Wash.IsClean;
+
+        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, char letter, ServiceTuning tuning)
         {
             TicketId = ticketId; CarId = carId; Request = request; Letter = letter;
             ParkTimer = new TicketTimer(request.ParkWindowMinutes);
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
+            Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);
+            Wash = new WashRule(tuning.WashMinutes);
+        }
+
+        /// <summary>The park timer runs only while nobody drives the car and it is not stopped in a station.</summary>
+        public void SyncParkTimer(float minute)
+        {
+            if (Driven || InStation) ParkTimer.Pause(minute);
+            else ParkTimer.Resume(minute);
         }
 
         public bool StayEnded(float minute) => State == TicketState.Parked && minute >= ParkedMinute + StayMinutes;
