@@ -27,11 +27,15 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private LotLayoutBuilder _lot;
         [SerializeField] private NightClock _clock;
         [SerializeField] private GameObject _valet;
+        [SerializeField] private PatronConfig _patronConfig;
         [SerializeField] private PatronSpawner _spawner;
         [SerializeField] private DebugOverlay _overlay;
+        [SerializeField] private TuningPanel _tuningPanel;
         [SerializeField] private CameraFollow _camera;
         [SerializeField] private NightSummaryCard _summaryCard;
         [SerializeField] private AudioDirector _audio;
+
+        private const int DefaultSpotSeed = 12;
 
         private RunDebt _debt;
         private NightTallyRecorder _recorder;
@@ -41,13 +45,17 @@ namespace UncannyValet.Bootstrap
         {
             Services.Reset();
             var bus = new EventBus();
-            var input = _valet.GetComponent<KeyboardInputSource>();
+            var keyboard = _valet.GetComponent<KeyboardInputSource>();
+            var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping);
+            var tuning = new TuningStore(bus);
             _debt = new RunDebt(bus, _runConfig.StartingDebt);
             _recorder = new NightTallyRecorder(bus, _debt, _runConfig.Nights,
                 n => _planConfig.For(n).NewTonight);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
+            Services.Register<ITuning>(tuning);
+            SeedTuning(tuning, 0);
             Services.Register<ICarFactory>(_carFactory);
             Services.Register<ILotLayout>(_lot);
             Services.Register<IInputSource>(input);
@@ -57,12 +65,15 @@ namespace UncannyValet.Bootstrap
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
+            SeedTuning(tuning, _lot.SpotIds.Count);
+            FrameLot();
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _runConfig.NightLengthMinutes, _runConfig.GameMinutesPerSecond, _planConfig);
             SpawnValet();
             _spawner.Random = new UnityPatronRandom();
             _spawner.gameObject.SetActive(true);
             StartOverlay();
+            _tuningPanel.gameObject.SetActive(true);
             _summaryCard.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
             _flow = new NightFlow(bus, new ClockNightStarter(_clock),
@@ -75,6 +86,20 @@ namespace UncannyValet.Bootstrap
         {
             yield return null;
             _flow.StartFirstNight();
+        }
+
+        // Seeds before any module is active so none reads an unseeded key. Called again once the lot knows its
+        // spot count, which only matters when the first plan says 0 ("all spots open").
+        private void SeedTuning(ITuning tuning, int spotCount)
+        {
+            TuningSeeder.Seed(tuning, _runConfig, _patronConfig, _tipConfig, _planConfig.For(1),
+                spotCount > 0 ? spotCount : DefaultSpotSeed);
+        }
+
+        private void FrameLot()
+        {
+            if (LotBounds.TryMeasure(_lot.gameObject, out var rect)) _camera.SetWorldBounds(rect);
+            else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
         }
 
         private void SpawnValet()

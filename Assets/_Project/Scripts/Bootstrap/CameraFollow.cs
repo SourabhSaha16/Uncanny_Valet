@@ -4,49 +4,95 @@ namespace UncannyValet.Bootstrap
 {
     /// <summary>
     /// Keeps an orthographic camera on a target. The valet's transform tracks the car he is driving,
-    /// so following the valet also follows the car.
+    /// so following the valet also follows the car. When world bounds are set, the zoom is chosen so the
+    /// whole lot fits (within a legibility cap) and the view never leaves the bounds.
     /// </summary>
     [RequireComponent(typeof(Camera))]
     public sealed class CameraFollow : MonoBehaviour
     {
-        [SerializeField] private Transform _target;
-        /// <summary>Half the visible height in world units. 8.5 at 16:9 shows the queue below, the curb and the stations above from the valet start.</summary>
+        /// <summary>Half the visible height in world units used until bounds are known.</summary>
         public const float DefaultOrthographicSize = 8.5f;
 
-        [SerializeField, Min(1f)] private float _orthographicSize = DefaultOrthographicSize;
+        [SerializeField] private Transform _target;
+        [SerializeField, Min(1f), Tooltip("Smallest zoom (half the visible height). Also the zoom used when no bounds are set.")]
+        private float _orthographicSize = DefaultOrthographicSize;
+        [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot. Beyond this the camera follows instead of showing everything.")]
+        private float _maxOrthographicSize = 16f;
+        [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
+        private float _boundsMargin = 2f;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
-        [SerializeField, Tooltip("Shifts the view from the target. At the valet start (y 0) a y offset between -0.3 and 0.2 keeps both the queue cars (down to y -8.3) and the stations (up to y 8.2) in view.")]
+        [SerializeField, Tooltip("Shifts the view from the target when no bounds are set.")]
         private Vector2 _focusOffset = Vector2.zero;
 
+        private Camera _camera;
+        private Rect _bounds;
+        private bool _hasBounds;
+        private float _aspect;
+
+        /// <summary>Follows this transform; snaps to it immediately.</summary>
         public void SetTarget(Transform target)
         {
             _target = target;
             if (target != null) Snap();
         }
 
+        /// <summary>Sets the world rectangle of the lot (walls included) and refits the zoom.</summary>
+        public void SetWorldBounds(Rect bounds)
+        {
+            _bounds = bounds;
+            _hasBounds = true;
+            ApplySize();
+            if (_target != null) Snap();
+        }
+
         private void Awake()
         {
-            var cam = GetComponent<Camera>();
-            cam.orthographic = true;
-            cam.orthographicSize = _orthographicSize;
+            _camera = GetComponent<Camera>();
+            _camera.orthographic = true;
+            ApplySize();
         }
 
         private void LateUpdate()
         {
+            if (!Mathf.Approximately(_aspect, _camera.aspect)) ApplySize();
             if (_target == null) return;
-            var goal = Goal();
             var t = _smoothing <= 0f ? 1f : 1f - Mathf.Exp(-_smoothing * Time.deltaTime);
-            transform.position = Vector3.Lerp(transform.position, goal, t);
+            transform.position = Vector3.Lerp(transform.position, Goal(), t);
         }
 
-        private void Snap()
+        private void Snap() => transform.position = Goal();
+
+        private void ApplySize()
         {
-            transform.position = Goal();
+            _aspect = _camera.aspect;
+            var size = _orthographicSize;
+            if (_hasBounds)
+            {
+                var halfH = _bounds.height * 0.5f + _boundsMargin;
+                var halfW = _bounds.width * 0.5f + _boundsMargin;
+                var fit = Mathf.Max(halfH, halfW / Mathf.Max(0.1f, _aspect));
+                size = Mathf.Clamp(fit, _orthographicSize, Mathf.Max(_orthographicSize, _maxOrthographicSize));
+            }
+            _camera.orthographicSize = size;
         }
 
         private Vector3 Goal()
         {
-            return new Vector3(_target.position.x + _focusOffset.x, _target.position.y + _focusOffset.y, transform.position.z);
+            var p = (Vector2)_target.position;
+            if (!_hasBounds) p += _focusOffset;
+            else
+            {
+                var half = new Vector2(_camera.orthographicSize * _camera.aspect, _camera.orthographicSize);
+                p.x = Clamp(p.x, _bounds.xMin - _boundsMargin, _bounds.xMax + _boundsMargin, half.x);
+                p.y = Clamp(p.y, _bounds.yMin - _boundsMargin, _bounds.yMax + _boundsMargin, half.y);
+            }
+            return new Vector3(p.x, p.y, transform.position.z);
+        }
+
+        private static float Clamp(float v, float min, float max, float half)
+        {
+            if (max - min <= half * 2f) return (min + max) * 0.5f;
+            return Mathf.Clamp(v, min + half, max - half);
         }
     }
 }
