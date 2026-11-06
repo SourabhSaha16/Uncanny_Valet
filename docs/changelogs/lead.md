@@ -15,3 +15,9 @@ Assets/InputSystem_Actions.inputactions, Assets/UniversalRenderPipelineGlobalSet
 .claude/settings.json, generated .meta files, docs/changelogs/lead.md
 Why: Create the Unity project (2D URP template, Unity 6000.2.5f1, product name Uncanny Valet) so CI can build the Web player (design.md section 1, 10).
 Tests: EditMode run in batch mode: 3 of 3 passed (EventBusTests).
+
+## lead: switch to local Web build published from site/
+Date: 2026-11-05
+Files: .github/workflows/ci-cd.yml, tools/build-web.ps1, .gitattributes, docs/changelogs/lead.md
+Why: Unity CI needs a license tied to a password login, which the project owner does not have. The Web player is now built locally and the committed site/ folder is published to GitHub Pages (design.md section 1, Platform).
+Tests: Not run; workflow and script not yet exercised. Needs the WebGL Build Support module before the first build.

@@ -1,7 +1,8 @@
 name: CI/CD
 
-# Pull requests: changelog check, tests and a Web build (downloadable artifact).
-# Pushes to main: the same, then deploy the Web build to GitHub Pages.
+# Local-build route: the Web player is built on a developer PC (tools/build-web.ps1), which copies it
+# into the committed site/ folder. CI checks changelogs and publishes site/ to GitHub Pages.
+# No Unity license or secrets are needed in CI.
 
 on:
   push:
@@ -16,11 +17,6 @@ concurrency:
 
 permissions:
   contents: read
-
-env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
 jobs:
   changelog:
@@ -39,69 +35,10 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
-  test:
-    name: EditMode tests
-    needs: changelog
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-test-${{ hashFiles('Packages/packages-lock.json') }}
-          restore-keys: Library-
-      - uses: game-ci/unity-test-runner@v4
-        id: tests
-        with:
-          testMode: editmode
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: ${{ steps.tests.outputs.artifactsPath }}
-
-  build:
-    name: Web build
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 50
-      - uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-WebGL-${{ hashFiles('Packages/packages-lock.json') }}
-          restore-keys: Library-
-      - uses: game-ci/unity-builder@v4
-        with:
-          targetPlatform: WebGL
-          buildMethod: UncannyValet.EditorTools.WebBuild.BuildFromCommandLine
-      - name: Find the build and add build info
-        id: site
-        run: |
-          INDEX=$(find build -name index.html | head -n 1)
-          if [ -z "$INDEX" ]; then echo "No index.html in build/"; exit 1; fi
-          SITE_DIR=$(dirname "$INDEX")
-          sudo chown -R "$(id -u)":"$(id -g)" build
-          bash tools/write-build-info.sh "$SITE_DIR"
-          echo "dir=$SITE_DIR" >> "$GITHUB_OUTPUT"
-      - name: Upload for Pages (main only)
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ steps.site.outputs.dir }}
-      - name: Upload build (pull requests)
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: ${{ steps.site.outputs.dir }}
-
   deploy:
-    name: Deploy to GitHub Pages
+    name: Publish site/ to GitHub Pages
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: changelog
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -110,5 +47,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+      - name: Check that site/ holds a Web build
+        run: |
+          if [ ! -f site/index.html ]; then
+            echo "::error::site/index.html is missing. Run tools/build-web.ps1 locally and commit site/."
+            exit 1
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4
