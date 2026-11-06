@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Audio",
+    "rootNamespace": "UncannyValet.Audio",
+    "references": ["UncannyValet.Core", "Unity.InputSystem"],
+    "autoReferenced": true
+}
