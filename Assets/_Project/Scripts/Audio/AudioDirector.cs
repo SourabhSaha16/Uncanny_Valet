@@ -16,6 +16,8 @@ namespace UncannyValet.Audio
 
         private readonly MuteState _mute = new MuteState();
         private SfxEventRouter _router;
+        private PendingCarTracker _pending;
+        private UrgencyRule _urgency;
         private SfxBank _bank;
         private AudioSource _music;
         private AudioSource[] _voices;
@@ -35,17 +37,32 @@ namespace UncannyValet.Audio
             }
             BuildAudio();
             _router = new SfxEventRouter(bus, Play);
-            if (isActiveAndEnabled) _router.Subscribe();
+            _pending = new PendingCarTracker(bus);
+            _urgency = new UrgencyRule(_config.MinTempoMultiplier, _config.MaxTempoMultiplier,
+                _config.PendingForMaxTempo, _config.TempoSmoothingSeconds);
+            if (!isActiveAndEnabled) return;
+            _router.Subscribe();
+            _pending.Subscribe();
         }
 
-        private void OnEnable() => _router?.Subscribe();
+        private void OnEnable()
+        {
+            _router?.Subscribe();
+            _pending?.Subscribe();
+        }
 
-        private void OnDisable() => _router?.Unsubscribe();
+        private void OnDisable()
+        {
+            _router?.Unsubscribe();
+            _pending?.Unsubscribe();
+        }
 
         private void Update()
         {
+            if (_music == null) return;
+            _music.pitch = _urgency.Step(_pending.Count, Time.unscaledDeltaTime);
             var keyboard = Keyboard.current;
-            if (_music == null || keyboard == null || !keyboard.mKey.wasPressedThisFrame) return;
+            if (keyboard == null || !keyboard.mKey.wasPressedThisFrame) return;
             _mute.Toggle();
             ApplyVolumes();
         }

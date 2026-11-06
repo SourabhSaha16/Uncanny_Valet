@@ -18,5 +18,9 @@ MonoBehaviour:
   _tempoBpm: 104
   _rootMidiNote: 45
   _swing: 0.15
+  _minTempoMultiplier: 1
+  _maxTempoMultiplier: 1.2
+  _pendingForMaxTempo: 4
+  _tempoSmoothingSeconds: 2.5
   _sampleRate: 22050
   _sfxVoices: 6
