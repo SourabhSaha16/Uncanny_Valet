@@ -85,6 +85,43 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
+        public void CarAlreadyAtCurb_WhenPickupRequested_ClosesImmediately()
+        {
+            var ticket = _registry.Open(_car, new PatronRequest(10f, 20, false));
+            _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new CarAtCurb(_car));
+            Tick(10f);
+
+            Assert.AreEqual(TicketState.Closed, ticket.State);
+            Assert.AreEqual(0f, _tips.Last.WaitMinutes);
+            Assert.IsInstanceOf<PickupRequested>(_log[0]);
+            Assert.IsInstanceOf<TicketClosed>(_log[1]);
+        }
+
+        [Test]
+        public void CarEnteredAfterCurb_ClearsCurbFlag()
+        {
+            var ticket = _registry.Open(_car, new PatronRequest(10f, 20, false));
+            _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new CarAtCurb(_car));
+            _bus.Publish(new CarEntered(_car));
+            Tick(10f);
+
+            Assert.AreEqual(TicketState.PickupRequested, ticket.State);
+        }
+
+        [Test]
+        public void OpeningTicketInsideHandler_DoesNotThrow()
+        {
+            _registry.Open(_car, new PatronRequest(5f, 20, false));
+            _bus.Publish(new CarParked(_car, 1));
+            _bus.Subscribe<PickupRequested>(e => _registry.Open(new CarId(2), new PatronRequest(5f, 20, false)));
+
+            Assert.DoesNotThrow(() => Tick(5f));
+            Assert.AreEqual(2, _registry.OpenCount);
+        }
+
+        [Test]
         public void NightTick_BeforePark_DoesNotRequestPickup()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));

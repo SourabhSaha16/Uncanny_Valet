@@ -12,6 +12,9 @@ namespace UncannyValet.Patrons
         public float ParkedMinute { get; private set; }
         public float PickupRequestMinute { get; private set; }
 
+        /// <summary>True while the car sits at the curb (it arrived there before pickup was requested).</summary>
+        public bool AtCurb { get; set; }
+
         public float StayMinutes => Request.StayMinutes;
 
         public Ticket(TicketId ticketId, CarId carId, PatronRequest request)
