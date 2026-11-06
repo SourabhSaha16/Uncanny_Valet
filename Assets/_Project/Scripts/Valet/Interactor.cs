@@ -17,13 +17,19 @@ namespace UncannyValet.Valet
         /// <summary>Prompt for the debug overlay, or empty when nothing is in range.</summary>
         public string CurrentPrompt { get; private set; } = string.Empty;
 
+        private readonly FrameGuard _guard = new FrameGuard();
+
         public void SetInput(IInputSource input) => _input = input;
+
+        /// <summary>Ignore the interact press for the rest of this frame (used right after exiting a car).</summary>
+        public void IgnoreInteractThisFrame() => _guard.Block(Time.frameCount);
 
         private void Update()
         {
             var target = FindNearest();
             CurrentPrompt = target != null ? target.Prompt : string.Empty;
-            if (target != null && _input != null && _input.InteractPressed) target.Interact(gameObject);
+            if (target != null && _input != null && _input.InteractPressed && !_guard.IsBlocked(Time.frameCount))
+                target.Interact(gameObject);
         }
 
         private void OnDisable() => CurrentPrompt = string.Empty;

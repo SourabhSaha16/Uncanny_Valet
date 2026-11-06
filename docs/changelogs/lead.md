@@ -111,3 +111,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Tests/EditMode/Integration/*, docs/changelogs/qa.md, generated .meta files
 Why: Cross-module tests (full fake night, event contracts, tip and physics rules) merged; qa could not run Unity, so the lead ran the suite (design.md section 10).
 Tests: Full EditMode run on merged main: 71 of 71 passed (52 before, 19 new from qa), no compile errors.
+
+## lead: merge valet fix
+Date: 2026-11-05
+Files: merged branch agent/valet (see docs/changelogs/valet.md)
+Why: QA review finding for valet fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).

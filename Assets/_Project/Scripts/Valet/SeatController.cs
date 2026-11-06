@@ -60,6 +60,7 @@ namespace UncannyValet.Valet
             _car = null;
             _state.TryExitCar();
             transform.position = car.Transform.position + car.Transform.right * _exitDistance;
+            _interactor.IgnoreInteractThisFrame();
             SetBodyActive(true);
         }
 
