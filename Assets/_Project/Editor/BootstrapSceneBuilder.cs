@@ -1,3 +1,4 @@
+using UncannyValet.Audio;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
 using UncannyValet.Economy;
@@ -28,12 +29,15 @@ namespace UncannyValet.EditorTools
             var clock = Child<NightClock>(root, "NightClock");
             var spawner = Child<PatronSpawner>(root, "PatronSpawner");
             var overlay = Child<DebugOverlay>(root, "DebugOverlay");
+            var summaryCard = Child<NightSummaryCard>(root, "NightSummaryCard");
+            var audio = Child<AudioDirector>(root, "AudioDirector");
             var valet = BuildValet(root);
             var camera = BuildCamera();
 
             Set(factory, "_defaultDefinition", Load<CarDefinition>("Assets/_Project/Data/Cars/Sedan.asset"));
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
             Set(spawner, "_config", Load<PatronConfig>(ProjectSetup.PatronConfigPath));
+            Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
 
             var so = new SerializedObject(bootstrap);
             so.FindProperty("_runConfig").objectReferenceValue = Load<RunConfig>("Assets/_Project/Data/Economy/RunConfig.asset");
@@ -45,6 +49,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_spawner").objectReferenceValue = spawner;
             so.FindProperty("_overlay").objectReferenceValue = overlay;
             so.FindProperty("_camera").objectReferenceValue = camera;
+            so.FindProperty("_summaryCard").objectReferenceValue = summaryCard;
+            so.FindProperty("_audio").objectReferenceValue = audio;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));
@@ -95,8 +101,9 @@ namespace UncannyValet.EditorTools
         private static CameraFollow BuildCamera()
         {
             var go = new GameObject("Main Camera") { tag = "MainCamera" };
-            go.transform.position = new Vector3(-2f, 0f, -10f);
+            go.transform.position = new Vector3(-9f, 0f, -10f);
             var cam = go.AddComponent<Camera>();
+            go.AddComponent<AudioListener>();
             cam.orthographic = true;
             cam.orthographicSize = CameraFollow.DefaultOrthographicSize;
             cam.clearFlags = CameraClearFlags.SolidColor;
@@ -118,5 +125,12 @@ namespace UncannyValet.EditorTools
         }
 
         private static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
+
+        private static T RequireAsset<T>(string path) where T : Object
+        {
+            var asset = Load<T>(path);
+            if (asset == null) Debug.LogError("Missing asset " + path + ". Run Uncanny Valet/Setup/Create Config Assets first.");
+            return asset;
+        }
     }
 }

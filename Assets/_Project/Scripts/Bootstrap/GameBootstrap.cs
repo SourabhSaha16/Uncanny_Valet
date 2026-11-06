@@ -1,3 +1,4 @@
+using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
@@ -27,15 +28,20 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private PatronSpawner _spawner;
         [SerializeField] private DebugOverlay _overlay;
         [SerializeField] private CameraFollow _camera;
+        [SerializeField] private NightSummaryCard _summaryCard;
+        [SerializeField] private AudioDirector _audio;
 
-        private DebtLedger _ledger;
+        private RunDebt _debt;
+        private NightTallyRecorder _recorder;
+        private NightFlow _flow;
 
         private void Awake()
         {
             Services.Reset();
             var bus = new EventBus();
             var input = _valet.GetComponent<KeyboardInputSource>();
-            _ledger = new DebtLedger(bus, _runConfig.StartingDebt);
+            _debt = new RunDebt(bus, _runConfig.StartingDebt);
+            _recorder = new NightTallyRecorder(bus, _debt, _runConfig.Nights);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
@@ -44,15 +50,20 @@ namespace UncannyValet.Bootstrap
             Services.Register<IInputSource>(input);
             Services.Register<IGameClock>(_clock);
             Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
-            Services.Register<IDebtView>(_ledger);
+            Services.Register<IDebtView>(_debt);
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
+            _clock.Initialize(bus, _runConfig.NightLengthMinutes);
             SpawnValet();
             _spawner.gameObject.SetActive(true);
             StartOverlay();
-            _clock.StartNight(1);
+            _summaryCard.gameObject.SetActive(true);
+            _audio.gameObject.SetActive(true);
+            _flow = new NightFlow(bus, new ClockNightStarter(_clock),
+                new ValetPlacer(_valet, _lot, _camera), _debt, _runConfig.Nights);
+            _flow.StartFirstNight();
         }
 
         private void SpawnValet()
@@ -74,7 +85,9 @@ namespace UncannyValet.Bootstrap
 
         private void OnDestroy()
         {
-            _ledger?.Dispose();
+            _flow?.Dispose();
+            _recorder?.Dispose();
+            _debt?.Dispose();
             Services.Reset();
         }
     }

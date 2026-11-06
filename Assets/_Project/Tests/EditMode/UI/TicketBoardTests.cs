@@ -63,6 +63,19 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
+        public void ThreeQueuedCars_ShowALinesABC()
+        {
+            for (var i = 1; i <= 3; i++)
+            {
+                var car = new CarId(i);
+                _bus.Publish(new TicketOpened(new TicketId(i), car, 60f));
+                _bus.Publish(new CarLetterAssigned(car, (char)('A' + i - 1)));
+            }
+            var lines = Lines().Replace("\r", string.Empty).Split('\n');
+            Assert.AreEqual(new[] { "  A  Waiting", "  B  Waiting", "  C  Waiting" }, lines);
+        }
+
+        [Test]
         public void ParkExpiryClose_RemovesRow()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));

@@ -1,4 +1,5 @@
 using System.IO;
+using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
@@ -16,12 +17,14 @@ namespace UncannyValet.EditorTools
     {
         public const string LotConfigPath = "Assets/_Project/Data/Lot/LotConfig.asset";
         public const string PatronConfigPath = "Assets/_Project/Data/Patrons/PatronConfig.asset";
+        public const string AudioConfigPath = "Assets/_Project/Data/Audio/AudioConfig.asset";
 
         [MenuItem("Uncanny Valet/Setup/Create Config Assets")]
         public static void CreateConfigs()
         {
             CreateIfMissing<LotConfig>(LotConfigPath);
             CreateIfMissing<PatronConfig>(PatronConfigPath);
+            CreateIfMissing<AudioConfig>(AudioConfigPath);
             AssetDatabase.SaveAssets();
         }
 

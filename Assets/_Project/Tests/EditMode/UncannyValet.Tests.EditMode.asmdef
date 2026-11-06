@@ -11,6 +11,7 @@
         "UncannyValet.Night",
         "UncannyValet.Audio",
         "UncannyValet.UI",
+        "UncannyValet.Bootstrap",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
