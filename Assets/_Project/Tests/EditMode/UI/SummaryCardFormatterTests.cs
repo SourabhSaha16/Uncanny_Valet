@@ -38,6 +38,90 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual("New run", card.ButtonLabel);
         }
 
+        private static NightSummary Detailed(int baseTips, int speed, int charge, int clean, int zeroed,
+            string note = "", int night = 2) =>
+            new NightSummary(night, 7, baseTips + speed + charge + clean, 5, 1, 900,
+                baseTips, speed, charge, clean, zeroed, note);
+
+        [Test]
+        public void Calc_WithoutBonuses_ShowsBaseSpeedAndTotal()
+        {
+            var card = SummaryCardFormatter.Build(Detailed(40, 6, 0, 0, 0));
+            Assert.AreEqual(new[] { "Base tips: $40", "Speed bonus: +$6", "= Tips collected: $46" }, card.CalcLines);
+        }
+
+        [Test]
+        public void Calc_NegativeSpeed_IsAPenalty()
+        {
+            var card = SummaryCardFormatter.Build(Detailed(40, -4, 0, 0, 0));
+            Assert.AreEqual("Speed penalty: -$4", card.CalcLines[1]);
+        }
+
+        [Test]
+        public void Calc_AnyBonus_ShowsAllFourLines()
+        {
+            var card = SummaryCardFormatter.Build(Detailed(40, 0, 5, 0, 0));
+            Assert.AreEqual(
+                new[] { "Base tips: $40", "Speed bonus: $0", "Charge bonus: +$5", "Clean bonus: $0", "= Tips collected: $45" },
+                card.CalcLines);
+        }
+
+        [Test]
+        public void Calc_ZeroedTips_ShownOnlyWhenPositive()
+        {
+            Assert.AreEqual("Zeroed tips: 2", SummaryCardFormatter.Build(Detailed(40, 0, 0, 3, 2)).CalcLines[5]);
+            Assert.AreEqual(3, SummaryCardFormatter.Build(Detailed(40, 6, 0, 0, 0)).CalcLines.Length);
+        }
+
+        [Test]
+        public void Tomorrow_ShownWithNote_NotOnFinalNightOrWhenEmpty()
+        {
+            Assert.AreEqual("Tomorrow: EVs arrive", SummaryCardFormatter.Build(Detailed(1, 0, 0, 0, 0, "EVs arrive")).Tomorrow);
+            Assert.IsTrue(SummaryCardFormatter.Build(Detailed(1, 0, 0, 0, 0, "EVs arrive")).HasTomorrow);
+            Assert.IsFalse(SummaryCardFormatter.Build(Detailed(1, 0, 0, 0, 0, "")).HasTomorrow);
+            Assert.IsFalse(SummaryCardFormatter.Build(Detailed(1, 0, 0, 0, 0, "x", 7)).HasTomorrow);
+        }
+
+        [Test]
+        public void Signed_FormatsSignAndZero()
+        {
+            Assert.AreEqual("+$3", SummaryCardFormatter.Signed(3));
+            Assert.AreEqual("-$3", SummaryCardFormatter.Signed(-3));
+            Assert.AreEqual("$0", SummaryCardFormatter.Signed(0));
+        }
+
+        [Test]
+        public void WrappedLineCount_WrapsOnWords()
+        {
+            Assert.AreEqual(0, SummaryCardLayout.WrappedLineCount("", 10));
+            Assert.AreEqual(1, SummaryCardLayout.WrappedLineCount("aaa bbb", 10));
+            Assert.AreEqual(2, SummaryCardLayout.WrappedLineCount("aaaaaa bbbbbb", 10));
+            Assert.AreEqual(3, SummaryCardLayout.WrappedLineCount("aaaaaaaaaaaaaaaaaaaaaaaa", 10));
+        }
+
+        [Test]
+        public void LayoutHeight_GrowsWithCalcAndNote()
+        {
+            var plain = SummaryCardLayout.Height(4, false, 10f, 5f, 20f);
+            var full = SummaryCardLayout.Height(4, false, 5, 3, 10f, 5f, 20f);
+            Assert.AreEqual(plain + 60f + 30f + 10f, full);
+        }
+
+        [Test]
+        public void FitScale_ShrinksOnlyWhenTooTall()
+        {
+            Assert.AreEqual(1f, SummaryCardLayout.FitScale(500f, 600f, 10f));
+            Assert.AreEqual(0.5f, SummaryCardLayout.FitScale(1160f, 600f, 10f), 0.001f);
+        }
+
+        [Test]
+        public void WorstCaseCard_FitsAn800By600View()
+        {
+            // Final night is longest without a note; a normal night with zeroed tips, bonuses and a 3-line note.
+            var height = SummaryCardLayout.Height(4, false, 7, 3, 18 * 1.5f, 14f, 44f);
+            Assert.LessOrEqual(height, 600f - 20f);
+        }
+
         [Test]
         public void LayoutHeight_GrowsWithHeadline()
         {

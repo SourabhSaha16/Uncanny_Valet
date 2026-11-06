@@ -43,6 +43,43 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
+        public void Ev_ShowsChargePercentAfterTheRow()
+        {
+            var row = Row('A', TicketRowState.Parked, 3);
+            row.IsEv = true;
+            row.Charge01 = 0.45f;
+            Assert.AreEqual("  A  Parked  in spot 3 EV 45%", TicketRowFormatter.Format(row));
+        }
+
+        [Test]
+        public void Ev_WithUnknownCharge_ShowsJustEv()
+        {
+            var row = Row('A', TicketRowState.AwaitingPark);
+            row.IsEv = true;
+            Assert.AreEqual("  A  Waiting EV", TicketRowFormatter.Format(row));
+        }
+
+        [Test]
+        public void Dirty_ShowsDirtyUntilWashedThenClean()
+        {
+            var row = Row('B', TicketRowState.AwaitingPark);
+            row.IsDirty = true;
+            Assert.AreEqual("  B  Waiting DIRTY", TicketRowFormatter.Format(row));
+            row.Washed = true;
+            Assert.AreEqual("  B  Waiting clean", TicketRowFormatter.Format(row));
+        }
+
+        [Test]
+        public void EvAndDirty_ShowBothTags()
+        {
+            var row = Row('C', TicketRowState.AwaitingPark);
+            row.IsEv = true;
+            row.Charge01 = 1f;
+            row.IsDirty = true;
+            Assert.AreEqual("  C  Waiting EV 100% DIRTY", TicketRowFormatter.Format(row));
+        }
+
+        [Test]
         public void PercentLeft_ClampsAndRounds()
         {
             Assert.AreEqual(100, TicketRowFormatter.PercentLeft(-1f));

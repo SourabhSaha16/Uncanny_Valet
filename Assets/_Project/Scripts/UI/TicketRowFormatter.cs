@@ -18,6 +18,29 @@ namespace UncannyValet.UI
         {
             text.Append(Gap).Append(row.Letter).Append(Gap);
             AppendStatus(text, row);
+            AppendSpot(text, row);
+            AppendTags(text, row);
+        }
+
+        /// <summary>Trait tags: " EV 45%", " DIRTY" until washed, then " clean".</summary>
+        public static void AppendTags(StringBuilder text, TicketRow row)
+        {
+            if (row.IsEv)
+            {
+                text.Append(" EV");
+                if (row.Charge01 >= 0f) text.Append(' ').Append(Percent(row.Charge01)).Append('%');
+            }
+            if (row.IsDirty) text.Append(row.Washed ? " clean" : " DIRTY");
+        }
+
+        public static int Percent(float value01)
+        {
+            var clamped = value01 < 0f ? 0f : value01 > 1f ? 1f : value01;
+            return (int)(clamped * 100f + 0.5f);
+        }
+
+        private static void AppendSpot(StringBuilder text, TicketRow row)
+        {
             if (row.Spot == 0) return;
             var inSpot = row.State != TicketRowState.AwaitingPark;
             text.Append(Gap).Append(inSpot ? "in spot " : "(spot ").Append(row.Spot);
