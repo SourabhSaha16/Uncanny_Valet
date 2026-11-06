@@ -231,3 +231,9 @@ Date: 2026-11-06
 Files: docs/design.md, docs/decisions.md, docs/status.md, docs/changelogs/lead.md, Assets/_Project/Scripts/Core/Contracts/ITipCalculator.cs, Assets/_Project/Scripts/Core/Contracts/TipInput.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs, Assets/_Project/Scripts/Core/Events/NightPlan.cs, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/StationEvents.cs, Assets/_Project/Scripts/Core/Events/StationKind.cs, Assets/_Project/Scripts/Core/Events/TicketEvents.cs, Assets/_Project/Scripts/Core/Events/TipBreakdown.cs, Assets/_Project/Scripts/Core/Events/TipZeroReason.cs
 Why: Play-test round 4: seven nights with one new challenge each, EV charging and car wash stations, mirrors, faster clock (design.md section 10, Challenge schedule).
 Tests: None run. ITipCalculator gains Explain, so main does not compile until economy-night implements it and fakes are updated.
+
+## lead: merge round-4 module work and pin the test harness clock
+Date: 2026-11-06
+Files: Assets/_Project/Tests/EditMode/Integration/NightHarness.cs, generated .meta files, docs/changelogs/lead.md
+Why: Merged economy-night, patrons, lot, cars and audio round-4 work (design.md section 10, Challenge schedule). The clock now defaults to 1.5 game minutes per second, so the integration test harness pins it at 1.0 to keep its minute maths exact.
+Tests: Full EditMode suite 223 of 223 passed on merged main (4 integration tests failed before the harness fix).

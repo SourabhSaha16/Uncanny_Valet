@@ -33,7 +33,7 @@ namespace UncannyValet.Tests.Integration
         {
             Log = new EventLog(Bus);
             Clock = _clockObject.AddComponent<NightClock>();
-            Clock.Initialize(Bus);
+            Clock.Initialize(Bus, 0, 1f); // pin 1 game minute per second so Minutes(n) is exact
             Cars = new FakeCarFactory(Bus);
             var tips = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>());
             Registry = new TicketRegistry(Bus, Clock, tips);
@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Integration
 
         public void StartNight(int night = 1) => Clock.StartNight(night);
 
-        /// <summary>Runs whole game minutes (one real second each at the default clock speed).</summary>
+        /// <summary>Runs whole game minutes (one real second each: the harness pins the clock at 1 game minute per second).</summary>
         public void Minutes(int minutes)
         {
             for (var i = 0; i < minutes; i++) Clock.Advance(1f);
