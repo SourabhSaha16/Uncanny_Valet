@@ -19,6 +19,9 @@ namespace UncannyValet.Audio
                 case SfxId.CarArrives: return SfxAlerts.CarArrives(sampleRate);
                 case SfxId.NightEnded: return SfxAlerts.NightEnded(sampleRate);
                 case SfxId.ButtonClick: return SfxAlerts.ButtonClick(sampleRate);
+                case SfxId.Charged: return SfxStations.Charged(sampleRate);
+                case SfxId.Washed: return SfxStations.Washed(sampleRate);
+                case SfxId.StationStart: return SfxStations.StationStart(sampleRate);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");
             }
         }
