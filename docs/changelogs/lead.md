@@ -279,3 +279,9 @@ Date: 2026-11-06
 Files: merges of economy-night, patrons, lot, audio, integration branches; Bootstrap.unity regenerated; docs/design.md, docs/decisions.md; LotGeometryTests.cs (removed a wrong assertion)
 Why: user feedback round 5.
 Tests: EditMode 281 of 281 passed in batch mode.
+
+## lead: rebuild site for round 5
+Date: 2026-11-06
+Files: site/
+Why: publish point for pacing, charge spots, expanding lot, urgency audio and the F2 tuning panel.
+Tests: EditMode 281 of 281; Web build succeeded; local load shows no console errors and F2 opens the panel.

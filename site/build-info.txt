@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  0f896c7
-Subject: lead: apply Schedule A pacing, closed spots, $250 debt
-Date:    2026-11-06 14:50:27 -0800
+Commit:  582448a
+Subject: lead: merge round 5 modules, regenerate scene, update design
+Date:    2026-11-06 15:17:29 -0800

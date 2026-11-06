@@ -1,4 +1,17 @@
 === Last 50 commits ===
+582448a  2026-11-06  lead: merge round 5 modules, regenerate scene, update design
+ac2cd86  2026-11-06  lead: merge worktree-agent-a703ca379456fc8fb
+6015ea5  2026-11-06  lead: merge worktree-agent-ae4539f8f8528161c
+920f572  2026-11-06  lead: merge worktree-agent-af0b69962cee20673
+ede64dd  2026-11-06  lead: merge worktree-agent-a6db7aa90b03ae1ae
+d1cd687  2026-11-06  lead: merge worktree-agent-ad413ea46456c7dab
+500828d  2026-11-06  lot: expanding lot and charging spots
+0bde7d4  2026-11-06  integration: tuning store seeding and F2 debug panel
+20c2954  2026-11-06  patrons: live tuning, late EV surge, charge spots
+29bd52e  2026-11-06  economy-night: faster pacing, layered unlocks, live tuning
+8df46eb  2026-11-06  audio: tempo rises with waiting cars
+e129498  2026-11-06  lead: add ITuning, TuningKey catalog and late EV fields on NightPlan
+5dc9324  2026-11-06  lead: rebuild site with Schedule A pacing and closed spots
 0f896c7  2026-11-06  lead: apply Schedule A pacing, closed spots, $250 debt
 691a997  2026-11-06  lead: merge agent/lot closed spots
 aabb64f  2026-11-06  lead: merge agent/economy-night Schedule A and debt
@@ -36,19 +49,6 @@ df193e6  2026-11-06  lead: merge valet destroy-release fix
 ea59b41  2026-11-06  lead: merge worktree-agent-a7a5f896664c79e56
 ee02cfa  2026-11-06  lead: merge worktree-agent-a5810ce02ec054298
 410833e  2026-11-06  lead: merge worktree-agent-ae4c8bc8613d8eb05
-27016d9  2026-11-06  lead: merge worktree-agent-a028528ae8495cfd3
-6b8cafd  2026-11-06  lead: merge worktree-agent-aedba899768d0bd8f
-04cf4a9  2026-11-06  audio: add synthesised funk loop and sound effects
-917d4f6  2026-11-06  lot: arrival slots side by side below the curb
-affeae6  2026-11-06  economy-night: 180-minute nights and end-of-night tally
-9a6a1da  2026-11-06  patrons: close tickets and stop spawning at night end
-24c3852  2026-11-06  valet: leave a car that is despawned while driven
-c3099c6  2026-11-06  lead: add night summary contracts and Audio module ownership
-c1ac5c7  2026-11-06  lead: publish round-2 build with queue, letters and timers
-9bc78c2  2026-11-06  lead: merge integration overlay and camera
-a165113  2026-11-06  integration: ticket board shows car letter and live timers
-0b72110  2026-11-06  lead: add meta files for round-2 scripts and log merges
-f197b0d  2026-11-06  lead: merge cars duplicate-member fix
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -72,6 +72,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Audio/{SfxStations,SfxId,SfxRecipeBook,SfxEventRouter}.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
 Why: Round-4 stations: CarFullyCharged plays a zap and chime, CarCleaned a splash with sparkle and ding, CarEnteredStation a click and low hum.
 Tests: Router mapping test extended with the three events; the existing every-effect length and peak test covers the new clips automatically. Not run (Unity not launched). Duplicate-member grep on edited files: none.
+
+## audio: tempo rises with waiting cars
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Audio/{UrgencyRule,PendingCarTracker,AudioConfig,AudioDirector}.cs, Assets/_Project/Data/Audio/AudioConfig.asset, Assets/_Project/Tests/EditMode/Audio/UrgencyTests.cs
+Why: Play-test round 5: the funk groove speeds up as more cars wait to be parked or handed back, and relaxes as the queue clears (design.md section 10). PendingCarTracker counts waiting cars from TicketOpened, CarParked, PickupRequested, TicketClosed, park-timer expiry and night start/end; UrgencyRule maps the count to a smoothed multiplier applied to the music AudioSource pitch each frame (no allocation, no clip regeneration, no click). SFX sources and M mute are untouched.
+Tests: UrgencyTests (curve, smoothing, tracker counts, resets, unsubscribe). Not run (Unity not launched).
 
 === docs/changelogs/cars.md ===
 # Cars changelog
@@ -143,6 +149,12 @@ Files: Assets/_Project/Scripts/Economy/{TipCalculator,TipConfig,RunConfig,NightT
 Why: design.md section 10 (challenge schedule). RunConfig.GameMinutesPerSecond 1.5; clock publishes NightPlanChanged before NightStarted; TipCalculator.Explain with charge/clean bonuses (forced-zero tips have all parts 0 so base+speed+charge+clean equals tips when nothing is zeroed); the summary carries the breakdown and the next night note. Bootstrap wiring: clock.Initialize(bus, run.NightLengthMinutes, run.GameMinutesPerSecond, planConfig); new NightTallyRecorder(bus, ledger, run.Nights, n => planConfig.For(n).NewTonight). NightPlanConfig has no asset yet: create one via the Create menu (fills the default table) or pass null to use built-in defaults.
 Tests: tip branches, breakdown sums and note, clock speed, plan order and defaults added; not run (Unity not launched).
 
+## economy-night: faster pacing, layered unlocks, live tuning
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Night/{NightClock,NightPlanSource,NightPlanDefaults,NightPlanEntry}.cs, Assets/_Project/Scripts/Economy/TipCalculator.cs, Assets/_Project/Data/Night/NightPlanConfig.asset, Assets/_Project/Tests/EditMode/Night/{ClockTests,TuningTests}.cs
+Why: design.md sections 5 and 10 (user feedback round 5). Gap scale/waiting/open regular spots N1 2.0/1/4, N2 1.5/3/5, N3 1.3/3/6, N4 1.2/3/6, N5 1.1/3/7, N6 1.0/3/7, N7 0.9/3/8. Unlocks layer: N3 charging+EVs (0.35), N4 adds wash, EVs 0.3 stay, N5-N7 both. Nights 3-7 carry LateEvChance 0.75 from LateEvStart 0.6. NightClock reads GameMinutesPerSecond and NightLengthMinutes live from ITuning (Initialize tuning param, else Services in Start); NightPlanSource applies plan-key overrides to the running and later nights (a value equal to the seeded one clears the override) and the clock republishes NightPlanChanged mid-night. TipCalculator(config, tuning) reads BaseTip, ChargeBonus, CleanBonus, SpeedWindowMinutes live; without tuning it uses config/input as before.
+Tests: ClockTests updated to the new table; TuningTests added (unlocks monotonic, late EV, live speed, live length, plan override republish and reset, live tips); not run (Unity not launched).
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
@@ -183,6 +195,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, CameraFollow), Assets/_Project/Scripts/UI/ (NightSummaryCard, SummaryCardStyles, SummaryCardContent, SummaryCardFormatter, SummaryCardLayout, TicketBoard, TicketRow, TicketRowFormatter), Assets/_Project/Editor/ (ProjectSetup, BootstrapSceneBuilder), Assets/_Project/Tests/EditMode/UI/ (SummaryCardFormatterTests, TicketRowFormatterTests, TicketBoardTests)
 Why: design.md section 10 (night length, challenge schedule). NightPlanConfig asset is created by ProjectSetup and passed to NightClock.Initialize (with RunConfig speed) and, via n => plan.For(n).NewTonight, to NightTallyRecorder. PatronSpawner.Random is set before the spawner activates. First night now starts one frame after Awake so StationSwitch (subscribes in Start) hears night 1's NightPlanChanged. End card gains a Tip calculation block (Base, signed Speed, Charge/Clean when any bonus is non-zero, = total, Zeroed tips when > 0) and a highlighted wrapped "Tomorrow:" block; the card grows to fit and scales down to fit the screen (font 18). Ticket rows get " EV 45%" and " DIRTY"/" clean" tags. Camera focus offset y -0.5 -> 0: view y is -8.5..8.5, queue cars reach y -8.3 and stations y 8.2, so both fit (-0.5 cut the station tops at 8.0); size unchanged.
 Tests: added formatter, layout, wrap, fit and ticket-board trait tests (not run; Unity not launched).
+
+## integration: tuning store seeding and F2 debug panel
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, CameraFollow, TuningSeeder, LotBounds, GatedInputSource), Assets/_Project/Scripts/UI/ (TuningPanel, TuningRowView, DebugOverlay), Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Tests/EditMode/Integration/GatedInputSourceTests.cs
+Why: user feedback round 5. GameBootstrap creates a TuningStore, registers ITuning before any child is activated and seeds every TuningKey from RunConfig, PatronConfig, TipConfig and night 1's plan (ActiveSpots 0 is reseeded with the lot's spot count). Tuned values persist across runs; Reset all returns to seeds. F2 toggles an IMGUI panel (grouped sliders, number fields, per-row reset, Reset all) that never pauses the game and writes only via ITuning.Set; the valet input is wrapped in GatedInputSource so keys are ignored only while a number field has focus. Camera now measures the built lot's renderer bounds, zooms to fit (cap 16, min 8.5) and clamps the view inside the lot, so a lot up to ~1.6x wider stays framed. The scene builder adds the TuningPanel child and the PatronConfig reference; RunBatch is unchanged.
+Tests: added GatedInputSourceTests (not run; Unity not launched). Panel and camera need a play check.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -449,6 +467,24 @@ Files: docs/design.md, docs/decisions.md, .meta files for new Lot scripts and te
 Why: user asked to apply the simulation's recommendation (docs/balance.md); merged agent branches economy-night and lot.
 Tests: EditMode 248 of 248 passed in batch mode.
 
+## lead: rebuild site with Schedule A pacing and closed spots
+Date: 2026-11-06
+Files: site/
+Why: publish point for the simulation-based pacing round.
+Tests: EditMode 248 of 248; Web build succeeded.
+
+## lead: add ITuning, TuningKey catalog and late EV fields on NightPlan
+Date: 2026-11-06
+Files: Core/Contracts/ITuning.cs, TuningStore.cs, TuningCatalog.cs, TuningInfo.cs; Core/Events/TuningKey.cs, TuningEvents.cs, NightPlan.cs
+Why: user asked for every pacing number to be tunable live from a debug panel and for a late-night EV surge.
+Tests: none yet; module agents add theirs.
+
+## lead: merge round 5 (pacing, layered unlocks, charge spots, expanding lot, urgency audio, tuning panel)
+Date: 2026-11-06
+Files: merges of economy-night, patrons, lot, audio, integration branches; Bootstrap.unity regenerated; docs/design.md, docs/decisions.md; LotGeometryTests.cs (removed a wrong assertion)
+Why: user feedback round 5.
+Tests: EditMode 281 of 281 passed in batch mode.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -502,6 +538,12 @@ Files: Assets/_Project/Scripts/Lot/{OpenSpotRule,SpotCloser,SpotOccupancy,LotGeo
 Why: design.md section 10 (spot count per night). SpotCloser listens to NightPlanChanged and calls SpotOccupancy.SetActiveSpots, so spots above ActiveSpots refuse cars (ParkingSpot never publishes CarParked) and get a dark cover; 0 or a later bigger plan reopens them. Spot ids now run column by column from the curb (they ran row by row before), so the farthest columns close first.
 Tests: SpotClosingTests (4) and a LotGeometry id-order test; Unity not run per request.
 
+## lot: expanding lot and charging spots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LotExpander,LotFrame,LotFrameRule,SpotBuilder,LotGeometry,SpotOccupancy,ParkingSpot,StationBuilder,StationSwitch,RectFactory,LotLayoutBuilder,LotConfig}.cs (SpotCloser, WallBuilder removed), Assets/_Project/Tests/EditMode/Lot/{LotExpansionTests,LotGeometryTests}.cs
+Why: user feedback round 5, design.md sections 4/9/10. Closed spots are no longer drawn: LotExpander switches per-spot objects on/off and LotFrame moves the ground and walls to the frame from the pure LotFrameRule / LotGeometry.FrameFor, on every NightPlanChanged and when a car leaves a spot (no per-frame work). A spot holding a car stays open until empty. The dim covers are gone. Charging bays are now two ParkingSpots (ids after the regular ones, blue pad and bolt marker, open only while ChargingOpen, not counted in ActiveSpots, any car); they publish CarParked/CarLeftSpot plus CarEnteredStation/CarLeftStation with StationKind.Charging. The wash slot stays a station. ILotLayout.SpotIds now lists the currently open spot ids (regular and charging).
+Tests: LotExpansionTests (5) and LotGeometryTests updated and extended (columns, frame growth, containment); Unity not run.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
@@ -542,6 +584,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,ArrivalSlotScanner,LetterPool,PatronConfig,PatronRequest,PatronSpawner,PatronDeparture,Ticket,TicketBook,TicketRegistry,TicketTimer,TicketTimerPublisher}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ArrivalGate,LetterPool,TicketTimer,TicketRegistryTimer,TicketRegistry}Tests.cs
 Why: design.md section 10 pressure rules. Up to 3 cars queue in ILotLayout.ArrivalSlots; each ticket gets the lowest free letter; the park timer (45 min, pauses while the valet drives) makes the patron take the car for $0, no penalty; the pickup timer (60 min) zeroes the tip via TipInput.PickupExpired but the car is still owed. PatronSpawner.Spawn is now TrySpawn(request, out ticket).
 Tests: new EditMode tests for the gate, letter pool, timer and registry timers (expiry, pause, stop, vanished car frees letter and ticket); one existing registry test adjusted for park expiry. Unity not run.
+
+## patrons: live tuning, late EV surge, charge spots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{PatronTuning,LiveTicketTuning,EvChanceCurve,PatronRequestRoller,PatronPlan,PatronSpawner,PatronConfig,StationService,Ticket,TicketBook,TicketRegistry,TicketTimer}.cs, Assets/_Project/Tests/EditMode/Patrons/{ChargeSpotTests,LiveTuningTests,ServiceRulesTests,TicketRegistryServiceTests}.cs
+Why: round 5 feedback. Gap, stay, impatience, park and pickup windows, charge and wash minutes are read live from ITuning (config is only a fallback); window changes also reach running timers. EV chance ramps from EvChance to LateEvChance after LateEvStart. Charging bays are parking spots: only EVs charge, and a charging spot no longer pauses the park timer (the wash still does). Plan changes mid-night only overwrite PatronPlan values.
+Tests: new ChargeSpotTests and LiveTuningTests; two existing tests adjusted (RollTraits signature, park timer pauses in the wash bay). Unity not run.
 
 === docs/changelogs/qa.md ===
 # QA changelog
