@@ -174,8 +174,19 @@ Goal: **pick up and drop off, end to end, in a browser.** No UI beyond a debug o
   fill is red-tinted.
 - Cars are heavy: the valet on foot cannot push them.
 
+**Night length and summary (play-test round 3):** a night is 180 game minutes (3 real minutes, 22:00 to
+01:00), tunable in `RunConfig`. When it ends, every open ticket closes with $0 and its car leaves, the
+clock stops and a **summary card** shows tips collected, cars parked, cars not parked and debt left, with a
+**Next** button. After the final night the card says whether the debt is paid off and the button starts a
+new run. Cars not parked = cars that vanished or were still waiting when the night ended.
+
+**Audio:** a quiet, generated funk groove loops under the game (low volume) and short generated sound
+effects mark key events (enter or exit car, parked, tip, pickup request, car vanishes, night end, button).
+All audio is synthesised in code for now, behind an `AudioConfig` (volumes, tempo); real files can replace
+it later. M mutes.
+
 **Out of scope for P1:** mafia jobs, stations, faults, damage, raids, chase, story cards, pixel art,
-audio, menus. Placeholder art is coloured rectangles generated in code.
+recorded audio, menus. Placeholder art is coloured rectangles generated in code.
 
 **Web rules:** no threads, no `System.IO` file access, no blocking calls; build compression disabled so
 GitHub Pages can serve it.

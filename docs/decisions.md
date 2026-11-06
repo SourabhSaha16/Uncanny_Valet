@@ -19,3 +19,9 @@ Every question an agent asked, and the answer. Newest at the bottom.
 | 2026-11-06 | lead | Does the park timer run while the valet drives the car? | No: it pauses while the valet is inside, so no car has to be despawned under a driver. It resumes if he leaves the car outside a spot | lead, avoids cross-module ejection |
 | 2026-11-06 | lead | How do waiting cars queue? | New Core member `ILotLayout.ArrivalSlots` (slot 0 = arrival point); patrons uses the first free slot among `MaxWaitingCars` | lead |
 | 2026-11-06 | lead | Engineering standards | Added "Engineering standards" to CLAUDE.md so every new agent follows them; qa reviews against it | Human, chat |
+| 2026-11-06 | human | Play-test round 3 notes | Prefers the first build's look: queued cars next to each other and all visible at once. Overlay shows percent of time left (keep). Add low-volume funky background groove and basic sound effects. Shorter nights. End-of-night summary card (tips, cars parked, cars not parked) with a Next button | Human, chat |
+| 2026-11-06 | lead | Queue layout? | Side by side in a row, close together, all inside the camera at the old size 8.5 | Human, chat |
+| 2026-11-06 | lead | Night length? | 3 real minutes (180 game minutes, 22:00 to 01:00), in RunConfig | Human, chat |
+| 2026-11-06 | lead | Audio source? | Generated in code (synthesised loop and effects) behind an AudioConfig; new module Audio references only Core | Human, chat |
+| 2026-11-06 | lead | After the final night? | The card shows paid off or debt left; the button starts a new run | Human, chat |
+| 2026-11-06 | lead | What happens to open tickets at night end? | All close with $0 and their cars leave; the summary counts never-parked cars as not parked. Core gains NightSummary, NightSummaryReady, NextNightRequested | lead |

@@ -207,3 +207,9 @@ Date: 2026-11-06
 Files: site/*, docs/changelogs/lead.md
 Why: Web build after play-test round 2: queue of 3, car letters, park and pickup timers with dark fill, heavy cars, vertical CURB, overlay with letters and timers (design.md section 10, Pressure rules).
 Tests: Full EditMode run on merged main: 130 of 130 passed. Web build loaded locally: CURB fits vertically, three cars queued as A, B, C with park timers counting down in the overlay and a fill on the car. Not verified in play: pickup timer, park expiry vanish, shoving a car.
+
+## lead: add night summary contracts and Audio module ownership
+Date: 2026-11-06
+Files: CLAUDE.md, docs/design.md, docs/decisions.md, docs/status.md, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs
+Why: Round-3 play-test: shorter nights, end-of-night summary card, audio (design.md section 10, Night length and summary, Audio). CLAUDE.md gets an owner row for the new Audio module.
+Tests: None run; Core additions are plain structs.

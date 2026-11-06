@@ -20,6 +20,7 @@ It does not write gameplay code itself unless an agent is stuck.
 | `Assets/_Project/Scripts/Lot/` | lot |
 | `Assets/_Project/Scripts/Patrons/` | patrons |
 | `Assets/_Project/Scripts/Economy/`, `Assets/_Project/Scripts/Night/` | economy-night |
+| `Assets/_Project/Scripts/Audio/` | audio (new module, assembly `UncannyValet.Audio`) |
 | `Assets/_Project/Scripts/Bootstrap/`, `Assets/_Project/Scripts/UI/`, `Assets/_Project/Scenes/` | integration |
 | `Assets/_Project/Editor/`, `.github/`, `tools/` | integration |
 | `Assets/_Project/Tests/` | qa (module agents may add tests for their own module) |

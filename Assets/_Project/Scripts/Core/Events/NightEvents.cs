@@ -21,4 +21,18 @@ namespace UncannyValet.Core.Events
         public readonly int Night;
         public NightEnded(int night) { Night = night; }
     }
+
+    /// <summary>Published by the Night module after NightEnded, once the night's numbers are final.</summary>
+    public readonly struct NightSummaryReady : IGameEvent
+    {
+        public readonly NightSummary Summary;
+        public NightSummaryReady(NightSummary summary) { Summary = summary; }
+    }
+
+    /// <summary>The player pressed Next on the summary card. After the final night it means "new run".</summary>
+    public readonly struct NextNightRequested : IGameEvent
+    {
+        public readonly int FinishedNight;
+        public NextNightRequested(int finishedNight) { FinishedNight = finishedNight; }
+    }
 }
