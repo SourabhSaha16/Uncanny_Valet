@@ -29,6 +29,7 @@ namespace UncannyValet.EditorTools
             var clock = Child<NightClock>(root, "NightClock");
             var spawner = Child<PatronSpawner>(root, "PatronSpawner");
             var overlay = Child<DebugOverlay>(root, "DebugOverlay");
+            var tuningPanel = Child<TuningPanel>(root, "TuningPanel");
             var summaryCard = Child<NightSummaryCard>(root, "NightSummaryCard");
             var audio = Child<AudioDirector>(root, "AudioDirector");
             var valet = BuildValet(root);
@@ -36,13 +37,16 @@ namespace UncannyValet.EditorTools
 
             Set(factory, "_defaultDefinition", Load<CarDefinition>("Assets/_Project/Data/Cars/Sedan.asset"));
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
-            Set(spawner, "_config", Load<PatronConfig>(ProjectSetup.PatronConfigPath));
+            var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
+            Set(spawner, "_config", patronConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
 
             var so = new SerializedObject(bootstrap);
             so.FindProperty("_runConfig").objectReferenceValue = Load<RunConfig>("Assets/_Project/Data/Economy/RunConfig.asset");
             so.FindProperty("_tipConfig").objectReferenceValue = Load<TipConfig>("Assets/_Project/Data/Economy/TipConfig.asset");
             so.FindProperty("_planConfig").objectReferenceValue = RequireAsset<NightPlanConfig>(ProjectSetup.NightPlanConfigPath);
+            so.FindProperty("_patronConfig").objectReferenceValue = patronConfig;
+            so.FindProperty("_tuningPanel").objectReferenceValue = tuningPanel;
             so.FindProperty("_carFactory").objectReferenceValue = factory;
             so.FindProperty("_lot").objectReferenceValue = lot;
             so.FindProperty("_clock").objectReferenceValue = clock;

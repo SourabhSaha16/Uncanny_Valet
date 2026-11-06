@@ -52,6 +52,7 @@ namespace UncannyValet.UI
             _text.AppendLine($"Debt left: ${_debt.DebtRemaining}   Tips tonight: ${_debt.TipsTonight}");
             _text.AppendLine($"Open tickets: {_board.Count}");
             _board.AppendLines(_text, _maxTicketLines);
+            _text.AppendLine(TuningPanel.Hint);
             var content = new GUIContent(_text.ToString().TrimEnd());
             var size = _label.CalcSize(content);
             var rect = new Rect(10, 10, size.x + _padding * 2f, size.y + _padding * 2f);
