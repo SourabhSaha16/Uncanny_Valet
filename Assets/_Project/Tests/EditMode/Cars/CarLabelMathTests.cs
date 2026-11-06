@@ -20,6 +20,20 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
+        public void LetterTextShowsUppercaseLetter()
+        {
+            Assert.AreEqual("A", CarLabelMath.LetterText('A'));
+            Assert.AreEqual("B", CarLabelMath.LetterText('b'));
+        }
+
+        [Test]
+        public void LetterTextIsEmptyUntilAssigned()
+        {
+            Assert.AreEqual(string.Empty, CarLabelMath.LetterText('\0'));
+            Assert.AreEqual(string.Empty, CarLabelMath.LetterText(' '));
+        }
+
+        [Test]
         public void CharacterSizeNeverZero()
         {
             Assert.Greater(CarLabelMath.CharacterSizeFor(0f), 0f);

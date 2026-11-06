@@ -60,16 +60,18 @@ namespace UncannyValet.Cars
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = GetSprite();
             renderer.color = def.Color;
-            renderer.sortingOrder = 10;
+            renderer.sortingOrder = CarSorting.Body;
 
             var body = go.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;
+            body.mass = def.Mass;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
             go.AddComponent<BoxCollider2D>().size = Vector2.one;
 
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
+            CarTimerFill.Attach(go, id, def, GetSprite());
             CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);
             return driver;
         }
