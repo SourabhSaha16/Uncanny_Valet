@@ -30,6 +30,12 @@ namespace UncannyValet.Lot
         [SerializeField] private float _arrivalInset = 1.5f;
         [SerializeField] private float _valetStartOffset = 1.5f;
 
+        [Header("Labels")]
+        [SerializeField] private float _labelSize = 1.6f;
+        [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
+
+        public float LabelSize => _labelSize;
+        public Color LabelColor => _labelColor;
         public float ArrivalInset => _arrivalInset;
         public float ValetStartOffset => _valetStartOffset;
 
