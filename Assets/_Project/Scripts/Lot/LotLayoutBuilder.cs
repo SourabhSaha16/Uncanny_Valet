@@ -15,12 +15,14 @@ namespace UncannyValet.Lot
         private static readonly Color SpotFill = new Color(0.30f, 0.32f, 0.37f);
         private static readonly Color CurbEdge = new Color(0.95f, 0.78f, 0.15f);
         private static readonly Color CurbFill = new Color(0.55f, 0.42f, 0.12f);
+        private static readonly Color Shut = new Color(0.08f, 0.08f, 0.10f, 0.82f);
         private static readonly Color Wall = new Color(0.55f, 0.28f, 0.25f);
 
         [SerializeField] private LotConfig _config;
 
         private readonly List<int> _spotIds = new List<int>();
         private readonly List<ParkingSpot> _spots = new List<ParkingSpot>();
+        private readonly List<GameObject> _covers = new List<GameObject>();
         private SpotOccupancy _occupancy;
         private RectFactory _rects;
         private Vector2[] _arrivalSlots = { Vector2.zero };
@@ -51,6 +53,7 @@ namespace UncannyValet.Lot
             WallBuilder.Build(_rects, transform, bounds, c.WallThickness, Wall);
             _occupancy = new SpotOccupancy(_spotIds);
             InitSpots();
+            gameObject.AddComponent<SpotCloser>().Init(_occupancy, _covers.ToArray());
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 
@@ -64,6 +67,9 @@ namespace UncannyValet.Lot
                 _rects.Make(transform, "Spot Line " + id, pos, c.SpotSize, Line, -7);
                 _rects.Make(transform, "Spot Fill " + id, pos, c.SpotSize - Vector2.one * 0.16f, SpotFill, -6);
                 SpotLabel.Create(transform, id.ToString(), pos, c, -5);
+                var cover = _rects.Make(transform, "Spot Closed " + id, pos, c.SpotSize, Shut, -4);
+                cover.SetActive(false);
+                _covers.Add(cover);
                 var zone = new GameObject("Spot " + id);
                 zone.transform.SetParent(transform, false);
                 zone.transform.localPosition = pos;

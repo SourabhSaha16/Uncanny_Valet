@@ -43,3 +43,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Lot/{LabelFit,StationBuilder,LotConfig}.cs, Assets/_Project/Tests/EditMode/Lot/LabelFitTests.cs
 Why: Web build: the CHARGE labels were wider than their 2.6 bays and ran together. The size is now computed by the pure LabelFit helper from the bay width, a generous per-character width (0.9 x size) and a 70% fill, capped by StationLabelSize (now 0.45). Stations were not moved.
 Tests: 3 LabelFitTests (cap, shrink with margin, default config fits CHARGE and WASH); Unity not run per request.
+
+## lot: close spots beyond the night's ActiveSpots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{OpenSpotRule,SpotCloser,SpotOccupancy,LotGeometry,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{SpotClosingTests,LotGeometryTests}.cs
+Why: design.md section 10 (spot count per night). SpotCloser listens to NightPlanChanged and calls SpotOccupancy.SetActiveSpots, so spots above ActiveSpots refuse cars (ParkingSpot never publishes CarParked) and get a dark cover; 0 or a later bigger plan reopens them. Spot ids now run column by column from the curb (they ran row by row before), so the farthest columns close first.
+Tests: SpotClosingTests (4) and a LotGeometry id-order test; Unity not run per request.

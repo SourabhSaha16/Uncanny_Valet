@@ -27,6 +27,19 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void SpotIds_RunColumnByColumnFromTheCurb()
+        {
+            var rows = _config.Rows;
+            for (var i = 1; i < _geo.Spots.Length; i++)
+            {
+                var prev = _geo.Spots[i - 1];
+                var cur = _geo.Spots[i];
+                Assert.GreaterOrEqual(cur.x, prev.x - 0.001f, "x never decreases from one id to the next");
+                if (i % rows != 0) Assert.AreEqual(prev.x, cur.x, 0.001f, "same column within a group of rows");
+            }
+        }
+
+        [Test]
         public void NoTwoLotRectanglesOverlap()
         {
             var all = AllRects();
