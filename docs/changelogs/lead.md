@@ -195,3 +195,9 @@ Date: 2026-11-06
 Files: CLAUDE.md, docs/design.md, docs/decisions.md, docs/status.md, Assets/_Project/Scripts/Core/Contracts/ILotLayout.cs, Assets/_Project/Scripts/Core/Contracts/TipInput.cs, Assets/_Project/Scripts/Core/Events/CarEvents.cs, Assets/_Project/Scripts/Core/Events/TicketEvents.cs, Assets/_Project/Scripts/Core/Events/TimerKind.cs
 Why: Play-test round 2 needs a queue of 3, park and pickup timers and car letters (design.md section 10, Pressure rules). CLAUDE.md now holds Unity and software engineering standards for every agent.
 Tests: None run. ILotLayout gains ArrivalSlots, so main does not compile until the lot agent implements it.
+
+## lead: merge round-2 agent branches and add generated meta files
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Core/Events/TimerKind.cs.meta, Assets/_Project/Scripts/Lot/*.cs.meta, Assets/_Project/Scripts/Patrons/*.cs.meta, Assets/_Project/Tests/EditMode/Lot/*.cs.meta, Assets/_Project/Tests/EditMode/Patrons/*.cs.meta, docs/changelogs/lead.md
+Why: Merged lot, patrons, cars and economy-night round-2 work (design.md section 10, Pressure rules). Cars first arrived with duplicated members that broke compilation; the cars agent fixed them and they were re-merged. These are the Unity-generated meta files for the new scripts.
+Tests: Full EditMode suite 120 of 120 passed on merged main.
