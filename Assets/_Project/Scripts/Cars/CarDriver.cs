@@ -42,7 +42,6 @@ namespace UncannyValet.Cars
             HasDriver = hasDriver;
             if (!hasDriver) { _throttle = 0f; _steer = 0f; }
             ApplyDrag();
-            ApplyDrag();
             if (!Services.TryGet<IEventBus>(out var bus)) return;
             if (hasDriver) bus.Publish(new CarEntered(_id));
             else bus.Publish(new CarExited(_id));
@@ -54,16 +53,6 @@ namespace UncannyValet.Cars
         {
             if (_body == null) _body = GetComponent<Rigidbody2D>();
             _body.gravityScale = 0f;
-            if (_definition != null) _body.mass = _definition.Mass;
-            ApplyDrag();
-        }
-
-        // Driven: the velocity maths in FixedUpdate is the only damping. Parked: heavy drag as well.
-        private void ApplyDrag()
-        {
-            if (_body == null || _definition == null) return;
-            _body.linearDamping = HasDriver ? 0f : _definition.ParkedLinearDrag;
-            _body.angularDamping = HasDriver ? 0f : _definition.ParkedAngularDrag;
             if (_definition != null) _body.mass = _definition.Mass;
             ApplyDrag();
         }
