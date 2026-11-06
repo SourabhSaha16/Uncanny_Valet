@@ -45,3 +45,9 @@ Date: 2026-11-05
 Files: merged branch agent/cars (see docs/changelogs/cars.md)
 Why: P1 module work for cars merged into main after lead review of folder ownership (CLAUDE.md, Phases).
 Tests: Agent could not run tests; run on merged main.
+
+## lead: merge agent/valet
+Date: 2026-11-05
+Files: merged branch agent/valet (see docs/changelogs/valet.md)
+Why: P1 module work for valet merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent could not run tests; run on merged main.
