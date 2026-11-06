@@ -33,3 +33,9 @@ Date: 2026-11-05
 Files: README.md, CLAUDE.md, KICKOFF.md, docs/design.md, docs/decisions.md, docs/status.md, .claude/agents/integration.md, docs/changelogs/lead.md
 Why: Docs still described CI building the Web player with Unity secrets. They now describe the local build into site/ and the Unity 6000.2.5f1 decision (design.md section 1).
 Tests: Not applicable (docs only).
+
+## lead: start P1 module work
+Date: 2026-11-05
+Files: docs/status.md, docs/changelogs/lead.md
+Why: P0 is done (EventBusTests 3 of 3 in batch mode), so the five P1 module agents start (CLAUDE.md, Phases).
+Tests: EventBusTests run earlier: 3 of 3 passed.
