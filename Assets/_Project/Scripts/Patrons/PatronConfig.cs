@@ -11,6 +11,9 @@ namespace UncannyValet.Patrons
         [SerializeField] private int _baseTip = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
+        [SerializeField, Min(1)] private int _maxWaitingCars = 2;
+
+        public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;
         public int BaseTip => _baseTip;
