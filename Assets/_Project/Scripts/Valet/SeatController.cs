@@ -7,7 +7,7 @@ namespace UncannyValet.Valet
 {
     /// <summary>
     /// Puts the valet in a car when the car publishes CarEntered, forwards input to it, and gets out beside it
-    /// on the interact key (publishing CarExited). Hides the walking body while seated.
+    /// on the interact key (the car publishes CarExited from SetDriver(false)). Hides the walking body while seated.
     /// </summary>
     public sealed class SeatController : MonoBehaviour
     {
@@ -61,7 +61,6 @@ namespace UncannyValet.Valet
             _state.TryExitCar();
             transform.position = car.Transform.position + car.Transform.right * _exitDistance;
             SetBodyActive(true);
-            _bus?.Publish(new CarExited(car.Id));
         }
 
         private void SetBodyActive(bool active)

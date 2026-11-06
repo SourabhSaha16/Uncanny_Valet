@@ -81,3 +81,15 @@ Date: 2026-11-05
 Files: Assets/_Project/**/*.meta (Cars, Valet, Data, Tests folders and files)
 Why: Unity generates .meta files on first import; the cars and valet agents could not run Unity, so these were missing.
 Tests: Full EditMode run on merged main: 52 of 52 passed, no compile errors.
+
+## lead: record P1 merge status
+Date: 2026-11-05
+Files: docs/status.md
+Why: Status board shows the five P1 modules merged and lists what integration must wire (design.md section 10).
+Tests: Not applicable (docs only).
+
+## lead: merge agent/valet
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/SeatController.cs, docs/changelogs/valet.md
+Why: Valet fix so CarExited is published once, by CarDriver.SetDriver(false), not twice (design.md section 9, events).
+Tests: Full EditMode suite re-run after this merge (see next entry).
