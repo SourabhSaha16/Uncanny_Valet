@@ -31,3 +31,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver}.cs, Assets/_Project/Data/Cars/Sedan.asset
 Why: Fix compile break from af46781, where an edit script had applied twice: duplicate fields/properties in CarDefinition, duplicate ApplyDrag in CarDriver, duplicate asset keys. Each member now exists once; other Cars files checked by grep.
 Tests: None run (Unity not run); checked by inspection.
+
+## cars: mirrors, EV look with charge bar, mud overlay
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarFactory,CarSorting}.cs, new Assets/_Project/Scripts/Cars/{CarMirrorStyle,CarChargeBarStyle,CarMirrorMath,CarMirrors,CarChargeBarMath,CarMudMath,CarChargeBar,CarMudOverlay,CarTraitLook}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/CarLooksMathTests.cs (+ .meta)
+Why: design.md section 10 challenge schedule. Two front mirrors on every car; TicketTraitsAssigned (via CarTraitLook) turns EVs blue and activates a charge bar driven by CarChargeChanged/CarFullyCharged (lighter tint when full), and activates a brown mud overlay for dirty cars that fades with CarCleanChanged and hides on CarCleaned. Bar and mud children start inactive so they only subscribe once needed. Tunables live in CarDefinition (nested CarMirrorStyle, CarChargeBarStyle, EvBodyColor, MudColor); Sedan.asset keeps the code defaults for the new fields. Smoothing reuses CarTimerFillMath. Sorting: mirrors 9, body 10, mud 11, timer fill 12, charge track 13, charge fill 14, label 15.
+Tests: 7 new EditMode tests (mirror placement, charge fill geometry, mud alpha); Unity not run.

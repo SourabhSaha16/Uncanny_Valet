@@ -71,9 +71,19 @@ namespace UncannyValet.Cars
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
+            AttachLooks(go, id, def, renderer);
             CarTimerFill.Attach(go, id, def, GetSprite());
             CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);
             return driver;
+        }
+
+        private void AttachLooks(GameObject go, CarId id, CarDefinition def, SpriteRenderer body)
+        {
+            var sprite = GetSprite();
+            CarMirrors.Attach(go, def.Size, def.Mirrors, sprite);
+            var bar = CarChargeBar.Attach(go, id, def.Size, def.ChargeBar, sprite);
+            var mud = CarMudOverlay.Attach(go, id, def, sprite);
+            CarTraitLook.Attach(go, id, def, body, bar, mud);
         }
 
         private Sprite GetSprite()
