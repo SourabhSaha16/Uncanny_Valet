@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Patrons",
+    "rootNamespace": "UncannyValet.Patrons",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

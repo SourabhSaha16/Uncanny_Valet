@@ -1,0 +1,7 @@
+{
+    "name": "UncannyValet.Editor",
+    "rootNamespace": "UncannyValet.EditorTools",
+    "references": ["UncannyValet.Core"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": false
+}

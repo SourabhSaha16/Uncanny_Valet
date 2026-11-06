@@ -1,0 +1,39 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git switch*)",
+      "Bash(git worktree*)",
+      "Bash(git merge*)",
+      "Bash(git push origin main)",
+      "Bash(git push origin agent/*)",
+      "Bash(git push -u origin*)",
+      "Bash(bash tools/*)",
+      "Bash(pwsh tools/*)",
+      "Bash(powershell tools/*)",
+      "Bash(gh run list*)",
+      "Bash(gh run view*)",
+      "Bash(gh pr *)",
+      "Bash(\"C:/Program Files/Unity/Hub/Editor/6000.2.5f1/Editor/Unity.exe\" -batchmode *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git rebase*)",
+      "Bash(git clean*)",
+      "Bash(rm -rf*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh secret*)"
+    ]
+  }
+}

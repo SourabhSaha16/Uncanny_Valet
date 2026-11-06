@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.UI",
+    "rootNamespace": "UncannyValet.UI",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

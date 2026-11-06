@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Valet",
+    "rootNamespace": "UncannyValet.Valet",
+    "references": ["UncannyValet.Core", "Unity.InputSystem"],
+    "autoReferenced": true
+}

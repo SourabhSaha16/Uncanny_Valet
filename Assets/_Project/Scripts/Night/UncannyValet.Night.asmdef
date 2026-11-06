@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Night",
+    "rootNamespace": "UncannyValet.Night",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

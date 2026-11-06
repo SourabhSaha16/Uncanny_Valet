@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Lot",
+    "rootNamespace": "UncannyValet.Lot",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

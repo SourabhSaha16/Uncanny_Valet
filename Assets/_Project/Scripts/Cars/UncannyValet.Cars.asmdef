@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Cars",
+    "rootNamespace": "UncannyValet.Cars",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

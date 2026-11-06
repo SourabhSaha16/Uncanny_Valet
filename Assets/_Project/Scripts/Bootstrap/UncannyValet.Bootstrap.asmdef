@@ -1,0 +1,15 @@
+{
+    "name": "UncannyValet.Bootstrap",
+    "rootNamespace": "UncannyValet.Bootstrap",
+    "references": [
+        "UncannyValet.Core",
+        "UncannyValet.Cars",
+        "UncannyValet.Valet",
+        "UncannyValet.Lot",
+        "UncannyValet.Patrons",
+        "UncannyValet.Economy",
+        "UncannyValet.Night",
+        "UncannyValet.UI"
+    ],
+    "autoReferenced": true
+}

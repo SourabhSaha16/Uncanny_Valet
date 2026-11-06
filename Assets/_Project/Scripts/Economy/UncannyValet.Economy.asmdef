@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Economy",
+    "rootNamespace": "UncannyValet.Economy",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}
