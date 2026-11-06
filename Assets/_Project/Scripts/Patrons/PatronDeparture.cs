@@ -4,7 +4,7 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Patrons
 {
     /// <summary>On TicketClosed the patron drives off: announce it, then remove the car.</summary>
-    public class PatronDeparture
+    public sealed class PatronDeparture
     {
         private readonly IEventBus _bus;
         private readonly ICarFactory _cars;
