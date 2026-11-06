@@ -2,6 +2,13 @@ namespace UncannyValet.Core.Events
 {
     // Night events, grouped in one file by domain.
 
+    /// <summary>The rules for the night about to start. Published just before NightStarted.</summary>
+    public readonly struct NightPlanChanged : IGameEvent
+    {
+        public readonly NightPlan Plan;
+        public NightPlanChanged(NightPlan plan) { Plan = plan; }
+    }
+
     public readonly struct NightStarted : IGameEvent
     {
         public readonly int Night;

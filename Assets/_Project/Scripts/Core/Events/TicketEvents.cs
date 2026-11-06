@@ -16,6 +16,31 @@ namespace UncannyValet.Core.Events
         }
     }
 
+    /// <summary>The traits of a new patron car, published right after TicketOpened.</summary>
+    public readonly struct TicketTraitsAssigned : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public readonly bool IsEv;
+        public readonly bool IsDirty;
+        public TicketTraitsAssigned(TicketId ticket, CarId car, bool isEv, bool isDirty)
+        {
+            Ticket = ticket; Car = car; IsEv = isEv; IsDirty = isDirty;
+        }
+    }
+
+    /// <summary>How a ticket's tip was made up, published just before TicketClosed.</summary>
+    public readonly struct TipExplained : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public readonly TipBreakdown Breakdown;
+        public TipExplained(TicketId ticket, CarId car, TipBreakdown breakdown)
+        {
+            Ticket = ticket; Car = car; Breakdown = breakdown;
+        }
+    }
+
     /// <summary>The patron wants the car back at the curb.</summary>
     public readonly struct PickupRequested : IGameEvent
     {

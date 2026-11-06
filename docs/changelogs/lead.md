@@ -225,3 +225,9 @@ Date: 2026-11-06
 Files: site/*, Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Audio/*, new .meta files, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs, docs/changelogs/lead.md
 Why: Round-3 play-test: shorter nights (180 min), end-of-night summary card with Next, generated music and sound effects, queue slots side by side at camera size 8.5 (design.md section 10). Scene and audio config regenerated with ProjectSetup.RunBatch. Test fix: reset the exit counter in SetUp.
 Tests: Full EditMode run: 176 of 176 passed. Web build loaded locally (cache disabled): three cars queued A, B, C side by side in view, timers and vanishing working, night 1 ended with the summary card (12 not parked, nothing played), Next started night 2 clean. Audio is not heard or verified by ear; no console errors. Not verified: parking, pickup and tip path in this build.
+
+## lead: add round-4 contracts for nights, stations and tip breakdown
+Date: 2026-11-06
+Files: docs/design.md, docs/decisions.md, docs/status.md, docs/changelogs/lead.md, Assets/_Project/Scripts/Core/Contracts/ITipCalculator.cs, Assets/_Project/Scripts/Core/Contracts/TipInput.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs, Assets/_Project/Scripts/Core/Events/NightPlan.cs, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/StationEvents.cs, Assets/_Project/Scripts/Core/Events/StationKind.cs, Assets/_Project/Scripts/Core/Events/TicketEvents.cs, Assets/_Project/Scripts/Core/Events/TipBreakdown.cs, Assets/_Project/Scripts/Core/Events/TipZeroReason.cs
+Why: Play-test round 4: seven nights with one new challenge each, EV charging and car wash stations, mirrors, faster clock (design.md section 10, Challenge schedule).
+Tests: None run. ITipCalculator gains Explain, so main does not compile until economy-night implements it and fakes are updated.

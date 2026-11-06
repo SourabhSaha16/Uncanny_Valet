@@ -78,7 +78,7 @@ speed and requests met, lowered for misses and damage, never below $0.
 | Impatient trait | Start | Same job; trait shown on ticket | Bigger bonus if returned within Z minutes |
 | Dirty car | Cleaning station | Clean before return | Required if on ticket |
 | Faulty car | Mechanic station | Fix before return | Required if on ticket |
-| EV charge | EV lots | Park in an EV spot | Required if on ticket |
+| EV charge | Charging station (night 3) | Charge the EV at a station before pickup | Charge bonus if fully charged |
 
 - Ticket requests are requirements; a miss lowers the tip, possibly to $0.
 - Damage is a 0–100% meter. Higher damage, lower tip. The mechanic repairs it.
@@ -184,6 +184,34 @@ new run. Cars not parked = cars that vanished or were still waiting when the nig
 effects mark key events (enter or exit car, parked, tip, pickup request, car vanishes, night end, button).
 All audio is synthesised in code for now, behind an `AudioConfig` (volumes, tempo); real files can replace
 it later. M mutes.
+
+**Night length (play-test round 4):** a night is still 22:00 to 01:00 on the clock but runs in 2 real
+minutes (clock at 1.5 game minutes per second, `RunConfig`). Park and pickup timers stay in game minutes,
+so they shrink in real seconds by the same ratio (park 45 min = 30 s, pickup 60 min = 40 s).
+
+**Challenge schedule (7 nights, one new thing at a time).** Driven by a `NightPlan` per night (Core struct,
+data in `NightPlanConfig`). What is new on night N+1 is listed on night N's end card, under the tip
+calculation (base, speed, charge bonus, clean bonus, zeroed tips).
+
+| Night | Challenge |
+| --- | --- |
+| 1 | Simple: one car at a time. A new car arrives only after the previous one is parked |
+| 2 | Messy: up to 3 cars waiting, parallel pickups and drop-offs, busier arrivals |
+| 3 | EV charging: some cars are EVs (blue body, small blue charge bar). A charging station (2 bays) is unlocked |
+| 4 | Dirty cars (muddy) must be washed, then parked. One car wash slot, with a timer. No EVs tonight |
+| 5 | Everything at once: parallel cars, several EVs and several dirty cars |
+| 6 | Same as night 5 |
+| 7 | Same as night 5 |
+
+- **EV:** an ordinary car, but handed back with a full charge it earns a **charge bonus**. It charges only
+  while stopped in a charging bay (timed, about 20 game minutes from empty; the bar shows progress).
+  No penalty for an uncharged EV.
+- **Dirty car:** must be washed in the single wash slot (about 15 game minutes) and then parked. Washed =
+  **clean bonus**. Handed back dirty = $0 tip (design.md section 5: required, a miss can zero the tip). The
+  slot frees as soon as the washed car drives out; the next dirty car can then go in.
+- The park timer pauses while a car is being driven or is stopped in a station, and resumes after.
+- Sabotage jobs stay off.
+- **Mirrors:** every car has two small side mirrors at the front as a visual cue for which end is the front.
 
 **Out of scope for P1:** mafia jobs, stations, faults, damage, raids, chase, story cards, pixel art,
 recorded audio, menus. Placeholder art is coloured rectangles generated in code.
