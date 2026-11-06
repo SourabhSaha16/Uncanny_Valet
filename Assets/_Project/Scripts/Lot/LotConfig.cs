@@ -27,16 +27,31 @@ namespace UncannyValet.Lot
         [SerializeField] private float _wallThickness = 0.6f;
 
         [Header("Start points")]
-        [SerializeField] private float _arrivalInset = 1.5f;
         [SerializeField] private float _valetStartOffset = 1.5f;
 
+        [Header("Arrival queue")]
+        [Min(1), Tooltip("Number of waiting slots; slot 0 is the arrival point.")]
+        [SerializeField] private int _queueSlotCount = 3;
+        [Min(0f), Tooltip("Distance between slot centres. Must exceed a car length (about 4.5).")]
+        [SerializeField] private float _queueSlotSpacing = 5.5f;
+        [Min(0f), Tooltip("Gap between the curb's near edge and the centre of slot 0.")]
+        [SerializeField] private float _queueStartGap = 3.5f;
+        [Min(0f), Tooltip("Space kept below the last slot centre before the lot wall.")]
+        [SerializeField] private float _queueEndPadding = 3f;
+
         [Header("Labels")]
+        [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
+        [SerializeField] private float _curbLabelSize = 1f;
         [SerializeField] private float _labelSize = 1.6f;
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
 
         public float LabelSize => _labelSize;
         public Color LabelColor => _labelColor;
-        public float ArrivalInset => _arrivalInset;
+        public float CurbLabelSize => _curbLabelSize;
+        public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
+        public float QueueSlotSpacing => _queueSlotSpacing;
+        public float QueueStartGap => _queueStartGap;
+        public float QueueEndPadding => _queueEndPadding;
         public float ValetStartOffset => _valetStartOffset;
 
         public int Rows => Mathf.Max(1, _rows);

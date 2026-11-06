@@ -5,7 +5,7 @@ namespace UncannyValet.Lot
     /// <summary>Creates a world-space text label (TextMesh) centred on a point. WebGL safe.</summary>
     public static class SpotLabel
     {
-        public static void Create(Transform parent, string text, Vector2 center, LotConfig config, int order)
+        public static void Create(Transform parent, string text, Vector2 center, LotConfig config, int order, float size = -1f)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var go = new GameObject("Label " + text);
@@ -16,7 +16,7 @@ namespace UncannyValet.Lot
             mesh.font = font;
             mesh.text = text;
             mesh.fontSize = 64;
-            mesh.characterSize = config.LabelSize / 6.4f;
+            mesh.characterSize = (size > 0f ? size : config.LabelSize) / 6.4f;
             mesh.anchor = TextAnchor.MiddleCenter;
             mesh.alignment = TextAlignment.Center;
             mesh.color = config.LabelColor;

@@ -1,5 +1,5 @@
-using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Lot
 {
@@ -8,8 +8,8 @@ namespace UncannyValet.Lot
     {
         public void Init(LotConfig config) => Setup(config, config.CurbSize);
 
-        protected override void OnSettled(IDrivable car) => Bus.Publish(new CarAtCurb(car.Id));
+        protected override void OnSettled(CarId car) => Bus.Publish(new CarAtCurb(car));
 
-        protected override void OnLeft(IDrivable car) { }
+        protected override void OnLeft(CarId car) { }
     }
 }
