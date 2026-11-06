@@ -1,4 +1,14 @@
 === Last 50 commits ===
+0f896c7  2026-11-06  lead: apply Schedule A pacing, closed spots, $250 debt
+691a997  2026-11-06  lead: merge agent/lot closed spots
+aabb64f  2026-11-06  lead: merge agent/economy-night Schedule A and debt
+8616423  2026-11-06  lot: close spots beyond the night's ActiveSpots
+4177302  2026-11-06  economy-night: apply Schedule A pacing and $250 debt
+cc30df4  2026-11-06  lead: add ActiveSpots to NightPlan
+f0e56e1  2026-11-06  lead: merge balance simulation and fix clock line in design.md
+673f66d  2026-11-06  lead: merge balance simulation
+1d03d90  2026-11-06  qa: add lot-count balance simulation
+e1024bc  2026-11-06  lead: publish round-4 build with seven-night challenges
 8696aa4  2026-11-06  lead: merge station label fit
 18cd43d  2026-11-06  lot: fit station labels inside their bays
 25013eb  2026-11-06  lead: merge integration end card, overlay tags and wiring
@@ -39,16 +49,6 @@ c1ac5c7  2026-11-06  lead: publish round-2 build with queue, letters and timers
 a165113  2026-11-06  integration: ticket board shows car letter and live timers
 0b72110  2026-11-06  lead: add meta files for round-2 scripts and log merges
 f197b0d  2026-11-06  lead: merge cars duplicate-member fix
-8ed4e5d  2026-11-06  cars: remove duplicated members
-986f27e  2026-11-06  lead: merge worktree-agent-ab94e3fc8c3c0eb75
-39192c9  2026-11-06  lead: merge worktree-agent-aadecca71375c975c
-1cde6ef  2026-11-06  lead: merge worktree-agent-a3506ef6e3c7a49e3
-910a58e  2026-11-06  patrons: add arrival queue, car letters and park/pickup timers
-af46781  2026-11-06  cars: heavy cars, letter labels, timer fill overlay
-a60f886  2026-11-06  lot: arrival queue slots, vertical CURB label, release destroyed cars
-43fc295  2026-11-06  lead: add round-2 contracts and engineering standards
-9ebad66  2026-11-05  lead: log missing changelog entries for two meta commits
-fb14ef8  2026-11-05  lead: publish prototype build with numbered spots and arrival gate
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -124,6 +124,12 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Economy/{TipConfig,RunConfig,TipCalculator,DebtLedger}.cs (+ metas), Assets/_Project/Scripts/Night/{ClockFormat,NightClock}.cs, Assets/_Project/Data/Economy/{TipConfig,RunConfig}.asset, Assets/_Project/Tests/EditMode/{Economy,Night}/*, removed the EconomyModule and NightModule markers
 Why: P1 build of design.md sections 2, 5 and 9. Tuning numbers live in config assets.
 Tests: EditMode tests for tip floor, impatient bonus, penalty curve, ledger night-end maths and clock format incl. midnight wrap.
+
+## economy-night: apply Schedule A pacing and $250 debt
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Night/{NightPlanDefaults,NightPlanEntry}.cs, Assets/_Project/Scripts/Economy/RunConfig.cs, Assets/_Project/Data/Night/NightPlanConfig.asset, Assets/_Project/Data/Economy/RunConfig.asset, Assets/_Project/Tests/EditMode/Night/ClockTests.cs
+Why: docs/balance.md sections 1 and 6 (Schedule A) and the lead's $250 starting debt decision. Per night MaxWaitingCars/ArrivalGapScale/ActiveSpots: N1 1/3.7/4, N2 3/3.2/4, N3-N7 3/(2.5,2.4,2.3,2.2,2.0)/5. NightPlanEntry gains a serialized _activeSpots (Min 0, tooltip) passed to NightPlan; the NightPlanConfig asset was edited directly with the new values. Tip values unchanged.
+Tests: ClockTests.PlanDefaults_MatchDesignTable updated (gap 3.7) and PlanDefaults_MatchScheduleA added (table values, ActiveSpots non-decreasing); not run (Unity not launched).
 
 ## economy-night: 180-minute nights and end-of-night tally
 Date: 2026-11-06
@@ -419,6 +425,30 @@ Files: Assets/_Project/Tests/EditMode/Integration/NightHarness.cs, generated .me
 Why: Merged economy-night, patrons, lot, cars and audio round-4 work (design.md section 10, Challenge schedule). The clock now defaults to 1.5 game minutes per second, so the integration test harness pins it at 1.0 to keep its minute maths exact.
 Tests: Full EditMode suite 223 of 223 passed on merged main (4 integration tests failed before the harness fix).
 
+## lead: publish round-4 build with seven-night challenges
+Date: 2026-11-06
+Files: site/*, Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Night/*, generated .meta files, docs/changelogs/lead.md
+Why: Round-4 play-test: mirrors, 2-minute nights, seven nights with one new challenge each (EV charging, car wash), end card with tip calculation and next-night unlock note (design.md section 10, Challenge schedule). Scene regenerated with ProjectSetup.RunBatch.
+Tests: Full EditMode run: 242 of 242 passed. Web build played locally through nights 1 to 3: night 1 one car at a time, night 2 three cars queued, night 3 blue EVs with charge bars and charging bays; end cards showed the tip calculation and the Tomorrow note. Not verified in play: charging and washing a car, the wash slot (night 4), station label fit after the last fix, nights 5 to 7.
+
+## lead: merge balance simulation and fix clock line in design.md
+Date: 2026-11-06
+Files: tools/sim/*, docs/balance.md, docs/design.md, docs/changelogs/lead.md
+Why: Human asked for a simulation of the ideal number of parking spots per night (design.md section 10, Challenge schedule). The qa agent built tools/sim and docs/balance.md; design.md section 10 item 1 still described the old clock speed.
+Tests: Simulation self-test passed per the qa agent; no Unity code changed. Not re-run by the lead.
+
+## lead: add ActiveSpots to NightPlan
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Core/Events/NightPlan.cs
+Why: balance simulation (docs/balance.md) recommends 4 open spots on nights 1-2 and 5 from night 3; the plan carries the count (0 = all).
+Tests: none yet; economy-night and lot add them with their changes.
+
+## lead: apply Schedule A pacing, closed spots, $250 debt
+Date: 2026-11-06
+Files: docs/design.md, docs/decisions.md, .meta files for new Lot scripts and tests
+Why: user asked to apply the simulation's recommendation (docs/balance.md); merged agent branches economy-night and lot.
+Tests: EditMode 248 of 248 passed in batch mode.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -465,6 +495,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Lot/{LabelFit,StationBuilder,LotConfig}.cs, Assets/_Project/Tests/EditMode/Lot/LabelFitTests.cs
 Why: Web build: the CHARGE labels were wider than their 2.6 bays and ran together. The size is now computed by the pure LabelFit helper from the bay width, a generous per-character width (0.9 x size) and a 70% fill, capped by StationLabelSize (now 0.45). Stations were not moved.
 Tests: 3 LabelFitTests (cap, shrink with margin, default config fits CHARGE and WASH); Unity not run per request.
+
+## lot: close spots beyond the night's ActiveSpots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{OpenSpotRule,SpotCloser,SpotOccupancy,LotGeometry,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{SpotClosingTests,LotGeometryTests}.cs
+Why: design.md section 10 (spot count per night). SpotCloser listens to NightPlanChanged and calls SpotOccupancy.SetActiveSpots, so spots above ActiveSpots refuse cars (ParkingSpot never publishes CarParked) and get a dark cover; 0 or a later bigger plan reopens them. Spot ids now run column by column from the curb (they ran row by row before), so the farthest columns close first.
+Tests: SpotClosingTests (4) and a LotGeometry id-order test; Unity not run per request.
 
 === docs/changelogs/patrons.md ===
 # Patrons changelog
@@ -517,6 +553,12 @@ Date: 2026-11-05
 Files: Assets/_Project/Tests/EditMode/Integration/{FakeCarFactory,EventLog,NightHarness,FullNightTests,EventContractTests,PhysicsAndTipTests}.cs
 Why: design.md sections 9 and 10: real EventBus, NightClock, TicketRegistry, TipCalculator, DebtLedger, SpotOccupancy, StopTimer, NearestPicker, ValetState and CarPhysicsMath wired together; covers a whole night, event order, exactly-once publishing and tips never below $0.
 Tests: 19 EditMode tests added. NOT RUN: the batch-mode Unity launch was refused by the agent sandbox, so results are unverified and .meta files were not generated (Unity creates them on next open).
+
+## qa: add lot-count balance simulation
+Date: 2026-11-06
+Files: tools/sim/{params,rules,geometry,policies,car,valet,tasks,night,stats,grid,runs,schedule,lot_sim,selftest}.py, tools/sim/.gitignore, tools/sim/results/{report.md,grid.csv}, docs/balance.md
+Why: design.md section 10 (pressure rules, night length, challenge schedule): a seeded Monte Carlo of one night with one valet to find how many spots, cars and what arrival pace keep nights 1-7 moderately challenging, and whether the $1500 debt is reachable. Analysis only; no game code, scene or Data asset changed.
+Tests: python tools/sim/selftest.py passes (tip rules mirror TipCalculatorTests, LotConfig geometry, motion maths, seeded reproducibility and bookkeeping invariants). Full run (500 nights per cell, 441 grid cells plus schedule search) completed with seed 20261106.
 
 === docs/changelogs/valet.md ===
 # Valet changelog

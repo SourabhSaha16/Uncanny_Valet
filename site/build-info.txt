@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  8696aa4
-Subject: lead: merge station label fit
-Date:    2026-11-06 12:57:50 -0800
+Commit:  0f896c7
+Subject: lead: apply Schedule A pacing, closed spots, $250 debt
+Date:    2026-11-06 14:50:27 -0800

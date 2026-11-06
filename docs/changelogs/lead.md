@@ -261,3 +261,9 @@ Date: 2026-11-06
 Files: docs/design.md, docs/decisions.md, .meta files for new Lot scripts and tests
 Why: user asked to apply the simulation's recommendation (docs/balance.md); merged agent branches economy-night and lot.
 Tests: EditMode 248 of 248 passed in batch mode.
+
+## lead: rebuild site with Schedule A pacing and closed spots
+Date: 2026-11-06
+Files: site/
+Why: publish point for the simulation-based pacing round.
+Tests: EditMode 248 of 248; Web build succeeded.
