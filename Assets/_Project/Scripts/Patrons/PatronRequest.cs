@@ -17,13 +17,17 @@ namespace UncannyValet.Patrons
         public readonly bool Impatient;
         public readonly float ParkWindowMinutes;
         public readonly float PickupWindowMinutes;
+        public readonly bool IsEv;
+        public readonly bool IsDirty;
 
         public PatronRequest(float stayMinutes, int baseTip, bool impatient,
             float parkWindowMinutes = DefaultParkWindowMinutes,
-            float pickupWindowMinutes = DefaultPickupWindowMinutes)
+            float pickupWindowMinutes = DefaultPickupWindowMinutes,
+            bool isEv = false, bool isDirty = false)
         {
             StayMinutes = stayMinutes; BaseTip = baseTip; Impatient = impatient;
             ParkWindowMinutes = parkWindowMinutes; PickupWindowMinutes = pickupWindowMinutes;
+            IsEv = isEv; IsDirty = isDirty;
         }
     }
 }

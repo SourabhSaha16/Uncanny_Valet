@@ -24,6 +24,16 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
 
+        [Tooltip("Charge an EV arrives with (0..1).")]
+        [SerializeField, Range(0f, 1f)] private float _evStartCharge = 0.2f;
+
+        [Tooltip("Game minutes in a charging bay to go from empty to full.")]
+        [SerializeField, Min(1f)] private float _chargeMinutes = 20f;
+
+        [Tooltip("Game minutes in the wash bay to get a dirty car clean.")]
+        [SerializeField, Min(1f)] private float _washMinutes = 15f;
+
+        public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes);
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;

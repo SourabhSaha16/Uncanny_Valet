@@ -22,8 +22,13 @@ namespace UncannyValet.Patrons
         private float _nextArrivalMinute;
         private int _nextCarId = 1;
         private bool _nightOpen = true;
+        private PatronPlan _plan;
+        private PatronRequestRoller _roller;
 
         public TicketRegistry Registry { get; private set; }
+
+        /// <summary>Swappable so tests can script the rolls; defaults to UnityEngine.Random.</summary>
+        public IPatronRandom Random { get; set; } = new UnityPatronRandom();
 
         // Bootstrap registers services, then activates this object, so OnEnable is the first safe moment.
         private void OnEnable()
@@ -33,11 +38,14 @@ namespace UncannyValet.Patrons
             _cars = Services.Get<ICarFactory>();
             _lot = Services.Get<ILotLayout>();
             _scanner = new ArrivalSlotScanner(_arrivalClearSize);
-            Registry = new TicketRegistry(_bus, Services.Get<IGameClock>(), Services.Get<ITipCalculator>());
+            _plan = new PatronPlan(_config.MaxWaitingCars);
+            _roller = new PatronRequestRoller(_config, _plan, Random);
+            Registry = new TicketRegistry(_bus, Services.Get<IGameClock>(), Services.Get<ITipCalculator>(), _config.Tuning);
             _departure = new PatronDeparture(_bus, _cars);
             _bus.Subscribe<NightStarted>(OnNightStarted);
             _bus.Subscribe<NightTick>(OnNightTick);
             _bus.Subscribe<NightEnded>(OnNightEnded);
+            _bus.Subscribe<NightPlanChanged>(OnNightPlanChanged);
         }
 
         private void OnDisable()
@@ -46,6 +54,7 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<NightStarted>(OnNightStarted);
             _bus.Unsubscribe<NightTick>(OnNightTick);
             _bus.Unsubscribe<NightEnded>(OnNightEnded);
+            _bus.Unsubscribe<NightPlanChanged>(OnNightPlanChanged);
             Registry.Dispose();
             _departure.Dispose();
         }
@@ -58,14 +67,13 @@ namespace UncannyValet.Patrons
         {
             ticket = null;
             if (!_nightOpen) return false;
-            var blocked = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _config.MaxWaitingCars);
-            var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _config.MaxWaitingCars, blocked);
+            var blocked = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _plan.MaxWaitingCars);
+            var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _plan.MaxWaitingCars, blocked);
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
             _cars.Spawn(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees);
-            ticket = Registry.Open(car, request);
-            _bus.Publish(new CarSpawned(car, ticket.TicketId));
-            _bus.Publish(new CarLetterAssigned(car, ticket.Letter));
+            ticket = Registry.Create(car, request);
+            Registry.AnnounceArrival(ticket);
             return true;
         }
 
@@ -77,19 +85,13 @@ namespace UncannyValet.Patrons
 
         private void OnNightEnded(NightEnded e) => _nightOpen = false;
 
+        private void OnNightPlanChanged(NightPlanChanged e) => _plan.Apply(e.Plan);
+
         private void OnNightTick(NightTick e)
         {
             if (e.MinuteOfNight < _nextArrivalMinute) return;
-            if (!TrySpawn(RollRequest(), out _)) return;
-            var gap = Random.Range(_config.ArrivalIntervalRange.x, _config.ArrivalIntervalRange.y);
-            _nextArrivalMinute = e.MinuteOfNight + gap;
-        }
-
-        private PatronRequest RollRequest()
-        {
-            var stay = Random.Range(_config.StayRange.x, _config.StayRange.y);
-            return new PatronRequest(stay, _config.BaseTip, Random.value < _config.ImpatientChance,
-                _config.ParkWindowMinutes, _config.PickupWindowMinutes);
+            if (!TrySpawn(_roller.Roll(), out _)) return;
+            _nextArrivalMinute = e.MinuteOfNight + _roller.NextGap();
         }
     }
 }
