@@ -51,3 +51,9 @@ Date: 2026-11-05
 Files: merged branch agent/valet (see docs/changelogs/valet.md)
 Why: P1 module work for valet merged into main after lead review of folder ownership (CLAUDE.md, Phases).
 Tests: Agent could not run tests; run on merged main.
+
+## lead: merge agent/lot
+Date: 2026-11-05
+Files: merged branch agent/lot (see docs/changelogs/lot.md)
+Why: P1 module work for lot merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent reported 11 of 11 (8 new); re-run on merged main.
