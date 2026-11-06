@@ -20,6 +20,12 @@ namespace UncannyValet.Cars
             return Mathf.Max(0.01f, targetHeight / DigitHeightPerCharacterSize);
         }
 
+        /// <summary>Text for an assigned letter; empty until a real letter is assigned.</summary>
+        public static string LetterText(char letter)
+        {
+            return char.IsLetter(letter) ? char.ToUpperInvariant(letter).ToString() : string.Empty;
+        }
+
         /// <summary>Target digit height: a fraction of the car's width.</summary>
         public static float TargetHeight(float carWidth, float heightFraction)
         {
