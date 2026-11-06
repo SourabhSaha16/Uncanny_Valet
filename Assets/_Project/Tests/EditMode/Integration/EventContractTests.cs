@@ -107,13 +107,14 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void NightEnds_WithOpenTicket_PaysNothingAndEndsOnce()
+        public void NightEnds_WithOpenTicket_ClosesItWithNoTipAndEndsOnce()
         {
             ParkedTicket(30f);
             _h.Minutes(500);
             Assert.AreEqual(1, _h.Log.Count<NightEnded>());
             Assert.AreEqual(1000, _h.Ledger.DebtRemaining);
-            Assert.AreEqual(1, _h.Registry.OpenCount);
+            // Round 3: every open ticket closes with $0 when the night ends (design.md section 10).
+            Assert.AreEqual(0, _h.Registry.OpenCount);
         }
 
         [Test]

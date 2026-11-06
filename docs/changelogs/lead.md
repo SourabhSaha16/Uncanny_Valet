@@ -213,3 +213,9 @@ Date: 2026-11-06
 Files: CLAUDE.md, docs/design.md, docs/decisions.md, docs/status.md, Assets/_Project/Scripts/Core/Events/NightSummary.cs, Assets/_Project/Scripts/Core/Events/NightEvents.cs
 Why: Round-3 play-test: shorter nights, end-of-night summary card, audio (design.md section 10, Night length and summary, Audio). CLAUDE.md gets an owner row for the new Audio module.
 Tests: None run; Core additions are plain structs.
+
+## lead: update night-end integration test for round-3 rule
+Date: 2026-11-06
+Files: Assets/_Project/Tests/EditMode/Integration/EventContractTests.cs, docs/changelogs/lead.md
+Why: Merged round-3 branches (shorter nights, summary tally, audio, queue side by side, tickets close at night end). The old test expected an open ticket to survive NightEnded; design.md section 10 now closes every ticket with $0.
+Tests: Full EditMode run: 160 of 162 passed before this edit; the two failures were this test (fixed here) and a valet test that OnDestroy cannot satisfy in EditMode (sent back to the valet agent).
