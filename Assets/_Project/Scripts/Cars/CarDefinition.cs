@@ -30,6 +30,13 @@ namespace UncannyValet.Cars
         private Color _pickupFillColor = new Color(0.7f, 0.05f, 0.05f, 0.6f);
         [SerializeField, Min(0.1f), Tooltip("How fast the fill eases toward its target, per second.")]
         private float _fillSmoothing = 4f;
+        [Header("Looks")]
+        [SerializeField] private CarMirrorStyle _mirrors = new CarMirrorStyle();
+        [SerializeField, Tooltip("Body colour of an EV (clear blue).")]
+        private Color _evBodyColor = new Color(0.15f, 0.45f, 0.95f, 1f);
+        [SerializeField] private CarChargeBarStyle _chargeBar = new CarChargeBarStyle();
+        [SerializeField, Tooltip("Mud overlay colour; its alpha is the maximum opacity when filthy.")]
+        private Color _mudColor = new Color(0.36f, 0.22f, 0.1f, 0.7f);
 
         public string DisplayName => _displayName;
         /// <summary>Max forward speed, units per second.</summary>
@@ -61,5 +68,13 @@ namespace UncannyValet.Cars
         public Color PickupFillColor => _pickupFillColor;
         /// <summary>Fill easing rate per second.</summary>
         public float FillSmoothing => _fillSmoothing;
+        /// <summary>Side mirror look.</summary>
+        public CarMirrorStyle Mirrors => _mirrors;
+        /// <summary>Body colour used for EVs.</summary>
+        public Color EvBodyColor => _evBodyColor;
+        /// <summary>EV charge bar look.</summary>
+        public CarChargeBarStyle ChargeBar => _chargeBar;
+        /// <summary>Mud overlay colour; alpha is the maximum opacity.</summary>
+        public Color MudColor => _mudColor;
     }
 }
