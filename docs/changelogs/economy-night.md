@@ -8,6 +8,12 @@ Files: Assets/_Project/Scripts/Economy/{TipConfig,RunConfig,TipCalculator,DebtLe
 Why: P1 build of design.md sections 2, 5 and 9. Tuning numbers live in config assets.
 Tests: EditMode tests for tip floor, impatient bonus, penalty curve, ledger night-end maths and clock format incl. midnight wrap.
 
+## economy-night: apply Schedule A pacing and $250 debt
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Night/{NightPlanDefaults,NightPlanEntry}.cs, Assets/_Project/Scripts/Economy/RunConfig.cs, Assets/_Project/Data/Night/NightPlanConfig.asset, Assets/_Project/Data/Economy/RunConfig.asset, Assets/_Project/Tests/EditMode/Night/ClockTests.cs
+Why: docs/balance.md sections 1 and 6 (Schedule A) and the lead's $250 starting debt decision. Per night MaxWaitingCars/ArrivalGapScale/ActiveSpots: N1 1/3.7/4, N2 3/3.2/4, N3-N7 3/(2.5,2.4,2.3,2.2,2.0)/5. NightPlanEntry gains a serialized _activeSpots (Min 0, tooltip) passed to NightPlan; the NightPlanConfig asset was edited directly with the new values. Tip values unchanged.
+Tests: ClockTests.PlanDefaults_MatchDesignTable updated (gap 3.7) and PlanDefaults_MatchScheduleA added (table values, ActiveSpots non-decreasing); not run (Unity not launched).
+
 ## economy-night: 180-minute nights and end-of-night tally
 Date: 2026-11-06
 Files: Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder,RunConfig}.cs, Assets/_Project/Scripts/Night/NightClock.cs, Assets/_Project/Data/Economy/RunConfig.asset, Assets/_Project/Tests/EditMode/Economy/NightTallyTests.cs, Assets/_Project/Tests/EditMode/Night/ClockTests.cs

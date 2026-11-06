@@ -12,6 +12,8 @@ namespace UncannyValet.Night
         [SerializeField, Min(1)] private int _maxWaitingCars = 1;
         [SerializeField, Min(0.1f), Tooltip("Multiplies the gap between arrivals; below 1 is busier.")]
         private float _arrivalGapScale = 1f;
+        [SerializeField, Min(0), Tooltip("Parking spots open tonight, counted from the curb. 0 = all spots.")]
+        private int _activeSpots;
         [SerializeField, Range(0f, 1f)] private float _evChance;
         [SerializeField, Range(0f, 1f)] private float _dirtyChance;
         [SerializeField] private bool _chargingOpen;
@@ -23,9 +25,10 @@ namespace UncannyValet.Night
             _night = plan.Night; _maxWaitingCars = plan.MaxWaitingCars; _arrivalGapScale = plan.ArrivalGapScale;
             _evChance = plan.EvChance; _dirtyChance = plan.DirtyChance;
             _chargingOpen = plan.ChargingOpen; _washOpen = plan.WashOpen; _newTonight = plan.NewTonight;
+            _activeSpots = plan.ActiveSpots;
         }
 
         public NightPlan ToPlan() => new NightPlan(_night, _maxWaitingCars, _arrivalGapScale, _evChance,
-            _dirtyChance, _chargingOpen, _washOpen, _newTonight);
+            _dirtyChance, _chargingOpen, _washOpen, _newTonight, _activeSpots);
     }
 }

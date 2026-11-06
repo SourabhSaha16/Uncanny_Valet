@@ -12,16 +12,16 @@ namespace UncannyValet.Night
             const string everything = "Everything at once: parallel cars, EVs and dirty cars.";
             return new[]
             {
-                new NightPlan(1, 1, 1.0f, 0f, 0f, false, false, "Simple: one car at a time."),
-                new NightPlan(2, 3, 0.7f, 0f, 0f, false, false,
-                    "Things get messy: several cars waiting, parallel pickups and drop-offs."),
-                new NightPlan(3, 3, 0.7f, 0.4f, 0f, true, false,
-                    "EV charging unlocked: blue EVs earn a bonus tip when handed back fully charged. Use the charging station."),
-                new NightPlan(4, 3, 0.7f, 0f, 0.4f, false, true,
-                    "Dirty cars: wash them at the car wash (one slot) before parking. Extra tip for clean cars; unwashed cars pay $0. No EVs tonight."),
-                new NightPlan(5, 3, 0.6f, 0.3f, 0.3f, true, true, everything),
-                new NightPlan(6, 3, 0.6f, 0.3f, 0.3f, true, true, everything),
-                new NightPlan(7, 3, 0.6f, 0.3f, 0.3f, true, true, everything),
+                new NightPlan(1, 1, 3.7f, 0f, 0f, false, false, "Simple: one car at a time.", 4),
+                new NightPlan(2, 3, 3.2f, 0f, 0f, false, false,
+                    "Things get messy: several cars waiting, parallel pickups and drop-offs.", 4),
+                new NightPlan(3, 3, 2.5f, 0.4f, 0f, true, false,
+                    "EV charging unlocked: blue EVs earn a bonus tip when handed back fully charged. Use the charging station.", 5),
+                new NightPlan(4, 3, 2.4f, 0f, 0.4f, false, true,
+                    "Dirty cars: wash them at the car wash (one slot) before parking. Extra tip for clean cars; unwashed cars pay $0. No EVs tonight.", 5),
+                new NightPlan(5, 3, 2.3f, 0.3f, 0.3f, true, true, everything, 5),
+                new NightPlan(6, 3, 2.2f, 0.3f, 0.3f, true, true, everything, 5),
+                new NightPlan(7, 3, 2.0f, 0.3f, 0.3f, true, true, everything, 5),
             };
         }
 
