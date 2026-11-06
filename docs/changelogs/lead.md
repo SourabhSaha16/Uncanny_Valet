@@ -129,3 +129,9 @@ Date: 2026-11-05
 Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
 Why: QA review finding for patrons fixed by its owner and merged (design.md section 10).
 Tests: Full EditMode suite run after all three fix merges (see next entry).
+
+## lead: publish first playable prototype build
+Date: 2026-11-05
+Files: site/*, ProjectSettings/ProjectSettings.asset, ProjectSettings/UnityConnectSettings.asset, Assets/_Project/Scripts/Valet/FrameGuard.cs.meta, docs/changelogs/lead.md
+Why: Web build of the P1 prototype loop (Bootstrap scene, lot, patrons, valet, cars, economy) rebuilt from merged main after the qa fixes; publishes to GitHub Pages (design.md section 10). Settings files changed because the build switched the active target to WebGL and turned analytics off.
+Tests: Full EditMode run on merged main: 75 of 75 passed. Web build loaded locally with no exceptions; the full park-and-return loop has not been played end to end.

@@ -1,4 +1,33 @@
 === Last 50 commits ===
+6f6000a  2026-11-05  lead: merge patrons fix
+3f14e04  2026-11-05  lead: merge lot fix
+936a821  2026-11-05  lead: merge valet fix
+8d2bc38  2026-11-05  patrons: close ticket when car already at curb at pickup
+eb98da1  2026-11-05  lot: guard destroyed cars in stop zones
+3175a9e  2026-11-05  valet: guard same-frame re-entry after exit
+9b29aa8  2026-11-05  lead: merge agent/qa
+c016fa1  2026-11-05  qa: add cross-module integration tests
+6272f36  2026-11-05  lead: generate Bootstrap scene and config assets
+de436ed  2026-11-05  lead: merge agent/integration
+124d1ee  2026-11-05  integration: add GameBootstrap, overlay, camera and scene builder
+d503d0a  2026-11-05  lead: merge agent/valet
+1e7d052  2026-11-05  lead: record P1 merge status
+57f1f14  2026-11-05  valet: stop double-publishing CarExited
+9fc273b  2026-11-05  lead: add Unity-generated meta files for P1 modules
+b141d63  2026-11-05  lead: stop tracking agent worktrees
+e09445c  2026-11-05  lead: merge agent/economy-night
+cff6648  2026-11-05  lead: merge agent/patrons
+31590a7  2026-11-05  lead: merge agent/lot
+1bd934f  2026-11-05  lead: merge agent/valet
+c24c61a  2026-11-05  lead: merge agent/cars
+c189656  2026-11-05  lot: build lot layout, spots, curb zone and parked rule
+db1be20  2026-11-05  patrons: add tickets, registry, spawner and departure
+1a61970  2026-11-05  economy-night: add tips, debt ledger and night clock
+2ff213f  2026-11-05  cars: add driver, interaction, factory and physics maths
+9c7da42  2026-11-05  valet: add input, walking, interaction and seat control
+723c4da  2026-11-05  lead: start P1 module work
+82f38fc  2026-11-05  lead: update docs for the local Web build route
+b23d473  2026-11-05  lead: add first Web build in site/
 ad601a3  2026-11-05  lead: switch to local Web build published from site/
 fe416a4  2026-11-05  lead: add Unity 6000.2.5f1 project and git repo
 
@@ -7,15 +36,33 @@ fe416a4  2026-11-05  lead: add Unity 6000.2.5f1 project and git repo
 
 Entries are added by the cars agent, one per commit. Format in docs/changelogs/README.md.
 
+## cars: add driver, interaction, factory and physics maths
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarPhysicsMath,CarDriver,CarInteraction,CarFactory}.cs (+ .meta), Assets/_Project/Data/Cars/Sedan.asset (+ .meta), Assets/_Project/Tests/EditMode/Cars/CarPhysicsMathTests.cs
+Why: P1 Cars module (design.md sections 8, 9, 10): top-down Rigidbody2D driving, enter-car interaction via CarEntered, generated-rectangle car factory.
+Tests: 8 EditMode tests for CarPhysicsMath added; Unity batch run was blocked by the permission system, so not yet run.
+
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
 
 Entries are added by the economy-night agent, one per commit. Format in docs/changelogs/README.md.
 
+## economy-night: add tips, debt ledger and night clock
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Economy/{TipConfig,RunConfig,TipCalculator,DebtLedger}.cs (+ metas), Assets/_Project/Scripts/Night/{ClockFormat,NightClock}.cs, Assets/_Project/Data/Economy/{TipConfig,RunConfig}.asset, Assets/_Project/Tests/EditMode/{Economy,Night}/*, removed the EconomyModule and NightModule markers
+Why: P1 build of design.md sections 2, 5 and 9. Tuning numbers live in config assets.
+Tests: EditMode tests for tip floor, impatient bonus, penalty curve, ledger night-end maths and clock format incl. midnight wrap.
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
 Entries are added by the integration agent, one per commit. Format in docs/changelogs/README.md.
+
+## integration: add GameBootstrap, overlay, camera and scene builder
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Bootstrap/GameBootstrap.cs, CameraFollow.cs, PlaceholderSprite.cs; Assets/_Project/Scripts/UI/DebugOverlay.cs; Assets/_Project/Editor/ProjectSetup.cs, BootstrapSceneBuilder.cs, UncannyValet.Editor.asmdef
+Why: P2 wiring for the design.md section 10 loop. Editor script creates LotConfig, PatronConfig and Bootstrap.unity (scene 0). Scene not yet generated: Unity batch launch was blocked in this run.
+Tests: none run; code not yet compiled in Unity.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -42,22 +89,178 @@ Files: .github/workflows/ci-cd.yml, tools/build-web.ps1, .gitattributes, docs/ch
 Why: Unity CI needs a license tied to a password login, which the project owner does not have. The Web player is now built locally and the committed site/ folder is published to GitHub Pages (design.md section 1, Platform).
 Tests: Not run; workflow and script not yet exercised. Needs the WebGL Build Support module before the first build.
 
+## lead: add first Web build in site/
+Date: 2026-11-05
+Files: site/*, ProjectSettings/URPProjectSettings.asset, ProjectSettings/PackageManagerSettings.asset, docs/changelogs/lead.md
+Why: First Web (WebGL) build of the empty SampleScene, built locally with tools/build-web.ps1 and published from site/ to GitHub Pages (design.md section 1, Platform). Editor-written settings files from opening the project are included.
+Tests: Web player served locally and loaded in a browser with no console errors; EditMode tests passed earlier (3 of 3).
+
+## lead: update docs for the local Web build route
+Date: 2026-11-05
+Files: README.md, CLAUDE.md, KICKOFF.md, docs/design.md, docs/decisions.md, docs/status.md, .claude/agents/integration.md, docs/changelogs/lead.md
+Why: Docs still described CI building the Web player with Unity secrets. They now describe the local build into site/ and the Unity 6000.2.5f1 decision (design.md section 1).
+Tests: Not applicable (docs only).
+
+## lead: start P1 module work
+Date: 2026-11-05
+Files: docs/status.md, docs/changelogs/lead.md
+Why: P0 is done (EventBusTests 3 of 3 in batch mode), so the five P1 module agents start (CLAUDE.md, Phases).
+Tests: EventBusTests run earlier: 3 of 3 passed.
+
+## lead: merge agent/cars
+Date: 2026-11-05
+Files: merged branch agent/cars (see docs/changelogs/cars.md)
+Why: P1 module work for cars merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent could not run tests; run on merged main.
+
+## lead: merge agent/valet
+Date: 2026-11-05
+Files: merged branch agent/valet (see docs/changelogs/valet.md)
+Why: P1 module work for valet merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent could not run tests; run on merged main.
+
+## lead: merge agent/lot
+Date: 2026-11-05
+Files: merged branch agent/lot (see docs/changelogs/lot.md)
+Why: P1 module work for lot merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent reported 11 of 11 (8 new); re-run on merged main.
+
+## lead: merge agent/patrons
+Date: 2026-11-05
+Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
+Why: P1 module work for patrons merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent reported 7 of 7 (4 new); re-run on merged main.
+
+## lead: merge agent/economy-night
+Date: 2026-11-05
+Files: merged branch worktree-agent-a04e0f3931e473e2f (see docs/changelogs/economy-night.md)
+Why: P1 module work for economy-night merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent reported 27 of 27 (24 new); re-run on merged main.
+
+## lead: stop tracking agent worktrees
+Date: 2026-11-05
+Files: .gitignore, docs/changelogs/lead.md (removed .claude/worktrees/* from the index)
+Why: The cars merge commit accidentally recorded the agents' worktree folders as embedded repos; they are local scratch space.
+Tests: Not applicable.
+
+## lead: add Unity-generated meta files for P1 modules
+Date: 2026-11-05
+Files: Assets/_Project/**/*.meta (Cars, Valet, Data, Tests folders and files)
+Why: Unity generates .meta files on first import; the cars and valet agents could not run Unity, so these were missing.
+Tests: Full EditMode run on merged main: 52 of 52 passed, no compile errors.
+
+## lead: record P1 merge status
+Date: 2026-11-05
+Files: docs/status.md
+Why: Status board shows the five P1 modules merged and lists what integration must wire (design.md section 10).
+Tests: Not applicable (docs only).
+
+## lead: merge agent/valet
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/SeatController.cs, docs/changelogs/valet.md
+Why: Valet fix so CarExited is published once, by CarDriver.SetDriver(false), not twice (design.md section 9, events).
+Tests: Full EditMode suite re-run after this merge (see next entry).
+
+## lead: merge agent/integration
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: P2 integration code (GameBootstrap, DebugOverlay, CameraFollow, scene and config builders) merged after folder-ownership review; the agent could not launch Unity, so the lead generates the assets (design.md section 10).
+Tests: Not run yet at merge time; compile and EditMode run follow.
+
+## lead: generate Bootstrap scene and config assets
+Date: 2026-11-05
+Files: Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Patrons/PatronConfig.asset, ProjectSettings/EditorBuildSettings.asset, Assets/_Project/Editor/BootstrapSceneBuilder.cs, .meta files, docs/changelogs/lead.md
+Why: The integration agent could not launch Unity, so the lead ran ProjectSetup.RunBatch. The scene builder failed because Assets/_Project/Scenes did not exist; the lead added Directory.CreateDirectory before SaveScene and set the real scene GUID in Build Settings (design.md section 10).
+Tests: Full EditMode run after the generated assets: 52 of 52 passed, no compile errors. Play not yet verified.
+
+## lead: merge agent/qa
+Date: 2026-11-05
+Files: Assets/_Project/Tests/EditMode/Integration/*, docs/changelogs/qa.md, generated .meta files
+Why: Cross-module tests (full fake night, event contracts, tip and physics rules) merged; qa could not run Unity, so the lead ran the suite (design.md section 10).
+Tests: Full EditMode run on merged main: 71 of 71 passed (52 before, 19 new from qa), no compile errors.
+
+## lead: merge valet fix
+Date: 2026-11-05
+Files: merged branch agent/valet (see docs/changelogs/valet.md)
+Why: QA review finding for valet fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).
+
+## lead: merge lot fix
+Date: 2026-11-05
+Files: merged branch agent/lot (see docs/changelogs/lot.md)
+Why: QA review finding for lot fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).
+
+## lead: merge patrons fix
+Date: 2026-11-05
+Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
+Why: QA review finding for patrons fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
 Entries are added by the lot agent, one per commit. Format in docs/changelogs/README.md.
+
+## lot: build lot layout, spots, curb zone and parked rule
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Lot/{LotConfig,LotLayoutBuilder,RectFactory,StopZone,ParkingSpot,CurbZone,StopTimer,SpotOccupancy}.cs (LotModule.cs removed), Assets/_Project/Tests/EditMode/Lot/{SpotOccupancyTests,StopTimerTests}.cs
+Why: design.md sections 4, 9, 10: runtime-generated lot, CarParked / CarLeftSpot / CarAtCurb after a car is stopped and empty for 0.5 s.
+Tests: 8 EditMode tests added (SpotOccupancy, StopTimer); EditMode run in batch mode.
+
+## lot: guard destroyed cars in stop zones
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Lot/StopZone.cs, LotConfig.cs, LotLayoutBuilder.cs
+Why: qa finding: a car despawned inside the curb zone made StopZone.Update throw every frame. Destroyed cars are now pruned; arrival inset and valet start offset moved into LotConfig (design.md section 9).
+Tests: none added (Unity-null check is not a pure helper); Unity not run per request.
 
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
 
+## patrons: close ticket when car already at curb at pickup
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Patrons/{Ticket,TicketRegistry}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryTests.cs
+Why: QA found a ticket stuck if the car waited at the curb before pickup (CarAtCurb fires once). Registry now remembers AtCurb per ticket (cleared on CarEntered), closes on pickup request, iterates a copy of tickets and removes closed ones.
+Tests: 3 EditMode tests added (early curb, CarEntered clears flag, open inside handler); not run, Unity not run per instruction.
+
+## patrons: add tickets, registry, spawner and departure
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Patrons/{PatronConfig,PatronRequest,Ticket,TicketState,TicketRegistry,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryTests.cs
+Why: P1 patron loop (design.md sections 5 and 10): arrive, park, stay, pickup request, close with tip, depart.
+Tests: 4 EditMode tests for TicketRegistry (whole ticket, early curb ignored, no pickup before park, unknown car); all 7 EditMode tests pass.
+
 === docs/changelogs/qa.md ===
 # QA changelog
 
 Entries are added by the qa agent, one per commit. Format in docs/changelogs/README.md.
 
+## qa: add cross-module integration tests
+Date: 2026-11-05
+Files: Assets/_Project/Tests/EditMode/Integration/{FakeCarFactory,EventLog,NightHarness,FullNightTests,EventContractTests,PhysicsAndTipTests}.cs
+Why: design.md sections 9 and 10: real EventBus, NightClock, TicketRegistry, TipCalculator, DebtLedger, SpotOccupancy, StopTimer, NearestPicker, ValetState and CarPhysicsMath wired together; covers a whole night, event order, exactly-once publishing and tips never below $0.
+Tests: 19 EditMode tests added. NOT RUN: the batch-mode Unity launch was refused by the agent sandbox, so results are unverified and .meta files were not generated (Unity creates them on next open).
+
 === docs/changelogs/valet.md ===
 # Valet changelog
 
 Entries are added by the valet agent, one per commit. Format in docs/changelogs/README.md.
+
+## valet: add input, walking, interaction and seat control
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/{ValetState,NearestPicker,KeyboardInputSource,OnFootMover,Interactor,SeatController}.cs, Assets/_Project/Tests/EditMode/Valet/ValetTests.cs
+Why: P1 valet module (design.md sections 3, 9, 10): walk, enter and exit cars, drive via IDrivable.
+Tests: ValetTests (state transitions, nearest pick) added; not run (batch-mode Unity launch was blocked in the agent sandbox); lead to run.
+
+## valet: stop double-publishing CarExited
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/SeatController.cs
+Why: CarDriver.SetDriver(false) already publishes CarExited, so the valet no longer does (design.md section 9).
+Tests: none run (Unity not run per instruction); main suite reported 52/52 before this change.
+
+## valet: guard same-frame re-entry after exit
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/{FrameGuard,Interactor,SeatController}.cs, Assets/_Project/Tests/EditMode/Valet/ValetTests.cs
+Why: exiting re-enabled the Interactor while E was still pressed, so the valet re-entered the car the same frame (design.md section 10).
+Tests: added FrameGuard_BlocksOnlyTheBlockedFrame; not run (Unity not run per instruction).
