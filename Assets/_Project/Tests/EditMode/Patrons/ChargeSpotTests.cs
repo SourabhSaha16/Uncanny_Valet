@@ -1,0 +1,91 @@
+using NUnit.Framework;
+using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
+using UncannyValet.Patrons;
+
+namespace UncannyValet.Tests.Patrons
+{
+    public class ChargeSpotTests
+    {
+        private sealed class FakeClock : IGameClock
+        {
+            public int Night => 1;
+            public float MinuteOfNight { get; set; }
+            public bool IsRunning => true;
+        }
+
+        private sealed class FakeTips : ITipCalculator
+        {
+            public int Calculate(in TipInput input) => 1;
+            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(1, 0, 0, 0, 1, TipZeroReason.None);
+        }
+
+        private EventBus _bus;
+        private FakeClock _clock;
+        private TicketRegistry _registry;
+        private int _charges;
+        private int _expired;
+        private readonly CarId _car = new CarId(1);
+
+        [SetUp]
+        public void SetUp()
+        {
+            _bus = new EventBus(); _clock = new FakeClock();
+            _registry = new TicketRegistry(_bus, _clock, new FakeTips(), new ServiceTuning(0.2f, 20f, 15f));
+            _charges = 0; _expired = 0;
+            _bus.Subscribe<CarChargeChanged>(e => _charges++);
+            _bus.Subscribe<TicketTimerExpired>(e => _expired++);
+        }
+
+        private Ticket Arrive(bool ev)
+        {
+            var t = _registry.Create(_car, new PatronRequest(100f, 20, false, 45f, 60f, ev, false));
+            _registry.AnnounceArrival(t);
+            return t;
+        }
+
+        private void Tick(float minute)
+        {
+            _clock.MinuteOfNight = minute;
+            _bus.Publish(new NightTick(1, minute));
+        }
+
+        [Test]
+        public void EvParkedInChargingSpot_IsParkedAndKeepsCharging_UntilItLeaves()
+        {
+            var t = Arrive(true);
+            _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
+            var before = _charges;
+            Tick(1f); Tick(2f);
+            Assert.AreEqual(TicketState.Parked, t.State);
+            Assert.IsFalse(t.ParkTimer.IsActive);
+            Assert.AreEqual(before + 2, _charges);
+            _bus.Publish(new CarLeftStation(_car, StationKind.Charging));
+            Tick(3f);
+            Assert.AreEqual(before + 2, _charges);
+        }
+
+        [Test]
+        public void NonEvParkedInChargingSpot_ParkTimerStopsAndNothingCharges()
+        {
+            var t = Arrive(false);
+            _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
+            _bus.Publish(new CarParked(_car, 1));
+            Tick(60f);
+            Assert.AreEqual(TicketState.Parked, t.State);
+            Assert.AreEqual(0, _charges);
+            Assert.AreEqual(0, _expired);
+        }
+
+        [Test]
+        public void ChargingStationEntry_DoesNotPauseParkTimer()
+        {
+            Arrive(true);
+            _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
+            Tick(50f);
+            Assert.AreEqual(1, _expired);
+        }
+    }
+}

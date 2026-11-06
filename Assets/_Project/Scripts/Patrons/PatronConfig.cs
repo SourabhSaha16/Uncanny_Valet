@@ -41,5 +41,7 @@ namespace UncannyValet.Patrons
         public float ImpatientChance => _impatientChance;
         public float ParkWindowMinutes => _parkWindowMinutes;
         public float PickupWindowMinutes => _pickupWindowMinutes;
+        public float ChargeMinutes => _chargeMinutes;
+        public float WashMinutes => _washMinutes;
     }
 }

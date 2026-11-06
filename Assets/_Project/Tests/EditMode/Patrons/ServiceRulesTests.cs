@@ -57,7 +57,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var plan = new PatronPlan(3);
             plan.Apply(new NightPlan(2, 2, 1f, 0.3f, 0.3f, true, true, ""));
-            plan.RollTraits(new ScriptedRandom { Next = roll }, out var isEv, out var isDirty);
+            plan.RollTraits(new ScriptedRandom { Next = roll }, 0f, out var isEv, out var isDirty);
             Assert.AreEqual(ev, isEv);
             Assert.AreEqual(dirty, isDirty);
         }

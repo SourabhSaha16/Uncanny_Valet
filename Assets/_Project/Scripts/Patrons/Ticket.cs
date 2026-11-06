@@ -33,10 +33,9 @@ namespace UncannyValet.Patrons
 
         /// <summary>A valet is driving the car.</summary>
         public bool Driven { get; set; }
+        /// <summary>An EV is parked in a charging spot. Charging spots are ordinary parking, so this never pauses the park timer.</summary>
         public bool InChargingBay { get; set; }
         public bool InWashBay { get; set; }
-
-        public bool InStation => InChargingBay || InWashBay;
         public bool ChargedEv => IsEv && Charge.IsFull;
         public bool CleanedDirty => IsDirty && Wash.IsClean;
         public bool UncleanedDirty => IsDirty && !Wash.IsClean;
@@ -50,10 +49,10 @@ namespace UncannyValet.Patrons
             Wash = new WashRule(tuning.WashMinutes);
         }
 
-        /// <summary>The park timer runs only while nobody drives the car and it is not stopped in a station.</summary>
+        /// <summary>The park timer runs only while nobody drives the car and it is not in the wash bay.</summary>
         public void SyncParkTimer(float minute)
         {
-            if (Driven || InStation) ParkTimer.Pause(minute);
+            if (Driven || InWashBay) ParkTimer.Pause(minute);
             else ParkTimer.Resume(minute);
         }
 

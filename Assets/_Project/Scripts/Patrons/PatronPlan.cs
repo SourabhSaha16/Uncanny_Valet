@@ -9,6 +9,8 @@ namespace UncannyValet.Patrons
         public float ArrivalGapScale { get; private set; } = 1f;
         public float EvChance { get; private set; }
         public float DirtyChance { get; private set; }
+        public float LateEvChance { get; private set; }
+        public float LateEvStart { get; private set; }
 
         /// <summary>Before any plan arrives the config's cap applies and no traits are rolled.</summary>
         public PatronPlan(int defaultMaxWaiting) { MaxWaitingCars = defaultMaxWaiting; }
@@ -19,14 +21,17 @@ namespace UncannyValet.Patrons
             ArrivalGapScale = plan.ArrivalGapScale;
             EvChance = plan.EvChance;
             DirtyChance = plan.DirtyChance;
+            LateEvChance = plan.LateEvChance;
+            LateEvStart = plan.LateEvStart;
         }
 
-        /// <summary>One roll decides: EV, dirty or plain. A car is never both.</summary>
-        public void RollTraits(IPatronRandom random, out bool isEv, out bool isDirty)
+        /// <summary>One roll decides: EV, dirty or plain. A car is never both. The EV chance ramps with night progress (0..1).</summary>
+        public void RollTraits(IPatronRandom random, float nightProgress, out bool isEv, out bool isDirty)
         {
+            var ev = EvChanceCurve.Evaluate(EvChance, LateEvChance, LateEvStart, nightProgress);
             var r = random.Value();
-            isEv = r < EvChance;
-            isDirty = !isEv && r < EvChance + DirtyChance;
+            isEv = r < ev;
+            isDirty = !isEv && r < ev + DirtyChance;
         }
     }
 }
