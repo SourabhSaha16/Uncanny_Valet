@@ -243,3 +243,9 @@ Date: 2026-11-06
 Files: site/*, Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Night/*, generated .meta files, docs/changelogs/lead.md
 Why: Round-4 play-test: mirrors, 2-minute nights, seven nights with one new challenge each (EV charging, car wash), end card with tip calculation and next-night unlock note (design.md section 10, Challenge schedule). Scene regenerated with ProjectSetup.RunBatch.
 Tests: Full EditMode run: 242 of 242 passed. Web build played locally through nights 1 to 3: night 1 one car at a time, night 2 three cars queued, night 3 blue EVs with charge bars and charging bays; end cards showed the tip calculation and the Tomorrow note. Not verified in play: charging and washing a car, the wash slot (night 4), station label fit after the last fix, nights 5 to 7.
+
+## lead: merge balance simulation and fix clock line in design.md
+Date: 2026-11-06
+Files: tools/sim/*, docs/balance.md, docs/design.md, docs/changelogs/lead.md
+Why: Human asked for a simulation of the ideal number of parking spots per night (design.md section 10, Challenge schedule). The qa agent built tools/sim and docs/balance.md; design.md section 10 item 1 still described the old clock speed.
+Tests: Simulation self-test passed per the qa agent; no Unity code changed. Not re-run by the lead.

@@ -151,7 +151,7 @@ night events (started, tick, ended).
 
 Goal: **pick up and drop off, end to end, in a browser.** No UI beyond a debug overlay.
 
-1. A night runs on a clock (1 real second = 1 game minute, 22:00–04:00).
+1. A night runs on a clock (1.5 game minutes per real second, 22:00–01:00, about 2 real minutes).
 2. Patrons arrive at the curb every so often; each car gets a ticket with a stay length.
 3. The valet walks (WASD/arrows), presses **E** to enter the car, drives it into a free spot, stops, and
    presses **E** to exit. The spot records the car as parked.
