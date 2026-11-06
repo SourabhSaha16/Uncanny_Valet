@@ -9,6 +9,7 @@
         "UncannyValet.Patrons",
         "UncannyValet.Economy",
         "UncannyValet.Night",
+        "UncannyValet.UI",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
