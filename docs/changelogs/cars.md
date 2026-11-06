@@ -25,3 +25,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver,CarFactory,CarLabel,CarLabelMath}.cs, new Assets/_Project/Scripts/Cars/{CarSorting,CarTimerFill,CarTimerFillMath}.cs (+ .meta), Assets/_Project/Data/Cars/Sedan.asset, Assets/_Project/Tests/EditMode/Cars/{CarLabelMathTests,CarTimerFillMathTests}.cs (+ .meta)
 Why: design.md section 10 pressure rules. (1) Heavy cars: CarDefinition gains Mass (20), ParkedLinearDrag and ParkedAngularDrag (8). The body stays Dynamic so spot/curb triggers are untouched (switching body type was rejected as riskier). Mass is set on the Rigidbody2D and damping is applied only while no driver is seated; seated damping is 0 so handling is unchanged. CarDriver sets velocity directly from CarPhysicsMath, so driving does not depend on mass and no force scaling was needed. (2) CarLabel is now a component subscribed to CarLetterAssigned (OnEnable/OnDisable), filtered by CarId, blank until assigned. (3) CarTimerFill listens to TicketTimerChanged/Expired/Stopped for its car and eases a bottom-up overlay (shared cached 1x1 sprite, child scaled in car-local space, park dark, pickup red) using CarTimerFillMath; sorting is body 10, fill 11, label 12 (CarSorting).
 Tests: 8 new EditMode tests (CarTimerFillMath x6, CarLabelMath.LetterText x2); Unity not run, compiled by inspection.
+
+## cars: remove duplicated members
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarDriver}.cs, Assets/_Project/Data/Cars/Sedan.asset
+Why: Fix compile break from af46781, where an edit script had applied twice: duplicate fields/properties in CarDefinition, duplicate ApplyDrag in CarDriver, duplicate asset keys. Each member now exists once; other Cars files checked by grep.
+Tests: None run (Unity not run); checked by inspection.

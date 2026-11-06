@@ -28,9 +28,3 @@ MonoBehaviour:
   _parkFillColor: {r: 0, g: 0, b: 0, a: 0.55}
   _pickupFillColor: {r: 0.7, g: 0.05, b: 0.05, a: 0.6}
   _fillSmoothing: 4
-  _mass: 20
-  _parkedLinearDrag: 8
-  _parkedAngularDrag: 8
-  _parkFillColor: {r: 0, g: 0, b: 0, a: 0.55}
-  _pickupFillColor: {r: 0.7, g: 0.05, b: 0.05, a: 0.6}
-  _fillSmoothing: 4
