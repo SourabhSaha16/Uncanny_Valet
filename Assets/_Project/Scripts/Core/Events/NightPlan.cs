@@ -16,13 +16,15 @@ namespace UncannyValet.Core.Events
         public readonly bool WashOpen;
         /// <summary>What is new tonight; shown on the previous night's end card.</summary>
         public readonly string NewTonight;
+        /// <summary>How many parking spots are open tonight, counted from the curb. 0 means all of them.</summary>
+        public readonly int ActiveSpots;
 
         public NightPlan(int night, int maxWaitingCars, float arrivalGapScale, float evChance, float dirtyChance,
-            bool chargingOpen, bool washOpen, string newTonight)
+            bool chargingOpen, bool washOpen, string newTonight, int activeSpots = 0)
         {
             Night = night; MaxWaitingCars = maxWaitingCars; ArrivalGapScale = arrivalGapScale;
             EvChance = evChance; DirtyChance = dirtyChance; ChargingOpen = chargingOpen;
-            WashOpen = washOpen; NewTonight = newTonight ?? "";
+            WashOpen = washOpen; NewTonight = newTonight ?? ""; ActiveSpots = activeSpots;
         }
     }
 }

@@ -249,3 +249,9 @@ Date: 2026-11-06
 Files: tools/sim/*, docs/balance.md, docs/design.md, docs/changelogs/lead.md
 Why: Human asked for a simulation of the ideal number of parking spots per night (design.md section 10, Challenge schedule). The qa agent built tools/sim and docs/balance.md; design.md section 10 item 1 still described the old clock speed.
 Tests: Simulation self-test passed per the qa agent; no Unity code changed. Not re-run by the lead.
+
+## lead: add ActiveSpots to NightPlan
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Core/Events/NightPlan.cs
+Why: balance simulation (docs/balance.md) recommends 4 open spots on nights 1-2 and 5 from night 3; the plan carries the count (0 = all).
+Tests: none yet; economy-night and lot add them with their changes.
