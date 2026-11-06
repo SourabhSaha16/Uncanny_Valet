@@ -23,8 +23,10 @@ namespace UncannyValet.Lot
         private readonly List<ParkingSpot> _spots = new List<ParkingSpot>();
         private SpotOccupancy _occupancy;
         private RectFactory _rects;
+        private Vector2[] _arrivalSlots = { Vector2.zero };
 
-        public Vector2 ArrivalPoint { get; private set; }
+        public Vector2 ArrivalPoint => _arrivalSlots[0];
+        public IReadOnlyList<Vector2> ArrivalSlots => _arrivalSlots;
         public float ArrivalRotationDegrees => 0f;
         public Vector2 ValetStartPoint { get; private set; }
         public IReadOnlyList<int> SpotIds => _spotIds;
@@ -43,15 +45,17 @@ namespace UncannyValet.Lot
             var spotsLeft = c.CurbPosition.x + c.CurbSize.x * 0.5f + c.CurbToSpotsGap;
             var right = spotsLeft + rowWidth + c.Margin;
             var half = spotsHeight * 0.5f + c.Margin;
-            var bounds = new Rect(left, -half, right - left, half * 2f);
+            var firstSlot = new Vector2(c.CurbPosition.x, c.CurbPosition.y - c.CurbSize.y * 0.5f - c.QueueStartGap);
+            _arrivalSlots = ArrivalQueue.Slots(firstSlot, c.QueueSlotCount, c.QueueSlotSpacing);
+            var bottom = Mathf.Min(-half, _arrivalSlots[_arrivalSlots.Length - 1].y - c.QueueEndPadding);
+            var bounds = new Rect(left, bottom, right - left, half - bottom);
 
             _rects.Make(transform, "Ground", bounds.center, bounds.size, Ground, -10);
             BuildSpots(spotsLeft, spotsHeight * 0.5f);
             BuildCurb();
-            BuildWalls(bounds);
+            WallBuilder.Build(_rects, transform, bounds, c.WallThickness, Wall);
             _occupancy = new SpotOccupancy(_spotIds);
             InitSpots();
-            ArrivalPoint = new Vector2(c.CurbPosition.x, bounds.yMin + c.ArrivalInset);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 
@@ -87,27 +91,12 @@ namespace UncannyValet.Lot
             var c = _config;
             _rects.Make(transform, "Curb Edge", c.CurbPosition, c.CurbSize, CurbEdge, -7);
             _rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
-            SpotLabel.Create(transform, "CURB", c.CurbPosition, c, -5);
+            SpotLabel.Create(transform, string.Join("\n", "CURB".ToCharArray()), c.CurbPosition, c, -5, c.CurbLabelSize);
             var zone = new GameObject("CurbZone");
             zone.transform.SetParent(transform, false);
             zone.transform.localPosition = c.CurbPosition;
             zone.AddComponent<BoxCollider2D>();
             zone.AddComponent<CurbZone>().Init(c);
-        }
-
-        private void BuildWalls(Rect b)
-        {
-            var t = _config.WallThickness;
-            AddWall("Wall N", new Vector2(b.center.x, b.yMax + t * 0.5f), new Vector2(b.width + t * 2f, t));
-            AddWall("Wall S", new Vector2(b.center.x, b.yMin - t * 0.5f), new Vector2(b.width + t * 2f, t));
-            AddWall("Wall W", new Vector2(b.xMin - t * 0.5f, b.center.y), new Vector2(t, b.height));
-            AddWall("Wall E", new Vector2(b.xMax + t * 0.5f, b.center.y), new Vector2(t, b.height));
-        }
-
-        private void AddWall(string wallName, Vector2 center, Vector2 size)
-        {
-            var go = _rects.Make(transform, wallName, center, size, Wall, 0);
-            go.AddComponent<BoxCollider2D>().size = Vector2.one;
         }
     }
 }

@@ -1,5 +1,5 @@
-using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Lot
 {
@@ -17,14 +17,14 @@ namespace UncannyValet.Lot
             Setup(config, config.SpotSize);
         }
 
-        protected override void OnSettled(IDrivable car)
+        protected override void OnSettled(CarId car)
         {
-            if (_occupancy.Park(SpotId, car.Id)) Bus.Publish(new CarParked(car.Id, SpotId));
+            if (_occupancy.Park(SpotId, car)) Bus.Publish(new CarParked(car, SpotId));
         }
 
-        protected override void OnLeft(IDrivable car)
+        protected override void OnLeft(CarId car)
         {
-            if (_occupancy.Leave(SpotId, car.Id)) Bus.Publish(new CarLeftSpot(car.Id, SpotId));
+            if (_occupancy.Leave(SpotId, car)) Bus.Publish(new CarLeftSpot(car, SpotId));
         }
     }
 }
