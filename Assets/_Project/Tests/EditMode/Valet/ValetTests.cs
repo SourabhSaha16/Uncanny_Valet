@@ -40,6 +40,22 @@ namespace UncannyValet.Tests.Valet
         }
 
         [Test]
+        public void ExitPlacement_NudgesAlongNormalizedAside()
+        {
+            var p = ExitPlacement.Beside(new Vector2(1, 1), new Vector2(0, 5), 2f);
+            Assert.AreEqual(1f, p.x, 0.001f);
+            Assert.AreEqual(3f, p.y, 0.001f);
+        }
+
+        [Test]
+        public void ExitPlacement_ZeroAside_FallsBackToRight()
+        {
+            var p = ExitPlacement.Beside(Vector2.zero, Vector2.zero, 1.5f);
+            Assert.AreEqual(1.5f, p.x, 0.001f);
+            Assert.AreEqual(0f, p.y, 0.001f);
+        }
+
+        [Test]
         public void Picker_ChoosesNearest()
         {
             var p = new[] { new Vector2(3, 0), new Vector2(1, 0), new Vector2(2, 0) };

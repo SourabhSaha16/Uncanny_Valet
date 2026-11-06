@@ -1,6 +1,7 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 using UnityEngine;
 
 namespace UncannyValet.Valet
@@ -21,6 +22,7 @@ namespace UncannyValet.Valet
         private IInputSource _input;
         private IEventBus _bus;
         private IDrivable _car;
+        private CarId _carId;
         private int _enterFrame = -1;
 
         private void Start()
@@ -29,24 +31,49 @@ namespace UncannyValet.Valet
             if (_input == null) Services.TryGet(out _input);
             _mover.SetInput(_input);
             _interactor.SetInput(_input);
-            if (Services.TryGet(out _bus)) _bus.Subscribe<CarEntered>(OnCarEntered);
+            if (!Services.TryGet(out _bus)) return;
+            _bus.Subscribe<CarEntered>(OnCarEntered);
+            _bus.Subscribe<CarExited>(OnCarExited);
         }
 
-        private void OnDestroy() => _bus?.Unsubscribe<CarEntered>(OnCarEntered);
+        private void OnDestroy()
+        {
+            if (_bus == null) return;
+            _bus.Unsubscribe<CarEntered>(OnCarEntered);
+            _bus.Unsubscribe<CarExited>(OnCarExited);
+        }
 
         private void OnCarEntered(CarEntered e)
         {
             if (!Services.TryGet<ICarFactory>(out var cars) || !cars.TryGet(e.Car, out var car)) return;
             if (!_state.TryEnterCar()) return;
             _car = car;
+            _carId = e.Car;
             _enterFrame = Time.frameCount;
             _car.SetDriver(true);
             SetBodyActive(false);
         }
 
+        // The seated car was despawned: it publishes CarExited from OnDestroy while still driven.
+        private void OnCarExited(CarExited e)
+        {
+            if (_state.IsDriving && e.Car == _carId) LeaveVanishedCar();
+        }
+
+        // The valet already sits at the car's last position (Update follows the car), so nudge aside from there.
+        private void LeaveVanishedCar()
+        {
+            _car = null;
+            _state.TryExitCar();
+            transform.position = ExitPlacement.Beside(transform.position, Vector2.right, _exitDistance);
+            _interactor.IgnoreInteractThisFrame();
+            SetBodyActive(true);
+        }
+
         private void Update()
         {
             if (!_state.IsDriving || _input == null) return;
+            if (_car is Object unityCar && !unityCar) { LeaveVanishedCar(); return; }
             transform.position = _car.Transform.position;
             _car.SetInput(_input.Move.y, _input.Move.x);
             if (_input.InteractPressed && Time.frameCount != _enterFrame) Exit();
@@ -56,10 +83,10 @@ namespace UncannyValet.Valet
         {
             var car = _car;
             car.SetInput(0f, 0f);
-            car.SetDriver(false);
             _car = null;
-            _state.TryExitCar();
-            transform.position = car.Transform.position + car.Transform.right * _exitDistance;
+            _state.TryExitCar(); // before SetDriver, so the CarExited it publishes is ignored here
+            car.SetDriver(false);
+            transform.position = ExitPlacement.Beside(car.Transform.position, car.Transform.right, _exitDistance);
             _interactor.IgnoreInteractThisFrame();
             SetBodyActive(true);
         }
