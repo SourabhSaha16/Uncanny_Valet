@@ -49,3 +49,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Lot/{OpenSpotRule,SpotCloser,SpotOccupancy,LotGeometry,LotLayoutBuilder}.cs, Assets/_Project/Tests/EditMode/Lot/{SpotClosingTests,LotGeometryTests}.cs
 Why: design.md section 10 (spot count per night). SpotCloser listens to NightPlanChanged and calls SpotOccupancy.SetActiveSpots, so spots above ActiveSpots refuse cars (ParkingSpot never publishes CarParked) and get a dark cover; 0 or a later bigger plan reopens them. Spot ids now run column by column from the curb (they ran row by row before), so the farthest columns close first.
 Tests: SpotClosingTests (4) and a LotGeometry id-order test; Unity not run per request.
+
+## lot: expanding lot and charging spots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Lot/{LotExpander,LotFrame,LotFrameRule,SpotBuilder,LotGeometry,SpotOccupancy,ParkingSpot,StationBuilder,StationSwitch,RectFactory,LotLayoutBuilder,LotConfig}.cs (SpotCloser, WallBuilder removed), Assets/_Project/Tests/EditMode/Lot/{LotExpansionTests,LotGeometryTests}.cs
+Why: user feedback round 5, design.md sections 4/9/10. Closed spots are no longer drawn: LotExpander switches per-spot objects on/off and LotFrame moves the ground and walls to the frame from the pure LotFrameRule / LotGeometry.FrameFor, on every NightPlanChanged and when a car leaves a spot (no per-frame work). A spot holding a car stays open until empty. The dim covers are gone. Charging bays are now two ParkingSpots (ids after the regular ones, blue pad and bolt marker, open only while ChargingOpen, not counted in ActiveSpots, any car); they publish CarParked/CarLeftSpot plus CarEnteredStation/CarLeftStation with StationKind.Charging. The wash slot stays a station. ILotLayout.SpotIds now lists the currently open spot ids (regular and charging).
+Tests: LotExpansionTests (5) and LotGeometryTests updated and extended (columns, frame growth, containment); Unity not run.

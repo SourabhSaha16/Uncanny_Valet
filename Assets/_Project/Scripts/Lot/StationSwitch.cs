@@ -5,15 +5,15 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Shows and hides the stations to match the night plan. Closing a station first releases the cars in
-    /// it (so CarLeftStation is published) and then deactivates it. Stations start closed.
+    /// Shows and hides the wash slot to match the night plan. Closing it first releases the cars in it
+    /// (so CarLeftStation is published) and then deactivates it. It starts closed.
     /// </summary>
     public sealed class StationSwitch : MonoBehaviour
     {
-        private StationZone[] _zones = new StationZone[0];
+        private StationZone _wash;
         private IEventBus _bus;
 
-        public void Init(StationZone[] zones) => _zones = zones;
+        public void Init(StationZone wash) => _wash = wash;
 
         private void Start()
         {
@@ -33,15 +33,10 @@ namespace UncannyValet.Lot
 
         private void OnPlan(NightPlanChanged e)
         {
-            foreach (var zone in _zones)
-                Apply(zone, zone.Kind == StationKind.Charging ? e.Plan.ChargingOpen : e.Plan.WashOpen);
-        }
-
-        private static void Apply(StationZone zone, bool open)
-        {
-            if (zone.gameObject.activeSelf == open) return;
-            if (!open) zone.ReleaseAll();
-            zone.gameObject.SetActive(open);
+            var open = e.Plan.WashOpen;
+            if (_wash.gameObject.activeSelf == open) return;
+            if (!open) _wash.ReleaseAll();
+            _wash.gameObject.SetActive(open);
         }
     }
 }

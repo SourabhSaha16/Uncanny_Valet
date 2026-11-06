@@ -22,7 +22,8 @@ namespace UncannyValet.Tests.Lot
             var all = new Dictionary<string, Rect> { ["curb"] = _geo.Curb };
             for (var i = 0; i < _geo.Spots.Length; i++) all["spot" + i] = _geo.Spots[i];
             for (var i = 0; i < _geo.QueueCars.Length; i++) all["queue" + i] = _geo.QueueCars[i];
-            for (var i = 0; i < _geo.Stations.Length; i++) all["station" + i] = _geo.Stations[i];
+            for (var i = 0; i < _geo.ChargingSpots.Length; i++) all["charging" + i] = _geo.ChargingSpots[i];
+            all["wash"] = _geo.Wash;
             return all;
         }
 
@@ -62,17 +63,63 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void StationCount_IsChargingBaysPlusOneWash()
+        public void ChargingSpots_FollowTheRegularSpotIds()
         {
-            Assert.AreEqual(_config.ChargingBays + 1, _geo.Stations.Length);
+            Assert.AreEqual(_config.ChargingBays, _geo.ChargingSpots.Length);
+            Assert.AreEqual(_geo.Spots.Length + 1, _geo.FirstChargingId);
         }
 
         [Test]
-        public void StationsLeaveAWalkwayToTheSpots()
+        public void ChargingSpotsAndWash_LeaveAWalkwayToTheSpots()
         {
-            foreach (var station in _geo.Stations)
-                Assert.GreaterOrEqual(_geo.Spots[0].xMin - station.xMax, 2f);
+            foreach (var spot in _geo.ChargingSpots)
+                Assert.GreaterOrEqual(_geo.Spots[0].xMin - spot.xMax, 2f);
+            Assert.GreaterOrEqual(_geo.Spots[0].xMin - _geo.Wash.xMax, 2f);
         }
+
+        [Test]
+        public void ColumnsFor_RoundsUpAndClamps()
+        {
+            var rows = _config.Rows;
+            Assert.AreEqual(1, _geo.ColumnsFor(0));
+            Assert.AreEqual(1, _geo.ColumnsFor(rows));
+            Assert.AreEqual(2, _geo.ColumnsFor(rows + 1));
+            Assert.AreEqual(_config.SpotsPerRow, _geo.ColumnsFor(int.MaxValue / 2));
+        }
+
+        [Test]
+        public void Frame_GrowsToTheRightOnlyWithMoreColumns()
+        {
+            var one = _geo.FrameFor(1, false, false);
+            var four = _geo.FrameFor(4, false, false);
+            Assert.AreEqual(one.xMin, four.xMin, 0.001f);
+            Assert.AreEqual(one.yMin, four.yMin, 0.001f);
+            Assert.AreEqual(one.yMax, four.yMax, 0.001f);
+            Assert.AreEqual(3 * (_config.SpotSize.x + _config.SpotGap), four.xMax - one.xMax, 0.001f);
+        }
+
+        [Test]
+        public void Frame_ContainsEveryOpenSpot_AndTheMaxFrameIsTheBounds()
+        {
+            var cols = _config.SpotsPerRow;
+            Assert.AreEqual(_geo.Bounds, _geo.FrameFor(cols, true, true));
+            var frame = _geo.FrameFor(2, true, false);
+            var lastOpen = _geo.Spots[2 * _config.Rows - 1];
+            Assert.LessOrEqual(lastOpen.xMax, frame.xMax);
+            foreach (var spot in _geo.ChargingSpots) Assert.IsTrue(Contains(frame, spot));
+            Assert.IsFalse(Contains(_geo.FrameFor(2, false, false), _geo.ChargingSpots[0]));
+        }
+
+        [Test]
+        public void EightSpotsAndChargingFrame_StaysInsideTheWiderLot()
+        {
+            var frame = _geo.FrameFor(_geo.ColumnsFor(8), true, true);
+            Assert.LessOrEqual(frame.width, _geo.Bounds.width);
+            Assert.Less(frame.width, 26f, "8 spots + 2 charging fit about 26 units wide");
+        }
+
+        private static bool Contains(Rect outer, Rect inner) =>
+            inner.xMin >= outer.xMin && inner.xMax <= outer.xMax && inner.yMin >= outer.yMin && inner.yMax <= outer.yMax;
 
         [Test]
         public void SlotZero_IsTheFirstQueueCar_BelowTheCurb()

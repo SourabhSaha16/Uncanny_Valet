@@ -3,24 +3,43 @@ using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Pure record of which car sits in which spot.</summary>
+    /// <summary>
+    /// Pure record of which car sits in which spot, and which spots are open. A spot is open while it is
+    /// within the night's limit (regular spots), while charging is open (charging spots), or while a car
+    /// holds it - so a spot never closes under a parked car.
+    /// </summary>
     public sealed class SpotOccupancy
     {
         private readonly HashSet<int> _known = new HashSet<int>();
         private readonly Dictionary<int, CarId> _cars = new Dictionary<int, CarId>();
+        private readonly int _firstChargingId;
+        private bool _chargingOpen;
 
-        public SpotOccupancy(IEnumerable<int> spotIds)
+        /// <param name="spotIds">Every spot id that exists.</param>
+        /// <param name="firstChargingId">Ids from here up are charging spots; default: none are.</param>
+        public SpotOccupancy(IEnumerable<int> spotIds, int firstChargingId = int.MaxValue)
         {
+            _firstChargingId = firstChargingId;
             foreach (var id in spotIds) _known.Add(id);
         }
 
-        /// <summary>Highest spot id open for parking (spots above it are closed).</summary>
+        /// <summary>Highest regular spot id the night plan opens (spots above it are closed unless held by a car).</summary>
         public int OpenLimit { get; private set; } = int.MaxValue;
 
-        /// <summary>Opens spots 1..<paramref name="activeSpots"/> only. 0 (or less) opens them all.</summary>
+        /// <summary>Opens regular spots 1..<paramref name="activeSpots"/> only. 0 (or less) opens them all.</summary>
         public void SetActiveSpots(int activeSpots) => OpenLimit = OpenSpotRule.Limit(activeSpots);
 
-        public bool IsOpen(int spotId) => _known.Contains(spotId) && spotId <= OpenLimit;
+        /// <summary>Opens or closes the charging spots (a charging spot holding a car stays open).</summary>
+        public void SetChargingOpen(bool open) => _chargingOpen = open;
+
+        public bool IsCharging(int spotId) => spotId >= _firstChargingId;
+
+        public bool IsOpen(int spotId)
+        {
+            if (!_known.Contains(spotId)) return false;
+            if (_cars.ContainsKey(spotId)) return true;
+            return IsCharging(spotId) ? _chargingOpen : spotId <= OpenLimit;
+        }
 
         public bool IsFree(int spotId) => IsOpen(spotId) && !_cars.ContainsKey(spotId);
 
