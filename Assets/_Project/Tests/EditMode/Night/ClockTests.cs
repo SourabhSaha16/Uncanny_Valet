@@ -14,7 +14,7 @@ namespace UncannyValet.Tests.Night
         [TestCase(119.9f, "23:59")]
         [TestCase(120f, "00:00")]
         [TestCase(125f, "00:05")]
-        [TestCase(360f, "04:00")]
+        [TestCase(180f, "01:00")]
         [TestCase(-5f, "22:00")]
         public void Format(float minute, string expected)
             => Assert.AreEqual(expected, ClockFormat.Format(minute));
@@ -41,9 +41,36 @@ namespace UncannyValet.Tests.Night
             clock.Advance(1000f);
 
             Assert.AreEqual(1, started);
-            Assert.AreEqual(360, ticks);
+            Assert.AreEqual(180, ticks);
             Assert.AreEqual(1, ended);
             Assert.IsFalse(clock.IsRunning);
+            Object.DestroyImmediate(go);
+        }
+
+        [Test]
+        public void Clock_EndsOnceStopsTickingAndRestarts()
+        {
+            var bus = new EventBus();
+            var go = new GameObject("clock");
+            var clock = go.AddComponent<NightClock>();
+            clock.Initialize(bus, 10);
+            int ticks = 0, ended = 0, started = 0;
+            bus.Subscribe<NightStarted>(_ => started++);
+            bus.Subscribe<NightTick>(_ => ticks++);
+            bus.Subscribe<NightEnded>(_ => ended++);
+
+            clock.StartNight(1);
+            clock.Advance(50f);
+            clock.Advance(50f);
+            Assert.AreEqual(1, ended);
+            Assert.AreEqual(10, ticks);
+
+            clock.StartNight(2);
+            Assert.AreEqual(0f, clock.MinuteOfNight);
+            clock.Advance(50f);
+            Assert.AreEqual(2, started);
+            Assert.AreEqual(2, ended);
+            Assert.AreEqual(20, ticks);
             Object.DestroyImmediate(go);
         }
     }

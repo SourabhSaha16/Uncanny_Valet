@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _nights: 7
   _startingDebt: 1500
+  _nightLengthMinutes: 180

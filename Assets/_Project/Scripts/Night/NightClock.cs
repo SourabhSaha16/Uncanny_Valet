@@ -9,7 +9,8 @@ namespace UncannyValet.Night
     public sealed class NightClock : MonoBehaviour, IGameClock
     {
         [SerializeField, Min(0.01f)] private float _gameMinutesPerSecond = 1f;
-        [SerializeField, Min(1)] private int _nightLengthMinutes = 360; // 22:00 to 04:00
+        [SerializeField, Min(1), Tooltip("Game minutes per night. Bootstrap overrides it from RunConfig.")]
+        private int _nightLengthMinutes = 180;
 
         private IEventBus _bus;
         private int _lastTick;
@@ -17,8 +18,14 @@ namespace UncannyValet.Night
         public int Night { get; private set; }
         public float MinuteOfNight { get; private set; }
         public bool IsRunning { get; private set; }
+        public int NightLengthMinutes => _nightLengthMinutes;
 
-        public void Initialize(IEventBus bus) => _bus = bus;
+        /// <summary>Sets the bus; a positive nightLengthMinutes (from RunConfig) overrides the serialized length.</summary>
+        public void Initialize(IEventBus bus, int nightLengthMinutes = 0)
+        {
+            _bus = bus;
+            if (nightLengthMinutes > 0) _nightLengthMinutes = nightLengthMinutes;
+        }
 
         public void StartNight(int night)
         {
