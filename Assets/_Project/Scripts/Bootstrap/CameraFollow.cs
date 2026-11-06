@@ -10,7 +10,10 @@ namespace UncannyValet.Bootstrap
     public sealed class CameraFollow : MonoBehaviour
     {
         [SerializeField] private Transform _target;
-        [SerializeField, Min(1f)] private float _orthographicSize = 8.5f;
+        /// <summary>Half the visible height in world units. 11 shows the curb and queue slots 0 and 1 together.</summary>
+        public const float DefaultOrthographicSize = 11f;
+
+        [SerializeField, Min(1f)] private float _orthographicSize = DefaultOrthographicSize;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
 
         public void SetTarget(Transform target)

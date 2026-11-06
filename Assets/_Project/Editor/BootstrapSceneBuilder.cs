@@ -98,7 +98,7 @@ namespace UncannyValet.EditorTools
             go.transform.position = new Vector3(-2f, 0f, -10f);
             var cam = go.AddComponent<Camera>();
             cam.orthographic = true;
-            cam.orthographicSize = 8.5f;
+            cam.orthographicSize = CameraFollow.DefaultOrthographicSize;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.07f, 0.07f, 0.09f);
             return go.AddComponent<CameraFollow>();
