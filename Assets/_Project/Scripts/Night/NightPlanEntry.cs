@@ -16,6 +16,10 @@ namespace UncannyValet.Night
         private int _activeSpots;
         [SerializeField, Range(0f, 1f)] private float _evChance;
         [SerializeField, Range(0f, 1f)] private float _dirtyChance;
+        [SerializeField, Range(0f, 1f), Tooltip("EV chance reached at the end of the night.")]
+        private float _lateEvChance;
+        [SerializeField, Range(0f, 1f), Tooltip("Fraction of the night after which the EV chance ramps up.")]
+        private float _lateEvStart = 0.6f;
         [SerializeField] private bool _chargingOpen;
         [SerializeField] private bool _washOpen;
         [SerializeField, TextArea] private string _newTonight = "";
@@ -26,9 +30,10 @@ namespace UncannyValet.Night
             _evChance = plan.EvChance; _dirtyChance = plan.DirtyChance;
             _chargingOpen = plan.ChargingOpen; _washOpen = plan.WashOpen; _newTonight = plan.NewTonight;
             _activeSpots = plan.ActiveSpots;
+            _lateEvChance = plan.LateEvChance; _lateEvStart = plan.LateEvStart;
         }
 
         public NightPlan ToPlan() => new NightPlan(_night, _maxWaitingCars, _arrivalGapScale, _evChance,
-            _dirtyChance, _chargingOpen, _washOpen, _newTonight, _activeSpots);
+            _dirtyChance, _chargingOpen, _washOpen, _newTonight, _activeSpots, _lateEvChance, _lateEvStart);
     }
 }
