@@ -26,6 +26,13 @@ namespace UncannyValet.Lot
         [SerializeField] private float _margin = 1.5f;
         [SerializeField] private float _wallThickness = 0.6f;
 
+        [Header("Start points")]
+        [SerializeField] private float _arrivalInset = 1.5f;
+        [SerializeField] private float _valetStartOffset = 1.5f;
+
+        public float ArrivalInset => _arrivalInset;
+        public float ValetStartOffset => _valetStartOffset;
+
         public int Rows => Mathf.Max(1, _rows);
         public int SpotsPerRow => Mathf.Max(1, _spotsPerRow);
         public Vector2 SpotSize => _spotSize;

@@ -51,8 +51,8 @@ namespace UncannyValet.Lot
             BuildWalls(bounds);
             _occupancy = new SpotOccupancy(_spotIds);
             InitSpots();
-            ArrivalPoint = new Vector2(c.CurbPosition.x, bounds.yMin + 1.5f);
-            ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + 1.5f, 0f);
+            ArrivalPoint = new Vector2(c.CurbPosition.x, bounds.yMin + c.ArrivalInset);
+            ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 
         private void BuildSpots(float spotsLeft, float top)

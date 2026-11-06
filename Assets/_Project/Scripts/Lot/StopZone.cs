@@ -50,6 +50,11 @@ namespace UncannyValet.Lot
             _scratch.AddRange(_inside.Keys);
             foreach (var car in _scratch)
             {
+                if (car is Object unityObject && unityObject == null)
+                {
+                    _inside.Remove(car); // destroyed while inside; no exit callback will arrive
+                    continue;
+                }
                 var stopped = !car.HasDriver && car.Speed < _config.StoppedSpeed
                               && _box.OverlapPoint(car.Transform.position);
                 if (_inside[car].Tick(Time.deltaTime, stopped)) OnSettled(car);
