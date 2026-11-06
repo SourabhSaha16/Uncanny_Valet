@@ -99,3 +99,9 @@ Date: 2026-11-05
 Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
 Why: P2 integration code (GameBootstrap, DebugOverlay, CameraFollow, scene and config builders) merged after folder-ownership review; the agent could not launch Unity, so the lead generates the assets (design.md section 10).
 Tests: Not run yet at merge time; compile and EditMode run follow.
+
+## lead: generate Bootstrap scene and config assets
+Date: 2026-11-05
+Files: Assets/_Project/Scenes/Bootstrap.unity, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Patrons/PatronConfig.asset, ProjectSettings/EditorBuildSettings.asset, Assets/_Project/Editor/BootstrapSceneBuilder.cs, .meta files, docs/changelogs/lead.md
+Why: The integration agent could not launch Unity, so the lead ran ProjectSetup.RunBatch. The scene builder failed because Assets/_Project/Scenes did not exist; the lead added Directory.CreateDirectory before SaveScene and set the real scene GUID in Build Settings (design.md section 10).
+Tests: Full EditMode run after the generated assets: 52 of 52 passed, no compile errors. Play not yet verified.

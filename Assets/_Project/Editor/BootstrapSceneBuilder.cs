@@ -47,6 +47,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_camera").objectReferenceValue = camera;
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();

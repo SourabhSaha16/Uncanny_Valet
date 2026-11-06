@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa685c721e37850429761b3c04784a1e, type: 3}
+  m_Name: LotConfig
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotConfig
+  _rows: 2
+  _spotsPerRow: 6
+  _spotSize: {x: 2.6, y: 4.4}
+  _spotGap: 0.2
+  _aisleWidth: 5
+  _curbPosition: {x: -12, y: 0}
+  _curbSize: {x: 3, y: 6}
+  _curbToSpotsGap: 3
+  _settleSeconds: 0.5
+  _stoppedSpeed: 0.2
+  _margin: 1.5
+  _wallThickness: 0.6
