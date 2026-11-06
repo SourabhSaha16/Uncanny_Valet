@@ -117,3 +117,9 @@ Date: 2026-11-05
 Files: merged branch agent/valet (see docs/changelogs/valet.md)
 Why: QA review finding for valet fixed by its owner and merged (design.md section 10).
 Tests: Full EditMode suite run after all three fix merges (see next entry).
+
+## lead: merge lot fix
+Date: 2026-11-05
+Files: merged branch agent/lot (see docs/changelogs/lot.md)
+Why: QA review finding for lot fixed by its owner and merged (design.md section 10).
+Tests: Full EditMode suite run after all three fix merges (see next entry).
