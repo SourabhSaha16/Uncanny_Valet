@@ -29,6 +29,9 @@ namespace UncannyValet.Audio
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<NightEnded>(OnNightEnded);
             _bus.Subscribe<NextNightRequested>(OnNextNightRequested);
+            _bus.Subscribe<CarFullyCharged>(OnCarFullyCharged);
+            _bus.Subscribe<CarCleaned>(OnCarCleaned);
+            _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
         }
 
         public void Unsubscribe()
@@ -44,6 +47,9 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<NightEnded>(OnNightEnded);
             _bus.Unsubscribe<NextNightRequested>(OnNextNightRequested);
+            _bus.Unsubscribe<CarFullyCharged>(OnCarFullyCharged);
+            _bus.Unsubscribe<CarCleaned>(OnCarCleaned);
+            _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -55,5 +61,8 @@ namespace UncannyValet.Audio
         private void OnTimerExpired(TicketTimerExpired e) => _play(SfxId.CarVanished);
         private void OnNightEnded(NightEnded e) => _play(SfxId.NightEnded);
         private void OnNextNightRequested(NextNightRequested e) => _play(SfxId.ButtonClick);
+        private void OnCarFullyCharged(CarFullyCharged e) => _play(SfxId.Charged);
+        private void OnCarCleaned(CarCleaned e) => _play(SfxId.Washed);
+        private void OnCarEnteredStation(CarEnteredStation e) => _play(SfxId.StationStart);
     }
 }

@@ -36,13 +36,19 @@ namespace UncannyValet.Tests.Audio
             bus.Publish(new TipEarned(new TicketId(1), 5));
             bus.Publish(new NightEnded(1));
             bus.Publish(new NextNightRequested(1));
-            CollectionAssert.AreEqual(
-                new[] { SfxId.CarEnter, SfxId.TipEarned, SfxId.NightEnded, SfxId.ButtonClick }, played);
+            bus.Publish(new CarFullyCharged(new CarId(1)));
+            bus.Publish(new CarCleaned(new CarId(1)));
+            bus.Publish(new CarEnteredStation(new CarId(1), StationKind.Wash));
+            CollectionAssert.AreEqual(new[]
+            {
+                SfxId.CarEnter, SfxId.TipEarned, SfxId.NightEnded, SfxId.ButtonClick,
+                SfxId.Charged, SfxId.Washed, SfxId.StationStart
+            }, played);
 
             router.Unsubscribe();
             bus.Publish(new CarExited(new CarId(1)));
-            bus.Publish(new NextNightRequested(2));
-            Assert.AreEqual(4, played.Count);
+            bus.Publish(new CarCleaned(new CarId(1)));
+            Assert.AreEqual(7, played.Count);
         }
     }
 }

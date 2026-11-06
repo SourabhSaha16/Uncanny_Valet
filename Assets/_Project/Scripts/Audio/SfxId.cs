@@ -11,6 +11,9 @@ namespace UncannyValet.Audio
         CarVanished,
         CarArrives,
         NightEnded,
-        ButtonClick
+        ButtonClick,
+        Charged,
+        Washed,
+        StationStart
     }
 }
