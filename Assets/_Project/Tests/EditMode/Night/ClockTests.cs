@@ -28,7 +28,7 @@ namespace UncannyValet.Tests.Night
             var bus = new EventBus();
             var go = new GameObject("clock");
             var clock = go.AddComponent<NightClock>();
-            clock.Initialize(bus);
+            clock.Initialize(bus, 0, 1f);
             int started = 0, ticks = 0, ended = 0;
             bus.Subscribe<NightStarted>(_ => started++);
             bus.Subscribe<NightTick>(_ => ticks++);
@@ -48,12 +48,83 @@ namespace UncannyValet.Tests.Night
         }
 
         [Test]
+        public void Clock_AdvancesConfiguredMinutesPerSecondAndCatchesUp()
+        {
+            var bus = new EventBus();
+            var go = new GameObject("clock");
+            var clock = go.AddComponent<NightClock>();
+            clock.Initialize(bus, 180, 1.5f);
+            var ticks = new System.Collections.Generic.List<float>();
+            bus.Subscribe<NightTick>(e => ticks.Add(e.MinuteOfNight));
+
+            clock.StartNight(1);
+            clock.Advance(4f);
+
+            Assert.AreEqual(6f, clock.MinuteOfNight, 0.001f);
+            CollectionAssert.AreEqual(new[] { 1f, 2f, 3f, 4f, 5f, 6f }, ticks);
+            Object.DestroyImmediate(go);
+        }
+
+        [Test]
+        public void StartNight_PublishesPlanBeforeStarted()
+        {
+            var bus = new EventBus();
+            var go = new GameObject("clock");
+            var clock = go.AddComponent<NightClock>();
+            clock.Initialize(bus);
+            var order = new System.Collections.Generic.List<string>();
+            var planNight = 0;
+            bus.Subscribe<NightPlanChanged>(e => { order.Add("plan"); planNight = e.Plan.Night; });
+            bus.Subscribe<NightStarted>(_ => order.Add("started"));
+
+            clock.StartNight(3);
+
+            CollectionAssert.AreEqual(new[] { "plan", "started" }, order);
+            Assert.AreEqual(3, planNight);
+            Object.DestroyImmediate(go);
+        }
+
+        [Test]
+        public void PlanDefaults_MatchDesignTable()
+        {
+            var n1 = NightPlanDefaults.For(1);
+            Assert.AreEqual(1, n1.MaxWaitingCars);
+            Assert.AreEqual(1f, n1.ArrivalGapScale);
+            var n3 = NightPlanDefaults.For(3);
+            Assert.IsTrue(n3.ChargingOpen);
+            Assert.IsFalse(n3.WashOpen);
+            Assert.AreEqual(0.4f, n3.EvChance);
+            var n4 = NightPlanDefaults.For(4);
+            Assert.IsTrue(n4.WashOpen);
+            Assert.IsFalse(n4.ChargingOpen);
+            Assert.AreEqual(0f, n4.EvChance);
+            Assert.AreEqual(0.4f, n4.DirtyChance);
+            Assert.AreEqual(NightPlanDefaults.For(7).NewTonight, NightPlanDefaults.For(5).NewTonight);
+        }
+
+        [Test]
+        public void PlanDefaults_ClampToLastEntry()
+        {
+            Assert.AreEqual(7, NightPlanDefaults.For(12).Night);
+            Assert.AreEqual(1, NightPlanDefaults.For(0).Night);
+        }
+
+        [Test]
+        public void PlanConfig_EmptyListFallsBackToDefaults()
+        {
+            var config = ScriptableObject.CreateInstance<NightPlanConfig>();
+            Assert.AreEqual(7, config.For(9).Night);
+            Assert.AreEqual(2, config.For(2).Night);
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
         public void Clock_EndsOnceStopsTickingAndRestarts()
         {
             var bus = new EventBus();
             var go = new GameObject("clock");
             var clock = go.AddComponent<NightClock>();
-            clock.Initialize(bus, 10);
+            clock.Initialize(bus, 10, 1f);
             int ticks = 0, ended = 0, started = 0;
             bus.Subscribe<NightStarted>(_ => started++);
             bus.Subscribe<NightTick>(_ => ticks++);

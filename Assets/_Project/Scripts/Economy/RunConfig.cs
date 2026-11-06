@@ -12,6 +12,10 @@ namespace UncannyValet.Economy
         [SerializeField, Min(1), Tooltip("Game minutes in one night. 180 = 22:00 to 01:00.")]
         private int _nightLengthMinutes = 180;
 
+        [SerializeField, Min(0.01f), Tooltip("Game minutes that pass per real second.")]
+        private float _gameMinutesPerSecond = 1.5f;
+
+        public float GameMinutesPerSecond => _gameMinutesPerSecond;
         public int NightLengthMinutes => _nightLengthMinutes;
         public int Nights => _nights;
         public int StartingDebt => _startingDebt;

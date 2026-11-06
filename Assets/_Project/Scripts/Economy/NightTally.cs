@@ -21,6 +21,11 @@ namespace UncannyValet.Economy
         public int Tips { get; private set; }
         public int CarsParked => _parked.Count;
         public int CarsNotParked { get; private set; }
+        public int BaseTips { get; private set; }
+        public int SpeedAdjust { get; private set; }
+        public int ChargeBonus { get; private set; }
+        public int CleanBonus { get; private set; }
+        public int ZeroedTips { get; private set; }
 
         public NightTally(int totalNights) => _totalNights = Math.Max(1, totalNights);
 
@@ -33,7 +38,19 @@ namespace UncannyValet.Economy
             _debtAtStart = Math.Max(0, debtAtStart);
             Tips = 0;
             CarsNotParked = 0;
+            BaseTips = SpeedAdjust = ChargeBonus = CleanBonus = ZeroedTips = 0;
             IsActive = true;
+        }
+
+        /// <summary>Adds one ticket's tip parts to the breakdown totals.</summary>
+        public void RecordTipExplained(in TipBreakdown breakdown)
+        {
+            if (!IsActive) return;
+            BaseTips += breakdown.BaseTip;
+            SpeedAdjust += breakdown.SpeedAdjust;
+            ChargeBonus += breakdown.ChargeBonus;
+            CleanBonus += breakdown.CleanBonus;
+            if (breakdown.ZeroReason != TipZeroReason.None) ZeroedTips++;
         }
 
         public void RecordTicketOpened(TicketId ticket, CarId car)
@@ -54,15 +71,17 @@ namespace UncannyValet.Economy
             if (!_parked.Contains(car)) CarsNotParked++;
         }
 
-        /// <summary>Counts still-open never-parked tickets as not parked, stops counting and returns the summary.</summary>
-        public NightSummary End()
+        /// <summary>Counts still-open never-parked tickets as not parked, stops counting and returns the summary
+        /// carrying the given note about tomorrow.</summary>
+        public NightSummary End(string nextNightNote = "")
         {
             foreach (var pair in _open)
                 if (!_parked.Contains(pair.Value)) CarsNotParked++;
             _open.Clear();
             IsActive = false;
             return new NightSummary(_night, _totalNights, Tips, CarsParked, CarsNotParked,
-                Math.Max(0, _debtAtStart - Tips));
+                Math.Max(0, _debtAtStart - Tips), BaseTips, SpeedAdjust, ChargeBonus, CleanBonus, ZeroedTips,
+                nextNightNote);
         }
     }
 }

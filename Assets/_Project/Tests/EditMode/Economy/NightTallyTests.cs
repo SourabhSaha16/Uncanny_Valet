@@ -118,6 +118,55 @@ namespace UncannyValet.Tests.Economy
             Assert.AreEqual(0, _summary.CarsNotParked);
         }
 
+        private void Explain(int n, TipBreakdown b)
+        {
+            _bus.Publish(new TipExplained(T(n), C(n), b));
+            Close(n, b.Total);
+        }
+
+        [Test]
+        public void SumsBreakdownAndMatchesTips()
+        {
+            _bus.Publish(new NightStarted(1));
+            Open(1); Open(2); Open(3);
+            Explain(1, new TipBreakdown(10, 2, 15, 0, 27, TipZeroReason.None));
+            Explain(2, new TipBreakdown(10, -3, 0, 15, 22, TipZeroReason.None));
+            Explain(3, new TipBreakdown(0, 0, 0, 0, 0, TipZeroReason.NotCleaned));
+            _bus.Publish(new NightEnded(1));
+
+            Assert.AreEqual(20, _summary.BaseTips);
+            Assert.AreEqual(-1, _summary.SpeedAdjust);
+            Assert.AreEqual(15, _summary.ChargeBonus);
+            Assert.AreEqual(15, _summary.CleanBonus);
+            Assert.AreEqual(1, _summary.ZeroedTips);
+            Assert.AreEqual(_summary.BaseTips + _summary.SpeedAdjust + _summary.ChargeBonus + _summary.CleanBonus,
+                _summary.Tips);
+        }
+
+        [Test]
+        public void BreakdownAfterSummaryIsIgnoredAndResetsNextNight()
+        {
+            _bus.Publish(new NightStarted(1));
+            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new TipExplained(T(1), C(1), new TipBreakdown(5, 0, 0, 0, 5, TipZeroReason.None)));
+            _bus.Publish(new NightStarted(2));
+            _bus.Publish(new NightEnded(2));
+            Assert.AreEqual(0, _summary.BaseTips);
+        }
+
+        [Test]
+        public void NextNightNoteComesFromNextPlan_EmptyOnFinalNight()
+        {
+            _recorder.Dispose();
+            _recorder = new NightTallyRecorder(_bus, _debt, 7, n => "note" + n);
+            _bus.Publish(new NightStarted(2));
+            _bus.Publish(new NightEnded(2));
+            Assert.AreEqual("note3", _summary.NextNightNote);
+            _bus.Publish(new NightStarted(7));
+            _bus.Publish(new NightEnded(7));
+            Assert.AreEqual("", _summary.NextNightNote);
+        }
+
         [Test]
         public void DisposedRecorderPublishesNothing()
         {
