@@ -3,42 +3,77 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Pure placement maths: every rectangle of the lot (spots, curb, waiting cars, stations) and the
-    /// bounds that contain them, computed from a <see cref="LotConfig"/>. Local lot coordinates.
+    /// Pure placement maths: every rectangle of the lot (spots, charging spots, curb, waiting cars, wash slot)
+    /// and the frame that contains what is open, computed from a <see cref="LotConfig"/>. Local lot coordinates.
     /// </summary>
     public sealed class LotGeometry
     {
+        private readonly Rect _lotWithoutSpots;
+        private readonly float _spotsLeft;
+        private readonly float _columnPitch;
+        private readonly float _spotWidth;
+        private readonly float _margin;
+        private readonly float _padding;
+        private readonly int _rows;
+        private readonly int _columns;
+        private readonly Rect[] _washOnly;
+
+        /// <summary>Regular spots; index + 1 is the spot id, listed column by column from the curb.</summary>
         public Rect[] Spots { get; }
+        /// <summary>Charging spots; their ids continue after the regular spots.</summary>
+        public Rect[] ChargingSpots { get; }
+        public Rect Wash { get; }
         public Rect Curb { get; }
         public Vector2[] QueueSlots { get; }
         public Rect[] QueueCars { get; }
-        /// <summary>Charging bays first, then the wash slot (last).</summary>
-        public Rect[] Stations { get; }
+        /// <summary>The frame with every spot, charging spot and the wash open: the largest the lot gets.</summary>
         public Rect Bounds { get; }
+        /// <summary>Id of the first charging spot.</summary>
+        public int FirstChargingId => Spots.Length + 1;
 
         public LotGeometry(LotConfig c)
         {
             Curb = Box(c.CurbPosition, c.CurbSize);
-            var spotsLeft = Curb.xMax + c.CurbToSpotsGap;
+            _spotsLeft = Curb.xMax + c.CurbToSpotsGap;
+            _rows = c.Rows;
+            _columns = c.SpotsPerRow;
+            _spotWidth = c.SpotSize.x;
+            _columnPitch = c.SpotSize.x + c.SpotGap;
+            _margin = c.Margin;
+            _padding = c.QueuePadding;
             var spotsHeight = c.Rows * c.SpotSize.y + (c.Rows - 1) * c.AisleWidth;
-            Spots = BuildSpots(c, spotsLeft, spotsHeight * 0.5f);
-
-            var rowWidth = c.SpotsPerRow * (c.SpotSize.x + c.SpotGap) - c.SpotGap;
+            Spots = BuildSpots(c, _spotsLeft, spotsHeight * 0.5f);
             var half = spotsHeight * 0.5f + c.Margin;
-            var lot = Rect.MinMaxRect(Curb.xMin - c.Margin, -half, spotsLeft + rowWidth + c.Margin, half);
+            _lotWithoutSpots = Rect.MinMaxRect(Curb.xMin - c.Margin, -half, 0f, half);
 
             QueueSlots = QueueSlotsFor(c);
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
-            var stationCentres = ArrivalQueue.Slots(c.StationsFirstCenter, c.ChargingBays + 1, Vector2.right,
+            var centres = ArrivalQueue.Slots(c.StationsFirstCenter, c.ChargingBays + 1, Vector2.right,
                 ArrivalQueue.Pitch(c.StationSize.x, c.StationGap));
-            Stations = Boxes(stationCentres, c.StationSize, 0f);
+            var boxes = Boxes(centres, c.StationSize, 0f);
+            ChargingSpots = new Rect[c.ChargingBays];
+            System.Array.Copy(boxes, ChargingSpots, ChargingSpots.Length);
+            Wash = boxes[boxes.Length - 1];
+            _washOnly = new[] { Wash };
+            Bounds = FrameFor(_columns, true, true);
+        }
 
-            Bounds = Grow(Grow(lot, QueueCars, c.QueuePadding), Stations, c.QueuePadding);
+        /// <summary>Number of spot columns needed to show spot ids 1..<paramref name="highestOpenId"/> (at least 1).</summary>
+        public int ColumnsFor(int highestOpenId) => Mathf.Clamp((highestOpenId + _rows - 1) / _rows, 1, _columns);
+
+        /// <summary>The frame (walls inside edge) around the curb, the queue, the given spot columns and the optional extras.</summary>
+        public Rect FrameFor(int columns, bool charging, bool wash)
+        {
+            var cols = Mathf.Clamp(columns, 1, _columns);
+            var right = _spotsLeft + cols * _columnPitch - (_columnPitch - _spotWidth) + _margin;
+            var frame = Rect.MinMaxRect(_lotWithoutSpots.xMin, _lotWithoutSpots.yMin, right, _lotWithoutSpots.yMax);
+            frame = Grow(frame, QueueCars, _padding);
+            if (charging) frame = Grow(frame, ChargingSpots, _padding);
+            return wash ? Grow(frame, _washOnly, _padding) : frame;
         }
 
         public static Rect Box(Vector2 center, Vector2 size) => new Rect(center - size * 0.5f, size);
 
-        /// <summary>Spots are listed column by column from the curb, so index + 1 is the spot id.</summary>
         private static Rect[] BuildSpots(LotConfig c, float left, float top)
         {
             var spots = new Rect[c.Rows * c.SpotsPerRow];

@@ -27,5 +27,14 @@ namespace UncannyValet.Lot
             sr.sortingOrder = order;
             return go;
         }
+
+        /// <summary>A line of the given thickness from <paramref name="a"/> to <paramref name="b"/> (local to the parent).</summary>
+        public GameObject Segment(Transform parent, string name, Vector2 a, Vector2 b, float thickness, Color color, int order)
+        {
+            var d = b - a;
+            var go = Make(parent, name, (a + b) * 0.5f, new Vector2(d.magnitude, thickness), color, order);
+            go.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg);
+            return go;
+        }
     }
 }

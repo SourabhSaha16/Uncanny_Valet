@@ -46,13 +46,13 @@ namespace UncannyValet.Lot
         [SerializeField] private float _queueRotationDegrees;
 
         [Header("Stations")]
-        [Min(0), Tooltip("Charging bays. They sit in a row left to right, followed by the single wash slot.")]
+        [Min(0), Tooltip("Charging spots (ids continue after the regular spots). They sit in a row left to right, followed by the single wash slot.")]
         [SerializeField] private int _chargingBays = 2;
         [Tooltip("Footprint of each station (width, length).")]
         [SerializeField] private Vector2 _stationSize = new Vector2(2.6f, 4.4f);
         [Min(0f), Tooltip("Gap between neighbouring stations.")]
         [SerializeField] private float _stationGap = 0.4f;
-        [Tooltip("Centre of the first charging bay. Default: above the curb, clear of the curb zone and the spots.")]
+        [Tooltip("Centre of the first charging spot. Default: above the curb, clear of the curb zone and the spots.")]
         [SerializeField] private Vector2 _stationsFirstCenter = new Vector2(-17.5f, 6f);
         [Min(0.1f), Tooltip("Largest size of the CHARGE / WASH text; it shrinks to fit the station width.")]
         [SerializeField] private float _stationLabelSize = 0.45f;
