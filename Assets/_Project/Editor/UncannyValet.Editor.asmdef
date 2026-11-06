@@ -1,7 +1,17 @@
 {
     "name": "UncannyValet.Editor",
     "rootNamespace": "UncannyValet.EditorTools",
-    "references": ["UncannyValet.Core"],
+    "references": [
+        "UncannyValet.Core",
+        "UncannyValet.Cars",
+        "UncannyValet.Valet",
+        "UncannyValet.Lot",
+        "UncannyValet.Patrons",
+        "UncannyValet.Economy",
+        "UncannyValet.Night",
+        "UncannyValet.UI",
+        "UncannyValet.Bootstrap"
+    ],
     "includePlatforms": ["Editor"],
     "autoReferenced": false
 }

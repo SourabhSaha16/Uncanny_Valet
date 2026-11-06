@@ -93,3 +93,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Valet/SeatController.cs, docs/changelogs/valet.md
 Why: Valet fix so CarExited is published once, by CarDriver.SetDriver(false), not twice (design.md section 9, events).
 Tests: Full EditMode suite re-run after this merge (see next entry).
+
+## lead: merge agent/integration
+Date: 2026-11-05
+Files: merged branch worktree-agent-a99b776c9a31c40de (see docs/changelogs/integration.md)
+Why: P2 integration code (GameBootstrap, DebugOverlay, CameraFollow, scene and config builders) merged after folder-ownership review; the agent could not launch Unity, so the lead generates the assets (design.md section 10).
+Tests: Not run yet at merge time; compile and EditMode run follow.
