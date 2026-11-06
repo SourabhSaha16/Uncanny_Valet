@@ -15,7 +15,8 @@ MonoBehaviour:
   _nights:
   - _night: 1
     _maxWaitingCars: 1
-    _arrivalGapScale: 1
+    _arrivalGapScale: 3.7
+    _activeSpots: 4
     _evChance: 0
     _dirtyChance: 0
     _chargingOpen: 0
@@ -23,7 +24,8 @@ MonoBehaviour:
     _newTonight: 'Simple: one car at a time.'
   - _night: 2
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.7
+    _arrivalGapScale: 3.2
+    _activeSpots: 4
     _evChance: 0
     _dirtyChance: 0
     _chargingOpen: 0
@@ -31,7 +33,8 @@ MonoBehaviour:
     _newTonight: 'Things get messy: several cars waiting, parallel pickups and drop-offs.'
   - _night: 3
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.7
+    _arrivalGapScale: 2.5
+    _activeSpots: 5
     _evChance: 0.4
     _dirtyChance: 0
     _chargingOpen: 1
@@ -40,7 +43,8 @@ MonoBehaviour:
       fully charged. Use the charging station.'
   - _night: 4
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.7
+    _arrivalGapScale: 2.4
+    _activeSpots: 5
     _evChance: 0
     _dirtyChance: 0.4
     _chargingOpen: 0
@@ -49,7 +53,8 @@ MonoBehaviour:
       Extra tip for clean cars; unwashed cars pay $0. No EVs tonight.'
   - _night: 5
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.6
+    _arrivalGapScale: 2.3
+    _activeSpots: 5
     _evChance: 0.3
     _dirtyChance: 0.3
     _chargingOpen: 1
@@ -57,7 +62,8 @@ MonoBehaviour:
     _newTonight: 'Everything at once: parallel cars, EVs and dirty cars.'
   - _night: 6
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.6
+    _arrivalGapScale: 2.2
+    _activeSpots: 5
     _evChance: 0.3
     _dirtyChance: 0.3
     _chargingOpen: 1
@@ -65,7 +71,8 @@ MonoBehaviour:
     _newTonight: 'Everything at once: parallel cars, EVs and dirty cars.'
   - _night: 7
     _maxWaitingCars: 3
-    _arrivalGapScale: 0.6
+    _arrivalGapScale: 2.0
+    _activeSpots: 5
     _evChance: 0.3
     _dirtyChance: 0.3
     _chargingOpen: 1

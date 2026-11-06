@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: RunConfig
   m_EditorClassIdentifier:
   _nights: 7
-  _startingDebt: 1500
+  _startingDebt: 250
   _nightLengthMinutes: 180
   _gameMinutesPerSecond: 1.5

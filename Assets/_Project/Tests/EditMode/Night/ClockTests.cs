@@ -89,7 +89,7 @@ namespace UncannyValet.Tests.Night
         {
             var n1 = NightPlanDefaults.For(1);
             Assert.AreEqual(1, n1.MaxWaitingCars);
-            Assert.AreEqual(1f, n1.ArrivalGapScale);
+            Assert.AreEqual(3.7f, n1.ArrivalGapScale);
             var n3 = NightPlanDefaults.For(3);
             Assert.IsTrue(n3.ChargingOpen);
             Assert.IsFalse(n3.WashOpen);
@@ -100,6 +100,24 @@ namespace UncannyValet.Tests.Night
             Assert.AreEqual(0f, n4.EvChance);
             Assert.AreEqual(0.4f, n4.DirtyChance);
             Assert.AreEqual(NightPlanDefaults.For(7).NewTonight, NightPlanDefaults.For(5).NewTonight);
+        }
+
+        [Test]
+        public void PlanDefaults_MatchScheduleA()
+        {
+            var waiting = new[] { 1, 3, 3, 3, 3, 3, 3 };
+            var gap = new[] { 3.7f, 3.2f, 2.5f, 2.4f, 2.3f, 2.2f, 2.0f };
+            var spots = new[] { 4, 4, 5, 5, 5, 5, 5 };
+            var previousSpots = 0;
+            for (var night = 1; night <= 7; night++)
+            {
+                var plan = NightPlanDefaults.For(night);
+                Assert.AreEqual(waiting[night - 1], plan.MaxWaitingCars, "waiting night " + night);
+                Assert.AreEqual(gap[night - 1], plan.ArrivalGapScale, 0.0001f, "gap night " + night);
+                Assert.AreEqual(spots[night - 1], plan.ActiveSpots, "spots night " + night);
+                Assert.GreaterOrEqual(plan.ActiveSpots, previousSpots, "spots never shrink");
+                previousSpots = plan.ActiveSpots;
+            }
         }
 
         [Test]
