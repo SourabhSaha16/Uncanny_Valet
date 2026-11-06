@@ -21,3 +21,9 @@ Date: 2026-11-05
 Files: .github/workflows/ci-cd.yml, tools/build-web.ps1, .gitattributes, docs/changelogs/lead.md
 Why: Unity CI needs a license tied to a password login, which the project owner does not have. The Web player is now built locally and the committed site/ folder is published to GitHub Pages (design.md section 1, Platform).
 Tests: Not run; workflow and script not yet exercised. Needs the WebGL Build Support module before the first build.
+
+## lead: add first Web build in site/
+Date: 2026-11-05
+Files: site/*, ProjectSettings/URPProjectSettings.asset, ProjectSettings/PackageManagerSettings.asset, docs/changelogs/lead.md
+Why: First Web (WebGL) build of the empty SampleScene, built locally with tools/build-web.ps1 and published from site/ to GitHub Pages (design.md section 1, Platform). Editor-written settings files from opening the project are included.
+Tests: Web player served locally and loaded in a browser with no console errors; EditMode tests passed earlier (3 of 3).

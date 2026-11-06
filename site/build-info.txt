@@ -1,0 +1,4 @@
+Uncanny Valet web build
+Commit:  ad601a3
+Subject: lead: switch to local Web build published from site/
+Date:    2026-11-05 20:17:59 -0800
