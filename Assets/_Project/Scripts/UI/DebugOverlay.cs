@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
@@ -9,21 +8,24 @@ using UnityEngine;
 namespace UncannyValet.UI
 {
     /// <summary>
-    /// IMGUI debug overlay: clock, debt, tips, open tickets, interact prompt, pickup highlight.
-    /// Ticket states come from events, so the overlay needs only Core. The prompt and clock format
-    /// are supplied by the bootstrap as delegates.
+    /// IMGUI debug overlay: clock, debt, tips, open tickets (with spot), interact prompt, pickup highlight.
+    /// Core-only: ticket data comes from events via TicketBoard; prompt and clock format are delegates.
     /// </summary>
     public sealed class DebugOverlay : MonoBehaviour
     {
-        private readonly Dictionary<int, string> _states = new Dictionary<int, string>();
-        private readonly Dictionary<int, int> _carOfTicket = new Dictionary<int, int>();
+        [SerializeField, Min(8)] private int _fontSize = 20;
+        [SerializeField, Range(0f, 1f)] private float _backgroundAlpha = 0.6f;
+        [SerializeField] private Vector2 _panelSize = new Vector2(520f, 300f);
+
         private readonly StringBuilder _text = new StringBuilder();
         private Func<string> _prompt = () => string.Empty;
         private Func<float, string> _formatClock = m => ((int)m).ToString();
-        private IEventBus _bus;
+        private TicketBoard _board;
         private IGameClock _clock;
         private IDebtView _debt;
-        private int _pickups;
+        private GUIStyle _label;
+        private GUIStyle _box;
+        private Texture2D _dark;
 
         public void Configure(Func<string> prompt, Func<float, string> formatClock)
         {
@@ -33,77 +35,53 @@ namespace UncannyValet.UI
 
         private void OnEnable()
         {
-            _bus = Services.Get<IEventBus>();
             _clock = Services.Get<IGameClock>();
             _debt = Services.Get<IDebtView>();
-            _bus.Subscribe<TicketOpened>(OnOpened);
-            _bus.Subscribe<CarParked>(OnParked);
-            _bus.Subscribe<PickupRequested>(OnPickup);
-            _bus.Subscribe<TicketClosed>(OnClosed);
+            _board = new TicketBoard(Services.Get<IEventBus>());
         }
 
-        private void OnDisable()
-        {
-            _bus.Unsubscribe<TicketOpened>(OnOpened);
-            _bus.Unsubscribe<CarParked>(OnParked);
-            _bus.Unsubscribe<PickupRequested>(OnPickup);
-            _bus.Unsubscribe<TicketClosed>(OnClosed);
-        }
-
-        private void OnOpened(TicketOpened e)
-        {
-            _states[e.Ticket.Value] = "AwaitingPark";
-            _carOfTicket[e.Ticket.Value] = e.Car.Value;
-        }
-
-        private void OnParked(CarParked e)
-        {
-            foreach (var pair in _carOfTicket)
-            {
-                if (pair.Value != e.Car.Value || _states[pair.Key] != "AwaitingPark") continue;
-                _states[pair.Key] = "Parked";
-                return;
-            }
-        }
-
-        private void OnPickup(PickupRequested e)
-        {
-            _states[e.Ticket.Value] = "PICKUP REQUESTED";
-            _pickups++;
-        }
-
-        private void OnClosed(TicketClosed e)
-        {
-            if (_states.Remove(e.Ticket.Value) && _pickups > 0) _pickups--;
-            _carOfTicket.Remove(e.Ticket.Value);
-        }
+        private void OnDisable() => _board?.Dispose();
 
         private void OnGUI()
         {
             if (_clock == null) return;
+            EnsureStyles();
             _text.Clear();
             _text.AppendLine($"Night {_clock.Night}  {_formatClock(_clock.MinuteOfNight)}");
             _text.AppendLine($"Debt left: ${_debt.DebtRemaining}   Tips tonight: ${_debt.TipsTonight}");
-            _text.AppendLine($"Open tickets: {_states.Count}");
-            foreach (var pair in _states)
-                _text.AppendLine($"  #{pair.Key} Car#{_carOfTicket[pair.Key]}: {pair.Value}");
-            GUI.Label(new Rect(10, 10, 420, 400), _text.ToString());
+            _text.AppendLine($"Open tickets: {_board.Count}");
+            _board.AppendLines(_text);
+            var rect = new Rect(10, 10, _panelSize.x, _panelSize.y);
+            GUI.Box(rect, GUIContent.none, _box);
+            GUI.Label(new Rect(20, 16, _panelSize.x - 20, _panelSize.y - 12), _text.ToString(), _label);
             DrawPrompt();
-            if (_pickups > 0) DrawPickupBanner();
+            if (_board.PickupCount > 0) DrawPickupBanner();
+        }
+
+        private void EnsureStyles()
+        {
+            if (_label != null) return;
+            _dark = new Texture2D(1, 1);
+            _dark.SetPixel(0, 0, new Color(0f, 0f, 0f, _backgroundAlpha));
+            _dark.Apply();
+            _box = new GUIStyle(GUI.skin.box) { normal = { background = _dark } };
+            _label = new GUIStyle(GUI.skin.label) { fontSize = _fontSize, normal = { textColor = Color.white } };
         }
 
         private void DrawPrompt()
         {
             var prompt = _prompt();
             if (string.IsNullOrEmpty(prompt)) return;
-            GUI.Box(new Rect(Screen.width * 0.5f - 90, Screen.height - 60, 180, 30), "[E] " + prompt);
+            var style = new GUIStyle(_box) { fontSize = _fontSize, normal = { background = _dark, textColor = Color.white } };
+            GUI.Box(new Rect(Screen.width * 0.5f - 130, Screen.height - 70, 260, 40), "[E] " + prompt, style);
         }
 
         private void DrawPickupBanner()
         {
             var old = GUI.color;
             GUI.color = Mathf.PingPong(Time.unscaledTime * 3f, 1f) > 0.5f ? Color.yellow : Color.white;
-            GUI.Box(new Rect(Screen.width * 0.5f - 150, 10, 300, 30), "PICKUP REQUESTED: bring the car to the curb");
+            var style = new GUIStyle(_box) { fontSize = _fontSize, normal = { background = _dark, textColor = Color.white } };
+            GUI.Box(new Rect(Screen.width * 0.5f - 250, 10, 500, 40), "PICKUP REQUESTED: bring the car to the curb", style);
             GUI.color = old;
         }
     }
