@@ -255,3 +255,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Core/Events/NightPlan.cs
 Why: balance simulation (docs/balance.md) recommends 4 open spots on nights 1-2 and 5 from night 3; the plan carries the count (0 = all).
 Tests: none yet; economy-night and lot add them with their changes.
+
+## lead: apply Schedule A pacing, closed spots, $250 debt
+Date: 2026-11-06
+Files: docs/design.md, docs/decisions.md, .meta files for new Lot scripts and tests
+Why: user asked to apply the simulation's recommendation (docs/balance.md); merged agent branches economy-night and lot.
+Tests: EditMode 248 of 248 passed in batch mode.

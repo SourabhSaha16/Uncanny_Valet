@@ -210,6 +210,10 @@ calculation (base, speed, charge bonus, clean bonus, zeroed tips).
   **clean bonus**. Handed back dirty = $0 tip (design.md section 5: required, a miss can zero the tip). The
   slot frees as soon as the washed car drives out; the next dirty car can then go in.
 - The park timer pauses while a car is being driven or is stopped in a station, and resumes after.
+- **Pacing and lot size (balance simulation, docs/balance.md Schedule A):** per night, waiting cap /
+  arrival gap scale / open spots: N1 1/3.7/4, N2 3/3.2/4, N3 3/2.5/5, N4 3/2.4/5, N5 3/2.3/5, N6 3/2.2/5,
+  N7 3/2.0/5. Spots beyond the night's `ActiveSpots` are closed (dimmed, no number); numbering runs column
+  by column from the curb. Starting debt is $250 (a competent player earns about $225 over 7 nights).
 - Sabotage jobs stay off.
 - **Mirrors:** every car has two small side mirrors at the front as a visual cue for which end is the front.
 
