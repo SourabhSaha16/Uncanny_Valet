@@ -32,12 +32,18 @@ namespace UncannyValet.Lot
         [Header("Arrival queue")]
         [Min(1), Tooltip("Number of waiting slots; slot 0 is the arrival point.")]
         [SerializeField] private int _queueSlotCount = 3;
-        [Min(0f), Tooltip("Distance between slot centres. Must exceed a car length (about 4.5).")]
-        [SerializeField] private float _queueSlotSpacing = 5.5f;
-        [Min(0f), Tooltip("Gap between the curb's near edge and the centre of slot 0.")]
-        [SerializeField] private float _queueStartGap = 3.5f;
-        [Min(0f), Tooltip("Space kept below the last slot centre before the lot wall.")]
-        [SerializeField] private float _queueEndPadding = 3f;
+        [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
+        [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
+        [Min(0f), Tooltip("Gap between the sides of neighbouring waiting cars.")]
+        [SerializeField] private float _queueSlotGap = 0.6f;
+        [Tooltip("Direction the row grows from slot 0. Keep it along the cars' width and away from the spots.")]
+        [SerializeField] private Vector2 _queueDirection = Vector2.left;
+        [Min(0f), Tooltip("Gap between the curb's lower edge and the nose of the car in slot 0.")]
+        [SerializeField] private float _queueStartGap = 0.8f;
+        [Min(0f), Tooltip("Space kept between the waiting cars and the lot walls.")]
+        [SerializeField] private float _queuePadding = 0.5f;
+        [Tooltip("Heading of waiting cars; 0 = facing +Y, towards the curb.")]
+        [SerializeField] private float _queueRotationDegrees;
 
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
@@ -49,9 +55,12 @@ namespace UncannyValet.Lot
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
-        public float QueueSlotSpacing => _queueSlotSpacing;
+        public Vector2 QueueCarSize => _queueCarSize;
+        public float QueueSlotGap => _queueSlotGap;
+        public Vector2 QueueDirection => _queueDirection;
         public float QueueStartGap => _queueStartGap;
-        public float QueueEndPadding => _queueEndPadding;
+        public float QueuePadding => _queuePadding;
+        public float QueueRotationDegrees => _queueRotationDegrees;
         public float ValetStartOffset => _valetStartOffset;
 
         public int Rows => Mathf.Max(1, _rows);
