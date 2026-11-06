@@ -37,17 +37,31 @@ namespace UncannyValet.Tests.Cars
         {
             var car = Make(new CarId(7));
             car.SetDriver(true);
-            Object.DestroyImmediate(car.gameObject);
+            car.ReleaseDriverOnDestroy();
             Assert.AreEqual(1, _exited);
             Assert.AreEqual(7, _lastId.Value);
+            Object.DestroyImmediate(car.gameObject);
+        }
+
+        [Test]
+        public void ReleaseTwice_PublishesOnce()
+        {
+            var car = Make(new CarId(9));
+            car.SetDriver(true);
+            _exited = 0;
+            car.ReleaseDriverOnDestroy();
+            car.ReleaseDriverOnDestroy();
+            Assert.AreEqual(1, _exited);
+            Object.DestroyImmediate(car.gameObject);
         }
 
         [Test]
         public void DestroyWithoutDriver_PublishesNothing()
         {
             var car = Make(new CarId(8));
-            Object.DestroyImmediate(car.gameObject);
+            car.ReleaseDriverOnDestroy();
             Assert.AreEqual(0, _exited);
+            Object.DestroyImmediate(car.gameObject);
         }
     }
 }

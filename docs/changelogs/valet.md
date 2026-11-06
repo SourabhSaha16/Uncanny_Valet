@@ -25,3 +25,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Valet/{ExitPlacement,SeatController}.cs, Assets/_Project/Scripts/Cars/CarDriver.cs (approved single-method cross-module edit), Assets/_Project/Tests/EditMode/Valet/ValetTests.cs, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs
 Why: Patrons despawns every car at night end, possibly with the valet inside; CarDriver.OnDestroy now publishes CarExited if driven, and SeatController reappears on foot beside the last position (design.md sections 9, 10).
 Tests: added ExitPlacement and CarDriver destroy tests; not run (Unity not run per instruction).
+
+## valet: make destroy-release testable
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/CarDriver.cs, Assets/_Project/Tests/EditMode/Cars/CarDriverDestroyTests.cs
+Why: OnDestroy does not run on DestroyImmediate in EditMode, so the body moved to public ReleaseDriverOnDestroy() which OnDestroy calls (design.md section 9).
+Tests: tests now call ReleaseDriverOnDestroy: driven publishes once, undriven none, twice still once; not run (Unity not run per instruction).

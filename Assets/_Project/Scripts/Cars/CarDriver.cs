@@ -50,7 +50,10 @@ namespace UncannyValet.Cars
         private void Awake() => EnsureBody();
 
         // Despawned while someone sits in it: tell the seated valet so it can get out (no double publish).
-        private void OnDestroy()
+        private void OnDestroy() => ReleaseDriverOnDestroy();
+
+        /// <summary>Publishes CarExited once if a driver is seated. Public so EditMode tests can call it.</summary>
+        public void ReleaseDriverOnDestroy()
         {
             if (!HasDriver) return;
             HasDriver = false;
