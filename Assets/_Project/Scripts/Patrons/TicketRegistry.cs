@@ -14,6 +14,7 @@ namespace UncannyValet.Patrons
         private readonly TicketBook _book;
         private readonly TicketSettler _settler;
         private readonly StationService _stations;
+        private readonly LiveTicketTuning _live;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         public int OpenCount => _book.Count;
@@ -23,6 +24,13 @@ namespace UncannyValet.Patrons
 
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips)
             : this(bus, clock, tips, ServiceTuning.Default) { }
+
+        /// <summary>Registry whose charge, wash and window numbers follow the live tuning.</summary>
+        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning)
+            : this(bus, clock, tips, tuning.Service)
+        {
+            _live = new LiveTicketTuning(bus, tuning, _book);
+        }
 
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning)
         {
@@ -43,6 +51,7 @@ namespace UncannyValet.Patrons
         public void Dispose()
         {
             _stations.Dispose();
+            _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<NightTick>(OnNightTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);

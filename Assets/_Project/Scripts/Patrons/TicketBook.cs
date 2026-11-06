@@ -9,10 +9,12 @@ namespace UncannyValet.Patrons
         private readonly LetterPool _letters = new LetterPool();
         private readonly Dictionary<int, Ticket> _byTicket = new Dictionary<int, Ticket>();
         private readonly Dictionary<int, Ticket> _byCar = new Dictionary<int, Ticket>();
-        private readonly ServiceTuning _tuning;
         private int _nextId = 1;
 
-        public TicketBook(ServiceTuning tuning) { _tuning = tuning; }
+        public TicketBook(ServiceTuning tuning) { Tuning = tuning; }
+
+        /// <summary>Service numbers given to tickets created from now on.</summary>
+        public ServiceTuning Tuning { get; set; }
 
         public int Count => _byTicket.Count;
 
@@ -30,7 +32,7 @@ namespace UncannyValet.Patrons
         /// <summary>Creates a ticket with the lowest free letter and stores it.</summary>
         public Ticket Add(CarId car, PatronRequest request)
         {
-            var ticket = new Ticket(new TicketId(_nextId++), car, request, _letters.Acquire(), _tuning);
+            var ticket = new Ticket(new TicketId(_nextId++), car, request, _letters.Acquire(), Tuning);
             _byTicket[ticket.TicketId.Value] = ticket;
             _byCar[car.Value] = ticket;
             return ticket;

@@ -39,8 +39,9 @@ namespace UncannyValet.Patrons
             _lot = Services.Get<ILotLayout>();
             _scanner = new ArrivalSlotScanner(_arrivalClearSize);
             _plan = new PatronPlan(_config.MaxWaitingCars);
-            _roller = new PatronRequestRoller(_config, _plan, Random);
-            Registry = new TicketRegistry(_bus, Services.Get<IGameClock>(), Services.Get<ITipCalculator>(), _config.Tuning);
+            var tuning = new PatronTuning(Services.Get<ITuning>(), _config);
+            _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
+            Registry = new TicketRegistry(_bus, Services.Get<IGameClock>(), Services.Get<ITipCalculator>(), tuning);
             _departure = new PatronDeparture(_bus, _cars);
             _bus.Subscribe<NightStarted>(OnNightStarted);
             _bus.Subscribe<NightTick>(OnNightTick);
@@ -90,7 +91,7 @@ namespace UncannyValet.Patrons
         private void OnNightTick(NightTick e)
         {
             if (e.MinuteOfNight < _nextArrivalMinute) return;
-            if (!TrySpawn(_roller.Roll(), out _)) return;
+            if (!TrySpawn(_roller.Roll(e.MinuteOfNight), out _)) return;
             _nextArrivalMinute = e.MinuteOfNight + _roller.NextGap();
         }
     }

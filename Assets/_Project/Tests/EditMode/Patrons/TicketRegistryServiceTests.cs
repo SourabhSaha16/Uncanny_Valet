@@ -130,13 +130,13 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ParkTimer_PausesWhileStoppedInAnyStation()
+        public void ParkTimer_PausesWhileInWashBay()
         {
             Arrive(false, false);
             Tick(10f);
-            _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
+            _bus.Publish(new CarEnteredStation(_car, StationKind.Wash));
             Tick(60f);
-            _bus.Publish(new CarLeftStation(_car, StationKind.Charging));
+            _bus.Publish(new CarLeftStation(_car, StationKind.Wash));
             Tick(80f);
             Assert.AreEqual(0, Count<TicketTimerExpired>());
             Tick(100f);

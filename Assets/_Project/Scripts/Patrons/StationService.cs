@@ -4,7 +4,7 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Tracks which station each car is stopped in, charges and washes it each minute, and pauses park timers.</summary>
+    /// <summary>Tracks which station each car is stopped in, charges EVs and washes cars each minute, and pauses park timers while washing.</summary>
     public sealed class StationService
     {
         private readonly IEventBus _bus;
@@ -41,8 +41,12 @@ namespace UncannyValet.Patrons
         private void SetBay(Core.Ids.CarId car, StationKind kind, bool inside)
         {
             if (!_book.TryGetByCar(car, out var t)) return;
-            if (kind == StationKind.Charging) t.InChargingBay = inside;
-            else t.InWashBay = inside;
+            if (kind == StationKind.Charging)
+            {
+                if (t.IsEv) t.InChargingBay = inside;
+                return;
+            }
+            t.InWashBay = inside;
             t.SyncParkTimer(_clock.MinuteOfNight);
         }
 

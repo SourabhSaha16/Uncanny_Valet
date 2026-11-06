@@ -8,7 +8,7 @@ namespace UncannyValet.Patrons
     /// </summary>
     public sealed class TicketTimer
     {
-        private readonly float _length;
+        private float _length;
         private float _elapsed;
         private float _lastMinute;
 
@@ -21,6 +21,9 @@ namespace UncannyValet.Patrons
 
         /// <summary>0 = just started, 1 = out of time.</summary>
         public float Elapsed01 => _length <= 0f ? 1f : Mathf.Clamp01(_elapsed / _length);
+
+        /// <summary>Changes the window while running; progress so far is kept, so a shorter window can expire at once.</summary>
+        public void SetLength(float lengthMinutes) { _length = lengthMinutes; }
 
         public void Start(float minute)
         {
