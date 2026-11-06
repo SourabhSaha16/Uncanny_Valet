@@ -30,6 +30,16 @@ namespace UncannyValet.Tests.Valet
         }
 
         [Test]
+        public void FrameGuard_BlocksOnlyTheBlockedFrame()
+        {
+            var g = new FrameGuard();
+            Assert.IsFalse(g.IsBlocked(0));
+            g.Block(5);
+            Assert.IsTrue(g.IsBlocked(5));
+            Assert.IsFalse(g.IsBlocked(6));
+        }
+
+        [Test]
         public void Picker_ChoosesNearest()
         {
             var p = new[] { new Vector2(3, 0), new Vector2(1, 0), new Vector2(2, 0) };

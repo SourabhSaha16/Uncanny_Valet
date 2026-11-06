@@ -13,3 +13,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Valet/SeatController.cs
 Why: CarDriver.SetDriver(false) already publishes CarExited, so the valet no longer does (design.md section 9).
 Tests: none run (Unity not run per instruction); main suite reported 52/52 before this change.
+
+## valet: guard same-frame re-entry after exit
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Valet/{FrameGuard,Interactor,SeatController}.cs, Assets/_Project/Tests/EditMode/Valet/ValetTests.cs
+Why: exiting re-enabled the Interactor while E was still pressed, so the valet re-entered the car the same frame (design.md section 10).
+Tests: added FrameGuard_BlocksOnlyTheBlockedFrame; not run (Unity not run per instruction).
