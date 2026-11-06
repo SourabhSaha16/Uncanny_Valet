@@ -13,3 +13,9 @@ Date: 2026-11-05
 Files: Assets/_Project/Scripts/Lot/StopZone.cs, LotConfig.cs, LotLayoutBuilder.cs
 Why: qa finding: a car despawned inside the curb zone made StopZone.Update throw every frame. Destroyed cars are now pruned; arrival inset and valet start offset moved into LotConfig (design.md section 9).
 Tests: none added (Unity-null check is not a pure helper); Unity not run per request.
+
+## lot: draw spot numbers
+Date: 2026-11-05
+Files: Assets/_Project/Scripts/Lot/SpotLabel.cs, LotConfig.cs, LotLayoutBuilder.cs
+Why: play-test: players could not tell which car is in which spot. World-space TextMesh labels (built-in LegacyRuntime font, WebGL safe) show each SpotId and a CURB label; size and colour are LotConfig fields.
+Tests: none (rendering only); Unity not run per request.

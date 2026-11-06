@@ -67,6 +67,7 @@ namespace UncannyValet.Lot
                 var pos = new Vector2(x, y);
                 _rects.Make(transform, "Spot Line " + id, pos, c.SpotSize, Line, -7);
                 _rects.Make(transform, "Spot Fill " + id, pos, c.SpotSize - Vector2.one * 0.16f, SpotFill, -6);
+                SpotLabel.Create(transform, id.ToString(), pos, c, -5);
                 var zone = new GameObject("Spot " + id);
                 zone.transform.SetParent(transform, false);
                 zone.transform.localPosition = pos;
@@ -86,6 +87,7 @@ namespace UncannyValet.Lot
             var c = _config;
             _rects.Make(transform, "Curb Edge", c.CurbPosition, c.CurbSize, CurbEdge, -7);
             _rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
+            SpotLabel.Create(transform, "CURB", c.CurbPosition, c, -5);
             var zone = new GameObject("CurbZone");
             zone.transform.SetParent(transform, false);
             zone.transform.localPosition = c.CurbPosition;
