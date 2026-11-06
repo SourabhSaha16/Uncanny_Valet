@@ -41,6 +41,9 @@ namespace UncannyValet.Patrons
             _letters.Release(t.Letter);
         }
 
+        /// <summary>Makes every letter free again (start of a night); call only when no ticket is open.</summary>
+        public void ResetLetters() { if (_byTicket.Count == 0) _letters.Reset(); }
+
         public bool TryGet(TicketId id, out Ticket ticket) => _byTicket.TryGetValue(id.Value, out ticket);
 
         public bool TryGetByCar(CarId car, out Ticket ticket) => _byCar.TryGetValue(car.Value, out ticket);

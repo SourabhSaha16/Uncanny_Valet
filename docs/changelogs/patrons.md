@@ -2,6 +2,12 @@
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
 
+## patrons: close tickets and stop spawning at night end
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{TicketRegistry,Ticket,TicketBook,LetterPool,PatronSpawner}.cs, Assets/_Project/Tests/EditMode/Patrons/TicketRegistryNightTests.cs
+Why: design.md section 10. On NightEnded every open ticket closes with wait 0 and tip 0 (no TipEarned), timers stop, letters free, and PatronDeparture removes the car; the spawner stops until NightStarted, which resets its arrival timer, leftover tickets and letters.
+Tests: 4 EditMode tests added (close all, timers stopped, double close safe, two-night clean state with letters from A); not run, Unity not run per instruction.
+
 ## patrons: add arrival gate against stacking cars
 Date: 2026-11-05
 Files: Assets/_Project/Scripts/Patrons/{ArrivalGate,PatronConfig,PatronSpawner,TicketRegistry}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalGateTests.cs
