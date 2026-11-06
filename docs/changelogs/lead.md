@@ -267,3 +267,9 @@ Date: 2026-11-06
 Files: site/
 Why: publish point for the simulation-based pacing round.
 Tests: EditMode 248 of 248; Web build succeeded.
+
+## lead: add ITuning, TuningKey catalog and late EV fields on NightPlan
+Date: 2026-11-06
+Files: Core/Contracts/ITuning.cs, TuningStore.cs, TuningCatalog.cs, TuningInfo.cs; Core/Events/TuningKey.cs, TuningEvents.cs, NightPlan.cs
+Why: user asked for every pacing number to be tunable live from a debug panel and for a late-night EV surge.
+Tests: none yet; module agents add theirs.

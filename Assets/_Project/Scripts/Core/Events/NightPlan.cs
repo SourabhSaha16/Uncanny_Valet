@@ -18,13 +18,19 @@ namespace UncannyValet.Core.Events
         public readonly string NewTonight;
         /// <summary>How many parking spots are open tonight, counted from the curb. 0 means all of them.</summary>
         public readonly int ActiveSpots;
+        /// <summary>EV chance reached at the end of the night; the chance ramps from EvChance once the night passes LateEvStart.</summary>
+        public readonly float LateEvChance;
+        /// <summary>Fraction 0..1 of the night after which the EV chance ramps toward LateEvChance.</summary>
+        public readonly float LateEvStart;
 
         public NightPlan(int night, int maxWaitingCars, float arrivalGapScale, float evChance, float dirtyChance,
-            bool chargingOpen, bool washOpen, string newTonight, int activeSpots = 0)
+            bool chargingOpen, bool washOpen, string newTonight, int activeSpots = 0,
+            float lateEvChance = -1f, float lateEvStart = 0.6f)
         {
             Night = night; MaxWaitingCars = maxWaitingCars; ArrivalGapScale = arrivalGapScale;
             EvChance = evChance; DirtyChance = dirtyChance; ChargingOpen = chargingOpen;
             WashOpen = washOpen; NewTonight = newTonight ?? ""; ActiveSpots = activeSpots;
+            LateEvChance = lateEvChance < 0f ? evChance : lateEvChance; LateEvStart = lateEvStart;
         }
     }
 }
