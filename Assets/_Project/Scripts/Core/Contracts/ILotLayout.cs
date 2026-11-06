@@ -11,6 +11,9 @@ namespace UncannyValet.Core.Contracts
 
         float ArrivalRotationDegrees { get; }
 
+        /// <summary>Ordered spots where waiting cars queue. Slot 0 is the ArrivalPoint.</summary>
+        IReadOnlyList<Vector2> ArrivalSlots { get; }
+
         /// <summary>Where the valet stands when the night starts.</summary>
         Vector2 ValetStartPoint { get; }
 

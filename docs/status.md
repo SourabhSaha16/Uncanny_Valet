@@ -25,3 +25,5 @@ The lead keeps this current. Agents read it when they are (re)spawned.
 - Not yet verified in play: trigger behaviour in the lot (CarParked / CarLeftSpot / CarAtCurb), car driving feel, enter/exit flow.
 
 - 2026-11-05 play-test round 1: handling and camera fine. Tasks: (patrons) ArrivalGate to stop car stacking; (lot) draw spot numbers on spots; (cars) show car number on each car; (integration) overlay shows which spot each parked car is in.
+
+- 2026-11-06 play-test round 2 (Core contracts added by lead: `ILotLayout.ArrivalSlots`, `TimerKind`, `TicketTimerChanged/Expired/Stopped`, `CarLetterAssigned`, `TipInput.PickupExpired`). Tasks: (lot) ArrivalSlots + vertical CURB text; (patrons) queue of 3, letters, park and pickup timers; (cars) heavy mass, letter label, timer fill; (economy-night) tip $0 when PickupExpired; (qa) review against the new Engineering standards. Main does not compile until lot implements ArrivalSlots.

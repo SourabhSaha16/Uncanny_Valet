@@ -12,6 +12,14 @@ namespace UncannyValet.Core.Events
         public CarSpawned(CarId car, TicketId ticket) { Car = car; Ticket = ticket; }
     }
 
+    /// <summary>The car was given its display letter (A, B, C) for as long as its ticket is open.</summary>
+    public readonly struct CarLetterAssigned : IGameEvent
+    {
+        public readonly CarId Car;
+        public readonly char Letter;
+        public CarLetterAssigned(CarId car, char letter) { Car = car; Letter = letter; }
+    }
+
     /// <summary>The valet got into the driver's seat.</summary>
     public readonly struct CarEntered : IGameEvent
     {

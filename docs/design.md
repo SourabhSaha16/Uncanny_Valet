@@ -159,6 +159,21 @@ Goal: **pick up and drop off, end to end, in a browser.** No UI beyond a debug o
 5. The ticket closes; the tip (base + speed bonus − wait penalty, never below $0) goes to the ledger.
 6. The car drives off (despawns). The overlay shows clock, debt left, tips tonight and open tickets.
 
+**Pressure rules (play-test round 2):**
+
+- **Letters and numbers:** each open ticket's car shows a letter (A, B, C: the lowest free one, kept until
+  the ticket closes). Parking spots show numbers. The overlay pairs them ("A in spot 3").
+- **Queue:** up to `MaxWaitingCars` (3) cars can wait for parking at once, in queue slots behind the
+  arrival point. A new car arrives only when a slot is free.
+- **Park timer:** starts when the car arrives (`ParkWindowMinutes`, default 45). It pauses while the valet
+  is driving that car and stops when the car is parked. If it runs out, the patron takes the car and
+  leaves: the car vanishes, tip $0, no strike, no penalty (pillar 1).
+- **Pickup timer:** starts when the pickup is requested (`PickupWindowMinutes`, default 60). If it runs
+  out, the car must still be delivered (it blocks its spot until then) but the tip is $0.
+- **Timer visual:** a dark fill rises over the car as its timer runs out (bottom to top); the pickup timer
+  fill is red-tinted.
+- Cars are heavy: the valet on foot cannot push them.
+
 **Out of scope for P1:** mafia jobs, stations, faults, damage, raids, chase, story cards, pixel art,
 audio, menus. Placeholder art is coloured rectangles generated in code.
 

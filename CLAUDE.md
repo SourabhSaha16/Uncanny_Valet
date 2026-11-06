@@ -43,6 +43,40 @@ An agent edits only its own folders and its own changelog. Anything else is a re
 - Data and behaviour are separate: tunable numbers go in ScriptableObjects or serialized fields,
   never hard-coded in logic.
 
+## Engineering standards (apply to every line of code)
+
+Design
+- Single responsibility: one class, one reason to change. Prefer composition over inheritance and small
+  interfaces over big ones. Mark classes `sealed` unless inheritance is designed for.
+- Dependencies are passed in: plain classes take them in the constructor; MonoBehaviours get them from
+  `Services` in `Start` (never `Awake`) or from `[SerializeField]` references. Only Bootstrap meets concrete types.
+- Open for extension: new rules are new classes behind an interface, not new `if` branches in old ones.
+- No magic numbers, no strings as identifiers. Tunables live in `*Config` / `*Definition` assets with
+  `[Min]`, `[Range]` and `[Tooltip]`. Treat ScriptableObjects as read-only at runtime.
+- State has one owner. Everyone else reads it or reacts to its event.
+
+Unity correctness
+- Subscribe to events in `OnEnable`, unsubscribe in `OnDisable`. Never leave a subscription behind.
+- Never allocate in `Update`/`FixedUpdate`: no LINQ, `new` collections, string concatenation, boxing or
+  closures. Reuse buffers (`NonAlloc` physics calls). Cache components in `Awake`; no `GetComponent`,
+  `Find*` or `Camera.main` per frame.
+- Physics: move Rigidbody2D bodies in `FixedUpdate` through the body (never `transform.position`);
+  read input in `Update`; use `Time.deltaTime` or `fixedDeltaTime`, never frame counts.
+- Rendering: never `renderer.material` (it leaks a copy); use shared materials or `MaterialPropertyBlock`;
+  cache generated sprites and textures once.
+- Use `[RequireComponent]` and `[DisallowMultipleComponent]` where a component needs a sibling. Validate
+  setup in `OnValidate` / `Awake` and fail loudly with `Debug.LogError` naming the object; never silently
+  skip a missing reference.
+- Destroying or despawning an object must release everything it holds: spots, timers, subscriptions, labels.
+
+Code quality
+- Pure rules are plain C# with EditMode tests written with the rule. Every bug fix adds a regression test.
+- Public API gets an XML summary. No dead code, no commented-out code, no TODO without an owner in status.md.
+- Handle expected failures with return values (`TryGet`), not exceptions. Never swallow exceptions.
+- Prefer enums, readonly structs and small types over loose bools, ints and tuples.
+- Before committing, an agent re-reads its diff against this list and the file-size limits.
+- qa reviews every branch against this section and rejects violations.
+
 ## Web build rules
 
 The target is Unity Web (WebGL) on GitHub Pages. No threads or `Task.Run`, no `System.IO` file access,

@@ -24,6 +24,40 @@ namespace UncannyValet.Core.Events
         public PickupRequested(TicketId ticket, CarId car) { Ticket = ticket; Car = car; }
     }
 
+    /// <summary>Progress of a ticket timer, published once per game minute while it runs.</summary>
+    public readonly struct TicketTimerChanged : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public readonly TimerKind Kind;
+        /// <summary>0 = just started, 1 = out of time.</summary>
+        public readonly float Elapsed01;
+        public TicketTimerChanged(TicketId ticket, CarId car, TimerKind kind, float elapsed01)
+        {
+            Ticket = ticket; Car = car; Kind = kind; Elapsed01 = elapsed01;
+        }
+    }
+
+    /// <summary>A ticket timer ran out. Park: the car is about to vanish. Pickup: the tip will be $0.</summary>
+    public readonly struct TicketTimerExpired : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public readonly TimerKind Kind;
+        public TicketTimerExpired(TicketId ticket, CarId car, TimerKind kind)
+        {
+            Ticket = ticket; Car = car; Kind = kind;
+        }
+    }
+
+    /// <summary>A ticket timer stopped without expiring (the car was parked, or the ticket closed).</summary>
+    public readonly struct TicketTimerStopped : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public TicketTimerStopped(TicketId ticket, CarId car) { Ticket = ticket; Car = car; }
+    }
+
     /// <summary>The car was handed back. WaitMinutes is time from pickup request to return.</summary>
     public readonly struct TicketClosed : IGameEvent
     {

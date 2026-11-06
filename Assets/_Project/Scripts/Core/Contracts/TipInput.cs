@@ -7,9 +7,13 @@ namespace UncannyValet.Core.Contracts
         public readonly float WaitMinutes;
         public readonly bool Impatient;
 
-        public TipInput(int baseTip, float waitMinutes, bool impatient)
+        /// <summary>True when the pickup timer ran out before the car came back. The tip is then $0.</summary>
+        public readonly bool PickupExpired;
+
+        public TipInput(int baseTip, float waitMinutes, bool impatient, bool pickupExpired = false)
         {
             BaseTip = baseTip; WaitMinutes = waitMinutes; Impatient = impatient;
+            PickupExpired = pickupExpired;
         }
     }
 }
