@@ -15,7 +15,8 @@ namespace UncannyValet.UI
     {
         [SerializeField, Min(8)] private int _fontSize = 20;
         [SerializeField, Range(0f, 1f)] private float _backgroundAlpha = 0.6f;
-        [SerializeField] private Vector2 _panelSize = new Vector2(520f, 300f);
+        [SerializeField, Min(0f)] private float _padding = 6f;
+        [SerializeField, Min(1)] private int _maxTicketLines = 8;
 
         private readonly StringBuilder _text = new StringBuilder();
         private Func<string> _prompt = () => string.Empty;
@@ -50,10 +51,12 @@ namespace UncannyValet.UI
             _text.AppendLine($"Night {_clock.Night}  {_formatClock(_clock.MinuteOfNight)}");
             _text.AppendLine($"Debt left: ${_debt.DebtRemaining}   Tips tonight: ${_debt.TipsTonight}");
             _text.AppendLine($"Open tickets: {_board.Count}");
-            _board.AppendLines(_text);
-            var rect = new Rect(10, 10, _panelSize.x, _panelSize.y);
+            _board.AppendLines(_text, _maxTicketLines);
+            var content = new GUIContent(_text.ToString().TrimEnd());
+            var size = _label.CalcSize(content);
+            var rect = new Rect(10, 10, size.x + _padding * 2f, size.y + _padding * 2f);
             GUI.Box(rect, GUIContent.none, _box);
-            GUI.Label(new Rect(20, 16, _panelSize.x - 20, _panelSize.y - 12), _text.ToString(), _label);
+            GUI.Label(new Rect(10 + _padding, 10 + _padding, size.x + 2f, size.y), content, _label);
             DrawPrompt();
             if (_board.PickupCount > 0) DrawPickupBanner();
         }
