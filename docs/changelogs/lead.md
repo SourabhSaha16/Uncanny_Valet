@@ -63,3 +63,9 @@ Date: 2026-11-05
 Files: merged branch worktree-agent-a9b213294782d4e64 (see docs/changelogs/patrons.md)
 Why: P1 module work for patrons merged into main after lead review of folder ownership (CLAUDE.md, Phases).
 Tests: Agent reported 7 of 7 (4 new); re-run on merged main.
+
+## lead: merge agent/economy-night
+Date: 2026-11-05
+Files: merged branch worktree-agent-a04e0f3931e473e2f (see docs/changelogs/economy-night.md)
+Why: P1 module work for economy-night merged into main after lead review of folder ownership (CLAUDE.md, Phases).
+Tests: Agent reported 27 of 27 (24 new); re-run on merged main.
