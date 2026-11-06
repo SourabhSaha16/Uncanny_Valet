@@ -501,7 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UncannyValet.Bootstrap::UncannyValet.Bootstrap.CameraFollow
   _target: {fileID: 0}
-  _orthographicSize: 11
+  _orthographicSize: 8.5
   _smoothing: 8
 --- !u!20 &1153390169
 Camera:
@@ -538,7 +538,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 8.5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
