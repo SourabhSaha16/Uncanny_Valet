@@ -4,6 +4,7 @@ using UncannyValet.Cars;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
+using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UnityEditor;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace UncannyValet.EditorTools
         public const string LotConfigPath = "Assets/_Project/Data/Lot/LotConfig.asset";
         public const string PatronConfigPath = "Assets/_Project/Data/Patrons/PatronConfig.asset";
         public const string AudioConfigPath = "Assets/_Project/Data/Audio/AudioConfig.asset";
+        public const string OrdersConfigPath = "Assets/_Project/Data/Orders/OrdersConfig.asset";
         public const string NightPlanConfigPath = "Assets/_Project/Data/Night/NightPlanConfig.asset";
 
         [MenuItem("Uncanny Valet/Setup/Create Config Assets")]
@@ -28,6 +30,7 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<PatronConfig>(PatronConfigPath);
             CreateIfMissing<AudioConfig>(AudioConfigPath);
             CreateIfMissing<NightPlanConfig>(NightPlanConfigPath);
+            CreateIfMissing<OrdersConfig>(OrdersConfigPath);
             AssetDatabase.SaveAssets();
         }
 

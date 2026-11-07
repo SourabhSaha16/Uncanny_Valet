@@ -1,6 +1,7 @@
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Economy;
+using UncannyValet.Orders;
 using UncannyValet.Patrons;
 
 namespace UncannyValet.Bootstrap
@@ -10,7 +11,7 @@ namespace UncannyValet.Bootstrap
     {
         /// <param name="spotCount">Spots in the lot; used when the plan says 0 ("all spots open").</param>
         public static void Seed(ITuning t, RunConfig run, PatronConfig patrons, TipConfig tips,
-            NightPlan firstNight, int spotCount)
+            OrdersConfig orders, NightPlan firstNight, int spotCount)
         {
             t.Seed(TuningKey.GameMinutesPerSecond, run.GameMinutesPerSecond);
             t.Seed(TuningKey.NightLengthMinutes, run.NightLengthMinutes);
@@ -30,6 +31,8 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ChargeBonus, tips.ChargeBonus);
             t.Seed(TuningKey.CleanBonus, tips.CleanBonus);
             t.Seed(TuningKey.SpeedWindowMinutes, tips.SpeedBonusWindowMinutes);
+
+            orders.SeedInto(t);
 
             t.Seed(TuningKey.PlanMaxWaitingCars, firstNight.MaxWaitingCars);
             t.Seed(TuningKey.PlanArrivalGapScale, firstNight.ArrivalGapScale);

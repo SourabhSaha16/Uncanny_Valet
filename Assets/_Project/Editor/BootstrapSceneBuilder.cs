@@ -4,6 +4,7 @@ using UncannyValet.Cars;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
+using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -33,7 +34,7 @@ namespace UncannyValet.EditorTools
             var summaryCard = Child<NightSummaryCard>(root, "NightSummaryCard");
             var audio = Child<AudioDirector>(root, "AudioDirector");
             var messagePanel = Child<MessagePanel>(root, "MessagePanel");
-            var runLostCard = Child<RunLostCard>(root, "RunLostCard");
+            var orders = Child<BossOrderDirector>(root, "BossOrderDirector");
             Set(messagePanel, "_tuningPanel", tuningPanel);
             var valet = BuildValet(root);
             var camera = BuildCamera();
@@ -42,6 +43,8 @@ namespace UncannyValet.EditorTools
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
+            var ordersConfig = RequireAsset<OrdersConfig>(ProjectSetup.OrdersConfigPath);
+            Set(orders, "_config", ordersConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
 
             var so = new SerializedObject(bootstrap);
@@ -60,7 +63,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_summaryCard").objectReferenceValue = summaryCard;
             so.FindProperty("_audio").objectReferenceValue = audio;
             so.FindProperty("_messagePanel").objectReferenceValue = messagePanel;
-            so.FindProperty("_runLostCard").objectReferenceValue = runLostCard;
+            so.FindProperty("_ordersConfig").objectReferenceValue = ordersConfig;
+            so.FindProperty("_orders").objectReferenceValue = orders;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

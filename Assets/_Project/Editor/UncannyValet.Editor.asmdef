@@ -9,6 +9,7 @@
         "UncannyValet.Patrons",
         "UncannyValet.Economy",
         "UncannyValet.Night",
+        "UncannyValet.Orders",
         "UncannyValet.Audio",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap"

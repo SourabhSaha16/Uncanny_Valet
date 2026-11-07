@@ -7,6 +7,7 @@ using UncannyValet.Core.Events;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
+using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -35,7 +36,8 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private NightSummaryCard _summaryCard;
         [SerializeField] private AudioDirector _audio;
         [SerializeField] private MessagePanel _messagePanel;
-        [SerializeField] private RunLostCard _runLostCard;
+        [SerializeField] private OrdersConfig _ordersConfig;
+        [SerializeField] private BossOrderDirector _orders;
 
         private const int DefaultSpotSeed = 12;
 
@@ -78,6 +80,7 @@ namespace UncannyValet.Bootstrap
             _tuningPanel.gameObject.SetActive(true);
             _summaryCard.gameObject.SetActive(true);
             ActivateBossUi();
+            ActivateOrders();
             _audio.gameObject.SetActive(true);
             _flow = new NightFlow(bus, new ClockNightStarter(_clock),
                 new ValetPlacer(_valet, _lot, _camera), _debt, _runConfig.Nights);
@@ -95,7 +98,7 @@ namespace UncannyValet.Bootstrap
         // spot count, which only matters when the first plan says 0 ("all spots open").
         private void SeedTuning(ITuning tuning, int spotCount)
         {
-            TuningSeeder.Seed(tuning, _runConfig, _patronConfig, _tipConfig, _planConfig.For(1),
+            TuningSeeder.Seed(tuning, _runConfig, _patronConfig, _tipConfig, _ordersConfig, _planConfig.For(1),
                 spotCount > 0 ? spotCount : DefaultSpotSeed);
         }
 
@@ -115,16 +118,27 @@ namespace UncannyValet.Bootstrap
             if (_camera != null) _camera.SetTarget(_valet.transform);
         }
 
-        // Boss UI only listens for Orders events, so it is safe to activate before that module is wired.
+        // Boss UI only listens for Orders events, so it is safe to activate before the director.
         private void ActivateBossUi()
         {
-            if (_messagePanel == null || _runLostCard == null)
+            if (_messagePanel == null)
             {
                 Debug.LogError("Boss UI missing: rebuild the scene with Uncanny Valet/Setup/Build Everything.", this);
                 return;
             }
             _messagePanel.gameObject.SetActive(true);
-            _runLostCard.gameObject.SetActive(true);
+        }
+
+        // The director builds itself in Start, which runs before the one-frame-late first night (see Start below),
+        // so it hears NightStarted for night 1 and resets its strikes.
+        private void ActivateOrders()
+        {
+            if (_orders == null)
+            {
+                Debug.LogError("BossOrderDirector missing: rebuild the scene with Uncanny Valet/Setup/Build Everything.", this);
+                return;
+            }
+            _orders.gameObject.SetActive(true);
         }
 
         private void StartOverlay()
