@@ -18,7 +18,11 @@ namespace UncannyValet.UI
         [SerializeField, Min(0f)] private float _padding = 6f;
         [SerializeField, Min(1)] private int _maxTicketLines = 8;
 
+        private const int MaxPickupLines = 3;
+
         private readonly StringBuilder _text = new StringBuilder();
+        private readonly StringBuilder _pickups = new StringBuilder();
+        private GUIStyle _banner;
         private Func<string> _prompt = () => string.Empty;
         private Func<float, string> _formatClock = m => ((int)m).ToString();
         private TicketBoard _board;
@@ -82,10 +86,13 @@ namespace UncannyValet.UI
 
         private void DrawPickupBanner()
         {
+            _pickups.Clear();
+            var lines = _board.AppendPickups(_pickups, MaxPickupLines);
             var old = GUI.color;
             GUI.color = Mathf.PingPong(Time.unscaledTime * 3f, 1f) > 0.5f ? Color.yellow : Color.white;
-            var style = new GUIStyle(_box) { fontSize = _fontSize, normal = { background = _dark, textColor = Color.white } };
-            GUI.Box(new Rect(Screen.width * 0.5f - 250, 10, 500, 40), "PICKUP REQUESTED: bring the car to the curb", style);
+            _banner ??= new GUIStyle(_box) { fontSize = _fontSize, normal = { background = _dark, textColor = Color.white } };
+            var height = lines * (_fontSize + 6f) + _padding * 2f;
+            GUI.Box(new Rect(Screen.width * 0.5f - 250, 10, 500, height), _pickups.ToString(), _banner);
             GUI.color = old;
         }
     }
