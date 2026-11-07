@@ -1,4 +1,22 @@
 === Last 50 commits ===
+10b4d10  2026-11-07  lead: wire run loss guard, new run after lost run
+a1f9a14  2026-11-07  lead: merge worktree-agent-a8045495535519c56
+2ced8a5  2026-11-07  lead: merge worktree-agent-a206028ac2276dcd2
+a487025  2026-11-07  lead: merge worktree-agent-a69166817be7fa9e1
+1292ace  2026-11-07  lead: merge worktree-agent-a9436e6604dcfb3ee
+57ce32b  2026-11-07  economy-night: final strike ends the night with RunLost
+18f6548  2026-11-07  integration: wire Orders module, run lost via summary card
+bf515cd  2026-11-07  orders: use ILotLayout.IsChargingSpot, drop IChargingSpotQuery
+e3fd0cb  2026-11-07  lot: implement ILotLayout.IsChargingSpot
+af64037  2026-11-07  lead: add IsChargingSpot and RunLost to Core contracts
+b60c5a2  2026-11-07  lead: merge worktree-agent-a4ee71813c0b93344
+4ffbfb9  2026-11-07  lead: merge worktree-agent-a20b965c9a6557245
+32d59d9  2026-11-07  lead: merge worktree-agent-a933081ef1be51da2
+b3f7170  2026-11-07  orders: add boss order module with visit history and strikes
+1ba7820  2026-11-07  integration: boss message panel and run-lost card
+313868f  2026-11-07  patrons: publish CarDelivered before TicketClosed on delivery
+be47574  2026-11-07  lead: add boss order contracts
+ddfcd48  2026-11-06  lead: rebuild site for round 6
 c0f7ac9  2026-11-06  lead: debt $500, round 6 docs
 730f6e0  2026-11-06  lead: merge worktree-agent-ab18f0de0cd1fddce
 3b5c541  2026-11-06  lead: merge worktree-agent-a2c5058bb112f5187
@@ -31,24 +49,6 @@ f0e56e1  2026-11-06  lead: merge balance simulation and fix clock line in design
 673f66d  2026-11-06  lead: merge balance simulation
 1d03d90  2026-11-06  qa: add lot-count balance simulation
 e1024bc  2026-11-06  lead: publish round-4 build with seven-night challenges
-8696aa4  2026-11-06  lead: merge station label fit
-18cd43d  2026-11-06  lot: fit station labels inside their bays
-25013eb  2026-11-06  lead: merge integration end card, overlay tags and wiring
-b7dcace  2026-11-06  integration: round-4 wiring, tip calculation card, trait tags, camera centre
-df91473  2026-11-06  lead: merge round-4 module work and pin the test harness clock
-87dbc53  2026-11-06  lead: merge worktree-agent-a7a5f896664c79e56
-a5217cb  2026-11-06  lead: merge worktree-agent-a3506ef6e3c7a49e3
-308cec8  2026-11-06  lead: merge worktree-agent-a5810ce02ec054298
-1355832  2026-11-06  lead: merge worktree-agent-a028528ae8495cfd3
-754048c  2026-11-06  lead: merge worktree-agent-ae4c8bc8613d8eb05
-4e414fa  2026-11-06  patrons: apply night plan, EV charging, washing and tip breakdown
-38116db  2026-11-06  lot: charging bays and wash slot stations
-50c9217  2026-11-06  cars: mirrors, EV look with charge bar, mud overlay
-aa00edf  2026-11-06  economy-night: night plans, tip breakdown, richer summary
-14868ee  2026-11-06  audio: add charge, wash and station sounds
-d026c06  2026-11-06  lead: add round-4 contracts for nights, stations and tip breakdown
-8c6f3e3  2026-11-06  lead: publish round-3 build with audio, night summary and side-by-side queue
-73fac77  2026-11-06  lead: merge integration summary card, night flow and audio wiring
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -131,6 +131,7 @@ Tests: 7 new or changed EditMode tests (CarAutoDriveMath x5, mud wipe x2); full 
 
 Entries are added by the economy-night agent, one per commit. Format in docs/changelogs/README.md.
 
+
 ## economy-night: add tips, debt ledger and night clock
 Date: 2026-11-05
 Files: Assets/_Project/Scripts/Economy/{TipConfig,RunConfig,TipCalculator,DebtLedger}.cs (+ metas), Assets/_Project/Scripts/Night/{ClockFormat,NightClock}.cs, Assets/_Project/Data/Economy/{TipConfig,RunConfig}.asset, Assets/_Project/Tests/EditMode/{Economy,Night}/*, removed the EconomyModule and NightModule markers
@@ -160,6 +161,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Night/{NightClock,NightPlanSource,NightPlanDefaults,NightPlanEntry}.cs, Assets/_Project/Scripts/Economy/TipCalculator.cs, Assets/_Project/Data/Night/NightPlanConfig.asset, Assets/_Project/Tests/EditMode/Night/{ClockTests,TuningTests}.cs
 Why: design.md sections 5 and 10 (user feedback round 5). Gap scale/waiting/open regular spots N1 2.0/1/4, N2 1.5/3/5, N3 1.3/3/6, N4 1.2/3/6, N5 1.1/3/7, N6 1.0/3/7, N7 0.9/3/8. Unlocks layer: N3 charging+EVs (0.35), N4 adds wash, EVs 0.3 stay, N5-N7 both. Nights 3-7 carry LateEvChance 0.75 from LateEvStart 0.6. NightClock reads GameMinutesPerSecond and NightLengthMinutes live from ITuning (Initialize tuning param, else Services in Start); NightPlanSource applies plan-key overrides to the running and later nights (a value equal to the seeded one clears the override) and the clock republishes NightPlanChanged mid-night. TipCalculator(config, tuning) reads BaseTip, ChargeBonus, CleanBonus, SpeedWindowMinutes live; without tuning it uses config/input as before.
 Tests: ClockTests updated to the new table; TuningTests added (unlocks monotonic, late EV, live speed, live length, plan override republish and reset, live tips); not run (Unity not launched).
+
+## economy-night: final strike ends the night with RunLost
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Night/{INightEnder,RunLossGuard,NightClock}.cs, Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder}.cs, Assets/_Project/Tests/EditMode/Night/RunLossTests.cs
+Why: design.md sections 2 and 6 (boss strikes). RunLossGuard (plain class, Bootstrap must `new RunLossGuard(bus, clock)`) asks the clock to end on a final StrikeGiven while the night runs; NightClock.EndAtNextTick ends on the next Advance so every StrikeGiven subscriber has run first and the end goes through the normal NightEnded path. NightTallyRecorder flags a final strike during an active tally and the summary is published with RunLost = true (tips so far kept, DebtLeft floored at 1 so PaidOff stays false, no next-night note).
+Tests: RunLossTests (ends once with RunLost, non-final ignored, ignored when not running, no double end, new run after loss, never paid off); not run (sandbox refused the Unity batch command).
 
 === docs/changelogs/integration.md ===
 # Integration changelog
@@ -213,6 +220,18 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/UI/ (PickupBannerFormatter, TicketBoard, DebugOverlay), Assets/_Project/Tests/EditMode/UI/PickupBannerTests.cs
 Why: design.md section 10 pickup feedback. The banner now reads "PICKUP: car B from spot 4", one line per pending pickup (max 3, then "+N more"), letter only when no spot is known, and its height follows the line count. TicketBoard.AppendPickups fills a reused StringBuilder with no LINQ; text rules live in PickupBannerFormatter.
 Tests: added PickupBannerTests (none, one, unknown spot, filtering, three, cap with +2 more, closed ticket).
+
+## integration: boss message panel and run-lost card
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/UI/ (MessagePanel, MessagePanelStyles, MessageFeed, MessageFeedSettings, MessageStatus, FeedMessage, MessageFormatter, RunLostCard, TuningPanel), Assets/_Project/Scripts/Bootstrap/GameBootstrap.cs, Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Tests/EditMode/UI/MessageFeedTests.cs
+Why: design.md section 6. Right-hand BOSS panel fed only by OrderIssued, OrderResolved, StrikeGiven, NightStarted (Core events): strike marks, up to 5 cards, OPEN/DONE/FAILED badges, flash on arrival, Cancelled fades, silent. It sits below the pickup banner, shrinks to the screen, caps at 30% width and hides while the F2 panel is open (TuningPanel.IsOpen). RunLostCard shows on the final strike and freezes the game with Time.timeScale 0; its New run button calls a handler set via Configure, which is NOT wired yet: NextNightRequested cannot be reused because NightFlow ignores it while a night runs and nothing ends the night on the final strike (lead decision). Scene must be rebuilt (Build Everything) to add the two new children; until then GameBootstrap logs an error and skips them. Orders is not wired.
+Tests: added MessageFeedTests (issue, flash, each outcome, cap, cancel, reset on night 1, strikes); not run, the sandbox blocked launching Unity. TuningSeeder tests may fail on the four unseeded TuningKey values (expected).
+
+## integration: wire Orders module, run lost via summary card
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, TuningSeeder, asmdef), Assets/_Project/Editor/ (BootstrapSceneBuilder, ProjectSetup, asmdef), Assets/_Project/Scripts/UI/SummaryCardFormatter.cs, Assets/_Project/Scripts/UI/RunLostCard.cs (deleted), Assets/_Project/Tests/EditMode/UI/SummaryCardFormatterTests.cs, Assets/_Project/Tests/EditMode/Integration/TuningSeederTests.cs
+Why: design.md section 6. BossOrderDirector is a scene child with OrdersConfig, activated in GameBootstrap.Awake (before the one-frame-late night 1, so it hears NightStarted). TuningSeeder calls OrdersConfig.SeedInto, so all TuningCatalog keys are seeded. RunLostCard and its timeScale freeze are removed: a lost run ends through NightSummaryCard (title 'The boss is finished with you', headline cites strikes and never 'paid off', button 'New run'). ProjectSetup creates OrdersConfig if missing. Scene must be regenerated with ProjectSetup.RunBatch.
+Tests: added 3 RunLost formatter tests and 2 TuningSeederTests. Not run: the parallel Orders/Lot changes (IChargingSpotQuery removal, IsChargingSpot) are not merged, so the Orders director and fixture do not compile against Core on this branch.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -515,6 +534,36 @@ Files: RunConfig.cs, RunConfig.asset, docs/design.md, docs/decisions.md, merges 
 Why: Round 6 requests. Pacing increase was cancelled by the human; economy-night work discarded; only the debt change kept.
 Tests: pending (Unity editor open, batch tests cannot run yet).
 
+## lead: rebuild site for round 6
+Date: 2026-11-06
+Files: site/, Assets/_Project/Scenes/Bootstrap.unity, two .meta files
+Why: Publish round 6 (cars drive in and out, dark mud wiped left to right, pickup banner names car and spot, debt $500).
+Tests: 297 of 297 EditMode passed; local browser smoke test loaded with no console errors.
+
+## lead: add boss order contracts (OrderId, OrderEvents, CarDelivered, tuning keys)
+Date: 2026-11-07
+Files: Core/Ids/OrderId.cs, Core/Events/OrderEvents.cs, OrderOutcome.cs, TicketEvents.cs (CarDelivered), TuningKey.cs, Core/Contracts/TuningCatalog.cs
+Why: Boss messages feature (design.md section 6). New Orders module issues orders, keeps car visit history, judges at delivery and gives strikes; Patrons publishes CarDelivered; UI shows the message panel.
+Tests: not yet run (contracts only; TuningSeeder must seed the four new keys before tests pass).
+
+## lead: add IsChargingSpot and RunLost to Core contracts
+Date: 2026-11-07
+Files: Core/Contracts/ILotLayout.cs, Core/Events/NightSummary.cs; merges of the orders, patrons and ui branches
+Why: Orders needs to tell charging spots from regular ones; a third strike must end the run through the normal summary card (NightSummary.RunLost makes IsFinalNight true, so Next starts a new run).
+Tests: pending (follow-up agents fix the implementers; full suite run after).
+
+## lead: merge round 7 follow-ups; wire RunLossGuard and NightFlow run loss
+Date: 2026-11-07
+Files: Bootstrap/GameBootstrap.cs, Bootstrap/NightFlow.cs; merges of lot, orders, integration and night branches
+Why: A final strike ends the night (RunLossGuard) and Next after a lost summary starts a new run (NightFlow reads NightSummary.RunLost).
+Tests: run next (full EditMode suite).
+
+## lead: fix CameraFollow crash when GameBootstrap.Awake runs first
+Date: 2026-11-07
+Files: Bootstrap/CameraFollow.cs, Tests/EditMode/Integration/CameraFollowTests.cs
+Why: After the scene was regenerated, GameBootstrap.Awake ran before CameraFollow.Awake, so SetWorldBounds hit a null camera and aborted Bootstrap (no night started). The camera is now cached on first use. Found by running the Bootstrap scene in batch play mode.
+Tests: new regression test; full suite and a browser smoke test follow.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -574,6 +623,29 @@ Files: Assets/_Project/Scripts/Lot/{LotExpander,LotFrame,LotFrameRule,SpotBuilde
 Why: user feedback round 5, design.md sections 4/9/10. Closed spots are no longer drawn: LotExpander switches per-spot objects on/off and LotFrame moves the ground and walls to the frame from the pure LotFrameRule / LotGeometry.FrameFor, on every NightPlanChanged and when a car leaves a spot (no per-frame work). A spot holding a car stays open until empty. The dim covers are gone. Charging bays are now two ParkingSpots (ids after the regular ones, blue pad and bolt marker, open only while ChargingOpen, not counted in ActiveSpots, any car); they publish CarParked/CarLeftSpot plus CarEnteredStation/CarLeftStation with StationKind.Charging. The wash slot stays a station. ILotLayout.SpotIds now lists the currently open spot ids (regular and charging).
 Tests: LotExpansionTests (5) and LotGeometryTests updated and extended (columns, frame growth, containment); Unity not run.
 
+## lot: implement ILotLayout.IsChargingSpot
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Lot/{LotLayoutBuilder,SpotOccupancy}.cs, Assets/_Project/Tests/EditMode/Lot/ChargingSpotTests.cs
+Why: Core's ILotLayout gained IsChargingSpot (design.md sections 4/10). LotLayoutBuilder delegates to SpotOccupancy.IsCharging, which now returns false for unknown ids.
+Tests: ChargingSpotTests (3: regular false, charging true, unknown false); Unity not run.
+
+=== docs/changelogs/orders.md ===
+# Orders changelog
+
+Entries are added by the orders agent, one per commit. Format in docs/changelogs/README.md.
+
+## orders: add boss order module with visit history and strikes
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Orders/*.cs and UncannyValet.Orders.asmdef (OrderBook, OrderSelector, OrderScheduler, OrderJudge, CarVisitHistory, ParkedCars, StrikeTracker, OrderTracker, OrderIssuer, OrderResolver, BossOrderDirector, OrdersConfig), Assets/_Project/Data/Orders/OrdersConfig.asset, Assets/_Project/Tests/EditMode/Orders/*.cs, Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef (added UncannyValet.Orders reference)
+Why: Boss messages (design.md section 6, pillar 2). From night 2 the boss orders a parked car into a free regular spot; the order is judged only when the car is delivered (visited the target spot after the order = pass, else fail and a strike); any other ticket end cancels it with no strike. Strikes are counted across the run by one StrikeTracker and reset when night 1 starts again.
+Tests: 34 NUnit tests under Tests/EditMode/Orders (rules, issue flow, resolve flow, strikes). Run outside Unity against UnityEngine stubs: 34 passed. Not run in the Unity editor.
+
+## orders: use ILotLayout.IsChargingSpot, drop IChargingSpotQuery
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Orders/OrderIssuer.cs, Assets/_Project/Scripts/Orders/BossOrderDirector.cs, Assets/_Project/Scripts/Orders/IChargingSpotQuery.cs (deleted, with .meta), Assets/_Project/Tests/EditMode/Orders/OrderFlowFixture.cs
+Why: Core's ILotLayout now answers IsChargingSpot (design.md section 6), so the Orders-local adapter interface and its Services registration are no longer needed. BossOrderDirector now needs only IEventBus, ITuning and ILotLayout. FakeLot implements the new member.
+Tests: No test logic changed; the fixture's fake lot was updated. Not run: the sandbox refused to launch Unity batch mode from the worktree.
+
 === docs/changelogs/patrons.md ===
 # Patrons changelog
 
@@ -626,6 +698,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{ArrivalReservations,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalReservationsTests.cs
 Why: cars now drive in and out on their own (design.md section 5). Arrivals call ICarFactory.SpawnArriving; departures call DriveAwayAndDespawn after CarDeparted. A car still driving in is invisible to the physics scan, so each ticket reserves its arrival slot until it leaves AwaitingPark, which stops two cars heading for the same slot.
 Tests: new ArrivalReservationsTests (slot stays blocked while arriving, freed on park, departure drives away not despawns). Park timer is unchanged and starts at spawn, so it also counts the drive-in time.
+
+## patrons: publish CarDelivered before TicketClosed on delivery
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Patrons/TicketSettler.cs, Assets/_Project/Tests/EditMode/Patrons/CarDeliveredTests.cs
+Why: Core now has CarDelivered (patron got the car back at the curb). TicketSettler.Pay, the single delivered close (normal and late pickup), publishes it right before TicketClosed; Void (vanished car, never parked, night end) does not.
+Tests: new CarDeliveredTests (normal and late pickup publish CarDelivered then TicketClosed; park-timer vanish and night end publish TicketClosed only). Unity run: see report.
 
 === docs/changelogs/qa.md ===
 # QA changelog

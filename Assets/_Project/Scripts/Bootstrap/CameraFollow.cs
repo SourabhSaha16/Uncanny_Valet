@@ -25,6 +25,18 @@ namespace UncannyValet.Bootstrap
         private Vector2 _focusOffset = Vector2.zero;
 
         private Camera _camera;
+
+        // GameBootstrap.Awake can run before this Awake (scene order), so the camera is cached on first use.
+        private Camera Cam
+        {
+            get
+            {
+                if (_camera != null) return _camera;
+                _camera = GetComponent<Camera>();
+                _camera.orthographic = true;
+                return _camera;
+            }
+        }
         private Rect _bounds;
         private bool _hasBounds;
         private float _aspect;
@@ -47,14 +59,12 @@ namespace UncannyValet.Bootstrap
 
         private void Awake()
         {
-            _camera = GetComponent<Camera>();
-            _camera.orthographic = true;
             ApplySize();
         }
 
         private void LateUpdate()
         {
-            if (!Mathf.Approximately(_aspect, _camera.aspect)) ApplySize();
+            if (!Mathf.Approximately(_aspect, Cam.aspect)) ApplySize();
             if (_target == null) return;
             var t = _smoothing <= 0f ? 1f : 1f - Mathf.Exp(-_smoothing * Time.deltaTime);
             transform.position = Vector3.Lerp(transform.position, Goal(), t);
@@ -64,7 +74,7 @@ namespace UncannyValet.Bootstrap
 
         private void ApplySize()
         {
-            _aspect = _camera.aspect;
+            _aspect = Cam.aspect;
             var size = _orthographicSize;
             if (_hasBounds)
             {
@@ -73,7 +83,7 @@ namespace UncannyValet.Bootstrap
                 var fit = Mathf.Max(halfH, halfW / Mathf.Max(0.1f, _aspect));
                 size = Mathf.Clamp(fit, _orthographicSize, Mathf.Max(_orthographicSize, _maxOrthographicSize));
             }
-            _camera.orthographicSize = size;
+            Cam.orthographicSize = size;
         }
 
         private Vector3 Goal()
@@ -82,7 +92,7 @@ namespace UncannyValet.Bootstrap
             if (!_hasBounds) p += _focusOffset;
             else
             {
-                var half = new Vector2(_camera.orthographicSize * _camera.aspect, _camera.orthographicSize);
+                var half = new Vector2(Cam.orthographicSize * Cam.aspect, Cam.orthographicSize);
                 p.x = Clamp(p.x, _bounds.xMin - _boundsMargin, _bounds.xMax + _boundsMargin, half.x);
                 p.y = Clamp(p.y, _bounds.yMin - _boundsMargin, _bounds.yMax + _boundsMargin, half.y);
             }

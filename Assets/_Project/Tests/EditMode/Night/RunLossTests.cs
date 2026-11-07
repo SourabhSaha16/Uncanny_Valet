@@ -52,8 +52,8 @@ namespace UncannyValet.Tests.Night
 
         private void Tip(int amount, int n = 1)
         {
-            var ticket = new Core.Ids.TicketId(n);
-            var car = new Core.Ids.CarId(n);
+            var ticket = new UncannyValet.Core.Ids.TicketId(n);
+            var car = new UncannyValet.Core.Ids.CarId(n);
             _bus.Publish(new TicketOpened(ticket, car, 10f));
             _bus.Publish(new CarParked(car, 1));
             _bus.Publish(new TicketClosed(ticket, car, 1f, amount));

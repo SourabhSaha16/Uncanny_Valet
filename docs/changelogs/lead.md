@@ -321,3 +321,15 @@ Date: 2026-11-07
 Files: Bootstrap/GameBootstrap.cs, Bootstrap/NightFlow.cs; merges of lot, orders, integration and night branches
 Why: A final strike ends the night (RunLossGuard) and Next after a lost summary starts a new run (NightFlow reads NightSummary.RunLost).
 Tests: run next (full EditMode suite).
+
+## lead: fix CameraFollow crash when GameBootstrap.Awake runs first
+Date: 2026-11-07
+Files: Bootstrap/CameraFollow.cs, Tests/EditMode/Integration/CameraFollowTests.cs
+Why: After the scene was regenerated, GameBootstrap.Awake ran before CameraFollow.Awake, so SetWorldBounds hit a null camera and aborted Bootstrap (no night started). The camera is now cached on first use. Found by running the Bootstrap scene in batch play mode.
+Tests: new regression test; full suite and a browser smoke test follow.
+
+## lead: rebuild site for round 7 (boss messages)
+Date: 2026-11-07
+Files: site/, Assets/_Project/Scenes/Bootstrap.unity, meta files
+Why: Publish boss messages: side panel, orders from night 2, strikes, run lost on the third strike, debt $500.
+Tests: 366 of 366 EditMode passed; Bootstrap scene ran in batch play mode; browser smoke test shows night 1, BOSS panel and car arriving with no new console errors.

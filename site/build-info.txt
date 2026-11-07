@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  c0f7ac9
-Subject: lead: debt $500, round 6 docs
-Date:    2026-11-06 21:39:24 -0800
+Commit:  10b4d10
+Subject: lead: wire run loss guard, new run after lost run
+Date:    2026-11-07 10:19:43 -0800
