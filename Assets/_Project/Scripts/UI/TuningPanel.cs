@@ -38,6 +38,9 @@ namespace UncannyValet.UI
         /// <summary>True while a number field has keyboard focus, so valet keys must be ignored.</summary>
         public bool IsTyping { get; private set; }
 
+        /// <summary>True while the panel is showing, so other right-hand panels can step aside.</summary>
+        public bool IsOpen => _open;
+
         private void Start()
         {
             _tuning = Services.Get<ITuning>();

@@ -32,6 +32,9 @@ namespace UncannyValet.EditorTools
             var tuningPanel = Child<TuningPanel>(root, "TuningPanel");
             var summaryCard = Child<NightSummaryCard>(root, "NightSummaryCard");
             var audio = Child<AudioDirector>(root, "AudioDirector");
+            var messagePanel = Child<MessagePanel>(root, "MessagePanel");
+            var runLostCard = Child<RunLostCard>(root, "RunLostCard");
+            Set(messagePanel, "_tuningPanel", tuningPanel);
             var valet = BuildValet(root);
             var camera = BuildCamera();
 
@@ -56,6 +59,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_camera").objectReferenceValue = camera;
             so.FindProperty("_summaryCard").objectReferenceValue = summaryCard;
             so.FindProperty("_audio").objectReferenceValue = audio;
+            so.FindProperty("_messagePanel").objectReferenceValue = messagePanel;
+            so.FindProperty("_runLostCard").objectReferenceValue = runLostCard;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

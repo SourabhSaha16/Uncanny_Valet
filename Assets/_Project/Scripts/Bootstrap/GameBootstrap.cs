@@ -34,6 +34,8 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private CameraFollow _camera;
         [SerializeField] private NightSummaryCard _summaryCard;
         [SerializeField] private AudioDirector _audio;
+        [SerializeField] private MessagePanel _messagePanel;
+        [SerializeField] private RunLostCard _runLostCard;
 
         private const int DefaultSpotSeed = 12;
 
@@ -75,6 +77,7 @@ namespace UncannyValet.Bootstrap
             StartOverlay();
             _tuningPanel.gameObject.SetActive(true);
             _summaryCard.gameObject.SetActive(true);
+            ActivateBossUi();
             _audio.gameObject.SetActive(true);
             _flow = new NightFlow(bus, new ClockNightStarter(_clock),
                 new ValetPlacer(_valet, _lot, _camera), _debt, _runConfig.Nights);
@@ -110,6 +113,18 @@ namespace UncannyValet.Bootstrap
             body.color = new Color(0.95f, 0.85f, 0.2f);
             _valet.SetActive(true);
             if (_camera != null) _camera.SetTarget(_valet.transform);
+        }
+
+        // Boss UI only listens for Orders events, so it is safe to activate before that module is wired.
+        private void ActivateBossUi()
+        {
+            if (_messagePanel == null || _runLostCard == null)
+            {
+                Debug.LogError("Boss UI missing: rebuild the scene with Uncanny Valet/Setup/Build Everything.", this);
+                return;
+            }
+            _messagePanel.gameObject.SetActive(true);
+            _runLostCard.gameObject.SetActive(true);
         }
 
         private void StartOverlay()
