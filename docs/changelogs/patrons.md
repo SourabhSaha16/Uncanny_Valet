@@ -49,3 +49,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{ArrivalReservations,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalReservationsTests.cs
 Why: cars now drive in and out on their own (design.md section 5). Arrivals call ICarFactory.SpawnArriving; departures call DriveAwayAndDespawn after CarDeparted. A car still driving in is invisible to the physics scan, so each ticket reserves its arrival slot until it leaves AwaitingPark, which stops two cars heading for the same slot.
 Tests: new ArrivalReservationsTests (slot stays blocked while arriving, freed on park, departure drives away not despawns). Park timer is unchanged and starts at spawn, so it also counts the drive-in time.
+
+## patrons: publish CarDelivered before TicketClosed on delivery
+Date: 2026-11-07
+Files: Assets/_Project/Scripts/Patrons/TicketSettler.cs, Assets/_Project/Tests/EditMode/Patrons/CarDeliveredTests.cs
+Why: Core now has CarDelivered (patron got the car back at the curb). TicketSettler.Pay, the single delivered close (normal and late pickup), publishes it right before TicketClosed; Void (vanished car, never parked, night end) does not.
+Tests: new CarDeliveredTests (normal and late pickup publish CarDelivered then TicketClosed; park-timer vanish and night end publish TicketClosed only). Unity run: see report.

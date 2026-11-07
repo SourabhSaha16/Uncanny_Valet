@@ -17,7 +17,7 @@ namespace UncannyValet.Patrons
             _bus = bus; _clock = clock; _tips = tips; _timers = timers; _book = book;
         }
 
-        /// <summary>The car was handed back: explain and pay the tip, then close.</summary>
+        /// <summary>The car was handed back: announce the delivery, explain and pay the tip, then close.</summary>
         public void Pay(Ticket t)
         {
             var wait = _clock.MinuteOfNight - t.PickupRequestMinute;
@@ -28,6 +28,7 @@ namespace UncannyValet.Patrons
             _timers.Stop(t, TimerKind.Pickup);
             _book.Remove(t);
             _bus.Publish(new TipExplained(t.TicketId, t.CarId, breakdown));
+            _bus.Publish(new CarDelivered(t.TicketId, t.CarId));
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, wait, breakdown.Total));
             _bus.Publish(new TipEarned(t.TicketId, breakdown.Total));
         }
