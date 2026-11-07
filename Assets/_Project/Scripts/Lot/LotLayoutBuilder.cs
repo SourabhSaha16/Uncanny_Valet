@@ -42,6 +42,8 @@ namespace UncannyValet.Lot
 
         public bool IsSpotFree(int spotId) => _occupancy != null && _occupancy.IsFree(spotId);
 
+        public bool IsChargingSpot(int spotId) => _occupancy != null && _occupancy.IsCharging(spotId);
+
         private void Awake() => Build();
 
         private void Build()
