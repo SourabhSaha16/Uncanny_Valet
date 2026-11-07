@@ -291,3 +291,9 @@ Date: 2026-11-06
 Files: Core/Contracts/ICarFactory.cs, Cars/CarFactory.cs (stub), Tests/EditMode/Integration/FakeCarFactory.cs
 Why: Round 6 asks for cars that drive in and out; the contract lets Patrons ask and Cars animate. Stubs keep main compiling until the cars agent implements them.
 Tests: not run (contract only, stubs delegate to Spawn and Despawn).
+
+## lead: merge round 6 (drive in/out, mud wipe, pickup banner), debt $500
+Date: 2026-11-06
+Files: RunConfig.cs, RunConfig.asset, docs/design.md, docs/decisions.md, merges of cars, patrons, integration branches
+Why: Round 6 requests. Pacing increase was cancelled by the human; economy-night work discarded; only the debt change kept.
+Tests: pending (Unity editor open, batch tests cannot run yet).

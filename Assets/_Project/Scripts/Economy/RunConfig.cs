@@ -7,7 +7,7 @@ namespace UncannyValet.Economy
     public sealed class RunConfig : ScriptableObject
     {
         [SerializeField, Min(1)] private int _nights = 7;
-        [SerializeField, Min(0)] private int _startingDebt = 250;
+        [SerializeField, Min(0)] private int _startingDebt = 500;
 
         [SerializeField, Min(1), Tooltip("Game minutes in one night. 180 = 22:00 to 01:00.")]
         private int _nightLengthMinutes = 180;

@@ -213,7 +213,7 @@ calculation (base, speed, charge bonus, clean bonus, zeroed tips).
 - **Pacing and lot size (round 5, tunable live):** per night, arrival gap scale / waiting cap / open regular
   spots: N1 2.0/1/4, N2 1.5/3/5, N3 1.3/3/6, N4 1.2/3/6, N5 1.1/3/7, N6 1.0/3/7, N7 0.9/3/8. These sit between
   the too-easy balance.md Schedule A and the too-hard original; the debug panel (F2) tunes them. Spots that are not open
-  do not exist: the lot and its walls grow when more open, numbered column by column from the curb. Starting debt is $250.
+  do not exist: the lot and its walls grow when more open, numbered column by column from the curb. Starting debt is $500 (round 6, pacing unchanged).
 - **Charging spots:** two numbered spots (ids after the regular ones) while charging is unlocked, not counted in the
   open-spot number. Any car may park in one; only EVs charge there. A charged EV must be moved out to free it.
 - **EV surge:** from `LateEvStart` (0.6 of the night) the EV chance ramps from `EvChance` to `LateEvChance` (0.75)
