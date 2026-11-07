@@ -43,3 +43,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, CameraFollow, TuningSeeder, LotBounds, GatedInputSource), Assets/_Project/Scripts/UI/ (TuningPanel, TuningRowView, DebugOverlay), Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Tests/EditMode/Integration/GatedInputSourceTests.cs
 Why: user feedback round 5. GameBootstrap creates a TuningStore, registers ITuning before any child is activated and seeds every TuningKey from RunConfig, PatronConfig, TipConfig and night 1's plan (ActiveSpots 0 is reseeded with the lot's spot count). Tuned values persist across runs; Reset all returns to seeds. F2 toggles an IMGUI panel (grouped sliders, number fields, per-row reset, Reset all) that never pauses the game and writes only via ITuning.Set; the valet input is wrapped in GatedInputSource so keys are ignored only while a number field has focus. Camera now measures the built lot's renderer bounds, zooms to fit (cap 16, min 8.5) and clamps the view inside the lot, so a lot up to ~1.6x wider stays framed. The scene builder adds the TuningPanel child and the PatronConfig reference; RunBatch is unchanged.
 Tests: added GatedInputSourceTests (not run; Unity not launched). Panel and camera need a play check.
+
+## integration: pickup banner shows car letter and spot
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/UI/ (PickupBannerFormatter, TicketBoard, DebugOverlay), Assets/_Project/Tests/EditMode/UI/PickupBannerTests.cs
+Why: design.md section 10 pickup feedback. The banner now reads "PICKUP: car B from spot 4", one line per pending pickup (max 3, then "+N more"), letter only when no spot is known, and its height follows the line count. TicketBoard.AppendPickups fills a reused StringBuilder with no LINQ; text rules live in PickupBannerFormatter.
+Tests: added PickupBannerTests (none, one, unknown spot, filtering, three, cap with +2 more, closed ticket).

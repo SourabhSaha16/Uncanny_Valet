@@ -63,6 +63,28 @@ namespace UncannyValet.UI
             }
         }
 
+        /// <summary>
+        /// Writes one line per pending pickup (at most maxLines, then "+N more"), separated by newlines
+        /// with none at the end. Returns the number of lines written. Allocation-free apart from the builder.
+        /// </summary>
+        public int AppendPickups(StringBuilder text, int maxLines)
+        {
+            var lines = 0;
+            var hidden = 0;
+            foreach (var pair in _rows)
+            {
+                var row = pair.Value;
+                if (row.State != TicketRowState.PickupRequested) continue;
+                if (lines >= maxLines) { hidden++; continue; }
+                if (lines++ > 0) text.Append('\n');
+                PickupBannerFormatter.AppendPickup(text, row.Letter, row.Spot);
+            }
+            if (hidden == 0) return lines;
+            text.Append('\n');
+            PickupBannerFormatter.AppendOverflow(text, hidden);
+            return lines + 1;
+        }
+
         private void OnOpened(TicketOpened e)
         {
             var row = new TicketRow { Car = e.Car.Value };
