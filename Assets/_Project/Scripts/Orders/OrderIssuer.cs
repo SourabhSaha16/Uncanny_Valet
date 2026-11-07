@@ -15,7 +15,6 @@ namespace UncannyValet.Orders
         private readonly IEventBus _bus;
         private readonly ITuning _tuning;
         private readonly ILotLayout _lot;
-        private readonly IChargingSpotQuery _charging;
         private readonly OrderBook _book;
         private readonly ParkedCars _parked;
         private readonly OrderSelector _selector;
@@ -24,13 +23,12 @@ namespace UncannyValet.Orders
         private readonly List<ParkedCar> _cars = new List<ParkedCar>();
         private readonly List<int> _freeSpots = new List<int>();
 
-        public OrderIssuer(IEventBus bus, ITuning tuning, ILotLayout lot, IChargingSpotQuery charging,
+        public OrderIssuer(IEventBus bus, ITuning tuning, ILotLayout lot,
             OrderBook book, ParkedCars parked, OrderSelector selector, OrderScheduler scheduler, int fromNight)
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _tuning = tuning ?? throw new ArgumentNullException(nameof(tuning));
             _lot = lot ?? throw new ArgumentNullException(nameof(lot));
-            _charging = charging ?? throw new ArgumentNullException(nameof(charging));
             _book = book ?? throw new ArgumentNullException(nameof(book));
             _parked = parked ?? throw new ArgumentNullException(nameof(parked));
             _selector = selector ?? throw new ArgumentNullException(nameof(selector));
@@ -82,7 +80,7 @@ namespace UncannyValet.Orders
             for (var i = 0; i < ids.Count; i++)
             {
                 var id = ids[i];
-                if (_charging.IsCharging(id) || !_lot.IsSpotFree(id) || _book.IsSpotTargeted(id)) continue;
+                if (_lot.IsChargingSpot(id) || !_lot.IsSpotFree(id) || _book.IsSpotTargeted(id)) continue;
                 _freeSpots.Add(id);
             }
         }
