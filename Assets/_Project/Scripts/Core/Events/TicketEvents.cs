@@ -95,4 +95,15 @@ namespace UncannyValet.Core.Events
             Ticket = ticket; Car = car; WaitMinutes = waitMinutes; Tip = tip;
         }
     }
+
+    /// <summary>
+    /// The patron got the car back at the curb (published by Patrons just before TicketClosed, only when the
+    /// car was really handed over; not for a vanished car or a night that ended).
+    /// </summary>
+    public readonly struct CarDelivered : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public CarDelivered(TicketId ticket, CarId car) { Ticket = ticket; Car = car; }
+    }
 }

@@ -34,5 +34,11 @@ namespace UncannyValet.Core.Events
         ChargeBonus,
         CleanBonus,
         SpeedWindowMinutes,
+
+        // Boss orders.
+        OrderGapMinMinutes,
+        OrderGapMaxMinutes,
+        MaxOpenOrders,
+        MaxStrikes,
     }
 }

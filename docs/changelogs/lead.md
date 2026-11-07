@@ -303,3 +303,9 @@ Date: 2026-11-06
 Files: site/, Assets/_Project/Scenes/Bootstrap.unity, two .meta files
 Why: Publish round 6 (cars drive in and out, dark mud wiped left to right, pickup banner names car and spot, debt $500).
 Tests: 297 of 297 EditMode passed; local browser smoke test loaded with no console errors.
+
+## lead: add boss order contracts (OrderId, OrderEvents, CarDelivered, tuning keys)
+Date: 2026-11-07
+Files: Core/Ids/OrderId.cs, Core/Events/OrderEvents.cs, OrderOutcome.cs, TicketEvents.cs (CarDelivered), TuningKey.cs, Core/Contracts/TuningCatalog.cs
+Why: Boss messages feature (design.md section 6). New Orders module issues orders, keeps car visit history, judges at delivery and gives strikes; Patrons publishes CarDelivered; UI shows the message panel.
+Tests: not yet run (contracts only; TuningSeeder must seed the four new keys before tests pass).

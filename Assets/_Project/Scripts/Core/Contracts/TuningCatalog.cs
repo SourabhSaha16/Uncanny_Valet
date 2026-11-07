@@ -30,6 +30,10 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.ChargeBonus, "Tips", "Charge bonus", 0, 200, 1),
             new TuningInfo(TuningKey.CleanBonus, "Tips", "Clean bonus", 0, 200, 1),
             new TuningInfo(TuningKey.SpeedWindowMinutes, "Tips", "Speed bonus window (game min)", 1, 60, 1),
+            new TuningInfo(TuningKey.OrderGapMinMinutes, "Boss orders", "Order gap min (game min)", 1, 90, 1),
+            new TuningInfo(TuningKey.OrderGapMaxMinutes, "Boss orders", "Order gap max (game min)", 1, 120, 1),
+            new TuningInfo(TuningKey.MaxOpenOrders, "Boss orders", "Max open orders", 1, 4, 1),
+            new TuningInfo(TuningKey.MaxStrikes, "Boss orders", "Strikes that lose the run", 1, 9, 1),
         };
     }
 }
