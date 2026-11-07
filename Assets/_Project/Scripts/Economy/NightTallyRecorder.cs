@@ -12,6 +12,7 @@ namespace UncannyValet.Economy
         private readonly NightTally _tally;
         private readonly Func<int, string> _nextNote;
         private readonly int _totalNights;
+        private bool _runLost;
 
         /// <summary>
         /// Create from Bootstrap with the shared bus, the debt view, RunConfig.Nights and nextNote, which maps a
@@ -31,6 +32,7 @@ namespace UncannyValet.Economy
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<TicketClosed>(OnTicketClosed);
             _bus.Subscribe<NightEnded>(OnNightEnded);
+            _bus.Subscribe<StrikeGiven>(OnStrikeGiven);
         }
 
         public void Dispose()
@@ -41,9 +43,20 @@ namespace UncannyValet.Economy
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
             _bus.Unsubscribe<NightEnded>(OnNightEnded);
+            _bus.Unsubscribe<StrikeGiven>(OnStrikeGiven);
         }
 
-        private void OnNightStarted(NightStarted e) => _tally.Start(e.Night, _debt.DebtRemaining);
+        private void OnNightStarted(NightStarted e)
+        {
+            _runLost = false;
+            _tally.Start(e.Night, _debt.DebtRemaining);
+        }
+
+        private void OnStrikeGiven(StrikeGiven e)
+        {
+            if (e.IsFinal && _tally.IsActive) _runLost = true;
+        }
+
         private void OnTicketOpened(TicketOpened e) => _tally.RecordTicketOpened(e.Ticket, e.Car);
         private void OnCarParked(CarParked e) => _tally.RecordCarParked(e.Car);
         private void OnTicketClosed(TicketClosed e) => _tally.RecordTicketClosed(e.Ticket, e.Car, e.Tip);
@@ -53,8 +66,10 @@ namespace UncannyValet.Economy
         private void OnNightEnded(NightEnded e)
         {
             if (!_tally.IsActive) return;
-            var note = _nextNote != null && e.Night < _totalNights ? _nextNote(e.Night + 1) : "";
-            _bus.Publish(new NightSummaryReady(_tally.End(note)));
+            var lost = _runLost;
+            _runLost = false;
+            var note = _nextNote != null && e.Night < _totalNights && !lost ? _nextNote(e.Night + 1) : "";
+            _bus.Publish(new NightSummaryReady(_tally.End(note, lost)));
         }
     }
 }
