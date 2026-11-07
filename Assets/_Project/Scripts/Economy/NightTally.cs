@@ -72,16 +72,17 @@ namespace UncannyValet.Economy
         }
 
         /// <summary>Counts still-open never-parked tickets as not parked, stops counting and returns the summary
-        /// carrying the given note about tomorrow.</summary>
-        public NightSummary End(string nextNightNote = "")
+        /// carrying the given note about tomorrow. When runLost the debt never reads as paid off.</summary>
+        public NightSummary End(string nextNightNote = "", bool runLost = false)
         {
             foreach (var pair in _open)
                 if (!_parked.Contains(pair.Value)) CarsNotParked++;
             _open.Clear();
             IsActive = false;
+            var floor = runLost ? 1 : 0;
             return new NightSummary(_night, _totalNights, Tips, CarsParked, CarsNotParked,
-                Math.Max(0, _debtAtStart - Tips), BaseTips, SpeedAdjust, ChargeBonus, CleanBonus, ZeroedTips,
-                nextNightNote);
+                Math.Max(floor, _debtAtStart - Tips), BaseTips, SpeedAdjust, ChargeBonus, CleanBonus, ZeroedTips,
+                nextNightNote, runLost);
         }
     }
 }

@@ -6,7 +6,7 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Night
 {
     /// <summary>The night's game time (design.md section 4). Ticks once per game minute on the event bus.</summary>
-    public sealed class NightClock : MonoBehaviour, IGameClock
+    public sealed class NightClock : MonoBehaviour, IGameClock, INightEnder
     {
         [SerializeField, Min(0.01f), Tooltip("Game minutes per real second. Bootstrap overrides it from RunConfig.")]
         private float _gameMinutesPerSecond = 1.5f;
@@ -19,6 +19,7 @@ namespace UncannyValet.Night
         private NightPlanSource _source;
         private bool _subscribed;
         private int _lastTick;
+        private bool _endRequested;
 
         public int Night { get; private set; }
         public float MinuteOfNight { get; private set; }
@@ -78,9 +79,16 @@ namespace UncannyValet.Night
             Night = night;
             MinuteOfNight = 0f;
             _lastTick = 0;
+            _endRequested = false;
             IsRunning = true;
             _bus.Publish(new NightPlanChanged(Source.For(night)));
             _bus.Publish(new NightStarted(night));
+        }
+
+        /// <inheritdoc />
+        public void EndAtNextTick()
+        {
+            if (IsRunning) _endRequested = true;
         }
 
         private void Update() => Advance(Time.deltaTime);
@@ -96,12 +104,13 @@ namespace UncannyValet.Night
                 _lastTick++;
                 _bus.Publish(new NightTick(Night, _lastTick));
             }
-            if (MinuteOfNight >= length) EndNight();
+            if (_endRequested || MinuteOfNight >= length) EndNight();
         }
 
         private void EndNight()
         {
             IsRunning = false;
+            _endRequested = false;
             _bus.Publish(new NightEnded(Night));
         }
     }
