@@ -315,3 +315,9 @@ Date: 2026-11-07
 Files: Core/Contracts/ILotLayout.cs, Core/Events/NightSummary.cs; merges of the orders, patrons and ui branches
 Why: Orders needs to tell charging spots from regular ones; a third strike must end the run through the normal summary card (NightSummary.RunLost makes IsFinalNight true, so Next starts a new run).
 Tests: pending (follow-up agents fix the implementers; full suite run after).
+
+## lead: merge round 7 follow-ups; wire RunLossGuard and NightFlow run loss
+Date: 2026-11-07
+Files: Bootstrap/GameBootstrap.cs, Bootstrap/NightFlow.cs; merges of lot, orders, integration and night branches
+Why: A final strike ends the night (RunLossGuard) and Next after a lost summary starts a new run (NightFlow reads NightSummary.RunLost).
+Tests: run next (full EditMode suite).

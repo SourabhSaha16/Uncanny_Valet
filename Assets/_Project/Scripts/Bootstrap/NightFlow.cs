@@ -15,6 +15,7 @@ namespace UncannyValet.Bootstrap
         private readonly IRunReset _run;
         private readonly int _totalNights;
         private bool _driving;
+        private bool _runLost;
 
         public NightFlow(IEventBus bus, INightStarter starter, IValetPlacer valet, IRunReset run, int totalNights)
         {
@@ -26,6 +27,7 @@ namespace UncannyValet.Bootstrap
             _bus.Subscribe<NextNightRequested>(OnNextNight);
             _bus.Subscribe<CarEntered>(OnCarEntered);
             _bus.Subscribe<CarExited>(OnCarExited);
+            _bus.Subscribe<NightSummaryReady>(OnSummary);
         }
 
         public void Dispose()
@@ -33,19 +35,22 @@ namespace UncannyValet.Bootstrap
             _bus.Unsubscribe<NextNightRequested>(OnNextNight);
             _bus.Unsubscribe<CarEntered>(OnCarEntered);
             _bus.Unsubscribe<CarExited>(OnCarExited);
+            _bus.Unsubscribe<NightSummaryReady>(OnSummary);
         }
 
         public void StartFirstNight() => _starter.StartNight(1);
 
         private void OnCarEntered(CarEntered e) => _driving = true;
         private void OnCarExited(CarExited e) => _driving = false;
+        private void OnSummary(NightSummaryReady e) => _runLost = e.Summary.RunLost;
 
         private void OnNextNight(NextNightRequested e)
         {
             if (_starter.IsRunning) return;
             if (!_driving) _valet.PlaceAtStart();
-            if (e.FinishedNight >= _totalNights)
+            if (_runLost || e.FinishedNight >= _totalNights)
             {
+                _runLost = false;
                 _run.ResetRun();
                 _starter.StartNight(1);
                 return;

@@ -44,6 +44,7 @@ namespace UncannyValet.Bootstrap
         private RunDebt _debt;
         private NightTallyRecorder _recorder;
         private NightFlow _flow;
+        private RunLossGuard _runLoss;
 
         private void Awake()
         {
@@ -73,6 +74,7 @@ namespace UncannyValet.Bootstrap
             FrameLot();
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _runConfig.NightLengthMinutes, _runConfig.GameMinutesPerSecond, _planConfig);
+            _runLoss = new RunLossGuard(bus, _clock);
             SpawnValet();
             _spawner.Random = new UnityPatronRandom();
             _spawner.gameObject.SetActive(true);
@@ -151,6 +153,7 @@ namespace UncannyValet.Bootstrap
         private void OnDestroy()
         {
             _flow?.Dispose();
+            _runLoss?.Dispose();
             _recorder?.Dispose();
             _debt?.Dispose();
             Services.Reset();
