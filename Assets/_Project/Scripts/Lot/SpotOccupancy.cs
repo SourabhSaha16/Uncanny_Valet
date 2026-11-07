@@ -32,7 +32,8 @@ namespace UncannyValet.Lot
         /// <summary>Opens or closes the charging spots (a charging spot holding a car stays open).</summary>
         public void SetChargingOpen(bool open) => _chargingOpen = open;
 
-        public bool IsCharging(int spotId) => spotId >= _firstChargingId;
+        /// <summary>True for known charging spots; unknown ids are never charging.</summary>
+        public bool IsCharging(int spotId) => spotId >= _firstChargingId && _known.Contains(spotId);
 
         public bool IsOpen(int spotId)
         {
