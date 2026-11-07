@@ -1,4 +1,13 @@
 === Last 50 commits ===
+c0f7ac9  2026-11-06  lead: debt $500, round 6 docs
+730f6e0  2026-11-06  lead: merge worktree-agent-ab18f0de0cd1fddce
+3b5c541  2026-11-06  lead: merge worktree-agent-a2c5058bb112f5187
+a8721e6  2026-11-06  lead: merge worktree-agent-a4a208a169e2d01ff
+83923fd  2026-11-06  cars: drive-in/drive-out cars and wipe-away mud
+e76c830  2026-11-06  integration: pickup banner shows car letter and spot
+3525332  2026-11-06  patrons: use SpawnArriving and DriveAwayAndDespawn, reserve slots
+c4982be  2026-11-06  lead: add SpawnArriving and DriveAwayAndDespawn to ICarFactory
+845c506  2026-11-06  lead: rebuild site for round 5
 582448a  2026-11-06  lead: merge round 5 modules, regenerate scene, update design
 ac2cd86  2026-11-06  lead: merge worktree-agent-a703ca379456fc8fb
 6015ea5  2026-11-06  lead: merge worktree-agent-ae4539f8f8528161c
@@ -40,15 +49,6 @@ aa00edf  2026-11-06  economy-night: night plans, tip breakdown, richer summary
 d026c06  2026-11-06  lead: add round-4 contracts for nights, stations and tip breakdown
 8c6f3e3  2026-11-06  lead: publish round-3 build with audio, night summary and side-by-side queue
 73fac77  2026-11-06  lead: merge integration summary card, night flow and audio wiring
-a9df51f  2026-11-06  integration: night summary card, night flow, audio wiring, camera 8.5
-b928fbd  2026-11-06  lead: merge audio button click
-f46dad0  2026-11-06  audio: play button click on next night
-df193e6  2026-11-06  lead: merge valet destroy-release fix
-6738562  2026-11-06  valet: make destroy-release testable
-1f2db95  2026-11-06  lead: update night-end integration test for round-3 rule
-ea59b41  2026-11-06  lead: merge worktree-agent-a7a5f896664c79e56
-ee02cfa  2026-11-06  lead: merge worktree-agent-a5810ce02ec054298
-410833e  2026-11-06  lead: merge worktree-agent-ae4c8bc8613d8eb05
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -119,6 +119,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Cars/{CarDefinition,CarFactory,CarSorting}.cs, new Assets/_Project/Scripts/Cars/{CarMirrorStyle,CarChargeBarStyle,CarMirrorMath,CarMirrors,CarChargeBarMath,CarMudMath,CarChargeBar,CarMudOverlay,CarTraitLook}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/CarLooksMathTests.cs (+ .meta)
 Why: design.md section 10 challenge schedule. Two front mirrors on every car; TicketTraitsAssigned (via CarTraitLook) turns EVs blue and activates a charge bar driven by CarChargeChanged/CarFullyCharged (lighter tint when full), and activates a brown mud overlay for dirty cars that fades with CarCleanChanged and hides on CarCleaned. Bar and mud children start inactive so they only subscribe once needed. Tunables live in CarDefinition (nested CarMirrorStyle, CarChargeBarStyle, EvBodyColor, MudColor); Sedan.asset keeps the code defaults for the new fields. Smoothing reuses CarTimerFillMath. Sorting: mirrors 9, body 10, mud 11, timer fill 12, charge track 13, charge fill 14, label 15.
 Tests: 7 new EditMode tests (mirror placement, charge fill geometry, mud alpha); Unity not run.
+
+## cars: drive-in/drive-out cars and wipe-away mud
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Cars/{CarFactory,CarDefinition,CarInteraction,CarMudMath,CarMudOverlay}.cs, new Assets/_Project/Scripts/Cars/{CarAutoDrive,CarAutoDriveMath,CarAutoDriveStyle}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/{CarLooksMathTests,CarAutoDriveMathTests}.cs (+ .meta)
+Why: design.md sections 8-10 (arrival, departure, dirty look). SpawnArriving starts the car EntryDistance behind the stop point and CarAutoDrive eases it in (sqrt braking profile, kinematic MovePosition in FixedUpdate); DriveAwayAndDespawn accelerates it out along its heading and despawns it, and is safe when repeated or for a missing id. While auto-driving, the collider, CarDriver and CarInteraction are disabled (no shoving, no trigger events, no Enter prompt); on arrival the body returns to Dynamic. Tunables are in CarDefinition.AutoDrive. Mud is dark brown (0.17,0.09,0.04,0.9) at constant opacity; washing shrinks the overlay's local X from the left edge (right edge fixed), a left-to-right wipe distinct from the bottom-up timer fill, with no allocation and no renderer.material. CarMudMath.Alpha is replaced by Width/CenterX.
+Tests: 7 new or changed EditMode tests (CarAutoDriveMath x5, mud wipe x2); full EditMode run 287/287 passed.
 
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
@@ -201,6 +207,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, CameraFollow, TuningSeeder, LotBounds, GatedInputSource), Assets/_Project/Scripts/UI/ (TuningPanel, TuningRowView, DebugOverlay), Assets/_Project/Editor/BootstrapSceneBuilder.cs, Assets/_Project/Tests/EditMode/Integration/GatedInputSourceTests.cs
 Why: user feedback round 5. GameBootstrap creates a TuningStore, registers ITuning before any child is activated and seeds every TuningKey from RunConfig, PatronConfig, TipConfig and night 1's plan (ActiveSpots 0 is reseeded with the lot's spot count). Tuned values persist across runs; Reset all returns to seeds. F2 toggles an IMGUI panel (grouped sliders, number fields, per-row reset, Reset all) that never pauses the game and writes only via ITuning.Set; the valet input is wrapped in GatedInputSource so keys are ignored only while a number field has focus. Camera now measures the built lot's renderer bounds, zooms to fit (cap 16, min 8.5) and clamps the view inside the lot, so a lot up to ~1.6x wider stays framed. The scene builder adds the TuningPanel child and the PatronConfig reference; RunBatch is unchanged.
 Tests: added GatedInputSourceTests (not run; Unity not launched). Panel and camera need a play check.
+
+## integration: pickup banner shows car letter and spot
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/UI/ (PickupBannerFormatter, TicketBoard, DebugOverlay), Assets/_Project/Tests/EditMode/UI/PickupBannerTests.cs
+Why: design.md section 10 pickup feedback. The banner now reads "PICKUP: car B from spot 4", one line per pending pickup (max 3, then "+N more"), letter only when no spot is known, and its height follows the line count. TicketBoard.AppendPickups fills a reused StringBuilder with no LINQ; text rules live in PickupBannerFormatter.
+Tests: added PickupBannerTests (none, one, unknown spot, filtering, three, cap with +2 more, closed ticket).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -485,6 +497,24 @@ Files: merges of economy-night, patrons, lot, audio, integration branches; Boots
 Why: user feedback round 5.
 Tests: EditMode 281 of 281 passed in batch mode.
 
+## lead: rebuild site for round 5
+Date: 2026-11-06
+Files: site/
+Why: publish point for pacing, charge spots, expanding lot, urgency audio and the F2 tuning panel.
+Tests: EditMode 281 of 281; Web build succeeded; local load shows no console errors and F2 opens the panel.
+
+## lead: add SpawnArriving and DriveAwayAndDespawn to ICarFactory
+Date: 2026-11-06
+Files: Core/Contracts/ICarFactory.cs, Cars/CarFactory.cs (stub), Tests/EditMode/Integration/FakeCarFactory.cs
+Why: Round 6 asks for cars that drive in and out; the contract lets Patrons ask and Cars animate. Stubs keep main compiling until the cars agent implements them.
+Tests: not run (contract only, stubs delegate to Spawn and Despawn).
+
+## lead: merge round 6 (drive in/out, mud wipe, pickup banner), debt $500
+Date: 2026-11-06
+Files: RunConfig.cs, RunConfig.asset, docs/design.md, docs/decisions.md, merges of cars, patrons, integration branches
+Why: Round 6 requests. Pacing increase was cancelled by the human; economy-night work discarded; only the debt change kept.
+Tests: pending (Unity editor open, batch tests cannot run yet).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -590,6 +620,12 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{PatronTuning,LiveTicketTuning,EvChanceCurve,PatronRequestRoller,PatronPlan,PatronSpawner,PatronConfig,StationService,Ticket,TicketBook,TicketRegistry,TicketTimer}.cs, Assets/_Project/Tests/EditMode/Patrons/{ChargeSpotTests,LiveTuningTests,ServiceRulesTests,TicketRegistryServiceTests}.cs
 Why: round 5 feedback. Gap, stay, impatience, park and pickup windows, charge and wash minutes are read live from ITuning (config is only a fallback); window changes also reach running timers. EV chance ramps from EvChance to LateEvChance after LateEvStart. Charging bays are parking spots: only EVs charge, and a charging spot no longer pauses the park timer (the wash still does). Plan changes mid-night only overwrite PatronPlan values.
 Tests: new ChargeSpotTests and LiveTuningTests; two existing tests adjusted (RollTraits signature, park timer pauses in the wash bay). Unity not run.
+
+## patrons: use SpawnArriving and DriveAwayAndDespawn, reserve arrival slots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ArrivalReservations,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalReservationsTests.cs
+Why: cars now drive in and out on their own (design.md section 5). Arrivals call ICarFactory.SpawnArriving; departures call DriveAwayAndDespawn after CarDeparted. A car still driving in is invisible to the physics scan, so each ticket reserves its arrival slot until it leaves AwaitingPark, which stops two cars heading for the same slot.
+Tests: new ArrivalReservationsTests (slot stays blocked while arriving, freed on park, departure drives away not despawns). Park timer is unchanged and starts at spawn, so it also counts the drive-in time.
 
 === docs/changelogs/qa.md ===
 # QA changelog

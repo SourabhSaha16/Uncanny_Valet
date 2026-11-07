@@ -297,3 +297,9 @@ Date: 2026-11-06
 Files: RunConfig.cs, RunConfig.asset, docs/design.md, docs/decisions.md, merges of cars, patrons, integration branches
 Why: Round 6 requests. Pacing increase was cancelled by the human; economy-night work discarded; only the debt change kept.
 Tests: pending (Unity editor open, batch tests cannot run yet).
+
+## lead: rebuild site for round 6
+Date: 2026-11-06
+Files: site/, Assets/_Project/Scenes/Bootstrap.unity, two .meta files
+Why: Publish round 6 (cars drive in and out, dark mud wiped left to right, pickup banner names car and spot, debt $500).
+Tests: 297 of 297 EditMode passed; local browser smoke test loaded with no console errors.

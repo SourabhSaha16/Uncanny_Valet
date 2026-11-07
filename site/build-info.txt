@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  582448a
-Subject: lead: merge round 5 modules, regenerate scene, update design
-Date:    2026-11-06 15:17:29 -0800
+Commit:  c0f7ac9
+Subject: lead: debt $500, round 6 docs
+Date:    2026-11-06 21:39:24 -0800
