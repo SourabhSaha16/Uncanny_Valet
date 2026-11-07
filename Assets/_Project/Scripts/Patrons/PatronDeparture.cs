@@ -3,7 +3,7 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>On TicketClosed the patron drives off: announce it, then remove the car.</summary>
+    /// <summary>On TicketClosed the patron drives off: announce it, then the car drives off and is removed.</summary>
     public sealed class PatronDeparture
     {
         private readonly IEventBus _bus;
@@ -20,7 +20,7 @@ namespace UncannyValet.Patrons
         private void OnTicketClosed(TicketClosed e)
         {
             _bus.Publish(new CarDeparted(e.Car));
-            _cars.Despawn(e.Car);
+            _cars.DriveAwayAndDespawn(e.Car);
         }
     }
 }

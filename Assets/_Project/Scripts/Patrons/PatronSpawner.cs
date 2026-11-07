@@ -18,6 +18,7 @@ namespace UncannyValet.Patrons
         private ICarFactory _cars;
         private ILotLayout _lot;
         private ArrivalSlotScanner _scanner;
+        private readonly ArrivalReservations _reservations = new ArrivalReservations();
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
         private int _nextCarId = 1;
@@ -68,12 +69,14 @@ namespace UncannyValet.Patrons
         {
             ticket = null;
             if (!_nightOpen) return false;
-            var blocked = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _plan.MaxWaitingCars);
+            var scanned = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _plan.MaxWaitingCars);
+            var blocked = _reservations.Merge(scanned, Registry);
             var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _plan.MaxWaitingCars, blocked);
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
-            _cars.Spawn(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees);
+            _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees);
             ticket = Registry.Create(car, request);
+            _reservations.Reserve(ticket.TicketId, slot);
             Registry.AnnounceArrival(ticket);
             return true;
         }

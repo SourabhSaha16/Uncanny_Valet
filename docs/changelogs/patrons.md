@@ -43,3 +43,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{PatronTuning,LiveTicketTuning,EvChanceCurve,PatronRequestRoller,PatronPlan,PatronSpawner,PatronConfig,StationService,Ticket,TicketBook,TicketRegistry,TicketTimer}.cs, Assets/_Project/Tests/EditMode/Patrons/{ChargeSpotTests,LiveTuningTests,ServiceRulesTests,TicketRegistryServiceTests}.cs
 Why: round 5 feedback. Gap, stay, impatience, park and pickup windows, charge and wash minutes are read live from ITuning (config is only a fallback); window changes also reach running timers. EV chance ramps from EvChance to LateEvChance after LateEvStart. Charging bays are parking spots: only EVs charge, and a charging spot no longer pauses the park timer (the wash still does). Plan changes mid-night only overwrite PatronPlan values.
 Tests: new ChargeSpotTests and LiveTuningTests; two existing tests adjusted (RollTraits signature, park timer pauses in the wash bay). Unity not run.
+
+## patrons: use SpawnArriving and DriveAwayAndDespawn, reserve arrival slots
+Date: 2026-11-06
+Files: Assets/_Project/Scripts/Patrons/{ArrivalReservations,PatronSpawner,PatronDeparture}.cs, Assets/_Project/Tests/EditMode/Patrons/ArrivalReservationsTests.cs
+Why: cars now drive in and out on their own (design.md section 5). Arrivals call ICarFactory.SpawnArriving; departures call DriveAwayAndDespawn after CarDeparted. A car still driving in is invisible to the physics scan, so each ticket reserves its arrival slot until it leaves AwaitingPark, which stops two cars heading for the same slot.
+Tests: new ArrivalReservationsTests (slot stays blocked while arriving, freed on park, departure drives away not despawns). Park timer is unchanged and starts at spawn, so it also counts the drive-in time.
