@@ -25,17 +25,20 @@ namespace UncannyValet.Core.Events
         /// <summary>What is new tomorrow (from the next night's plan); empty on the final night.</summary>
         public readonly string NextNightNote;
 
-        public bool IsFinalNight => Night >= TotalNights;
+        /// <summary>The run ended tonight because the strike limit was reached (boss orders).</summary>
+        public readonly bool RunLost;
+
+        public bool IsFinalNight => Night >= TotalNights || RunLost;
         public bool PaidOff => DebtLeft <= 0;
 
         public NightSummary(int night, int totalNights, int tips, int carsParked, int carsNotParked, int debtLeft,
             int baseTips = 0, int speedAdjust = 0, int chargeBonus = 0, int cleanBonus = 0, int zeroedTips = 0,
-            string nextNightNote = "")
+            string nextNightNote = "", bool runLost = false)
         {
             Night = night; TotalNights = totalNights; Tips = tips;
             CarsParked = carsParked; CarsNotParked = carsNotParked; DebtLeft = debtLeft;
             BaseTips = baseTips; SpeedAdjust = speedAdjust; ChargeBonus = chargeBonus;
-            CleanBonus = cleanBonus; ZeroedTips = zeroedTips; NextNightNote = nextNightNote ?? "";
+            CleanBonus = cleanBonus; ZeroedTips = zeroedTips; NextNightNote = nextNightNote ?? ""; RunLost = runLost;
         }
     }
 }

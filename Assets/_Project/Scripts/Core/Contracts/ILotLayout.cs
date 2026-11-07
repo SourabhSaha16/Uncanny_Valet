@@ -20,5 +20,8 @@ namespace UncannyValet.Core.Contracts
         IReadOnlyList<int> SpotIds { get; }
 
         bool IsSpotFree(int spotId);
+
+        /// <summary>True for the charging spots (specialised spots only open on charging nights).</summary>
+        bool IsChargingSpot(int spotId);
     }
 }

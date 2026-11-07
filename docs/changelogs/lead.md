@@ -309,3 +309,9 @@ Date: 2026-11-07
 Files: Core/Ids/OrderId.cs, Core/Events/OrderEvents.cs, OrderOutcome.cs, TicketEvents.cs (CarDelivered), TuningKey.cs, Core/Contracts/TuningCatalog.cs
 Why: Boss messages feature (design.md section 6). New Orders module issues orders, keeps car visit history, judges at delivery and gives strikes; Patrons publishes CarDelivered; UI shows the message panel.
 Tests: not yet run (contracts only; TuningSeeder must seed the four new keys before tests pass).
+
+## lead: add IsChargingSpot and RunLost to Core contracts
+Date: 2026-11-07
+Files: Core/Contracts/ILotLayout.cs, Core/Events/NightSummary.cs; merges of the orders, patrons and ui branches
+Why: Orders needs to tell charging spots from regular ones; a third strike must end the run through the normal summary card (NightSummary.RunLost makes IsFinalNight true, so Next starts a new run).
+Tests: pending (follow-up agents fix the implementers; full suite run after).
