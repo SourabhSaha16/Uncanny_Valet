@@ -30,6 +30,34 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual("New run", card.ButtonLabel);
         }
 
+        private static NightSummary Lost(int night, int debt) =>
+            new NightSummary(night, 7, 10, 2, 4, debt, runLost: true);
+
+        [Test]
+        public void RunLost_TitleSaysBossIsFinished_AndButtonIsNewRun()
+        {
+            var card = SummaryCardFormatter.Build(Lost(3, 400));
+            Assert.AreEqual(SummaryCardFormatter.RunLostTitle, card.Title);
+            Assert.AreEqual("New run", card.ButtonLabel);
+            Assert.AreEqual(3, card.Night);
+            Assert.AreEqual(string.Empty, card.Tomorrow);
+        }
+
+        [Test]
+        public void RunLost_HeadlineMentionsStrikes_NeverPaidOff()
+        {
+            var card = SummaryCardFormatter.Build(Lost(3, 400));
+            StringAssert.Contains("strikes", card.Headline);
+            StringAssert.DoesNotContain("paid off", card.Headline.ToLowerInvariant());
+        }
+
+        [Test]
+        public void RunLost_WithNoDebtLeft_StillNotPaidOff()
+        {
+            var card = SummaryCardFormatter.Build(Lost(2, 0));
+            Assert.AreNotEqual(SummaryCardFormatter.PaidOffHeadline, card.Headline);
+        }
+
         [Test]
         public void FinalNight_NotPaidOff_ShowsDebtLeft()
         {

@@ -10,6 +10,7 @@ namespace UncannyValet.UI
         public const string NewRunLabel = "New run";
         public const string PaidOffHeadline = "Debt paid off!";
         public const string CalcHeader = "Tip calculation";
+        public const string RunLostTitle = "The boss is finished with you";
         public const string TomorrowPrefix = "Tomorrow: ";
 
         public static SummaryCardContent Build(NightSummary s)
@@ -17,7 +18,7 @@ namespace UncannyValet.UI
             return new SummaryCardContent
             {
                 Night = s.Night,
-                Title = "Night " + s.Night + " complete",
+                Title = s.RunLost ? RunLostTitle : "Night " + s.Night + " complete",
                 Headline = s.IsFinalNight ? FinalHeadline(s) : string.Empty,
                 Lines = new[]
                 {
@@ -53,6 +54,7 @@ namespace UncannyValet.UI
 
         public static string FinalHeadline(NightSummary s)
         {
+            if (s.RunLost) return "Too many strikes: " + Money(s.DebtLeft) + " of debt left";
             return s.PaidOff ? PaidOffHeadline : "Debt left: " + Money(s.DebtLeft) + ": you did not pay it off";
         }
 
