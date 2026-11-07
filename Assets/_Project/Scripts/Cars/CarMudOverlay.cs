@@ -6,8 +6,8 @@ using UnityEngine;
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// Semi-transparent brown overlay on a dirty car. Created inactive; CarTraitLook activates it. Its alpha
-    /// fades as the car is washed (CarCleanChanged) and it disappears on CarCleaned.
+    /// Dark brown overlay on a dirty car. Created inactive; CarTraitLook activates it. Washing
+    /// (CarCleanChanged) wipes it away left to right, revealing the car colour; CarCleaned hides it.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CarMudOverlay : MonoBehaviour
@@ -28,6 +28,7 @@ namespace UncannyValet.Cars
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = CarSorting.Mud;
+            renderer.color = definition.MudColor;
             var mud = go.AddComponent<CarMudOverlay>();
             mud._id = id;
             mud._definition = definition;
@@ -72,9 +73,9 @@ namespace UncannyValet.Cars
 
         private void Apply()
         {
-            Color mud = _definition.MudColor;
-            mud.a = CarMudMath.Alpha(_shownClean, _definition.MudColor.a);
-            _renderer.color = mud;
+            var t = transform;
+            t.localScale = new Vector3(CarMudMath.Width(_shownClean), 1f, 1f);
+            t.localPosition = new Vector3(CarMudMath.CenterX(_shownClean), 0f, 0f);
         }
     }
 }

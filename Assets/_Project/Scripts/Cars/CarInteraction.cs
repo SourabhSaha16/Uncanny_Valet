@@ -19,7 +19,7 @@ namespace UncannyValet.Cars
 
         public bool CanInteract(GameObject actor)
         {
-            if (actor == null || Driver.HasDriver) return false;
+            if (actor == null || !isActiveAndEnabled || Driver.HasDriver) return false;
             return Vector2.Distance(actor.transform.position, transform.position) <= _range;
         }
 
