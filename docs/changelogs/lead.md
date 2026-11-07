@@ -285,3 +285,9 @@ Date: 2026-11-06
 Files: site/
 Why: publish point for pacing, charge spots, expanding lot, urgency audio and the F2 tuning panel.
 Tests: EditMode 281 of 281; Web build succeeded; local load shows no console errors and F2 opens the panel.
+
+## lead: add SpawnArriving and DriveAwayAndDespawn to ICarFactory
+Date: 2026-11-06
+Files: Core/Contracts/ICarFactory.cs, Cars/CarFactory.cs (stub), Tests/EditMode/Integration/FakeCarFactory.cs
+Why: Round 6 asks for cars that drive in and out; the contract lets Patrons ask and Cars animate. Stubs keep main compiling until the cars agent implements them.
+Tests: not run (contract only, stubs delegate to Spawn and Despawn).

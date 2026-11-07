@@ -43,6 +43,11 @@ namespace UncannyValet.Tests.Integration
             return car;
         }
 
+        public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees)
+            => Spawn(id, stopPosition, rotationDegrees);
+
+        public void DriveAwayAndDespawn(CarId id) => Despawn(id);
+
         public bool TryGet(CarId id, out IDrivable car)
         {
             var found = _cars.TryGetValue(id, out var fake);
