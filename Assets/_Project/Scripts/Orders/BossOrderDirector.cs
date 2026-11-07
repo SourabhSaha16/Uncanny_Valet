@@ -7,7 +7,7 @@ namespace UncannyValet.Orders
 {
     /// <summary>
     /// Runs the boss's orders. Add one to the Bootstrap scene and assign an <see cref="OrdersConfig"/>. Needs
-    /// IEventBus, ITuning, ILotLayout and IChargingSpotQuery in Services. It publishes OrderIssued,
+    /// IEventBus, ITuning and ILotLayout in Services. It publishes OrderIssued,
     /// OrderResolved and StrikeGiven; the UI shows them.
     /// </summary>
     [DisallowMultipleComponent]
@@ -29,12 +29,12 @@ namespace UncannyValet.Orders
                 return;
             }
             if (!Services.TryGet<IEventBus>(out var bus) || !Services.TryGet<ITuning>(out var tuning)
-                || !Services.TryGet<ILotLayout>(out var lot) || !Services.TryGet<IChargingSpotQuery>(out var charging))
+                || !Services.TryGet<ILotLayout>(out var lot))
             {
-                Debug.LogError("BossOrderDirector: IEventBus, ITuning, ILotLayout and IChargingSpotQuery must be registered in Services; boss orders are off.", this);
+                Debug.LogError("BossOrderDirector: IEventBus, ITuning and ILotLayout must be registered in Services; boss orders are off.", this);
                 return;
             }
-            Build(bus, tuning, lot, charging);
+            Build(bus, tuning, lot);
             if (isActiveAndEnabled) OnEnable();
         }
 
@@ -50,7 +50,7 @@ namespace UncannyValet.Orders
             for (var i = 0; i < _parts.Length; i++) _parts[i].Unsubscribe();
         }
 
-        private void Build(IEventBus bus, ITuning tuning, ILotLayout lot, IChargingSpotQuery charging)
+        private void Build(IEventBus bus, ITuning tuning, ILotLayout lot)
         {
             var random = new UnityOrderRandom();
             var book = new OrderBook();
@@ -64,7 +64,7 @@ namespace UncannyValet.Orders
                 _strikes,
                 new OrderTracker(bus, parked, history),
                 new OrderResolver(bus, book, new OrderJudge(history), _strikes),
-                new OrderIssuer(bus, tuning, lot, charging, book, parked, selector, scheduler, _config.FromNight),
+                new OrderIssuer(bus, tuning, lot, book, parked, selector, scheduler, _config.FromNight),
             };
         }
     }

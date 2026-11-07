@@ -11,7 +11,7 @@ namespace UncannyValet.Tests.Orders
     /// <summary>The Orders parts wired to a real EventBus the way BossOrderDirector wires them.</summary>
     public abstract class OrderFlowFixture
     {
-        protected sealed class FakeLot : ILotLayout, IChargingSpotQuery
+        protected sealed class FakeLot : ILotLayout
         {
             public readonly HashSet<int> Taken = new HashSet<int>();
             public int[] Spots = { 1, 2, 3, 9 };
@@ -22,7 +22,7 @@ namespace UncannyValet.Tests.Orders
             public Vector2 ValetStartPoint => Vector2.zero;
             public IReadOnlyList<int> SpotIds => Spots;
             public bool IsSpotFree(int spotId) => !Taken.Contains(spotId);
-            public bool IsCharging(int spotId) => spotId == ChargingSpot;
+            public bool IsChargingSpot(int spotId) => spotId == ChargingSpot;
         }
 
         protected EventBus Bus;
@@ -58,7 +58,7 @@ namespace UncannyValet.Tests.Orders
                 Strikes,
                 new OrderTracker(Bus, parked, history),
                 new OrderResolver(Bus, book, new OrderJudge(history), Strikes),
-                new OrderIssuer(Bus, tuning, Lot, Lot, book, parked, new OrderSelector(Rng),
+                new OrderIssuer(Bus, tuning, Lot, book, parked, new OrderSelector(Rng),
                     new OrderScheduler(Rng), 2),
             };
             foreach (var part in _parts) part.Subscribe();
