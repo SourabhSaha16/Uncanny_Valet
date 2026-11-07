@@ -35,8 +35,9 @@ namespace UncannyValet.Cars
         [SerializeField, Tooltip("Body colour of an EV (clear blue).")]
         private Color _evBodyColor = new Color(0.15f, 0.45f, 0.95f, 1f);
         [SerializeField] private CarChargeBarStyle _chargeBar = new CarChargeBarStyle();
-        [SerializeField, Tooltip("Mud overlay colour; its alpha is the maximum opacity when filthy.")]
-        private Color _mudColor = new Color(0.36f, 0.22f, 0.1f, 0.7f);
+        [SerializeField, Tooltip("Mud overlay colour (dark brown); washing wipes it away, it never fades.")]
+        private Color _mudColor = new Color(0.17f, 0.09f, 0.04f, 0.9f);
+        [SerializeField] private CarAutoDriveStyle _autoDrive = new CarAutoDriveStyle();
 
         public string DisplayName => _displayName;
         /// <summary>Max forward speed, units per second.</summary>
@@ -74,7 +75,9 @@ namespace UncannyValet.Cars
         public Color EvBodyColor => _evBodyColor;
         /// <summary>EV charge bar look.</summary>
         public CarChargeBarStyle ChargeBar => _chargeBar;
-        /// <summary>Mud overlay colour; alpha is the maximum opacity.</summary>
+        /// <summary>Self-driving arrival and departure tunables.</summary>
+        public CarAutoDriveStyle AutoDrive => _autoDrive;
+        /// <summary>Mud overlay colour (dark brown, constant opacity).</summary>
         public Color MudColor => _mudColor;
     }
 }

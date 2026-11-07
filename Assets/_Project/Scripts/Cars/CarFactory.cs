@@ -38,9 +38,22 @@ namespace UncannyValet.Cars
         }
 
         public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees)
-            => Spawn(id, stopPosition, rotationDegrees);
+        {
+            var definition = _defaultDefinition != null ? _defaultDefinition : ScriptableObject.CreateInstance<CarDefinition>();
+            Vector2 heading = Quaternion.Euler(0f, 0f, rotationDegrees) * Vector2.up;
+            Vector2 start = stopPosition - heading * definition.AutoDrive.EntryDistance;
+            var car = (CarDriver)Spawn(definition, id, start, rotationDegrees, default, false);
+            car.GetComponent<CarAutoDrive>().BeginArriving(definition, stopPosition);
+            return car;
+        }
 
-        public void DriveAwayAndDespawn(CarId id) => Despawn(id);
+        public void DriveAwayAndDespawn(CarId id)
+        {
+            if (!_cars.TryGetValue(id, out var car) || car == null) { Despawn(id); return; }
+            var drive = car.GetComponent<CarAutoDrive>();
+            if (drive.IsDeparting) return;
+            drive.BeginDeparting(car.Definition, () => Despawn(id));
+        }
 
         public bool TryGet(CarId id, out IDrivable car)
         {
@@ -76,6 +89,7 @@ namespace UncannyValet.Cars
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
+            go.AddComponent<CarAutoDrive>();
             AttachLooks(go, id, def, renderer);
             CarTimerFill.Attach(go, id, def, GetSprite());
             CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);

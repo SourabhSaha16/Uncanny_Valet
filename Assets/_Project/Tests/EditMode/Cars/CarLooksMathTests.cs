@@ -59,12 +59,22 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
-        public void MudFadesWithCleanliness()
+        public void MudWipesLeftToRightKeepingRightEdge()
         {
-            Assert.AreEqual(0.7f, CarMudMath.Alpha(0f, 0.7f), 1e-6f);
-            Assert.AreEqual(0.35f, CarMudMath.Alpha(0.5f, 0.7f), 1e-6f);
-            Assert.AreEqual(0f, CarMudMath.Alpha(1f, 0.7f), 1e-6f);
-            Assert.AreEqual(0f, CarMudMath.Alpha(5f, 0.7f), 1e-6f);
+            Assert.AreEqual(1f, CarMudMath.Width(0f), 1e-6f);
+            Assert.AreEqual(0f, CarMudMath.CenterX(0f), 1e-6f);
+            Assert.AreEqual(0.5f, CarMudMath.Width(0.5f), 1e-6f);
+            Assert.AreEqual(0.25f, CarMudMath.CenterX(0.5f), 1e-6f);
+            Assert.AreEqual(0f, CarMudMath.Width(1f), 1e-6f);
+            Assert.AreEqual(0f, CarMudMath.Width(5f), 1e-6f);
+            Assert.AreEqual(0.5f, CarMudMath.CenterX(5f), 1e-6f);
+        }
+
+        [Test]
+        public void MudRightEdgeNeverMoves()
+        {
+            for (float c = 0f; c <= 1f; c += 0.1f)
+                Assert.AreEqual(0.5f, CarMudMath.CenterX(c) + CarMudMath.Width(c) * 0.5f, 1e-5f);
         }
     }
 }
