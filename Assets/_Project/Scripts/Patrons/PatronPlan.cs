@@ -2,7 +2,7 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>The night plan as the patrons see it: waiting cap, arrival pace and trait odds. Pure.</summary>
+    /// <summary>The shift plan as the patrons see it: waiting cap, arrival pace and trait odds. Pure.</summary>
     public sealed class PatronPlan
     {
         public int MaxWaitingCars { get; private set; }
@@ -15,7 +15,7 @@ namespace UncannyValet.Patrons
         /// <summary>Before any plan arrives the config's cap applies and no traits are rolled.</summary>
         public PatronPlan(int defaultMaxWaiting) { MaxWaitingCars = defaultMaxWaiting; }
 
-        public void Apply(NightPlan plan)
+        public void Apply(ShiftPlan plan)
         {
             MaxWaitingCars = plan.MaxWaitingCars;
             ArrivalGapScale = plan.ArrivalGapScale;
@@ -25,10 +25,10 @@ namespace UncannyValet.Patrons
             LateEvStart = plan.LateEvStart;
         }
 
-        /// <summary>One roll decides: EV, dirty or plain. A car is never both. The EV chance ramps with night progress (0..1).</summary>
-        public void RollTraits(IPatronRandom random, float nightProgress, out bool isEv, out bool isDirty)
+        /// <summary>One roll decides: EV, dirty or plain. A car is never both. The EV chance ramps with shift progress (0..1).</summary>
+        public void RollTraits(IPatronRandom random, float shiftProgress, out bool isEv, out bool isDirty)
         {
-            var ev = EvChanceCurve.Evaluate(EvChance, LateEvChance, LateEvStart, nightProgress);
+            var ev = EvChanceCurve.Evaluate(EvChance, LateEvChance, LateEvStart, shiftProgress);
             var r = random.Value();
             isEv = r < ev;
             isDirty = !isEv && r < ev + DirtyChance;

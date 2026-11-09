@@ -1,6 +1,0 @@
-{
-    "name": "UncannyValet.Orders",
-    "rootNamespace": "UncannyValet.Orders",
-    "references": ["UncannyValet.Core"],
-    "autoReferenced": true
-}

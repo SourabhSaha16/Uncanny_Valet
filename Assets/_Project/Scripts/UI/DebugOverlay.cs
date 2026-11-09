@@ -8,7 +8,7 @@ using UnityEngine;
 namespace UncannyValet.UI
 {
     /// <summary>
-    /// IMGUI debug overlay: clock, debt, tips, open tickets (with spot), interact prompt, pickup highlight.
+    /// IMGUI debug overlay: clock, score, combo, star thresholds, open tickets (with spot), interact prompt, pickup highlight.
     /// Core-only: ticket data comes from events via TicketBoard; prompt and clock format are delegates.
     /// </summary>
     public sealed class DebugOverlay : MonoBehaviour
@@ -24,14 +24,15 @@ namespace UncannyValet.UI
         private readonly StringBuilder _pickups = new StringBuilder();
         private GUIStyle _banner;
         private Func<string> _prompt = () => string.Empty;
-        private Func<float, string> _formatClock = m => ((int)m).ToString();
+        private Func<float, string> _formatClock = s => ((int)s).ToString();
         private TicketBoard _board;
         private IGameClock _clock;
-        private IDebtView _debt;
+        private IShiftScoreView _score;
         private GUIStyle _label;
         private GUIStyle _box;
         private Texture2D _dark;
 
+        /// <param name="formatClock">Turns seconds remaining into the clock text.</param>
         public void Configure(Func<string> prompt, Func<float, string> formatClock)
         {
             _prompt = prompt ?? _prompt;
@@ -41,7 +42,7 @@ namespace UncannyValet.UI
         private void OnEnable()
         {
             _clock = Services.Get<IGameClock>();
-            _debt = Services.Get<IDebtView>();
+            _score = Services.Get<IShiftScoreView>();
             _board = new TicketBoard(Services.Get<IEventBus>());
         }
 
@@ -52,8 +53,8 @@ namespace UncannyValet.UI
             if (_clock == null) return;
             EnsureStyles();
             _text.Clear();
-            _text.AppendLine($"Night {_clock.Night}  {_formatClock(_clock.MinuteOfNight)}");
-            _text.AppendLine($"Debt left: ${_debt.DebtRemaining}   Tips tonight: ${_debt.TipsTonight}");
+            _text.AppendLine($"Shift {_formatClock(_clock.SecondsRemaining)}");
+            ScoreLines.Append(_text, _score);
             _text.AppendLine($"Open tickets: {_board.Count}");
             _board.AppendLines(_text, _maxTicketLines);
             _text.AppendLine(TuningPanel.Hint);

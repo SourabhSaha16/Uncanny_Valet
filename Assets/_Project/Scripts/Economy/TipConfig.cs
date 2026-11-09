@@ -14,6 +14,12 @@ namespace UncannyValet.Economy
         private int _chargeBonus = 15;
         [SerializeField, Min(0), Tooltip("Dollars added for a dirty car that was washed.")]
         private int _cleanBonus = 15;
+        [SerializeField, Min(0), Tooltip("Dollars added when the patron still has all their patience left; scales down with the patience spent.")]
+        private int _maxPatienceBonus = 10;
+        [SerializeField, Range(0.05f, 1f), Tooltip("Damage (0..1) per damage stage. 0.25 gives stages at 25%, 50%, 75% and 100%.")]
+        private float _damageStageSize = 0.25f;
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the tip lost per damage stage. At 100% damage the tip is always $0.")]
+        private float _damagePenaltyPerStage = 0.25f;
 
         public float SpeedBonusWindowMinutes => _speedBonusWindowMinutes;
         public int SpeedBonus => _speedBonus;
@@ -21,5 +27,8 @@ namespace UncannyValet.Economy
         public float PenaltyPerMinute => _penaltyPerMinute;
         public int ChargeBonus => _chargeBonus;
         public int CleanBonus => _cleanBonus;
+        public int MaxPatienceBonus => _maxPatienceBonus;
+        public float DamageStageSize => _damageStageSize;
+        public float DamagePenaltyPerStage => _damagePenaltyPerStage;
     }
 }

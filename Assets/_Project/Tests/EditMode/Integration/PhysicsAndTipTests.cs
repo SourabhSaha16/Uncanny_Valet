@@ -12,9 +12,9 @@ namespace UncannyValet.Tests.Integration
     /// <summary>Driving maths into parking into tips: the numbers must line up across modules.</summary>
     public class PhysicsAndTipTests
     {
-        private NightHarness _h;
+        private ShiftHarness _h;
 
-        [SetUp] public void SetUp() { _h = new NightHarness(1000); _h.StartNight(1); }
+        [SetUp] public void SetUp() { _h = new ShiftHarness(); _h.StartShift(); }
         [TearDown] public void TearDown() { _h.Dispose(); }
 
         [Test]
@@ -53,7 +53,7 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void EveryTipOnTheBus_IsNonNegative_AndLedgerMatchesTheirSum()
+        public void EveryTipOnTheBus_IsNonNegative_AndScoreMatchesTheirSum()
         {
             var sum = 0;
             _h.Bus.Subscribe<TipEarned>(e => { Assert.GreaterOrEqual(e.Amount, 0); sum += e.Amount; });
@@ -66,7 +66,7 @@ namespace UncannyValet.Tests.Integration
                 _h.LeaveSpot(t, spot);
                 _h.AtCurb(t);
             }
-            Assert.AreEqual(sum, _h.Ledger.TipsTonight);
+            Assert.AreEqual(sum, _h.Score.Score);
             Assert.AreEqual(0, _h.Registry.OpenCount);
         }
     }

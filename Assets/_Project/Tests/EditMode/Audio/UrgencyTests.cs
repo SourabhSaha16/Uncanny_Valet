@@ -83,10 +83,10 @@ namespace UncannyValet.Tests.Audio
             bus.Publish(new PickupRequested(Ticket(1), Car(1)));
             bus.Publish(new TicketTimerExpired(Ticket(1), Car(1), TimerKind.Pickup));
             Assert.AreEqual(1, tracker.Count);
-            bus.Publish(new NightEnded(1));
+            bus.Publish(new ShiftEnded());
             Assert.AreEqual(0, tracker.Count);
             bus.Publish(new TicketOpened(Ticket(3), Car(3), 45f));
-            bus.Publish(new NightStarted(2));
+            bus.Publish(new ShiftStarted());
             Assert.AreEqual(0, tracker.Count);
             tracker.Unsubscribe();
             bus.Publish(new TicketOpened(Ticket(4), Car(4), 45f));

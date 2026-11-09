@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UncannyValet.Bootstrap;
+using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Economy;
-using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UnityEngine;
 
@@ -15,37 +15,44 @@ namespace UncannyValet.Tests.Integration
         public void Seed_SeedsEveryKeyInTheCatalog()
         {
             var tuning = new TuningStore(new EventBus());
-            var run = ScriptableObject.CreateInstance<RunConfig>();
+            var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
             var tips = ScriptableObject.CreateInstance<TipConfig>();
-            var orders = ScriptableObject.CreateInstance<OrdersConfig>();
             try
             {
-                TuningSeeder.Seed(tuning, run, patrons, tips, orders, new NightPlan(), 12);
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 12);
                 foreach (var info in TuningCatalog.All)
                     Assert.IsTrue(tuning.TryGet(info.Key, out _), info.Key + " was not seeded");
             }
             finally
             {
-                Object.DestroyImmediate(run);
+                Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
                 Object.DestroyImmediate(tips);
-                Object.DestroyImmediate(orders);
             }
         }
 
         [Test]
-        public void OrdersConfig_SeedsOrderKeysWithItsValues()
+        public void Seed_UsesTheShiftLengthAndSpotCountFallback()
         {
             var tuning = new TuningStore(new EventBus());
-            var orders = ScriptableObject.CreateInstance<OrdersConfig>();
+            var shift = ScriptableObject.CreateInstance<ShiftConfig>();
+            var patrons = ScriptableObject.CreateInstance<PatronConfig>();
+            var tips = ScriptableObject.CreateInstance<TipConfig>();
             try
             {
-                orders.SeedInto(tuning);
-                Assert.AreEqual(orders.MaxStrikes, tuning.Get(TuningKey.MaxStrikes));
-                Assert.AreEqual(orders.MaxOpenOrders, tuning.Get(TuningKey.MaxOpenOrders));
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 12);
+                Assert.AreEqual(240f, tuning.Get(TuningKey.ShiftLengthSeconds));
+                Assert.AreEqual(12f, tuning.Get(TuningKey.PlanActiveSpots), "a plan of 0 opens every spot");
+                Assert.AreEqual(15f, patrons.ArrivalIntervalRange.x);
+                Assert.AreEqual(25f, patrons.ArrivalIntervalRange.y);
             }
-            finally { Object.DestroyImmediate(orders); }
+            finally
+            {
+                Object.DestroyImmediate(shift);
+                Object.DestroyImmediate(patrons);
+                Object.DestroyImmediate(tips);
+            }
         }
     }
 }

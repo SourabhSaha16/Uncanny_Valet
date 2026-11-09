@@ -2,14 +2,13 @@ using System;
 
 namespace UncannyValet.Night
 {
-    /// <summary>Turns minute-of-night into a 24-hour clock string such as "23:45". Wraps past midnight.</summary>
+    /// <summary>Turns seconds remaining into a countdown string such as "3:45". Rounds up so 0:00 means over.</summary>
     public static class ClockFormat
     {
-        public static string Format(float minuteOfNight, int startHour = 22)
+        public static string Format(float secondsRemaining)
         {
-            var total = startHour * 60 + (int)Math.Floor(Math.Max(0f, minuteOfNight));
-            total %= 24 * 60;
-            return $"{total / 60:00}:{total % 60:00}";
+            var total = (int)Math.Ceiling(Math.Max(0f, secondsRemaining));
+            return $"{total / 60}:{total % 60:00}";
         }
     }
 }

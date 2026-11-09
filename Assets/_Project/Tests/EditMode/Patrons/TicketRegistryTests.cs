@@ -11,8 +11,9 @@ namespace UncannyValet.Tests.Patrons
     {
         private class FakeClock : IGameClock
         {
-            public int Night => 1;
-            public float MinuteOfNight { get; set; }
+            public float SecondsRemaining => 0f;
+            public float ShiftLengthSeconds => 0f;
+            public float ElapsedMinutes { get; set; }
             public bool IsRunning => true;
         }
 
@@ -43,8 +44,8 @@ namespace UncannyValet.Tests.Patrons
 
         private void Tick(float minute)
         {
-            _clock.MinuteOfNight = minute;
-            _bus.Publish(new NightTick(1, minute));
+            _clock.ElapsedMinutes = minute;
+            _bus.Publish(new ShiftTick(minute));
         }
 
         [Test]
@@ -60,7 +61,7 @@ namespace UncannyValet.Tests.Patrons
             Tick(40f);
             Assert.AreEqual(TicketState.PickupRequested, ticket.State);
 
-            _clock.MinuteOfNight = 46f;
+            _clock.ElapsedMinutes = 46f;
             _bus.Publish(new CarAtCurb(_car));
 
             Assert.AreEqual(TicketState.Closed, ticket.State);
@@ -123,7 +124,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NightTick_BeforePark_DoesNotRequestPickup()
+        public void ShiftTick_BeforePark_DoesNotRequestPickup()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));
             Tick(10f);

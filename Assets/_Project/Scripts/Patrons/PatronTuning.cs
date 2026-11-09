@@ -19,9 +19,6 @@ namespace UncannyValet.Patrons
         public float GapMax => Read(TuningKey.ArrivalGapMaxMinutes, _config.ArrivalIntervalRange.y);
         public float ImpatientChance => Read(TuningKey.ImpatientChance, _config.ImpatientChance);
 
-        /// <summary>Night length in game minutes; 0 when unknown.</summary>
-        public float NightLength => Read(TuningKey.NightLengthMinutes, 0f);
-
         /// <summary>Charge and wash numbers for tickets created from now on.</summary>
         public ServiceTuning Service => new ServiceTuning(_config.Tuning.EvStartCharge,
             Read(TuningKey.ChargeMinutes, _config.ChargeMinutes), Read(TuningKey.WashMinutes, _config.WashMinutes));

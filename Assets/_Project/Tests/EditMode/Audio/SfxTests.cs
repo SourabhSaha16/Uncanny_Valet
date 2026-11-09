@@ -34,8 +34,8 @@ namespace UncannyValet.Tests.Audio
             router.Subscribe();
             bus.Publish(new CarEntered(new CarId(1)));
             bus.Publish(new TipEarned(new TicketId(1), 5));
-            bus.Publish(new NightEnded(1));
-            bus.Publish(new NextNightRequested(1));
+            bus.Publish(new ShiftEnded());
+            bus.Publish(new RetryShiftRequested());
             bus.Publish(new CarFullyCharged(new CarId(1)));
             bus.Publish(new CarCleaned(new CarId(1)));
             bus.Publish(new CarEnteredStation(new CarId(1), StationKind.Wash));

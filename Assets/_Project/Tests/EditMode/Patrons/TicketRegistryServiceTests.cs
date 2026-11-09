@@ -11,8 +11,9 @@ namespace UncannyValet.Tests.Patrons
     {
         private sealed class FakeClock : IGameClock
         {
-            public int Night => 1;
-            public float MinuteOfNight { get; set; }
+            public float SecondsRemaining => 0f;
+            public float ShiftLengthSeconds => 0f;
+            public float ElapsedMinutes { get; set; }
             public bool IsRunning => true;
         }
 
@@ -62,8 +63,8 @@ namespace UncannyValet.Tests.Patrons
 
         private void Tick(float minute)
         {
-            _clock.MinuteOfNight = minute;
-            _bus.Publish(new NightTick(1, minute));
+            _clock.ElapsedMinutes = minute;
+            _bus.Publish(new ShiftTick(minute));
         }
 
         private int Count<T>() where T : IGameEvent
@@ -178,7 +179,7 @@ namespace UncannyValet.Tests.Patrons
         public void NightEnd_ExplainsAllZeroWithReasonNone()
         {
             Arrive(false, false);
-            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new ShiftEnded());
             var e = (TipExplained)_log.Find(x => x is TipExplained);
             Assert.AreEqual(0, e.Breakdown.Total);
             Assert.AreEqual(TipZeroReason.None, e.Breakdown.ZeroReason);

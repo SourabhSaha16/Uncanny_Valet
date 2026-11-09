@@ -1,10 +1,10 @@
 using UncannyValet.Audio;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
+using UncannyValet.Core.Config;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
-using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -27,15 +27,12 @@ namespace UncannyValet.EditorTools
 
             var factory = Child<CarFactory>(root, "CarFactory");
             var lot = Child<LotLayoutBuilder>(root, "Lot");
-            var clock = Child<NightClock>(root, "NightClock");
+            var clock = Child<ShiftClock>(root, "ShiftClock");
             var spawner = Child<PatronSpawner>(root, "PatronSpawner");
             var overlay = Child<DebugOverlay>(root, "DebugOverlay");
             var tuningPanel = Child<TuningPanel>(root, "TuningPanel");
-            var summaryCard = Child<NightSummaryCard>(root, "NightSummaryCard");
+            var results = Child<ResultsScreen>(root, "ResultsScreen");
             var audio = Child<AudioDirector>(root, "AudioDirector");
-            var messagePanel = Child<MessagePanel>(root, "MessagePanel");
-            var orders = Child<BossOrderDirector>(root, "BossOrderDirector");
-            Set(messagePanel, "_tuningPanel", tuningPanel);
             var valet = BuildValet(root);
             var camera = BuildCamera();
 
@@ -43,14 +40,11 @@ namespace UncannyValet.EditorTools
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
-            var ordersConfig = RequireAsset<OrdersConfig>(ProjectSetup.OrdersConfigPath);
-            Set(orders, "_config", ordersConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
 
             var so = new SerializedObject(bootstrap);
-            so.FindProperty("_runConfig").objectReferenceValue = Load<RunConfig>("Assets/_Project/Data/Economy/RunConfig.asset");
+            so.FindProperty("_shiftConfig").objectReferenceValue = RequireAsset<ShiftConfig>(ProjectSetup.ShiftConfigPath);
             so.FindProperty("_tipConfig").objectReferenceValue = Load<TipConfig>("Assets/_Project/Data/Economy/TipConfig.asset");
-            so.FindProperty("_planConfig").objectReferenceValue = RequireAsset<NightPlanConfig>(ProjectSetup.NightPlanConfigPath);
             so.FindProperty("_patronConfig").objectReferenceValue = patronConfig;
             so.FindProperty("_tuningPanel").objectReferenceValue = tuningPanel;
             so.FindProperty("_carFactory").objectReferenceValue = factory;
@@ -60,11 +54,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_spawner").objectReferenceValue = spawner;
             so.FindProperty("_overlay").objectReferenceValue = overlay;
             so.FindProperty("_camera").objectReferenceValue = camera;
-            so.FindProperty("_summaryCard").objectReferenceValue = summaryCard;
+            so.FindProperty("_results").objectReferenceValue = results;
             so.FindProperty("_audio").objectReferenceValue = audio;
-            so.FindProperty("_messagePanel").objectReferenceValue = messagePanel;
-            so.FindProperty("_ordersConfig").objectReferenceValue = ordersConfig;
-            so.FindProperty("_orders").objectReferenceValue = orders;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

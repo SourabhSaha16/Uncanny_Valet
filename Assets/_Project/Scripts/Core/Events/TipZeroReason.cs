@@ -5,6 +5,7 @@ namespace UncannyValet.Core.Events
     {
         None,
         PickupExpired,
-        NotCleaned
+        NotCleaned,
+        Wrecked
     }
 }

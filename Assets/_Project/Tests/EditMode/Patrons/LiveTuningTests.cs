@@ -11,8 +11,9 @@ namespace UncannyValet.Tests.Patrons
     {
         private sealed class FakeClock : IGameClock
         {
-            public int Night => 1;
-            public float MinuteOfNight { get; set; }
+            public float SecondsRemaining => 0f;
+            public float ShiftLengthSeconds => 0f;
+            public float ElapsedMinutes { get; set; }
             public bool IsRunning => true;
         }
 
@@ -66,18 +67,17 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void Roller_UsesLiveGapStayAndLateEvChance_AndSurvivesPlanChange()
         {
-            _tuning.Seed(TuningKey.NightLengthMinutes, 100f);
             _tuning.Seed(TuningKey.ArrivalGapMaxMinutes, 12f);
             _tuning.Seed(TuningKey.StayMaxMinutes, 30f);
             var plan = new PatronPlan(3);
             var roller = new PatronRequestRoller(_config, _live, plan, new Scripted { Next = 0.4f });
-            plan.Apply(new NightPlan(1, 3, 2f, 0.1f, 0f, true, true, "", 0, 0.5f, 0.5f));
+            plan.Apply(new ShiftPlan(3, 2f, 0.1f, 0f, true, true, 0, 0.5f, 0.5f));
             Assert.AreEqual(24f, roller.NextGap(), 1e-4f);
-            Assert.IsFalse(roller.Roll(10f).IsEv);
-            Assert.IsTrue(roller.Roll(100f).IsEv);
-            Assert.AreEqual(30f, roller.Roll(10f).StayMinutes);
-            plan.Apply(new NightPlan(1, 3, 1f, 0.9f, 0f, true, true, ""));
-            Assert.IsTrue(roller.Roll(10f).IsEv);
+            Assert.IsFalse(roller.Roll(0.1f).IsEv);
+            Assert.IsTrue(roller.Roll(1f).IsEv);
+            Assert.AreEqual(30f, roller.Roll(0.1f).StayMinutes);
+            plan.Apply(new ShiftPlan(3, 1f, 0.9f, 0f, true, true));
+            Assert.IsTrue(roller.Roll(0.1f).IsEv);
             Assert.AreEqual(12f, roller.NextGap(), 1e-4f);
         }
 
@@ -88,11 +88,11 @@ namespace UncannyValet.Tests.Patrons
             var expired = 0;
             _bus.Subscribe<TicketTimerExpired>(e => expired++);
             registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 45f, 60f));
-            _clock.MinuteOfNight = 20f; _bus.Publish(new NightTick(1, 20f));
+            _clock.ElapsedMinutes = 20f; _bus.Publish(new ShiftTick(20f));
             Assert.AreEqual(0, expired);
             _tuning.Set(TuningKey.ParkWindowMinutes, 15f);
             _bus.Publish(new TuningChanged(TuningKey.ParkWindowMinutes, 15f));
-            _clock.MinuteOfNight = 21f; _bus.Publish(new NightTick(1, 21f));
+            _clock.ElapsedMinutes = 21f; _bus.Publish(new ShiftTick(21f));
             Assert.AreEqual(1, expired);
         }
 

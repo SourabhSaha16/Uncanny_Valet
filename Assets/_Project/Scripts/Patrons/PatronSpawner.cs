@@ -22,9 +22,10 @@ namespace UncannyValet.Patrons
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
         private int _nextCarId = 1;
-        private bool _nightOpen = true;
+        private bool _shiftOpen = true;
         private PatronPlan _plan;
         private PatronRequestRoller _roller;
+        private IGameClock _clock;
 
         public TicketRegistry Registry { get; private set; }
 
@@ -42,21 +43,23 @@ namespace UncannyValet.Patrons
             _plan = new PatronPlan(_config.MaxWaitingCars);
             var tuning = new PatronTuning(Services.Get<ITuning>(), _config);
             _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
-            Registry = new TicketRegistry(_bus, Services.Get<IGameClock>(), Services.Get<ITipCalculator>(), tuning);
+            _clock = Services.Get<IGameClock>();
+            Services.TryGet<IShiftScoreView>(out var score);
+            Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
             _departure = new PatronDeparture(_bus, _cars);
-            _bus.Subscribe<NightStarted>(OnNightStarted);
-            _bus.Subscribe<NightTick>(OnNightTick);
-            _bus.Subscribe<NightEnded>(OnNightEnded);
-            _bus.Subscribe<NightPlanChanged>(OnNightPlanChanged);
+            _bus.Subscribe<ShiftStarted>(OnShiftStarted);
+            _bus.Subscribe<ShiftTick>(OnShiftTick);
+            _bus.Subscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Subscribe<ShiftPlanChanged>(OnShiftPlanChanged);
         }
 
         private void OnDisable()
         {
             if (_bus == null) return;
-            _bus.Unsubscribe<NightStarted>(OnNightStarted);
-            _bus.Unsubscribe<NightTick>(OnNightTick);
-            _bus.Unsubscribe<NightEnded>(OnNightEnded);
-            _bus.Unsubscribe<NightPlanChanged>(OnNightPlanChanged);
+            _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
+            _bus.Unsubscribe<ShiftTick>(OnShiftTick);
+            _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Unsubscribe<ShiftPlanChanged>(OnShiftPlanChanged);
             Registry.Dispose();
             _departure.Dispose();
         }
@@ -68,7 +71,7 @@ namespace UncannyValet.Patrons
         public bool TrySpawn(PatronRequest request, out Ticket ticket)
         {
             ticket = null;
-            if (!_nightOpen) return false;
+            if (!_shiftOpen) return false;
             var scanned = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _plan.MaxWaitingCars);
             var blocked = _reservations.Merge(scanned, Registry);
             var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _plan.MaxWaitingCars, blocked);
@@ -81,21 +84,28 @@ namespace UncannyValet.Patrons
             return true;
         }
 
-        private void OnNightStarted(NightStarted e)
+        private void OnShiftStarted(ShiftStarted e)
         {
-            _nightOpen = true;
+            _shiftOpen = true;
             _nextArrivalMinute = 0f;
         }
 
-        private void OnNightEnded(NightEnded e) => _nightOpen = false;
+        private void OnShiftEnded(ShiftEnded e) => _shiftOpen = false;
 
-        private void OnNightPlanChanged(NightPlanChanged e) => _plan.Apply(e.Plan);
+        private void OnShiftPlanChanged(ShiftPlanChanged e) => _plan.Apply(e.Plan);
 
-        private void OnNightTick(NightTick e)
+        // How far into the shift we are, 0..1, from the clock's real seconds.
+        private float ShiftProgress()
         {
-            if (e.MinuteOfNight < _nextArrivalMinute) return;
-            if (!TrySpawn(_roller.Roll(e.MinuteOfNight), out _)) return;
-            _nextArrivalMinute = e.MinuteOfNight + _roller.NextGap();
+            var length = _clock.ShiftLengthSeconds;
+            return length > 0f ? Mathf.Clamp01(1f - _clock.SecondsRemaining / length) : 0f;
+        }
+
+        private void OnShiftTick(ShiftTick e)
+        {
+            if (e.ElapsedMinutes < _nextArrivalMinute) return;
+            if (!TrySpawn(_roller.Roll(ShiftProgress()), out _)) return;
+            _nextArrivalMinute = e.ElapsedMinutes + _roller.NextGap();
         }
     }
 }

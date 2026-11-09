@@ -18,20 +18,20 @@ namespace UncannyValet.Lot
         private void Start()
         {
             _bus = Services.Get<IEventBus>();
-            _bus.Subscribe<NightPlanChanged>(OnPlan);
+            _bus.Subscribe<ShiftPlanChanged>(OnPlan);
         }
 
         private void OnEnable()
         {
-            if (_bus != null) _bus.Subscribe<NightPlanChanged>(OnPlan);
+            if (_bus != null) _bus.Subscribe<ShiftPlanChanged>(OnPlan);
         }
 
         private void OnDisable()
         {
-            if (_bus != null) _bus.Unsubscribe<NightPlanChanged>(OnPlan);
+            if (_bus != null) _bus.Unsubscribe<ShiftPlanChanged>(OnPlan);
         }
 
-        private void OnPlan(NightPlanChanged e)
+        private void OnPlan(ShiftPlanChanged e)
         {
             var open = e.Plan.WashOpen;
             if (_wash.gameObject.activeSelf == open) return;
