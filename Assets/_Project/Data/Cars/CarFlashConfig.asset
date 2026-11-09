@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d034662935ea96c419cf2cfa444a880f, type: 3}
+  m_Name: CarFlashConfig
+  m_EditorClassIdentifier: UncannyValet.Cars::UncannyValet.Cars.CarFlashConfig
+  _minHz: 1
+  _maxHz: 6
+  _amberFrom: 0.6
+  _dangerFrom: 0.85
+  _calmColor: {r: 0.21960784, g: 0.8392157, b: 0.9411765, a: 1}
+  _amberColor: {r: 1, g: 0.6901961, b: 0.1254902, a: 1}
+  _dangerColor: {r: 1, g: 0.3529412, b: 0.16470589, a: 1}
+  _tagBackingColor: {r: 0.101960786, g: 0.08627451, b: 0.14901961, a: 1}
+  _tagSize: {x: 0.9, y: 0.34}
+  _tagBorder: 0.08
+  _outlinePadding: 0.18

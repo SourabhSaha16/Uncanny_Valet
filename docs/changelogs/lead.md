@@ -387,3 +387,9 @@ Date: 2026-11-09
 Files: docs/redesign/ui_style_guide.md
 Why: Human feedback with aerial car-park references after the first UI build.
 Tests: docs only.
+
+## lead: merge pivot-polish and rebuild site
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, new configs and metas, site/
+Why: Tag colours instead of car letters, pickup flash, info box after arrival, closer camera, crosswalks and pedestrians.
+Tests: 403 of 403 EditMode; batch setup compiled with no errors or sprite warnings; browser shows zoomed lot, crosswalk with arrows, walking pedestrians, tagged car; flash, info box and dirt/charge meters not yet seen in play.

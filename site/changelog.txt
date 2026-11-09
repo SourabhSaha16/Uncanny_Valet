@@ -1,4 +1,8 @@
 === Last 50 commits ===
+832d621  2026-11-09  lead: merge pivot-polish
+6570dd4  2026-11-09  pivot-polish: tag colours, flash, info box, zoom, pedestrians
+5c3294d  2026-11-09  lead: revise UI style guide after feedback
+19e5ef8  2026-11-09  lead: merge pivot-ui, rebuild site with pixel UI
 60da5a7  2026-11-09  lead: merge pivot-ui
 6f244e4  2026-11-09  pivot-ui: pixel UI kit, HUD, world tickets, results and title screens
 5567dd8  2026-11-09  lead: add UI style guide from art prompt deck
@@ -45,10 +49,6 @@ c4982be  2026-11-06  lead: add SpawnArriving and DriveAwayAndDespawn to ICarFact
 845c506  2026-11-06  lead: rebuild site for round 5
 582448a  2026-11-06  lead: merge round 5 modules, regenerate scene, update design
 ac2cd86  2026-11-06  lead: merge worktree-agent-a703ca379456fc8fb
-6015ea5  2026-11-06  lead: merge worktree-agent-ae4539f8f8528161c
-920f572  2026-11-06  lead: merge worktree-agent-af0b69962cee20673
-ede64dd  2026-11-06  lead: merge worktree-agent-a6db7aa90b03ae1ae
-d1cd687  2026-11-06  lead: merge worktree-agent-ad413ea46456c7dab
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -612,6 +612,18 @@ Files: docs/redesign/ui_style_guide.md
 Why: The human supplied a scene art prompt deck; the UI-relevant parts (style bible, cast, HUD, results, title) are kept for the UI agent.
 Tests: docs only.
 
+## lead: merge pivot-ui and rebuild site with pixel UI
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, metas, site/
+Why: Pixel-style HUD, floating tickets, results and title screens per docs/redesign/ui_style_guide.md.
+Tests: 363 of 363 EditMode; batch setup compiled cleanly; browser shows title, key-press start, HUD (clock, score and stars, key board) and a car driving in; one 404 resource error (not investigated).
+
+## lead: revise UI style guide (no car letters, flash urgency, info box, timing, zoom, pedestrians)
+Date: 2026-11-09
+Files: docs/redesign/ui_style_guide.md
+Why: Human feedback with aerial car-park references after the first UI build.
+Tests: docs only.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -818,6 +830,27 @@ Files:
 - Tests: Night/{ClockTests,TuningTests}, Economy/{ShiftScoreTests,ComboAndStarTests,TipCalculatorTests}, Integration/{ShiftHarness,FullShiftTests,EventLog,EventContractTests,PhysicsAndTipTests,TuningSeederTests}, UI/{ShiftFlowTests,ResultsFormatterTests}, plus mechanical event and clock renames in Patrons, Audio and Core tests.
 Why: chaos_redesign.md sections 3, 8 and 9. The mafia layer (debt, strikes, boss orders, phone UI, multi-night plan) is cut. A shift is 4 minutes from a ShiftConfig asset (length, star thresholds 150/300/450, $15 complaint penalty, combo cap 4x, pacing plan). ShiftClock counts real seconds down and publishes ShiftStarted, ShiftTick per game minute, ShiftLast30Seconds and ShiftEnded behind IGameClock. ShiftScore owns score, combo and complaints: a tip adds to the score and raises the combo, a $0 tip resets it, and either ticket timer running out (an angry patron) costs the penalty and resets it. The tip is base + speed + patience bonus + charge + clean, less damage stages, times the combo. Damage is an input defaulting to 0; nothing produces damage yet. Game minutes now default to one per real second, so patron windows (park 45, pickup 60, stay 20-45) read as seconds; arrivals are every 15-25 s. The Night assembly keeps its name (UncannyValet.Night) to avoid asmdef churn. The results screen shows stars, score and one Retry button (click, Enter or Space) that publishes RetryShiftRequested; ShiftFlow restarts the shift from a clean lot.
 Tests: added or rewrote EditMode tests for the shift timer and clock, plan source and live tuning, combo, stars, damage stages, patience bonus, complaint rules, the full shift loop, shift flow and results text. NOT run: Unity could not be launched in this sandbox, so compilation and the whole suite are unverified.
+
+=== docs/changelogs/pivot-polish.md ===
+# Pivot polish changelog
+
+Entries are added by the pivot-polish agent, one per commit. Format in docs/changelogs/README.md.
+Source: docs/redesign/ui_style_guide.md, "Revision 1" (binding).
+
+## pivot-polish: tag colours, flash, info box, zoom, pedestrians
+Date: 2026-11-09
+Files:
+- Core: added Scripts/Core/Config/TagPalette.cs (12 colours); Events/CarEvents.cs (CarLetterAssigned replaced by CarTagAssigned; new CarArrived).
+- Patrons: LetterPool replaced by TagPool; Ticket.Letter -> Ticket.Tag; TicketBook/TicketRegistry publish CarTagAssigned.
+- Cars: removed CarLabel, CarLabelMath; added CarKeyTag, CarFlashConfig, FlashLevel, PickupFlashMath; CarSorting (Label out, Outline/TagBacking/Tag in); CarFactory (flash config, key tag instead of label); CarAutoDrive publishes CarArrived when the drive-in ends.
+- UI: TicketRow (Tag, Arrived, Clean01, meter helpers), TicketBoard (tag, arrival, clean progress), PickupBannerFormatter (no letter; AppendAll), Hud/{WorldTicketLayout,WorldTicketPainter,KeyBoardPainter,NoticePainter}, Kit/PixelPalette (TagColor, Mud), GameUi.
+- Lot: added WalkwayStyle, WalkwayLayout, PaintedArrow, LotWalkwayArt; LotArtConfig (walkway style, camera view shares); LotDecor (aisle crossings and arrows, tighter ExtendView, WalkRoutes).
+- Pedestrians (new assembly UncannyValet.Pedestrians, references Core only): PedestrianConfig, PedestrianCrowd, PedestrianWalker, PedestrianPlan, PedestrianLook, RouteWalker, WalkAnimMath, WalkFacing.
+- Bootstrap: GameBootstrap (starts the crowd with LotDecor.WalkRoutes), CameraFollow (max zoom 16 -> 12.5, margin 2 -> 1); asmdef references.
+- Editor: BootstrapSceneBuilder (CarFlashConfig asset, Pedestrians object), Art/PedestrianArtBuilder; Editor and test asmdefs reference Pedestrians.
+- Tests: added Patrons/TagPoolTests, Cars/PickupFlashMathTests, Lot/WalkwayLayoutTests, Pedestrians/{RouteWalker,PedestrianPlan,WalkAnimMath}Tests; updated TicketRegistry*Tests, TicketBoardTests, PickupBannerTests, HudRulesTests; removed LetterPoolTests, CarLabelMathTests.
+Why: ui_style_guide.md Revision 1. Cars carry no letters: each open ticket gets the lowest unused colour of a 12-colour palette, drawn as a roof stripe on the car, on the floating info box, the key board row and the pickup banner. A requested pickup flashes the stripe and a ring around the car, 1 Hz rising to 6 Hz with the elapsed patience (real time), calm cyan, amber from 60% and orange-red from 85% or when expired (all in CarFlashConfig). The info box shows only needs (dirt meter that drains while washing, charge meter that fills and turns amber at full) and only after CarArrived until CarDeparted/ticket close. Camera zoom is about 22% closer. Pedestrians walk back and forth on routes computed by the lot (aisle crossings, the road crosswalk, the north sidewalk); scenery only, no collider.
+Tests: new EditMode fixtures listed above. NOT run: Unity could not be launched in this sandbox, so compilation and the suite are unverified. New .meta files (Pedestrians folder, asmdef, scripts, tests) are not committed; Unity creates them on first import.
 
 === docs/changelogs/pivot-ui.md ===
 # Pivot UI changelog

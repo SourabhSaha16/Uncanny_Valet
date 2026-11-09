@@ -45,3 +45,18 @@ MonoBehaviour:
   _tuftCount: 40
   _curbEdgeWidth: 0.15
   _curbPlateShare: {x: 0.5, y: 0.8}
+  _viewBuildingShare: 0.2
+  _viewRoadShare: 0.6
+  _walkway:
+    _crossingBars: 3
+    _barWidth: 0.45
+    _barGap: 0.45
+    _bayEntry: 1.5
+    _roadReach: 7
+    _northMargin: 2
+    _arrowLength: 1.5
+    _arrowThickness: 0.2
+    _arrowHeadLength: 0.6
+    _arrowHeadDegrees: 35
+    _laneInset: 1.25
+    _arrowColor: {r: 0.97, g: 0.97, b: 0.94, a: 0.9}
