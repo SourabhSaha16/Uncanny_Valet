@@ -60,3 +60,12 @@ These override anything above that conflicts.
 - **Timing.** A car's info box appears only after the car has finished driving in and stopped; never before it is visible.
 - **Camera.** Tighter framing than the first build: the play area still fits with a small street border, but zoomed in further so cars and people read bigger.
 - **Pedestrians and crosswalks.** Real car-park feel (see the human's aerial reference photos): zebra crosswalks across the drive aisles and between bay rows, painted arrows on the aisles, pedestrians walking on crosswalks and sidewalks in civilian outfits. Pedestrians are scenery for now (no collision or honk yet).
+
+## Revision 2 (2026-11-09, human feedback)
+
+Overrides earlier text where it conflicts.
+
+- **Legacy car meters removed.** No charge slider on the car and no timer fill bar under the car. The info box above the car is the only place for dirt and charge meters.
+- **Licence plate.** Each patron car shows a small licence-plate box under it: 3 letters then 3 numbers (for example ABC 123), pixel font on a light plate with a dark border. The plate is the car's identity: the key board rows show the same plate text. Plates are unique among open tickets.
+- **No colour band on the roof.** Instead the car sprite itself is tinted to a per-ticket colour (from the tag palette, softened so the outline and windows stay readable). The key board swatch uses the same colour. The pickup flash uses an outline/glow, not a roof stripe. The dirt tint stays.
+- **Car variety.** Use many different car sprites from the MetroCity car pack (not just a handful); EVs keep their own sprites.

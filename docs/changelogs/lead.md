@@ -393,3 +393,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Scenes/Bootstrap.unity, new configs and metas, site/
 Why: Tag colours instead of car letters, pickup flash, info box after arrival, closer camera, crosswalks and pedestrians.
 Tests: 403 of 403 EditMode; batch setup compiled with no errors or sprite warnings; browser shows zoomed lot, crosswalk with arrows, walking pedestrians, tagged car; flash, info box and dirt/charge meters not yet seen in play.
+
+## lead: UI style guide revision 2
+Date: 2026-11-09
+Files: docs/redesign/ui_style_guide.md
+Why: Human feedback: drop car meters and roof band, add licence plates, tint sprites, more car sprites.
+Tests: docs only.
