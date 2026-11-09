@@ -381,3 +381,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Scenes/Bootstrap.unity, metas, site/
 Why: Pixel-style HUD, floating tickets, results and title screens per docs/redesign/ui_style_guide.md.
 Tests: 363 of 363 EditMode; batch setup compiled cleanly; browser shows title, key-press start, HUD (clock, score and stars, key board) and a car driving in; one 404 resource error (not investigated).
+
+## lead: revise UI style guide (no car letters, flash urgency, info box, timing, zoom, pedestrians)
+Date: 2026-11-09
+Files: docs/redesign/ui_style_guide.md
+Why: Human feedback with aerial car-park references after the first UI build.
+Tests: docs only.

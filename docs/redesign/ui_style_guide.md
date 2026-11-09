@@ -49,3 +49,14 @@ Title UNCANNY VALET in big chunky pixel letters with a key-tag shape dotting the
 ## Tone and rules
 
 Bright, silly cartoon. Chaos is funny, never violent: no injuries, blood or weapons. Original work only: no copied characters, logos or UI from other games; invent all brand names; no real car brands.
+
+## Revision 1 (2026-11-09, human feedback after the first UI build)
+
+These override anything above that conflicts.
+
+- **No letters on cars.** Cars carry no letter label. Each open ticket has a colour code (key tag colour); the car shows it as a small tag or stripe, and the key board row, floating info box and tag all use the same colour.
+- **Pickup urgency is a flash.** A car whose patron wants it back flashes (colour tag or body outline). The flash frequency rises as the pickup patience runs down: slow while calm, fast near zero. Alarm colours still apply (amber while running low, orange-red when expired).
+- **Info box above the car** shows only what applies: a dirty icon with a dirt meter, a plug icon with a charge meter. No letter. Dirt keeps its dark-brown tint on the car body as well. A car with no needs shows no box.
+- **Timing.** A car's info box appears only after the car has finished driving in and stopped; never before it is visible.
+- **Camera.** Tighter framing than the first build: the play area still fits with a small street border, but zoomed in further so cars and people read bigger.
+- **Pedestrians and crosswalks.** Real car-park feel (see the human's aerial reference photos): zebra crosswalks across the drive aisles and between bay rows, painted arrows on the aisles, pedestrians walking on crosswalks and sidewalks in civilian outfits. Pedestrians are scenery for now (no collision or honk yet).
