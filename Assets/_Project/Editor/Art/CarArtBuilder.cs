@@ -11,12 +11,15 @@ namespace UncannyValet.EditorTools.Art
         private const string Sheet = "Cars/Cars-Sheet.png";
         private const string SheetName = "Cars-Sheet";
 
-        // (row, column) of tall top-down cells; colour variants of civilian cars.
+        // (row, column) of every top-down cell that fits the 1 x 2 car footprint: 12 civilian cars and the 2 police
+        // cars (same footprint, so spot fitting is unchanged). Ambulances (r0c2, r2c6) and the fire truck are left out:
+        // they are longer and would not fit. A car id also mirrors the sprite for half of the ids (CarArtMath.IsFlipped).
         private static readonly Vector2Int[] Regular =
         {
             new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(0, 5), new Vector2Int(0, 6),
             new Vector2Int(1, 1), new Vector2Int(1, 5), new Vector2Int(2, 0), new Vector2Int(2, 1),
-            new Vector2Int(2, 4), new Vector2Int(2, 5), new Vector2Int(3, 0), new Vector2Int(3, 5)
+            new Vector2Int(2, 4), new Vector2Int(2, 5), new Vector2Int(3, 0), new Vector2Int(3, 5),
+            new Vector2Int(1, 6), new Vector2Int(3, 1)
         };
 
         // Cyan-glow cells reserved for EVs.

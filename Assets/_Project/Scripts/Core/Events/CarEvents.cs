@@ -20,6 +20,14 @@ namespace UncannyValet.Core.Events
         public CarTagAssigned(CarId car, int tag) { Car = car; Tag = tag; }
     }
 
+    /// <summary>The car was given its licence plate (for example "ABC 123"), unique among open tickets, until its ticket ends.</summary>
+    public readonly struct CarPlateAssigned : IGameEvent
+    {
+        public readonly CarId Car;
+        public readonly string Plate;
+        public CarPlateAssigned(CarId car, string plate) { Car = car; Plate = plate; }
+    }
+
     /// <summary>An arriving car finished driving in and stopped; it is now on the lot like any other car.</summary>
     public readonly struct CarArrived : IGameEvent
     {

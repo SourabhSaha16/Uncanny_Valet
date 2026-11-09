@@ -50,6 +50,24 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
+        public void PickupWithPlate_NamesPlateThenSpot()
+        {
+            _bus.Publish(new CarPlateAssigned(new CarId(1), "BKT 482"));
+            Open(1, 1, 4, true);
+            _board.AppendPickups(_text, 3);
+            Assert.AreEqual("PICKUP: BKT 482 spot 4", _text.ToString());
+        }
+
+        [Test]
+        public void PickupWithPlateAndNoSpot_NamesPlateOnly()
+        {
+            _bus.Publish(new CarPlateAssigned(new CarId(1), "BKT 482"));
+            Open(1, 1, 0, true);
+            _board.AppendPickups(_text, 3);
+            Assert.AreEqual("PICKUP: BKT 482", _text.ToString());
+        }
+
+        [Test]
         public void UnknownSpot_ShowsPickupOnly()
         {
             Open(1, 2, 0, true);

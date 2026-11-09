@@ -12,6 +12,9 @@ namespace UncannyValet.Patrons
         /// <summary>The key-tag colour index (see TagPalette) held until the ticket ends.</summary>
         public int Tag { get; }
 
+        /// <summary>The licence plate (for example "BKT 482"), unique among open tickets; held until the ticket ends.</summary>
+        public string Plate { get; }
+
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
         public float ParkedMinute { get; private set; }
         public float PickupRequestMinute { get; private set; }
@@ -40,9 +43,9 @@ namespace UncannyValet.Patrons
         public bool CleanedDirty => IsDirty && Wash.IsClean;
         public bool UncleanedDirty => IsDirty && !Wash.IsClean;
 
-        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, ServiceTuning tuning)
+        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate, ServiceTuning tuning)
         {
-            TicketId = ticketId; CarId = carId; Request = request; Tag = tag;
+            TicketId = ticketId; CarId = carId; Request = request; Tag = tag; Plate = plate;
             ParkTimer = new TicketTimer(request.ParkWindowMinutes);
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
             Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);

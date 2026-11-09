@@ -3,17 +3,23 @@ using System.Text;
 
 namespace UncannyValet.UI
 {
-    /// <summary>Pure text rules for the pickup banner, e.g. "PICKUP: spot 4". The car is told apart by its tag colour. No Unity types.</summary>
+    /// <summary>Pure text rules for the pickup banner, e.g. "PICKUP: ABC 123 spot 4". The car is told apart by its plate and tag colour. No Unity types.</summary>
     public static class PickupBannerFormatter
     {
         /// <summary>No lot number known yet.</summary>
         public const int NoSpot = 0;
 
-        /// <summary>Appends one pickup line (no newline). The spot is left out when it is <see cref="NoSpot"/>.</summary>
-        public static void AppendPickup(StringBuilder text, int spot)
+        /// <summary>
+        /// Appends one pickup line (no newline): "PICKUP: ABC 123 spot 4". The plate is left out when empty and the
+        /// spot when it is <see cref="NoSpot"/>.
+        /// </summary>
+        public static void AppendPickup(StringBuilder text, string plate, int spot)
         {
             text.Append("PICKUP");
-            if (spot != NoSpot) text.Append(": spot ").Append(spot);
+            var hasPlate = !string.IsNullOrEmpty(plate);
+            if (hasPlate) text.Append(": ").Append(plate);
+            if (spot == NoSpot) return;
+            text.Append(hasPlate ? " spot " : ": spot ").Append(spot);
         }
 
         /// <summary>Appends the overflow line (no newline), e.g. "+2 more".</summary>
@@ -38,7 +44,7 @@ namespace UncannyValet.UI
                 if (row.State != TicketRowState.PickupRequested) continue;
                 if (lines >= maxLines) { hidden++; continue; }
                 if (lines++ > 0) text.Append('\n');
-                AppendPickup(text, row.Spot);
+                AppendPickup(text, row.Plate, row.Spot);
                 tags?.Add(row.Tag);
             }
             if (hidden == 0) return lines;

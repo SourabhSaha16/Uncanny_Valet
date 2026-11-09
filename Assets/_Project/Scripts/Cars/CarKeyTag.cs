@@ -7,59 +7,41 @@ using UnityEngine;
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// The ticket's key tag on a car: a small coloured stripe on the roof. Once the patron wants the car back, the
-    /// stripe and a ring around the car flash; the flash speeds up as the pickup patience runs out and turns amber,
-    /// then orange-red. The flash runs on real time (not game time) and allocates nothing.
+    /// The ticket's colour on the car: the body sprite is tinted to the tag colour (softened toward white). Once the
+    /// patron wants the car back, the tint pulses toward the alarm colour; the pulse speeds up as the pickup patience
+    /// runs out and turns amber, then orange-red. The pulse runs on real time (not game time) and allocates nothing.
+    /// A car without sprite art (coloured rectangle) is not tinted.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CarKeyTag : MonoBehaviour
     {
         private CarId _id;
         private CarFlashConfig _config;
-        private SpriteRenderer _stripe;
-        private SpriteRenderer _outline;
+        private CarBodyArt _art;
         private IEventBus _bus;
-        private Color _tagColor = TagPalette.Unknown;
+        private Color _tagColor = Color.white;
+        private Color _tint = Color.white;
+        private bool _isEv;
         private bool _flashing;
         private bool _expired;
         private float _elapsed01;
         private float _phase;
 
-        /// <summary>Adds the stripe, its dark border and the (hidden) outline to <paramref name="car"/>.</summary>
-        public static CarKeyTag Attach(GameObject car, CarId id, Vector2 carSize, Sprite sprite, CarFlashConfig config)
+        /// <summary>Adds the tint behaviour to <paramref name="car"/>; <paramref name="art"/> may be null (no tint).</summary>
+        public static CarKeyTag Attach(GameObject car, CarId id, CarBodyArt art, CarFlashConfig config)
         {
             var tag = car.AddComponent<CarKeyTag>();
             tag._id = id;
+            tag._art = art;
             tag._config = config;
-            var border = config.TagBorder * 2f;
-            Child(car, "KeyTagBacking", sprite, CarSorting.TagBacking, config.TagBackingColor,
-                (config.TagSize.x + border) / carSize.x, (config.TagSize.y + border) / carSize.y);
-            tag._stripe = Child(car, "KeyTag", sprite, CarSorting.Tag, TagPalette.Unknown,
-                config.TagSize.x / carSize.x, config.TagSize.y / carSize.y);
-            var pad = config.OutlinePadding * 2f;
-            tag._outline = Child(car, "PickupOutline", sprite, CarSorting.Outline, Color.white,
-                (carSize.x + pad) / carSize.x, (carSize.y + pad) / carSize.y);
-            tag._outline.enabled = false;
             return tag;
-        }
-
-        private static SpriteRenderer Child(GameObject car, string name, Sprite sprite, int order, Color color,
-            float scaleX, float scaleY)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(car.transform, false);
-            go.transform.localScale = new Vector3(scaleX, scaleY, 1f);
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.color = color;
-            renderer.sortingOrder = order;
-            return renderer;
         }
 
         private void OnEnable()
         {
             if (!Services.TryGet<IEventBus>(out _bus)) return;
             _bus.Subscribe<CarTagAssigned>(OnTag);
+            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Subscribe<PickupRequested>(OnPickup);
             _bus.Subscribe<TicketTimerChanged>(OnChanged);
             _bus.Subscribe<TicketTimerExpired>(OnExpired);
@@ -70,6 +52,7 @@ namespace UncannyValet.Cars
         {
             if (_bus == null) return;
             _bus.Unsubscribe<CarTagAssigned>(OnTag);
+            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
             _bus.Unsubscribe<TicketTimerChanged>(OnChanged);
             _bus.Unsubscribe<TicketTimerExpired>(OnExpired);
@@ -81,7 +64,20 @@ namespace UncannyValet.Cars
         {
             if (e.Car != _id) return;
             _tagColor = TagPalette.Get(e.Tag);
-            _stripe.color = _tagColor;
+            ApplyTint();
+        }
+
+        private void OnTraits(TicketTraitsAssigned e)
+        {
+            if (e.Car != _id) return;
+            _isEv = e.IsEv;
+            ApplyTint();
+        }
+
+        private void ApplyTint()
+        {
+            _tint = CarTintMath.BodyTint(_tagColor, _config.TintSoftness, _isEv, _config.EvTintStrength);
+            if (_art != null) _art.SetTint(_tint);
         }
 
         private void OnPickup(PickupRequested e)
@@ -107,21 +103,16 @@ namespace UncannyValet.Cars
         {
             if (e.Car != _id || !_flashing) return;
             _flashing = false;
-            _outline.enabled = false;
-            _stripe.color = _tagColor;
+            if (_art != null) _art.SetTint(_tint);
         }
 
         private void Update()
         {
-            if (!_flashing) return;
+            if (!_flashing || _art == null) return;
             var level = PickupFlashMath.Level(_elapsed01, _expired, _config.AmberFrom, _config.DangerFrom);
             var hz = PickupFlashMath.Frequency(_expired ? 1f : _elapsed01, _config.MinHz, _config.MaxHz);
             _phase = PickupFlashMath.Advance(_phase, hz, Time.unscaledDeltaTime);
-            var on = PickupFlashMath.IsOn(_phase);
-            var color = _config.ColorFor(level);
-            _outline.color = color;
-            _outline.enabled = on;
-            _stripe.color = on ? color : _tagColor;
+            _art.SetTint(CarTintMath.Pulse(_tint, _config.ColorFor(level), _config.PulseMix, PickupFlashMath.IsOn(_phase)));
         }
     }
 }

@@ -57,6 +57,42 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
+        public void FlipIsStableAndUsesBothLooks()
+        {
+            var flipped = 0;
+            for (var id = 1; id <= 200; id++)
+            {
+                Assert.AreEqual(CarArtMath.IsFlipped(id), CarArtMath.IsFlipped(id));
+                if (CarArtMath.IsFlipped(id)) flipped++;
+            }
+            Assert.That(flipped, Is.InRange(60, 140));
+        }
+
+        [Test]
+        public void FlipIsIndependentOfTheSpritePick()
+        {
+            var seen = new System.Collections.Generic.HashSet<int>();
+            for (var id = 1; id <= 400; id++)
+                if (CarArtMath.IsFlipped(id)) seen.Add(CarArtMath.PickIndex(id, 14));
+            Assert.AreEqual(14, seen.Count);
+        }
+
+        [Test]
+        public void EveryOneOfFourteenSpritesIsUsed()
+        {
+            var seen = new System.Collections.Generic.HashSet<int>();
+            for (var id = 1; id <= 100; id++) seen.Add(CarArtMath.PickIndex(id, 14));
+            Assert.AreEqual(14, seen.Count);
+        }
+
+        [Test]
+        public void MirrorCenterOnlyFlipsX()
+        {
+            Assert.AreEqual(new Vector2(-0.2f, 0.1f), CarArtMath.MirrorCenter(new Vector2(0.2f, 0.1f), true));
+            Assert.AreEqual(new Vector2(0.2f, 0.1f), CarArtMath.MirrorCenter(new Vector2(0.2f, 0.1f), false));
+        }
+
+        [Test]
         public void OnlyHalfTurnsAreAllowedAsRotationOffsets()
         {
             Assert.IsTrue(CarArtMath.IsHalfTurn(0f));

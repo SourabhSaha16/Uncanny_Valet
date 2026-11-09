@@ -35,30 +35,6 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
-        public void ChargeFillIsAnchoredToTheBottomBorder()
-        {
-            float usable = CarChargeBarMath.UsableFraction(1.3f, 0.05f);
-            float bottom = CarChargeBarMath.FillCentreY(0.4f, usable) - CarChargeBarMath.FillHeight(0.4f, usable) * 0.5f;
-            Assert.AreEqual(-usable * 0.5f, bottom, 1e-6f);
-            Assert.AreEqual(usable, CarChargeBarMath.FillHeight(2f, usable), 1e-6f);
-        }
-
-        [Test]
-        public void UsableFractionHandlesDegenerateSizes()
-        {
-            Assert.AreEqual(0f, CarChargeBarMath.UsableFraction(0f, 0.1f));
-            Assert.AreEqual(0f, CarChargeBarMath.UsableFraction(0.1f, 0.2f));
-            Assert.AreEqual(1f, CarChargeBarMath.UsableFraction(1f, 0f));
-        }
-
-        [Test]
-        public void FullDetection()
-        {
-            Assert.IsTrue(CarChargeBarMath.IsFull(1f));
-            Assert.IsFalse(CarChargeBarMath.IsFull(0.9f));
-        }
-
-        [Test]
         public void MudWipesLeftToRightKeepingRightEdge()
         {
             Assert.AreEqual(1f, CarMudMath.Width(0f), 1e-6f);

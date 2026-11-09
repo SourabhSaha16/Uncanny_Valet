@@ -35,11 +35,11 @@ namespace UncannyValet.Patrons
         }
 
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning,
-            IShiftScoreView score = null)
+            IShiftScoreView score = null, PlatePool plates = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
-            _book = new TicketBook(tuning);
+            _book = new TicketBook(tuning, plates);
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score);
             _stations = new StationService(bus, clock, _book);
             _bus.Subscribe<CarParked>(OnCarParked);
@@ -84,13 +84,14 @@ namespace UncannyValet.Patrons
 
         /// <summary>
         /// Announces a created ticket in the order listeners rely on: CarSpawned, TicketOpened, CarTagAssigned,
-        /// TicketTraitsAssigned, and only then the initial charge and clean levels.
+        /// CarPlateAssigned, TicketTraitsAssigned, and only then the initial charge and clean levels.
         /// </summary>
         public void AnnounceArrival(Ticket t)
         {
             _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
             _bus.Publish(new TicketOpened(t.TicketId, t.CarId, t.StayMinutes));
             _bus.Publish(new CarTagAssigned(t.CarId, t.Tag));
+            _bus.Publish(new CarPlateAssigned(t.CarId, t.Plate));
             _bus.Publish(new TicketTraitsAssigned(t.TicketId, t.CarId, t.IsEv, t.IsDirty));
             _stations.Announce(t);
         }

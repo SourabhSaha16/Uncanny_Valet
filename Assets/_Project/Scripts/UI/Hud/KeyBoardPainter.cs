@@ -7,27 +7,31 @@ namespace UncannyValet.UI.Hud
 {
     /// <summary>
     /// The key board panel at the bottom left: one row per open ticket with its coloured key tag (the same colour
-    /// as the tag on the car), a car icon, the spot number and a patience bar. Most urgent tickets first.
+    /// as the car body), the licence plate, the spot number and a patience bar. Most urgent tickets first.
     /// </summary>
     public sealed class KeyBoardPainter
     {
         private const int Margin = 4;
-        private const int Width = 104;
+        private const int Width = 124;
         private const int RowHeight = 13;
         private const int HeaderHeight = 10;
         private const int Border = 3;
         private const int MaxRows = 5;
-        private const int BarOffset = 56;
-        private const int BarWidth = 42;
+        private const int PlateOffset = 13;
+        private const int SpotOffset = 63;
+        private const int BarOffset = 85;
+        private const int BarWidth = 30;
         private const int BarHeight = 5;
         private const float BlinkPeriod = 0.5f;
         private const float PickupGlow = 0.35f;
 
         private readonly PixelCanvas _canvas;
+        private readonly PlatePainter _plates;
 
         public KeyBoardPainter(PixelCanvas canvas)
         {
             _canvas = canvas;
+            _plates = new PlatePainter(canvas);
         }
 
         public void Draw(List<TicketRow> rows, float time)
@@ -60,9 +64,9 @@ namespace UncannyValet.UI.Hud
                 _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
             }
             _canvas.Icon(PixelIcon.KeyTag, x + 2, y + 2, 1, PixelPalette.TagColor(row.Tag));
-            _canvas.Icon(PixelIcon.Car, x + 15, y + 3, 1, Color.white);
-            DrawSpot(row.Spot, x + 30, y + 3);
-            DrawBar(row, x + BarOffset - Border, y + 4);
+            if (row.HasPlate) _plates.Draw(row.Plate, x + PlateOffset, y + 1, PixelPalette.Ink);
+            DrawSpot(row.Spot, x + SpotOffset, y + 3);
+            DrawBar(row, x + BarOffset, y + 4);
         }
 
         private void DrawSpot(int spot, int x, int y)

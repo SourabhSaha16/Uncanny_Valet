@@ -5,7 +5,8 @@ namespace UncannyValet.Cars
 {
     /// <summary>
     /// Draws the car's top-down sprite as a child "Body" that rotates with the car. Regular and EV sprites are
-    /// picked from the car id once; <see cref="SetEv"/> swaps between them. Never touches materials.
+    /// picked from the car id once (and mirrored for half of the ids); <see cref="SetEv"/> swaps between them and
+    /// <see cref="SetTint"/> colours the body. Never touches materials.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CarBodyArt : MonoBehaviour
@@ -14,6 +15,7 @@ namespace UncannyValet.Cars
         private CarSpriteEntry _regular;
         private CarSpriteEntry _ev;
         private Vector2 _carSize;
+        private bool _flipped;
 
         /// <summary>Adds the body child to <paramref name="car"/> showing the regular sprite.</summary>
         public static CarBodyArt Attach(GameObject car, CarArtConfig art, CarId id, Vector2 carSize)
@@ -26,12 +28,16 @@ namespace UncannyValet.Cars
             body._carSize = carSize;
             body._regular = art.PickCar(id.Value);
             body._ev = art.PickEv(id.Value);
+            body._flipped = CarArtMath.IsFlipped(id.Value);
             body.Show(body._regular);
             return body;
         }
 
         /// <summary>Shows the EV sprite (when one exists) or the regular one.</summary>
         public void SetEv(bool isEv) => Show(isEv && _ev != null ? _ev : _regular);
+
+        /// <summary>Multiplies the sprite by <paramref name="tint"/> (white leaves it as drawn). Uses the renderer colour.</summary>
+        public void SetTint(Color tint) => _renderer.color = tint;
 
         private void Show(CarSpriteEntry entry)
         {
@@ -44,8 +50,9 @@ namespace UncannyValet.Cars
                 Debug.LogError("Car sprite rotation offset must be 0 or 180: " + entry.Sprite.name, this);
             var uniform = CarArtMath.UniformScale(entry.ContentSize, _carSize);
             var scale = CarArtMath.LocalScale(uniform, _carSize);
-            var offset = CarArtMath.LocalOffset(entry.ContentCenter, uniform, _carSize, entry.RotationOffsetDegrees);
+            var offset = CarArtMath.LocalOffset(CarArtMath.MirrorCenter(entry.ContentCenter, _flipped), uniform, _carSize, entry.RotationOffsetDegrees);
             _renderer.sprite = entry.Sprite;
+            _renderer.flipX = _flipped;
             transform.localScale = new Vector3(scale.x, scale.y, 1f);
             transform.localPosition = new Vector3(offset.x, offset.y, 0f);
             transform.localRotation = Quaternion.Euler(0f, 0f, entry.RotationOffsetDegrees);

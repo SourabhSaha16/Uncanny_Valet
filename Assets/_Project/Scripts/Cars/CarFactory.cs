@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UncannyValet.Cars
 {
-    /// <summary>Builds and removes cars. Cars are generated coloured rectangles (placeholder art).</summary>
+    /// <summary>Builds and removes cars. Cars use the top-down sprites of the CarArtConfig, or coloured rectangles without one.</summary>
     public sealed class CarFactory : MonoBehaviour, ICarFactory
     {
         [SerializeField] private CarDefinition _defaultDefinition;
@@ -14,7 +14,7 @@ namespace UncannyValet.Cars
         [SerializeField, Tooltip("Top-down car sprites. Empty: cars are coloured rectangles.")]
         private CarArtConfig _art;
 
-        [SerializeField, Tooltip("Key-tag stripe and pickup flash tunables.")]
+        [SerializeField, Tooltip("Body tint and pickup flash tunables.")]
         private CarFlashConfig _flash;
 
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
@@ -94,9 +94,9 @@ namespace UncannyValet.Cars
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
             go.AddComponent<CarAutoDrive>();
-            AttachLooks(go, id, def, renderer, AttachBodyArt(go, id, def, renderer));
-            CarTimerFill.Attach(go, id, def, GetSprite());
-            CarKeyTag.Attach(go, id, def.Size, GetSprite(), FlashConfig());
+            var art = AttachBodyArt(go, id, def, renderer);
+            AttachLooks(go, id, def, renderer, art);
+            CarKeyTag.Attach(go, id, art, FlashConfig());
             return driver;
         }
 
@@ -120,9 +120,8 @@ namespace UncannyValet.Cars
         {
             var sprite = GetSprite();
             if (art == null) CarMirrors.Attach(go, def.Size, def.Mirrors, sprite); // sprites have their own mirrors
-            var bar = CarChargeBar.Attach(go, id, def.Size, def.ChargeBar, sprite);
             var mud = CarMudOverlay.Attach(go, id, def, sprite);
-            CarTraitLook.Attach(go, id, def, body, bar, mud, art);
+            CarTraitLook.Attach(go, id, def, body, mud, art);
         }
 
         private Sprite GetSprite()

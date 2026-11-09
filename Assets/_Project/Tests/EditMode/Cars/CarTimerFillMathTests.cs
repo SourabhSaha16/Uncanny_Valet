@@ -43,15 +43,5 @@ namespace UncannyValet.Tests.Cars
             Assert.AreEqual(0.2f, CarTimerFillMath.Smooth(0.2f, 0.8f, 0f, 0.1f), 1e-6f);
             Assert.AreEqual(0.2f, CarTimerFillMath.Smooth(0.2f, 0.8f, 4f, -1f), 1e-6f);
         }
-
-        [Test]
-        public void OverlayIsAnchoredToTheBottomEdge()
-        {
-            Assert.AreEqual(-0.5f, CarTimerFillMath.CentreY(0f), 1e-6f);
-            Assert.AreEqual(0f, CarTimerFillMath.CentreY(1f), 1e-6f);
-            float fill = 0.3f;
-            float bottom = CarTimerFillMath.CentreY(fill) - CarTimerFillMath.HeightScale(fill) * 0.5f;
-            Assert.AreEqual(-0.5f, bottom, 1e-6f);
-        }
     }
 }

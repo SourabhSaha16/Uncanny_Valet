@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// Applies a ticket's traits to the car's look once they arrive: EVs get a blue body and a charge bar,
+    /// Applies a ticket's traits to the car's look once they arrive: EVs swap to an EV sprite (or a blue body),
     /// dirty cars get the mud overlay. Until then the car looks normal.
     /// </summary>
     [DisallowMultipleComponent]
@@ -15,24 +15,22 @@ namespace UncannyValet.Cars
         private CarId _id;
         private CarDefinition _definition;
         private SpriteRenderer _body;
-        private GameObject _chargeBar;
         private GameObject _mud;
         private CarBodyArt _art;
         private IEventBus _bus;
 
         /// <summary>
-        /// Adds the component to <paramref name="car"/>. The bar and mud children start inactive.
+        /// Adds the component to <paramref name="car"/>. The mud child starts inactive.
         /// With <paramref name="art"/> an EV swaps its sprite; without it the body colour changes.
         /// </summary>
         public static CarTraitLook Attach(GameObject car, CarId id, CarDefinition definition,
-            SpriteRenderer body, CarChargeBar chargeBar, CarMudOverlay mud, CarBodyArt art = null)
+            SpriteRenderer body, CarMudOverlay mud, CarBodyArt art = null)
         {
             var look = car.AddComponent<CarTraitLook>();
             look._art = art;
             look._id = id;
             look._definition = definition;
             look._body = body;
-            look._chargeBar = chargeBar.gameObject;
             look._mud = mud.gameObject;
             return look;
         }
@@ -55,7 +53,6 @@ namespace UncannyValet.Cars
             if (e.Car != _id) return;
             if (_art != null) _art.SetEv(e.IsEv);
             else _body.color = e.IsEv ? _definition.EvBodyColor : _definition.Color;
-            _chargeBar.SetActive(e.IsEv);
             _mud.SetActive(e.IsDirty);
         }
     }
