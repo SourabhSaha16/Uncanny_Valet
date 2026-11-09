@@ -61,6 +61,14 @@ MonoBehaviour:
     _contentSize: {x: 1.25, y: 2.0625}
     _contentCenter: {x: 0, y: -0.0625}
     _rotationOffsetDegrees: 0
+  - _sprite: {fileID: 7942811073291243708, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+    _contentSize: {x: 1.25, y: 2.0625}
+    _contentCenter: {x: 0, y: -0.0625}
+    _rotationOffsetDegrees: 0
+  - _sprite: {fileID: 6799578558289645722, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+    _contentSize: {x: 1.25, y: 2.09375}
+    _contentCenter: {x: 0, y: -0.046875}
+    _rotationOffsetDegrees: 0
   _evCars:
   - _sprite: {fileID: -5713700162401032198, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
     _contentSize: {x: 1.25, y: 2}

@@ -1,4 +1,8 @@
 === Last 50 commits ===
+1acd085  2026-11-09  lead: merge pivot-plates
+5831ff6  2026-11-09  pivot-plates: licence plates, tinted car bodies, remove legacy meters
+14806da  2026-11-09  lead: UI style guide revision 2
+ba1e09d  2026-11-09  lead: merge pivot-polish, rebuild site
 832d621  2026-11-09  lead: merge pivot-polish
 6570dd4  2026-11-09  pivot-polish: tag colours, flash, info box, zoom, pedestrians
 5c3294d  2026-11-09  lead: revise UI style guide after feedback
@@ -45,10 +49,6 @@ a8721e6  2026-11-06  lead: merge worktree-agent-a4a208a169e2d01ff
 83923fd  2026-11-06  cars: drive-in/drive-out cars and wipe-away mud
 e76c830  2026-11-06  integration: pickup banner shows car letter and spot
 3525332  2026-11-06  patrons: use SpawnArriving and DriveAwayAndDespawn, reserve slots
-c4982be  2026-11-06  lead: add SpawnArriving and DriveAwayAndDespawn to ICarFactory
-845c506  2026-11-06  lead: rebuild site for round 5
-582448a  2026-11-06  lead: merge round 5 modules, regenerate scene, update design
-ac2cd86  2026-11-06  lead: merge worktree-agent-a703ca379456fc8fb
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -624,6 +624,18 @@ Files: docs/redesign/ui_style_guide.md
 Why: Human feedback with aerial car-park references after the first UI build.
 Tests: docs only.
 
+## lead: merge pivot-polish and rebuild site
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, new configs and metas, site/
+Why: Tag colours instead of car letters, pickup flash, info box after arrival, closer camera, crosswalks and pedestrians.
+Tests: 403 of 403 EditMode; batch setup compiled with no errors or sprite warnings; browser shows zoomed lot, crosswalk with arrows, walking pedestrians, tagged car; flash, info box and dirt/charge meters not yet seen in play.
+
+## lead: UI style guide revision 2
+Date: 2026-11-09
+Files: docs/redesign/ui_style_guide.md
+Why: Human feedback: drop car meters and roof band, add licence plates, tint sprites, more car sprites.
+Tests: docs only.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -830,6 +842,28 @@ Files:
 - Tests: Night/{ClockTests,TuningTests}, Economy/{ShiftScoreTests,ComboAndStarTests,TipCalculatorTests}, Integration/{ShiftHarness,FullShiftTests,EventLog,EventContractTests,PhysicsAndTipTests,TuningSeederTests}, UI/{ShiftFlowTests,ResultsFormatterTests}, plus mechanical event and clock renames in Patrons, Audio and Core tests.
 Why: chaos_redesign.md sections 3, 8 and 9. The mafia layer (debt, strikes, boss orders, phone UI, multi-night plan) is cut. A shift is 4 minutes from a ShiftConfig asset (length, star thresholds 150/300/450, $15 complaint penalty, combo cap 4x, pacing plan). ShiftClock counts real seconds down and publishes ShiftStarted, ShiftTick per game minute, ShiftLast30Seconds and ShiftEnded behind IGameClock. ShiftScore owns score, combo and complaints: a tip adds to the score and raises the combo, a $0 tip resets it, and either ticket timer running out (an angry patron) costs the penalty and resets it. The tip is base + speed + patience bonus + charge + clean, less damage stages, times the combo. Damage is an input defaulting to 0; nothing produces damage yet. Game minutes now default to one per real second, so patron windows (park 45, pickup 60, stay 20-45) read as seconds; arrivals are every 15-25 s. The Night assembly keeps its name (UncannyValet.Night) to avoid asmdef churn. The results screen shows stars, score and one Retry button (click, Enter or Space) that publishes RetryShiftRequested; ShiftFlow restarts the shift from a clean lot.
 Tests: added or rewrote EditMode tests for the shift timer and clock, plan source and live tuning, combo, stars, damage stages, patience bonus, complaint rules, the full shift loop, shift flow and results text. NOT run: Unity could not be launched in this sandbox, so compilation and the whole suite are unverified.
+
+=== docs/changelogs/pivot-plates.md ===
+# Pivot plates changelog
+
+Source: docs/redesign/ui_style_guide.md, "Revision 2" (binding).
+
+## pivot-plates: licence plates, tinted car bodies, remove legacy meters
+Date: 2026-11-09
+Files:
+- Cars: removed CarChargeBar, CarChargeBarMath, CarChargeBarStyle, CarTimerFill (and their CarDefinition fields ChargeBar, ParkFillColor, PickupFillColor; CarSorting layers Outline/TimerFill/ChargeTrack/ChargeFill/TagBacking/Tag). CarTimerFillMath keeps only Smooth (used by the mud wipe). CarKeyTag rewritten: no roof stripe or rectangular ring; it tints the body sprite and pulses the tint toward the alarm colour while a pickup is wanted. New CarTintMath (pure). CarBodyArt gains SetTint and left-right mirroring; CarArtMath gains IsFlipped, MirrorCenter and a murmur-style hash for PickIndex; CarFlashConfig now holds tint softness, EV tint strength, pulse mix and the flash tunables (shape fields removed); CarFactory/CarTraitLook updated.
+- Core: CarEvents adds CarPlateAssigned (additive).
+- Patrons: new PlateFormat (3 letters from BCDFGHJKLMNPRSTVWXZ + 3 digits), PlatePool (unique among held plates, IPatronRandom injected), SeededPatronRandom (xorshift32); Ticket.Plate; TicketBook owns the pool (default seed 20261109, injectable) and releases the plate in Remove/ResetTags; TicketRegistry takes an optional PlatePool and publishes CarPlateAssigned after CarTagAssigned.
+- UI: TicketRow.Plate/HasPlate, TicketBoard (CarPlateAssigned), PickupBannerFormatter ("PICKUP: ABC 123 spot 4"), new Hud/PlateLayout and Hud/PlatePainter, WorldTicketPainter draws a plate under every ticketed car (border and glow flash from the pickup request, faster as patience runs out, alarm colours), KeyBoardPainter shows tag swatch, plate, spot and a shorter patience bar (car icon removed, panel 124 wide), GameUi passes the time.
+- Editor: CarArtBuilder adds the two police cells (14 regular sprites, 2 EV).
+- Tests: added Patrons/PlateTests, Patrons/TicketPlateTests, Cars/CarTintMathTests, UI/PlateUiTests; extended CarArtMathTests and PickupBannerTests; removed the charge-bar and timer-overlay maths tests.
+Why: ui_style_guide.md Revision 2. The info box above the car is the only place for dirt and charge meters; the plate is the car's identity on the lot, key board and pickup banner; the ticket colour is the car body tint (softened toward white, EVs only lightly); more car looks from Cars-Sheet. CarChargeChanged and the timer events stay: TicketBoard, the info box and audio still use them.
+Tests: new and extended EditMode fixtures listed above. NOT run: Unity could not be launched in this sandbox, so compilation and the suite are unverified. New .meta files are not committed; Unity creates them on first import.
+
+### Decisions to know
+- Plate drawn with the existing pixel kit (UI canvas projected from the car, like the info box), not a world sprite: the kit has the font, and the text is a cached string per ticket row so nothing allocates per frame; no per-plate texture is needed. It keeps a fixed pixel size (does not scale with camera zoom), under the car in screen space.
+- Pickup flash: plate border plus glow, and a body tint pulse. A sprite-shaped silhouette outline was not done: it needs a flat silhouette texture (Read/Write sprites or a shader), which cannot be checked here.
+- Car variety: Cars-Sheet has only 12 civilian and 2 EV top-down cells (all were already used; the rest are side views, ambulances or the fire truck). Variety now comes from adding the 2 police cells (same footprint), mirroring each sprite for half of the car ids, and the per-ticket tint. Ambulances (longer) and the fire truck are excluded.
 
 === docs/changelogs/pivot-polish.md ===
 # Pivot polish changelog

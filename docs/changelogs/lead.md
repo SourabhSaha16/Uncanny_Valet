@@ -399,3 +399,9 @@ Date: 2026-11-09
 Files: docs/redesign/ui_style_guide.md
 Why: Human feedback: drop car meters and roof band, add licence plates, tint sprites, more car sprites.
 Tests: docs only.
+
+## lead: merge pivot-plates and rebuild site
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, configs, metas, site/
+Why: Licence plates, tinted car bodies, legacy car meters and roof stripe removed, police sprites added.
+Tests: 442 of 442 EditMode; batch setup clean; browser shows plate DLZ 595 under the car and on the key board, no meters or roof band.
