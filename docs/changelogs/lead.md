@@ -417,3 +417,9 @@ Date: 2026-11-09
 Files: Patrons/SeededPatronRandom.cs, Assets scene and metas, docs/design.md, site/
 Why: Short plates, patron and ambient people flows, face-down delivery, bell on key board, audio mix, headlights. Regression found by PlateTests: xorshift gave near-zero first output for small seeds, so the seed is now scrambled.
 Tests: 482 of 482 EditMode; browser check: closer zoom, plate ZR 9, walkers in the lot, no new console errors.
+
+## lead: save Patron Director spec
+Date: 2026-11-09
+Files: docs/redesign/patron_director_spec.md, docs/decisions.md
+Why: Human supplied the spec; agents implement it in stages.
+Tests: docs only.
