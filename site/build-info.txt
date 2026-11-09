@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  1acd085
-Subject: lead: merge pivot-plates
-Date:    2026-11-09 14:32:52 -0800
+Commit:  77143b0
+Subject: lead: merge pivot-crowd
+Date:    2026-11-09 15:12:34 -0800

@@ -11,7 +11,8 @@ namespace UncannyValet.Patrons
 
         public SeededPatronRandom(int seed)
         {
-            _state = (uint)seed;
+            // Scramble the seed so small seeds (1, 2, ...) do not start with near-zero outputs.
+            _state = (uint)seed * ZeroSeedFallback;
             if (_state == 0u) _state = ZeroSeedFallback;
         }
 

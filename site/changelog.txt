@@ -1,4 +1,8 @@
 === Last 50 commits ===
+77143b0  2026-11-09  lead: merge pivot-crowd
+49b4d0e  2026-11-09  pivot-crowd: short plates, pickup bell, walking patrons, face-down delivery, headlights
+18b210b  2026-11-09  lead: make design.md a living doc with the current chaos design
+f57ff6f  2026-11-09  lead: merge pivot-plates, rebuild site
 1acd085  2026-11-09  lead: merge pivot-plates
 5831ff6  2026-11-09  pivot-plates: licence plates, tinted car bodies, remove legacy meters
 14806da  2026-11-09  lead: UI style guide revision 2
@@ -45,10 +49,6 @@ ddfcd48  2026-11-06  lead: rebuild site for round 6
 c0f7ac9  2026-11-06  lead: debt $500, round 6 docs
 730f6e0  2026-11-06  lead: merge worktree-agent-ab18f0de0cd1fddce
 3b5c541  2026-11-06  lead: merge worktree-agent-a2c5058bb112f5187
-a8721e6  2026-11-06  lead: merge worktree-agent-a4a208a169e2d01ff
-83923fd  2026-11-06  cars: drive-in/drive-out cars and wipe-away mud
-e76c830  2026-11-06  integration: pickup banner shows car letter and spot
-3525332  2026-11-06  patrons: use SpawnArriving and DriveAwayAndDespawn, reserve slots
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -636,6 +636,18 @@ Files: docs/redesign/ui_style_guide.md
 Why: Human feedback: drop car meters and roof band, add licence plates, tint sprites, more car sprites.
 Tests: docs only.
 
+## lead: merge pivot-plates and rebuild site
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, configs, metas, site/
+Why: Licence plates, tinted car bodies, legacy car meters and roof stripe removed, police sprites added.
+Tests: 442 of 442 EditMode; batch setup clean; browser shows plate DLZ 595 under the car and on the key board, no meters or roof band.
+
+## lead: rewrite design.md as a living document (Part A current, Part B legacy)
+Date: 2026-11-09
+Files: docs/design.md, docs/status.md, docs/decisions.md
+Why: Human asked to keep the game design updated with every change. Part A records the chaos redesign as built, in progress and planned, with a Design log.
+Tests: docs only.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -842,6 +854,26 @@ Files:
 - Tests: Night/{ClockTests,TuningTests}, Economy/{ShiftScoreTests,ComboAndStarTests,TipCalculatorTests}, Integration/{ShiftHarness,FullShiftTests,EventLog,EventContractTests,PhysicsAndTipTests,TuningSeederTests}, UI/{ShiftFlowTests,ResultsFormatterTests}, plus mechanical event and clock renames in Patrons, Audio and Core tests.
 Why: chaos_redesign.md sections 3, 8 and 9. The mafia layer (debt, strikes, boss orders, phone UI, multi-night plan) is cut. A shift is 4 minutes from a ShiftConfig asset (length, star thresholds 150/300/450, $15 complaint penalty, combo cap 4x, pacing plan). ShiftClock counts real seconds down and publishes ShiftStarted, ShiftTick per game minute, ShiftLast30Seconds and ShiftEnded behind IGameClock. ShiftScore owns score, combo and complaints: a tip adds to the score and raises the combo, a $0 tip resets it, and either ticket timer running out (an angry patron) costs the penalty and resets it. The tip is base + speed + patience bonus + charge + clean, less damage stages, times the combo. Damage is an input defaulting to 0; nothing produces damage yet. Game minutes now default to one per real second, so patron windows (park 45, pickup 60, stay 20-45) read as seconds; arrivals are every 15-25 s. The Night assembly keeps its name (UncannyValet.Night) to avoid asmdef churn. The results screen shows stars, score and one Retry button (click, Enter or Space) that publishes RetryShiftRequested; ShiftFlow restarts the shift from a clean lot.
 Tests: added or rewrote EditMode tests for the shift timer and clock, plan source and live tuning, combo, stars, damage stages, patience bonus, complaint rules, the full shift loop, shift flow and results text. NOT run: Unity could not be launched in this sandbox, so compilation and the whole suite are unverified.
+
+=== docs/changelogs/pivot-crowd.md ===
+# Pivot crowd changelog
+
+Source: docs/redesign/ui_style_guide.md, "Revision 3" (binding).
+
+## pivot-crowd: short plates, pickup bell, walking patrons, face-down delivery, headlights, closer zoom, audio mix
+Date: 2026-11-09
+Files:
+- Patrons: PlateFormat (2 letters + space + 1 digit, 3610 plates), PlatePool (documented duplicate fallback when exhausted), new CurbCall (stay over: send the patron to the curb, request the pickup on PatronReachedCurb or after a fallback timeout), Ticket (Summoned/SummonedMinute), TicketRegistry (CurbWalkTimeoutMinutes, PatronReachedCurb), PatronDeparture (delivered car waits for PatronBoarded or a game-minute timeout, or ShiftEnded), PatronConfig (CurbWalkTimeoutMinutes 40, BoardingTimeoutMinutes 6), PatronSpawner.
+- Core (additive): events PatronSummoned, PatronReachedCurb, PatronBoarded (TicketEvents), CurbFacingChanged (CarEvents); contracts ICurbFacing, IPatronLocator, IPedestrianPaths.
+- Lot: new CurbFacingRule (pure), PedestrianPathMap (pure routes: road crosswalk, strip, north sidewalk, door, curb standing spots), CurbZone (facing condition and hint events), StopZone (Accepts/OnForget hooks), LotConfig (curb facing tolerance 35), WalkwayStyle (curb arrows, standing spots, door), LotWalkwayArt (public Arrow, ChevronDown), LotCurbArt (down arrows and chevrons on the curb), WalkwayLayout.StripX, LotDecor (Paths replaces WalkRoutes).
+- Pedestrians: replaced the looping walkers with a pooled state machine: PedestrianPhase, PedestrianBrain, PathFollower, WalkerRouter, PatronWalkers, PedestrianCrowd, PedestrianWalker, PedestrianConfig (ambient flow and patron pool tunables). Removed RouteWalker and PedestrianPlan.RouteFor/StartFraction.
+- Cars: new CarHeadlights, CarHeadlightMath, CarFlashConfig headlight tunables, CarSorting.Glow/Headlight, CarFactory.
+- UI: PlateLayout/PlatePainter (narrow word gap, car-width plates), WorldTicketPainter (plate as wide as the car), KeyBoardPainter (bell and flashing highlight via new PickupMark, narrower panel), new CurbHintTracker and Hud/CurbHintPainter (PLEASE PARK IT PROPERLY), GameUi, NoticePainter (banner removed), TicketBoard (PickupCount and AppendPickups removed), PixelPalette (PanelCyan removed). Removed PickupBannerFormatter.
+- Audio: AudioConfig defaults sfx 0.4, music 0.2 (asset updated).
+- Bootstrap: CameraFit (pure), CameraFollow (fit tightness 0.87, play area never cropped), GameBootstrap (registers IPedestrianPaths and IPatronLocator, Begin()).
+- Tests: added PlateTests (3610 plates, exhaustion), PlateUiTests, PickupMarkTests, CurbFacingRuleTests, PedestrianPathMapTests, CarHeadlightMathTests, PedestrianBrainTests, PathFollowerTests, PatronWalkTimingTests, CameraFitTests; removed PickupBannerTests, RouteWalkerTests and the old route-plan tests.
+Why: Revision 3. Timing change: a patron is no longer "ready" the moment the stay ends. The stay (game minutes) still ends the same way, but it only summons the patron; the pickup (and its patience) starts when the patron stands at the curb, so pickups now come the walk time later (about 20 to 30 s real time at the default clock). Without a crowd the pickup is requested after CurbWalkTimeoutMinutes. Existing registry tests keep the old instant behaviour because the timeout defaults to 0 outside PatronSpawner.
+Tests: NOT run: Unity could not be launched in this sandbox, so compilation and the suite are unverified. New .meta files are not committed.
 
 === docs/changelogs/pivot-plates.md ===
 # Pivot plates changelog

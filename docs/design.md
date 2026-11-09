@@ -58,20 +58,22 @@ Car presentation (all per ticket):
 - A MetroCity top-down car sprite (14 regular and 2 EV cells), picked by a stable hash of the car id, half of
   them mirrored. The body is tinted to the ticket's colour (softened; EVs lightly). Dirty cars keep the
   dark-brown mud tint with a left-to-right wipe as they are washed.
-- Licence plate under the car, the car's identity: 3 letters + 3 numbers today; changing to 2 letters + 1 digit
-  at the car's width (in progress). Alphabet BCDFGHJKLMNPRSTVWXZ, unique among open tickets.
+- Licence plate under the car, the car's identity: 2 letters + 1 digit (for example ZR 9), sized to the car's
+  width but never smaller than the smallest readable box (about 8 px wider than the car at the current zoom).
+  Alphabet BCDFGHJKLMNPRSTVWXZ, unique among open tickets (a duplicate is issued if the 3610 combinations run out).
 - An info box above the car, only when something applies: dirty icon with a dirt meter, plug icon with a
   charge meter (amber at full). It appears only after the car has arrived.
 - Pickup urgency flashes the plate border and pulses the body tint, faster as patience runs down (1 to 6 Hz;
   cyan, then amber from 60%, orange-red from 85% or expired).
 - No letters on cars, no roof band, no charge slider, no timer bar (all removed).
-- Headlight highlights at the front so the player can read the car's facing (in progress).
+- Headlight highlights (two bright dots and a warm glow) at the nose of every car so the player can read the
+  facing; tunables in `CarFlashConfig` (small at the current zoom, to be checked in play).
 
 HUD (480x270 virtual canvas, integer-scaled, pixel font): shift clock top centre (amber at 30 s, blinking
 orange-red at 10 s); coin score with three stars top left; combo badge top right; key board bottom left
 listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel.
-Pickup will be shown on the key board with a bell and cyan highlight, and the separate pickup banner is removed
-(in progress).
+Pickup is shown on the key board row with a bell and cyan highlight, flashing with the urgency maths; the
+separate pickup banner is gone.
 
 ## A5. The lot and people
 
@@ -80,17 +82,19 @@ Pickup will be shown on the key board with a bell and cyan highlight, and the se
 - Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
 - 8 ambient pedestrians loop on fixed routes (MetroCity character parts, 4-direction run cycles). Scenery only
   for now: no collision, no honk.
-- Patron flow (in progress): the patron steps out of the arrived car, crosses to the diner and goes inside;
-  when it is time, they come out, cross to the curb and wait. The pickup is requested only when they stand at
-  the curb. Ambient walkers come from the road sides, enter the diner and come out again.
-- Delivery rule (in progress): the patron accepts the car only when it faces down the screen toward the road
-  within a tolerance (default 35 degrees); otherwise a hint over the patron reads PLEASE PARK IT PROPERLY. The
-  curb is marked with a downward arrow. On delivery the patron gets in and the car drives away.
+- Patron flow: the patron steps out of the arrived car, crosses to the diner and goes inside; when the stay
+  ends they come out (PatronSummoned), cross to the curb and wait. The pickup and its patience timer start only
+  when they stand at the curb (PatronReachedCurb; fallback after 40 game minutes). Ambient walkers come from
+  the road sides, walk to the diner door, vanish inside and come out again. Walkers have no colliders, so routes
+  may cut through hedges and bays until tuned.
+- Delivery rule: the patron accepts the car only when it faces down the screen toward the road within a
+  tolerance (35 degrees, `LotConfig`); otherwise an amber hint over the patron reads PLEASE PARK / IT PROPERLY.
+  The curb zone has two painted down arrows with chevrons (not clearly visible in the first check). On
+  delivery the patron walks to the car and boards, then the car drives away (boarding timeout 6 game minutes).
 
 ## A6. Audio
 
-Synthesised music and effects (no external assets), driven by events. Mix tweak (in progress): effects about
--2 dB, background about +2 to +3 dB. Combo stems, last-30-seconds tension and the title groove are planned.
+Synthesised music and effects (no external assets), driven by events. Mix: sound effects 0.4 (was 0.5), music 0.2 (was 0.15) in `AudioConfig`. Combo stems, last-30-seconds tension and the title groove are planned.
 
 ## A7. Architecture today
 
@@ -106,7 +110,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (442 at the last full run).
+- Tests: EditMode suite (482 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -115,7 +119,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Shift clock, score, combo, stars, results, retry | done |
 | Title screen, pixel HUD, key board, floating info boxes | done |
 | Diner lot art, car sprites and tint, valet animation, crosswalks, ambient pedestrians | done |
-| Plates (2+1), headlights, face-down delivery rule, patron walk flow, bell on key board, audio mix | in progress |
+| Plates (2+1), headlights, face-down delivery rule, patron walk flow, bell on key board, audio mix, more zoom | done, first browser check only (curb arrows and headlights hard to see; full flow not played) |
 | Car controller upgrade: handbrake drift, grip, speed-scaled steering, forgiving parking, Perfect Park | planned (P1 scope in the redesign) |
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
@@ -135,7 +139,7 @@ the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor 
 | 2026-11-09 | Pixel UI kit, HUD, title and results screens (style guide `docs/redesign/ui_style_guide.md`) |
 | 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
 | 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
-| 2026-11-09 | Play-test notes: plate to 2+1 at car width, more zoom, people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrow, headlights (in progress) |
+| 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
 
 ---
 

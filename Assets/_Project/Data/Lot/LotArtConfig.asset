@@ -59,4 +59,12 @@ MonoBehaviour:
     _arrowHeadLength: 0.6
     _arrowHeadDegrees: 35
     _laneInset: 1.25
+    _curbArrowLength: 2.2
+    _curbArrowSideShare: 0.3
+    _curbChevronGap: 0.35
+    _waitInset: 0.9
+    _waitSpacing: 1.6
+    _waitSlots: 3
+    _doorDepth: 0.9
+    _offscreenReach: 3
     _arrowColor: {r: 0.97, g: 0.97, b: 0.94, a: 0.9}

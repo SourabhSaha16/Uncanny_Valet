@@ -411,3 +411,9 @@ Date: 2026-11-09
 Files: docs/design.md, docs/status.md, docs/decisions.md
 Why: Human asked to keep the game design updated with every change. Part A records the chaos redesign as built, in progress and planned, with a Design log.
 Tests: docs only.
+
+## lead: merge pivot-crowd, fix seeded random, update design doc, rebuild site
+Date: 2026-11-09
+Files: Patrons/SeededPatronRandom.cs, Assets scene and metas, docs/design.md, site/
+Why: Short plates, patron and ambient people flows, face-down delivery, bell on key board, audio mix, headlights. Regression found by PlateTests: xorshift gave near-zero first output for small seeds, so the seed is now scrambled.
+Tests: 482 of 482 EditMode; browser check: closer zoom, plate ZR 9, walkers in the lot, no new console errors.
