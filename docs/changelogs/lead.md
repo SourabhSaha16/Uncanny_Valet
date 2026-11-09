@@ -369,3 +369,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Scenes/Bootstrap.unity, art configs, metas, site/
 Why: Diner lot, car sprites and valet animation from the imported MetroCity art.
 Tests: 338 of 338 EditMode; batch setup had no compile errors or missing-sprite warnings; browser shows the lot, a car sprite and the valet.
+
+## lead: add UI style guide from the scene art prompt deck
+Date: 2026-11-09
+Files: docs/redesign/ui_style_guide.md
+Why: The human supplied a scene art prompt deck; the UI-relevant parts (style bible, cast, HUD, results, title) are kept for the UI agent.
+Tests: docs only.
