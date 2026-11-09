@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713ddf60a4de67b4f97efeea3a014101, type: 3}
+  m_Name: LotArtConfig
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotArtConfig
+  _sidewalkTile: {fileID: -4748896761462124804, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  _roadDashTile: {fileID: -2288154472176348966, guid: 9ac52e6aa1293d9499f42d2038fbbcd9, type: 3}
+  _building: {fileID: -4412302423581473963, guid: 5862f98fc14b7ae479b1abee3e4a4524, type: 3}
+  _trees:
+  - {fileID: -5840967280191564666, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
+  - {fileID: 7735485415467158797, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
+  - {fileID: -6356453886549294554, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
+  - {fileID: 3506270956788260121, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
+  _tufts:
+  - {fileID: -1872832332641563131, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  - {fileID: 6467901759567576838, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  - {fileID: 6467901759567576838, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  - {fileID: 6467901759567576838, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  - {fileID: 6467901759567576838, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  - {fileID: 6467901759567576838, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
+  _grassColor: {r: 0.4627451, g: 0.7529412, b: 0.2784314, a: 1}
+  _asphaltColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
+  _hedgeColor: {r: 0.2, g: 0.42, b: 0.22, a: 1}
+  _crosswalkColor: {r: 0.97, g: 0.97, b: 0.94, a: 1}
+  _curbEdgeColor: {r: 0.95, g: 0.78, b: 0.15, a: 1}
+  _curbPlateColor: {r: 0, g: 0, b: 0, a: 0.45}
+  _sidewalkDepth: 1.5
+  _roadHeight: 3
+  _sideReach: 8
+  _grassReach: 40
+  _crosswalkOffset: 5
+  _crosswalkBars: 5
+  _crosswalkBarWidth: 0.45
+  _crosswalkBarGap: 0.45
+  _dashTileShift: 0.27
+  _tuftCount: 40
+  _curbEdgeWidth: 0.15
+  _curbPlateShare: {x: 0.5, y: 0.8}

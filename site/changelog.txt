@@ -1,4 +1,8 @@
 === Last 50 commits ===
+8e90c19  2026-11-09  lead: merge pivot-visuals
+4954df3  2026-11-09  pivot-visuals: MetroCity art for diner lot, cars and valet
+e4289b8  2026-11-09  lead: changelog check skips commits already on main
+6fc81bf  2026-11-09  lead: rebuild site for pivot shifts and scoring
 e434fdb  2026-11-09  lead: regenerate scene and metas after pivot-core
 fd2f4a9  2026-11-09  lead: merge pivot-core
 7717f0d  2026-11-09  pivot-core: replace nights, debt and boss orders with scored shifts
@@ -45,10 +49,6 @@ d1cd687  2026-11-06  lead: merge worktree-agent-ad413ea46456c7dab
 20c2954  2026-11-06  patrons: live tuning, late EV surge, charge spots
 29bd52e  2026-11-06  economy-night: faster pacing, layered unlocks, live tuning
 8df46eb  2026-11-06  audio: tempo rises with waiting cars
-e129498  2026-11-06  lead: add ITuning, TuningKey catalog and late EV fields on NightPlan
-5dc9324  2026-11-06  lead: rebuild site with Schedule A pacing and closed spots
-0f896c7  2026-11-06  lead: apply Schedule A pacing, closed spots, $250 debt
-691a997  2026-11-06  lead: merge agent/lot closed spots
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -588,6 +588,18 @@ Files: Assets/_Project/Scenes/Bootstrap.unity, Data/Shift/ShiftConfig.asset, new
 Why: pivot-core could not run Unity; ProjectSetup.RunBatch builds ShiftConfig and the shift scene.
 Tests: 317 of 317 EditMode passed (old night/orders tests removed with their code).
 
+## lead: rebuild site for pivot step 2-3 (shifts, score, results)
+Date: 2026-11-09
+Files: site/
+Why: First pivot/chaos publish; replaces the live site per the human. 4-minute shift, score, combo, stars, retry; art not yet in use.
+Tests: 317 of 317 EditMode; browser smoke test shows shift clock, score overlay and car A with no console errors.
+
+## lead: changelog check ignores commits already on main for a new branch
+Date: 2026-11-09
+Files: tools/check-changelog.sh
+Why: The first push of pivot/chaos failed CI because the check walked the whole history, including two old main commits without entries.
+Tests: ran the script locally against HEAD with a zero base: passes.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -794,6 +806,34 @@ Files:
 - Tests: Night/{ClockTests,TuningTests}, Economy/{ShiftScoreTests,ComboAndStarTests,TipCalculatorTests}, Integration/{ShiftHarness,FullShiftTests,EventLog,EventContractTests,PhysicsAndTipTests,TuningSeederTests}, UI/{ShiftFlowTests,ResultsFormatterTests}, plus mechanical event and clock renames in Patrons, Audio and Core tests.
 Why: chaos_redesign.md sections 3, 8 and 9. The mafia layer (debt, strikes, boss orders, phone UI, multi-night plan) is cut. A shift is 4 minutes from a ShiftConfig asset (length, star thresholds 150/300/450, $15 complaint penalty, combo cap 4x, pacing plan). ShiftClock counts real seconds down and publishes ShiftStarted, ShiftTick per game minute, ShiftLast30Seconds and ShiftEnded behind IGameClock. ShiftScore owns score, combo and complaints: a tip adds to the score and raises the combo, a $0 tip resets it, and either ticket timer running out (an angry patron) costs the penalty and resets it. The tip is base + speed + patience bonus + charge + clean, less damage stages, times the combo. Damage is an input defaulting to 0; nothing produces damage yet. Game minutes now default to one per real second, so patron windows (park 45, pickup 60, stay 20-45) read as seconds; arrivals are every 15-25 s. The Night assembly keeps its name (UncannyValet.Night) to avoid asmdef churn. The results screen shows stars, score and one Retry button (click, Enter or Space) that publishes RetryShiftRequested; ShiftFlow restarts the shift from a clean lot.
 Tests: added or rewrote EditMode tests for the shift timer and clock, plan source and live tuning, combo, stars, damage stages, patience bonus, complaint rules, the full shift loop, shift flow and results text. NOT run: Unity could not be launched in this sandbox, so compilation and the whole suite are unverified.
+
+=== docs/changelogs/pivot-visuals.md ===
+# pivot-visuals changelog
+
+## pivot-visuals: MetroCity art for the diner lot, cars and valet
+Date: 2026-11-09
+Files: Scripts/Lot/{LotArtConfig,DecorLayout,SpriteTiler,LotDecor,LotCurbArt,LotLayoutBuilder,SpotBuilder}.cs, Scripts/Cars/{CarSpriteEntry,CarArtConfig,CarArtMath,CarBodyArt,CarFactory,CarTraitLook}.cs, Scripts/Valet/{ValetFacing,ValetAnimMath,ValetArtConfig,ValetAnimator}.cs, Scripts/Bootstrap/GameBootstrap.cs, Editor/{BootstrapSceneBuilder}.cs, Editor/Art/{ArtSprites,ArtAssetUtil,LotArtBuilder,CarArtBuilder,ValetArtBuilder}.cs, Tests/EditMode/{Cars/CarArtMathTests,Valet/ValetAnimMathTests,Lot/DecorLayoutTests}.cs, docs/changelogs/pivot-visuals.md
+Why: the human wants to see the imported MetroCity art (chaos_redesign.md pivot; sprite names from pivot-art.md). Unity could not be launched: nothing here was compiled or run.
+Tests: three new EditMode fixtures (car art maths, valet animation maths, decor layout); not run.
+
+### Lot (step 1)
+- LotDecor (new, sibling of the Lot object, same origin, built at Awake) draws: grass, a south sidewalk, a 3 unit road with the dashed Road.png tile and code-drawn crosswalk bars (the Road.png crosswalk tiles only fit crossroads), a far sidewalk, a north sidewalk, the tan green-roof house as the diner, 8 trees (Tree-Sheet) and grass tufts. Placement is the pure DecorLayout around the largest lot frame (LotGeometry.Bounds).
+- The lot logic is untouched. Visual changes: ground colour = asphalt sampled from Road.png, walls = hedge green, spots = painted white bays on the asphalt (pad takes the asphalt colour), curb = cobble tiles with a yellow edge and a dark plate behind CURB. Charging bays keep their blue paint.
+- Camera: GameBootstrap widens the measured lot bounds vertically with LotDecor.ExtendView so the road and diner are in frame (zoom is capped at 16 by CameraFollow; beyond that it follows the valet).
+- Sprites that are auto-sliced (Tiles, Buildings) are found by a pixel inside them (LotArtBuilder: cobble 264,40; house 1147,645; tufts), not by index.
+
+### Cars (step 2)
+- CarArtConfig holds 12 regular cells and 2 EV cells of Cars-Sheet (r0c0 r0c1 r0c5 r0c6 r1c1 r1c5 r2c0 r2c1 r2c4 r2c5 r3c0 r3c5; EV r1c0 r3c4). Each entry stores the opaque size and centre, measured by the editor builder. A car id picks its sprite by a stable hash.
+- CarBodyArt (child "Body", order 10) scales the sprite uniformly so its opaque length equals the CarDefinition length, centred on the car. EVs swap to an EV sprite on TicketTraitsAssigned (no tint). The root rectangle is hidden, mirrors are skipped; mud, timer fill, charge bar and letter label are unchanged. Without a CarArtConfig the old rectangles still work.
+- Per-sprite rotation offset: CarSpriteEntry rotation (0 or 180 only, because the car root is scaled non-uniformly). CarArtBuilder.RotationOffset (0) is applied to every entry.
+
+### Valet (step 3)
+- ValetAnimator stacks Model (skin row 0), Outfit1 and Hairs row 0 as three SpriteRenderers (orders 20 to 22), reads Rigidbody2D.linearVelocity and shows frame = floor(movingSeconds x 10 fps) mod 6 of the facing group, or frame 0 when still. Facing is the dominant velocity axis (ValetAnimMath). No allocations in Update.
+- Groups: Down cols 0-5, Right 6-11, Up 12-17, Left 18-23; flip flags in ValetArtConfig. Valet scale is 1.4 (collider radius 0.3, about the old world size).
+- GameBootstrap no longer paints the valet yellow when a ValetAnimator exists.
+
+### Build
+Setup > Build Everything now also creates Data/Lot/LotArtConfig, Data/Cars/CarArtConfig and Data/Valet/ValetArtConfig and wires them (factory, lot, decor, valet animator, bootstrap).
 
 === docs/changelogs/qa.md ===
 # QA changelog

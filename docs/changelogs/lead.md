@@ -363,3 +363,9 @@ Date: 2026-11-09
 Files: tools/check-changelog.sh
 Why: The first push of pivot/chaos failed CI because the check walked the whole history, including two old main commits without entries.
 Tests: ran the script locally against HEAD with a zero base: passes.
+
+## lead: merge pivot-visuals and rebuild site with MetroCity art
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, art configs, metas, site/
+Why: Diner lot, car sprites and valet animation from the imported MetroCity art.
+Tests: 338 of 338 EditMode; batch setup had no compile errors or missing-sprite warnings; browser shows the lot, a car sprite and the valet.
