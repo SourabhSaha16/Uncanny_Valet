@@ -3,10 +3,10 @@ using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Storage for open tickets, looked up by ticket or car. Owns the car letters held by those tickets.</summary>
+    /// <summary>Storage for open tickets, looked up by ticket or car. Owns the tag colours held by those tickets.</summary>
     public sealed class TicketBook
     {
-        private readonly LetterPool _letters = new LetterPool();
+        private readonly TagPool _tags = new TagPool();
         private readonly Dictionary<int, Ticket> _byTicket = new Dictionary<int, Ticket>();
         private readonly Dictionary<int, Ticket> _byCar = new Dictionary<int, Ticket>();
         private int _nextId = 1;
@@ -29,25 +29,25 @@ namespace UncannyValet.Patrons
             }
         }
 
-        /// <summary>Creates a ticket with the lowest free letter and stores it.</summary>
+        /// <summary>Creates a ticket with the lowest free tag colour and stores it.</summary>
         public Ticket Add(CarId car, PatronRequest request)
         {
-            var ticket = new Ticket(new TicketId(_nextId++), car, request, _letters.Acquire(), Tuning);
+            var ticket = new Ticket(new TicketId(_nextId++), car, request, _tags.Acquire(), Tuning);
             _byTicket[ticket.TicketId.Value] = ticket;
             _byCar[car.Value] = ticket;
             return ticket;
         }
 
-        /// <summary>Forgets a ticket and frees its letter.</summary>
+        /// <summary>Forgets a ticket and frees its tag.</summary>
         public void Remove(Ticket t)
         {
             _byTicket.Remove(t.TicketId.Value);
             _byCar.Remove(t.CarId.Value);
-            _letters.Release(t.Letter);
+            _tags.Release(t.Tag);
         }
 
-        /// <summary>Makes every letter free again (start of a shift); call only when no ticket is open.</summary>
-        public void ResetLetters() { if (_byTicket.Count == 0) _letters.Reset(); }
+        /// <summary>Makes every tag free again (start of a shift); call only when no ticket is open.</summary>
+        public void ResetTags() { if (_byTicket.Count == 0) _tags.Reset(); }
 
         public bool TryGet(TicketId id, out Ticket ticket) => _byTicket.TryGetValue(id.Value, out ticket);
 

@@ -33,6 +33,13 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0)] private int _tuftCount = 40;
         [SerializeField, Min(0.01f)] private float _curbEdgeWidth = 0.15f;
         [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.5f, 0.8f);
+        [Header("Camera view")]
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the diner's height kept in view above the lot (the rest is cropped).")]
+        private float _viewBuildingShare = 0.2f;
+        [SerializeField, Min(0f), Tooltip("Road and sidewalk kept in view below the lot, as a share of their depth.")]
+        private float _viewRoadShare = 0.6f;
+        [Header("Walkways")]
+        [SerializeField] private WalkwayStyle _walkway = new WalkwayStyle();
 
         public Sprite SidewalkTile => _sidewalkTile;
         public Sprite RoadDashTile => _roadDashTile;
@@ -57,5 +64,8 @@ namespace UncannyValet.Lot
         public int TuftCount => _tuftCount;
         public float CurbEdgeWidth => _curbEdgeWidth;
         public Vector2 CurbPlateShare => _curbPlateShare;
+        public float ViewBuildingShare => _viewBuildingShare;
+        public float ViewRoadShare => _viewRoadShare;
+        public WalkwayStyle Walkway => _walkway;
     }
 }

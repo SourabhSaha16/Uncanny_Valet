@@ -1,3 +1,4 @@
+using UncannyValet.Core.Config;
 using UnityEngine;
 
 namespace UncannyValet.UI.Kit
@@ -25,16 +26,13 @@ namespace UncannyValet.UI.Kit
         public static readonly Color PanelCream = new Color32(0xE8, 0xDC, 0xB8, 255);
         public static readonly Color Dim = new Color(0f, 0f, 0f, 0.55f);
 
-        private static readonly Color[] KeyTags =
-        {
-            new Color32(0xE5, 0x48, 0x3C, 255), new Color32(0xF0, 0x8A, 0x2C, 255),
-            new Color32(0xF2, 0xD0, 0x30, 255), new Color32(0x4C, 0xCB, 0x5E, 255),
-            new Color32(0x28, 0xB8, 0xA8, 255), new Color32(0x3F, 0x7F, 0xE0, 255),
-            new Color32(0x8E, 0x5C, 0xD0, 255), new Color32(0xE8, 0x6A, 0xB0, 255),
-        };
+        /// <summary>Dark brown of the dirt meter, matching the mud on a dirty car.</summary>
+        public static readonly Color Mud = new Color32(0x7A, 0x4E, 0x2A, 255);
 
-        /// <summary>The key tag colour for a spot; spot 0 (not parked) is grey.</summary>
-        public static Color KeyTag(int spot)
-            => spot <= 0 ? Grey : KeyTags[(spot - 1) % KeyTags.Length];
+        /// <summary>The key tag colour for a spot number (title screen decoration); spot 0 is grey.</summary>
+        public static Color KeyTag(int spot) => spot <= 0 ? Grey : TagPalette.Get(spot - 1);
+
+        /// <summary>The key tag colour of a ticket's tag index; an unknown tag is grey.</summary>
+        public static Color TagColor(int tag) => TagPalette.Get(tag);
     }
 }

@@ -33,21 +33,21 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void LetterBeforeTicket_IsShown()
+        public void TagBeforeTicket_IsShown()
         {
-            _bus.Publish(new CarLetterAssigned(C, 'B'));
+            _bus.Publish(new CarTagAssigned(C, 1));
             _bus.Publish(new TicketOpened(T, C, 60f));
-            Assert.AreEqual('B', Only().Letter);
+            Assert.AreEqual(1, Only().Tag);
         }
 
         [Test]
-        public void LetterAfterTicket_IsShownWithItsTimer()
+        public void TagAfterTicket_IsShownWithItsTimer()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new CarLetterAssigned(C, 'A'));
+            _bus.Publish(new CarTagAssigned(C, 0));
             _bus.Publish(new TicketTimerChanged(T, C, TimerKind.Park, 0.5f));
             var row = Only();
-            Assert.AreEqual('A', row.Letter);
+            Assert.AreEqual(0, row.Tag);
             Assert.IsTrue(row.HasTimer);
             Assert.AreEqual(0.5f, row.Elapsed01, 0.001f);
         }
@@ -55,7 +55,7 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void ParkedStopsTimer_ThenPickupExpiresLate()
         {
-            _bus.Publish(new CarLetterAssigned(C, 'A'));
+            _bus.Publish(new CarTagAssigned(C, 0));
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarParked(C, 3));
             _bus.Publish(new TicketTimerStopped(T, C));
@@ -77,10 +77,66 @@ namespace UncannyValet.Tests.UI
             {
                 var car = new CarId(i);
                 _bus.Publish(new TicketOpened(new TicketId(i), car, 60f));
-                _bus.Publish(new CarLetterAssigned(car, (char)('A' + i - 1)));
+                _bus.Publish(new CarTagAssigned(car, i - 1));
             }
             _board.CollectRows(_rows);
-            Assert.AreEqual(new[] { 'A', 'B', 'C' }, new[] { _rows[0].Letter, _rows[1].Letter, _rows[2].Letter });
+            Assert.AreEqual(new[] { 0, 1, 2 }, new[] { _rows[0].Tag, _rows[1].Tag, _rows[2].Tag });
+        }
+
+        [Test]
+        public void InfoBox_WaitsForTheCarToArrive_AndHidesWhenItLeaves()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new TicketTraitsAssigned(T, C, true, true));
+            Assert.IsFalse(Only().ShowsInfoBox);
+            _bus.Publish(new CarArrived(C));
+            Assert.IsTrue(Only().ShowsInfoBox);
+            _bus.Publish(new CarDeparted(C));
+            Assert.IsFalse(Only().ShowsInfoBox);
+        }
+
+        [Test]
+        public void ArrivalBeforeTheTicket_StillCounts()
+        {
+            _bus.Publish(new CarArrived(C));
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
+            Assert.IsTrue(Only().ShowsInfoBox);
+        }
+
+        [Test]
+        public void CarWithoutNeeds_HasNoInfoBox()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            _bus.Publish(new TicketTraitsAssigned(T, C, false, false));
+            Assert.IsFalse(Only().ShowsInfoBox);
+        }
+
+        [Test]
+        public void DirtMeterDrainsWhileWashing_ThenTheLineGoes()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
+            Assert.AreEqual(1f, Only().Dirt01, 1e-4f);
+            _bus.Publish(new CarCleanChanged(C, 0.75f));
+            Assert.AreEqual(0.25f, Only().Dirt01, 1e-4f);
+            _bus.Publish(new CarCleaned(C));
+            Assert.IsFalse(Only().ShowsDirtMeter);
+            Assert.IsFalse(Only().ShowsInfoBox);
+        }
+
+        [Test]
+        public void ChargeMeterStaysForAnEv_EvenWhenFull()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            _bus.Publish(new TicketTraitsAssigned(T, C, true, false));
+            _bus.Publish(new CarChargeChanged(C, 1f));
+            Assert.IsTrue(Only().ShowsChargeMeter);
+            Assert.IsTrue(Only().ShowsInfoBox);
+            Assert.AreEqual(1f, Only().ChargeShown, 1e-4f);
         }
 
         [Test]

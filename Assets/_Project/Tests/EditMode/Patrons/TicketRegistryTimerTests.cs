@@ -166,31 +166,31 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void LettersAreLowestFree_AndFreedWhenTicketCloses()
+        public void TagsAreLowestFree_AndFreedWhenTicketCloses()
         {
             var a = OpenTicket(new CarId(1));
             var b = OpenTicket(new CarId(2));
-            Assert.AreEqual('A', a.Letter);
-            Assert.AreEqual('B', b.Letter);
+            Assert.AreEqual(0, a.Tag);
+            Assert.AreEqual(1, b.Tag);
 
             _bus.Publish(new CarParked(a.CarId, 1));
             Tick(20f);
             _bus.Publish(new CarAtCurb(a.CarId));
 
-            Assert.AreEqual('A', OpenTicket(new CarId(3)).Letter);
+            Assert.AreEqual(0, OpenTicket(new CarId(3)).Tag);
         }
 
         [Test]
-        public void VanishedCar_FreesItsLetterAndTicket()
+        public void VanishedCar_FreesItsTagAndTicket()
         {
             var first = OpenTicket(new CarId(1));
             for (var m = 1; m <= (int)ParkWindow; m++) Tick(m);
 
-            Assert.AreEqual('A', first.Letter);
+            Assert.AreEqual(0, first.Tag);
             Assert.AreEqual(0, _registry.OpenCount);
             Assert.AreEqual(0, _registry.AwaitingParkCount);
             Assert.IsFalse(_registry.TryGet(first.TicketId, out _));
-            Assert.AreEqual('A', OpenTicket(new CarId(2)).Letter);
+            Assert.AreEqual(0, OpenTicket(new CarId(2)).Tag);
         }
     }
 }

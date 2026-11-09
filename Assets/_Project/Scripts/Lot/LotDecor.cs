@@ -19,6 +19,10 @@ namespace UncannyValet.Lot
 
         private DecorLayout _layout;
         private bool _hasLayout;
+        private WalkwayLayout _walkway;
+
+        private WalkwayLayout Walkway
+            => _walkway ?? (_walkway = new WalkwayLayout(_config, Layout, _art.Walkway, _art.CrosswalkOffset));
 
         private DecorLayout Layout
         {
@@ -33,15 +37,36 @@ namespace UncannyValet.Lot
             }
         }
 
-        /// <summary>Stretches <paramref name="rect"/> up and down so the road, far sidewalk and diner are in view.</summary>
+        /// <summary>
+        /// Stretches <paramref name="rect"/> up and down just enough for the south sidewalk, part of the road and the
+        /// foot of the diner to be in view. The rest of the scenery is cropped, so cars and people read bigger.
+        /// </summary>
         public Rect ExtendView(Rect rect)
         {
             if (_config == null || _art == null) return rect;
             var layout = Layout;
             var origin = transform.position.y;
-            var top = layout.BuildingBase.y + BuildingHeight() + origin;
-            return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, layout.FarSidewalk.yMin + origin),
-                rect.xMax, Mathf.Max(rect.yMax, top));
+            var bottom = layout.SouthSidewalk.yMin - _art.RoadHeight * _art.ViewRoadShare + origin;
+            var top = layout.BuildingBase.y + BuildingHeight() * _art.ViewBuildingShare + origin;
+            return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, bottom), rect.xMax, Mathf.Max(rect.yMax, top));
+        }
+
+        /// <summary>
+        /// The routes pedestrians walk, in world coordinates (open polylines, walked to the end and back). Empty
+        /// until the decor has a LotConfig and a LotArtConfig.
+        /// </summary>
+        public Vector2[][] WalkRoutes()
+        {
+            if (_config == null || _art == null) return new Vector2[0][];
+            var routes = Walkway.Routes;
+            var world = new Vector2[routes.Length][];
+            var origin = (Vector2)transform.position;
+            for (var i = 0; i < routes.Length; i++)
+            {
+                world[i] = new Vector2[routes[i].Length];
+                for (var p = 0; p < routes[i].Length; p++) world[i][p] = routes[i][p] + origin;
+            }
+            return world;
         }
 
         private void Awake()
@@ -73,11 +98,11 @@ namespace UncannyValet.Lot
         {
             var curb = new LotGeometry(_config).Curb;
             var pitch = _art.CrosswalkBarWidth + _art.CrosswalkBarGap;
-            var first = curb.center.x + _art.CrosswalkOffset - pitch * (_art.CrosswalkBars - 1) * 0.5f;
-            var size = new Vector2(_art.CrosswalkBarWidth, l.Road.height - _art.CrosswalkBarGap);
-            for (var i = 0; i < _art.CrosswalkBars; i++)
-                rects.Make(transform, "Crosswalk Bar " + i, new Vector2(first + i * pitch, l.Road.center.y), size,
-                    _art.CrosswalkColor, MarkingOrder);
+            var width = pitch * (_art.CrosswalkBars - 1) + _art.CrosswalkBarWidth;
+            var zone = new Rect(curb.center.x + _art.CrosswalkOffset - width * 0.5f, l.Road.yMin, width, l.Road.height);
+            LotWalkwayArt.Crossing(transform, rects, "Road Crossing", zone, _art.CrosswalkBars, _art.CrosswalkBarWidth,
+                _art.CrosswalkBarGap, _art.CrosswalkColor, MarkingOrder);
+            LotWalkwayArt.Build(transform, rects, Walkway, _art.Walkway, _art.CrosswalkColor);
         }
 
         private void BuildProps(DecorLayout l)

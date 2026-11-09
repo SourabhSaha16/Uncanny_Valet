@@ -66,7 +66,7 @@ namespace UncannyValet.Patrons
 
         public bool TryGet(TicketId id, out Ticket ticket) => _book.TryGet(id, out ticket);
 
-        /// <summary>Opens a ticket for a car, gives it a letter and starts its park timer.</summary>
+        /// <summary>Opens a ticket for a car, gives it a tag colour and starts its park timer.</summary>
         public Ticket Open(CarId car, PatronRequest request)
         {
             var ticket = Create(car, request);
@@ -83,14 +83,14 @@ namespace UncannyValet.Patrons
         }
 
         /// <summary>
-        /// Announces a created ticket in the order listeners rely on: CarSpawned, TicketOpened, CarLetterAssigned,
+        /// Announces a created ticket in the order listeners rely on: CarSpawned, TicketOpened, CarTagAssigned,
         /// TicketTraitsAssigned, and only then the initial charge and clean levels.
         /// </summary>
         public void AnnounceArrival(Ticket t)
         {
             _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
             _bus.Publish(new TicketOpened(t.TicketId, t.CarId, t.StayMinutes));
-            _bus.Publish(new CarLetterAssigned(t.CarId, t.Letter));
+            _bus.Publish(new CarTagAssigned(t.CarId, t.Tag));
             _bus.Publish(new TicketTraitsAssigned(t.TicketId, t.CarId, t.IsEv, t.IsDirty));
             _stations.Announce(t);
         }
@@ -162,11 +162,11 @@ namespace UncannyValet.Patrons
 
         private void OnShiftEnded(ShiftEnded e) => CloseAllUnpaid();
 
-        // A new shift starts clean: nothing should be left, but make sure of it and restart the letters.
+        // A new shift starts clean: nothing should be left, but make sure of it and restart the tag colours.
         private void OnShiftStarted(ShiftStarted e)
         {
             CloseAllUnpaid();
-            _book.ResetLetters();
+            _book.ResetTags();
         }
 
         /// <summary>Shift over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>

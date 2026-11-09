@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Pedestrians",
+    "rootNamespace": "UncannyValet.Pedestrians",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

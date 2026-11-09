@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Patrons
             _log = new List<IGameEvent>();
             _bus.Subscribe<CarSpawned>(e => _log.Add(e));
             _bus.Subscribe<TicketOpened>(e => _log.Add(e));
-            _bus.Subscribe<CarLetterAssigned>(e => _log.Add(e));
+            _bus.Subscribe<CarTagAssigned>(e => _log.Add(e));
             _bus.Subscribe<TicketTraitsAssigned>(e => _log.Add(e));
             _bus.Subscribe<CarChargeChanged>(e => _log.Add(e));
             _bus.Subscribe<CarCleanChanged>(e => _log.Add(e));
@@ -80,7 +80,7 @@ namespace UncannyValet.Tests.Patrons
             Arrive(true, false);
             Assert.IsInstanceOf<CarSpawned>(_log[0]);
             Assert.IsInstanceOf<TicketOpened>(_log[1]);
-            Assert.IsInstanceOf<CarLetterAssigned>(_log[2]);
+            Assert.IsInstanceOf<CarTagAssigned>(_log[2]);
             Assert.IsInstanceOf<TicketTraitsAssigned>(_log[3]);
             Assert.IsInstanceOf<CarChargeChanged>(_log[4]);
             Assert.AreEqual(0.2f, ((CarChargeChanged)_log[4]).Charge01, 1e-4f);

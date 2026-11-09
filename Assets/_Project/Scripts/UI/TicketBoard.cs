@@ -6,12 +6,13 @@ using UncannyValet.UI.Hud;
 
 namespace UncannyValet.UI
 {
-    /// <summary>Tracks open tickets, letter, spot and timers from events only. The HUD reads the rows.</summary>
+    /// <summary>Tracks open tickets, tag colour, spot and timers from events only. The HUD reads the rows.</summary>
     public sealed class TicketBoard : IDisposable
     {
         private readonly IEventBus _bus;
         private readonly SortedDictionary<int, TicketRow> _rows = new SortedDictionary<int, TicketRow>();
-        private readonly Dictionary<int, char> _letters = new Dictionary<int, char>();
+        private readonly Dictionary<int, int> _tags = new Dictionary<int, int>();
+        private readonly HashSet<int> _arrived = new HashSet<int>();
 
         public int Count => _rows.Count;
         public int PickupCount { get; private set; }
@@ -20,7 +21,7 @@ namespace UncannyValet.UI
         {
             _bus = bus;
             _bus.Subscribe<TicketOpened>(OnOpened);
-            _bus.Subscribe<CarLetterAssigned>(OnLetter);
+            _bus.Subscribe<CarTagAssigned>(OnTag);
             _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Subscribe<PickupRequested>(OnPickup);
@@ -31,12 +32,15 @@ namespace UncannyValet.UI
             _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Subscribe<CarChargeChanged>(OnCharge);
             _bus.Subscribe<CarCleaned>(OnCleaned);
+            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
+            _bus.Subscribe<CarArrived>(OnArrived);
+            _bus.Subscribe<CarDeparted>(OnDeparted);
         }
 
         public void Dispose()
         {
             _bus.Unsubscribe<TicketOpened>(OnOpened);
-            _bus.Unsubscribe<CarLetterAssigned>(OnLetter);
+            _bus.Unsubscribe<CarTagAssigned>(OnTag);
             _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
@@ -47,6 +51,9 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Unsubscribe<CarChargeChanged>(OnCharge);
             _bus.Unsubscribe<CarCleaned>(OnCleaned);
+            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
+            _bus.Unsubscribe<CarArrived>(OnArrived);
+            _bus.Unsubscribe<CarDeparted>(OnDeparted);
         }
 
         /// <summary>Counts every change that could alter what the HUD shows about parking and pickups.</summary>
@@ -62,32 +69,40 @@ namespace UncannyValet.UI
 
         /// <summary>
         /// Writes one line per pending pickup (at most maxLines, then "+N more"), separated by newlines
-        /// with none at the end. Returns the number of lines written. Allocation-free apart from the builder.
+        /// with none at the end. Returns the number of lines written. When <paramref name="tags"/> is given it is
+        /// cleared and receives the tag colour index of every pickup line (not the overflow line).
+        /// Allocation-free apart from the builder.
         /// </summary>
-        public int AppendPickups(StringBuilder text, int maxLines)
-        {
-            var lines = 0;
-            var hidden = 0;
-            foreach (var pair in _rows)
-            {
-                var row = pair.Value;
-                if (row.State != TicketRowState.PickupRequested) continue;
-                if (lines >= maxLines) { hidden++; continue; }
-                if (lines++ > 0) text.Append('\n');
-                PickupBannerFormatter.AppendPickup(text, row.Letter, row.Spot);
-            }
-            if (hidden == 0) return lines;
-            text.Append('\n');
-            PickupBannerFormatter.AppendOverflow(text, hidden);
-            return lines + 1;
-        }
+        public int AppendPickups(StringBuilder text, int maxLines, List<int> tags = null)
+            => PickupBannerFormatter.AppendAll(text, _rows.Values, maxLines, tags);
 
         private void OnOpened(TicketOpened e)
         {
             Version++;
             var row = new TicketRow { Car = e.Car.Value };
-            if (_letters.TryGetValue(e.Car.Value, out var letter)) row.Letter = letter;
+            if (_tags.TryGetValue(e.Car.Value, out var tag)) row.Tag = tag;
+            row.Arrived = _arrived.Contains(e.Car.Value);
             _rows[e.Ticket.Value] = row;
+        }
+
+        private void OnArrived(CarArrived e)
+        {
+            _arrived.Add(e.Car.Value);
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Arrived = true;
+        }
+
+        private void OnDeparted(CarDeparted e)
+        {
+            _arrived.Remove(e.Car.Value);
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Arrived = false;
+        }
+
+        private void OnCleanChanged(CarCleanChanged e)
+        {
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Clean01 = e.Clean01;
         }
 
         private void OnTraits(TicketTraitsAssigned e)
@@ -109,12 +124,12 @@ namespace UncannyValet.UI
             if (row != null) row.Washed = true;
         }
 
-        private void OnLetter(CarLetterAssigned e)
+        private void OnTag(CarTagAssigned e)
         {
             Version++;
-            _letters[e.Car.Value] = e.Letter;
+            _tags[e.Car.Value] = e.Tag;
             var row = FindByCar(e.Car.Value);
-            if (row != null) row.Letter = e.Letter;
+            if (row != null) row.Tag = e.Tag;
         }
 
         private void OnParked(CarParked e)
@@ -166,7 +181,8 @@ namespace UncannyValet.UI
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
             if (row.State == TicketRowState.PickupRequested && PickupCount > 0) PickupCount--;
             _rows.Remove(e.Ticket.Value);
-            _letters.Remove(row.Car);
+            _tags.Remove(row.Car);
+            _arrived.Remove(row.Car);
         }
 
         private TicketRow FindByCar(int car)

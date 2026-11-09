@@ -14,11 +14,12 @@ namespace UncannyValet.Cars
         [SerializeField, Tooltip("Top-down car sprites. Empty: cars are coloured rectangles.")]
         private CarArtConfig _art;
 
-        [SerializeField, Range(0.1f, 1f)] private float _labelHeight = 0.55f;
-        [SerializeField] private Color _labelColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+        [SerializeField, Tooltip("Key-tag stripe and pickup flash tunables.")]
+        private CarFlashConfig _flash;
 
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
         private Sprite _sprite;
+        private CarFlashConfig _fallbackFlash;
 
         /// <summary>Optional bus for the publishSpawned overload. Set by the bootstrap.</summary>
         public IEventBus Bus { get; set; }
@@ -95,8 +96,17 @@ namespace UncannyValet.Cars
             go.AddComponent<CarAutoDrive>();
             AttachLooks(go, id, def, renderer, AttachBodyArt(go, id, def, renderer));
             CarTimerFill.Attach(go, id, def, GetSprite());
-            CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);
+            CarKeyTag.Attach(go, id, def.Size, GetSprite(), FlashConfig());
             return driver;
+        }
+
+        private CarFlashConfig FlashConfig()
+        {
+            if (_flash != null) return _flash;
+            if (_fallbackFlash != null) return _fallbackFlash;
+            Debug.LogError("CarFactory has no CarFlashConfig; using defaults. Rebuild with Setup/Build Everything.", this);
+            _fallbackFlash = ScriptableObject.CreateInstance<CarFlashConfig>();
+            return _fallbackFlash;
         }
 
         private CarBodyArt AttachBodyArt(GameObject go, CarId id, CarDefinition def, SpriteRenderer placeholder)
