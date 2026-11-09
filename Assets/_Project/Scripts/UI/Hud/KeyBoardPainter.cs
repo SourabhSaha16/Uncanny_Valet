@@ -6,8 +6,8 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// The key board panel at the bottom left: one row per open ticket with a coloured key tag (matching its spot),
-    /// the car letter, a car icon, the spot number and a patience bar. Most urgent tickets first.
+    /// The key board panel at the bottom left: one row per open ticket with its coloured key tag (the same colour
+    /// as the tag on the car), a car icon, the spot number and a patience bar. Most urgent tickets first.
     /// </summary>
     public sealed class KeyBoardPainter
     {
@@ -59,10 +59,9 @@ namespace UncannyValet.UI.Hud
                 glow.a = Blink.IsOn(time, BlinkPeriod) ? PickupGlow : PickupGlow * 0.5f;
                 _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
             }
-            _canvas.Icon(PixelIcon.KeyTag, x + 2, y + 2, 1, PixelPalette.KeyTag(row.Spot));
-            _canvas.Char(row.Letter, x + 11, y + 3, PixelPalette.Cream, 1);
-            _canvas.Icon(PixelIcon.Car, x + 19, y + 3, 1, Color.white);
-            DrawSpot(row.Spot, x + 33, y + 3);
+            _canvas.Icon(PixelIcon.KeyTag, x + 2, y + 2, 1, PixelPalette.TagColor(row.Tag));
+            _canvas.Icon(PixelIcon.Car, x + 15, y + 3, 1, Color.white);
+            DrawSpot(row.Spot, x + 30, y + 3);
             DrawBar(row, x + BarOffset - Border, y + 4);
         }
 

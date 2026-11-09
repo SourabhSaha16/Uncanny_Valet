@@ -1,4 +1,6 @@
 using System;
+using UncannyValet.Core;
+using UncannyValet.Core.Events;
 using UnityEngine;
 
 namespace UncannyValet.Cars
@@ -91,6 +93,7 @@ namespace UncannyValet.Cars
                 _body.position = _target;
                 _mode = Mode.Idle;
                 SetAutoDriving(false);
+                if (Services.TryGet<IEventBus>(out var bus)) bus.Publish(new CarArrived(_driver.Id));
                 return;
             }
             _body.MovePosition(position + _heading * step);

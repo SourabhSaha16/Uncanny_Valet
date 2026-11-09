@@ -7,6 +7,7 @@ using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
+using UncannyValet.Pedestrians;
 using UncannyValet.UI;
 using UncannyValet.Valet;
 using UnityEditor;
@@ -19,6 +20,7 @@ namespace UncannyValet.EditorTools
     public static class BootstrapSceneBuilder
     {
         public const string ScenePath = "Assets/_Project/Scenes/Bootstrap.unity";
+        private const string CarFlashConfigPath = "Assets/_Project/Data/Cars/CarFlashConfig.asset";
         private const float ValetScale = 1.4f;
         private const float ValetColliderRadius = 0.3f; // times the scale: about the old 0.4 world radius
         private const int ValetSortingOrder = 20;
@@ -41,12 +43,15 @@ namespace UncannyValet.EditorTools
             var lotArt = LotArtBuilder.Build();
             var valet = BuildValet(root, ValetArtBuilder.Build());
             var decor = BuildDecor(root, lotArt);
+            var crowd = Child<PedestrianCrowd>(root, "Pedestrians");
+            Set(crowd, "_config", PedestrianArtBuilder.Build());
             var camera = BuildCamera();
 
             Set(factory, "_defaultDefinition", Load<CarDefinition>("Assets/_Project/Data/Cars/Sedan.asset"));
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
             Set(lot, "_art", lotArt);
             Set(factory, "_art", carArt);
+            Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
@@ -65,6 +70,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_camera").objectReferenceValue = camera;
             so.FindProperty("_audio").objectReferenceValue = audio;
             so.FindProperty("_decor").objectReferenceValue = decor;
+            so.FindProperty("_pedestrians").objectReferenceValue = crowd;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

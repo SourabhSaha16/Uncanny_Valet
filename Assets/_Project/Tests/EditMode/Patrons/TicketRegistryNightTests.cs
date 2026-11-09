@@ -102,18 +102,18 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NextShift_StartsCleanAndLettersRestartFromA()
+        public void NextShift_StartsCleanAndTagsRestartFromFirst()
         {
             Open(1); Open(2); var third = Open(3);
-            Assert.AreEqual('C', third.Letter);
+            Assert.AreEqual(2, third.Tag);
             _bus.Publish(new ShiftEnded());
             _bus.Publish(new ShiftStarted());
 
             Assert.AreEqual(0, _registry.OpenCount);
             Assert.AreEqual(0, _registry.AwaitingParkCount);
             Assert.AreEqual(0, _cars.Alive);
-            Assert.AreEqual('A', Open(4).Letter);
-            Assert.AreEqual('B', Open(5).Letter);
+            Assert.AreEqual(0, Open(4).Tag);
+            Assert.AreEqual(1, Open(5).Tag);
             Assert.AreEqual(2, _registry.AwaitingParkCount);
         }
     }

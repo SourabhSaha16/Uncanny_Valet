@@ -8,6 +8,7 @@ using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
+using UncannyValet.Pedestrians;
 using UncannyValet.UI;
 using UncannyValet.Valet;
 using UnityEngine;
@@ -35,6 +36,8 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private AudioDirector _audio;
         [SerializeField, Tooltip("Optional diner scenery; widens the camera frame to show the road and the diner.")]
         private LotDecor _decor;
+        [SerializeField, Tooltip("Optional scenery pedestrians; they walk the routes the decor provides.")]
+        private PedestrianCrowd _pedestrians;
 
         private const int DefaultSpotSeed = 12;
 
@@ -71,6 +74,7 @@ namespace UncannyValet.Bootstrap
             _lot.gameObject.SetActive(true);
             SeedTuning(tuning, _lot.SpotIds.Count);
             FrameLot();
+            StartPedestrians();
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
             SpawnValet();
@@ -99,6 +103,13 @@ namespace UncannyValet.Bootstrap
             if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
                 _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect);
             else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
+        }
+
+        private void StartPedestrians()
+        {
+            if (_pedestrians == null || _decor == null) return;
+            _pedestrians.gameObject.SetActive(true);
+            _pedestrians.Begin(_decor.WalkRoutes());
         }
 
         private void SpawnValet()

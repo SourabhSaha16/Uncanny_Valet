@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using UncannyValet.UI.Kit;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Transient notices: the cyan pickup banner (which car, which spot) under the clock, the interact prompt
+    /// Transient notices: the cyan pickup banner (key-tag colour and spot of each car) under the clock, the interact prompt
     /// at the bottom centre and the small tuning hint at the bottom right.
     /// </summary>
     public sealed class NoticePainter
@@ -16,6 +17,7 @@ namespace UncannyValet.UI.Hud
         private const int BannerTop = 28;
         private const int BellScale = 2;
         private const int BannerPad = 5;
+        private const int TagGap = 3;
         private const int PromptHeight = 18;
         private const int PromptBottom = 8;
         private const int KeyCapSize = 11;
@@ -26,6 +28,7 @@ namespace UncannyValet.UI.Hud
         private readonly PixelCanvas _canvas;
         private readonly TicketBoard _board;
         private readonly StringBuilder _pickups = new StringBuilder(96);
+        private readonly List<int> _tags = new List<int>(MaxPickupLines);
         private int _pickupLines;
         private int _boardVersion = -1;
 
@@ -48,11 +51,12 @@ namespace UncannyValet.UI.Hud
             {
                 _boardVersion = _board.Version;
                 _pickups.Clear();
-                _pickupLines = _board.AppendPickups(_pickups, MaxPickupLines);
+                _pickupLines = _board.AppendPickups(_pickups, MaxPickupLines, _tags);
             }
             var textWidth = PixelTextLayout.Width(PixelTextLayout.LongestLine(_pickups), 1);
             var bellWidth = _canvas.IconWidth(PixelIcon.Bell) * BellScale;
-            var width = BannerPad * 3 + bellWidth + textWidth + WorldTicketLayout.Border;
+            var tagWidth = _canvas.IconWidth(PixelIcon.KeyTag) + TagGap;
+            var width = BannerPad * 3 + bellWidth + tagWidth + textWidth + WorldTicketLayout.Border;
             var textHeight = PixelTextLayout.LineHeight(1) * _pickupLines;
             var height = System.Math.Max(bellWidth, textHeight) + WorldTicketLayout.Border * 2 + BannerPad;
             var x = (PixelGrid.Width - width) / 2;
@@ -61,7 +65,17 @@ namespace UncannyValet.UI.Hud
             var iconY = BannerTop + (height - bellWidth) / 2;
             _canvas.Icon(PixelIcon.Bell, x + BannerPad + 1, iconY, BellScale, Color.white);
             var textY = BannerTop + (height - textHeight) / 2 + 1;
-            _canvas.Text(_pickups, x + BannerPad * 2 + bellWidth, textY, PixelPalette.White);
+            var textX = x + BannerPad * 2 + bellWidth + tagWidth;
+            _canvas.Text(_pickups, textX, textY, PixelPalette.White);
+            DrawTags(textX - tagWidth, textY);
+        }
+
+        // One key-tag swatch per pickup line, so the player can match the banner to the coloured car.
+        private void DrawTags(int x, int firstLineY)
+        {
+            var lineHeight = PixelTextLayout.LineHeight(1);
+            for (var i = 0; i < _tags.Count; i++)
+                _canvas.Icon(PixelIcon.KeyTag, x, firstLineY + i * lineHeight - 1, 1, PixelPalette.TagColor(_tags[i]));
         }
 
         private void DrawPrompt(string prompt)

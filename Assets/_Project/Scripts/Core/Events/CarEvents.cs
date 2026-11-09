@@ -12,12 +12,19 @@ namespace UncannyValet.Core.Events
         public CarSpawned(CarId car, TicketId ticket) { Car = car; Ticket = ticket; }
     }
 
-    /// <summary>The car was given its display letter (A, B, C) for as long as its ticket is open.</summary>
-    public readonly struct CarLetterAssigned : IGameEvent
+    /// <summary>The car was given its key-tag colour (an index into TagPalette) for as long as its ticket is open.</summary>
+    public readonly struct CarTagAssigned : IGameEvent
     {
         public readonly CarId Car;
-        public readonly char Letter;
-        public CarLetterAssigned(CarId car, char letter) { Car = car; Letter = letter; }
+        public readonly int Tag;
+        public CarTagAssigned(CarId car, int tag) { Car = car; Tag = tag; }
+    }
+
+    /// <summary>An arriving car finished driving in and stopped; it is now on the lot like any other car.</summary>
+    public readonly struct CarArrived : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarArrived(CarId car) { Car = car; }
     }
 
     /// <summary>The valet got into the driver's seat.</summary>

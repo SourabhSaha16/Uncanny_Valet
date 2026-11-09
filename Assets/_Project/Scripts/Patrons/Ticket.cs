@@ -9,8 +9,8 @@ namespace UncannyValet.Patrons
         public CarId CarId { get; }
         public PatronRequest Request { get; }
 
-        /// <summary>The display letter held until the ticket ends.</summary>
-        public char Letter { get; }
+        /// <summary>The key-tag colour index (see TagPalette) held until the ticket ends.</summary>
+        public int Tag { get; }
 
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
         public float ParkedMinute { get; private set; }
@@ -40,9 +40,9 @@ namespace UncannyValet.Patrons
         public bool CleanedDirty => IsDirty && Wash.IsClean;
         public bool UncleanedDirty => IsDirty && !Wash.IsClean;
 
-        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, char letter, ServiceTuning tuning)
+        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, ServiceTuning tuning)
         {
-            TicketId = ticketId; CarId = carId; Request = request; Letter = letter;
+            TicketId = ticketId; CarId = carId; Request = request; Tag = tag;
             ParkTimer = new TicketTimer(request.ParkWindowMinutes);
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
             Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);
