@@ -26,6 +26,9 @@ namespace UncannyValet.Patrons
         private PatronPlan _plan;
         private PatronRequestRoller _roller;
         private IGameClock _clock;
+        private ITuning _liveTuning;
+        private PatronRequest _pending;
+        private bool _hasPending;
 
         public TicketRegistry Registry { get; private set; }
 
@@ -41,7 +44,8 @@ namespace UncannyValet.Patrons
             _lot = Services.Get<ILotLayout>();
             _scanner = new ArrivalSlotScanner(_arrivalClearSize);
             _plan = new PatronPlan(_config.MaxWaitingCars);
-            var tuning = new PatronTuning(Services.Get<ITuning>(), _config);
+            _liveTuning = Services.Get<ITuning>();
+            var tuning = new PatronTuning(_liveTuning, _config);
             _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
             _clock = Services.Get<IGameClock>();
             Services.TryGet<IShiftScoreView>(out var score);
@@ -52,6 +56,7 @@ namespace UncannyValet.Patrons
             _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
             _bus.Subscribe<ShiftPlanChanged>(OnShiftPlanChanged);
+            _bus.Subscribe<PatronScheduled>(OnPatronScheduled);
         }
 
         private void OnDisable()
@@ -61,6 +66,7 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
             _bus.Unsubscribe<ShiftPlanChanged>(OnShiftPlanChanged);
+            _bus.Unsubscribe<PatronScheduled>(OnPatronScheduled);
             Registry.Dispose();
             _departure.Dispose();
         }
@@ -89,9 +95,33 @@ namespace UncannyValet.Patrons
         {
             _shiftOpen = true;
             _nextArrivalMinute = 0f;
+            _hasPending = false;
         }
 
-        private void OnShiftEnded(ShiftEnded e) => _shiftOpen = false;
+        private void OnShiftEnded(ShiftEnded e)
+        {
+            _shiftOpen = false;
+            _hasPending = false;
+        }
+
+        // The Patron Director's switch (an ITuning key, so the F2 panel can flip it): on, arrivals come from
+        // PatronScheduled; off, the old fixed timer below runs.
+        private bool DirectorOn => _liveTuning.TryGet(TuningKey.DirEnabled, out var on) && on >= 0.5f;
+
+        // Rolls the request once when the director asks, then keeps it until a queue slot is clear.
+        private void OnPatronScheduled(PatronScheduled e)
+        {
+            if (!DirectorOn || !_shiftOpen) return;
+            var progress = ShiftProgress();
+            _pending = e.ArchetypeChosen ? _roller.Roll(progress, e.Archetype) : _roller.Roll(progress);
+            _hasPending = true;
+            TrySpawnPending();
+        }
+
+        private void TrySpawnPending()
+        {
+            if (_hasPending && TrySpawn(_pending, out _)) _hasPending = false;
+        }
 
         private void OnShiftPlanChanged(ShiftPlanChanged e) => _plan.Apply(e.Plan);
 
@@ -104,6 +134,8 @@ namespace UncannyValet.Patrons
 
         private void OnShiftTick(ShiftTick e)
         {
+            if (DirectorOn) { TrySpawnPending(); return; }
+            _hasPending = false;
             if (e.ElapsedMinutes < _nextArrivalMinute) return;
             if (!TrySpawn(_roller.Roll(ShiftProgress()), out _)) return;
             _nextArrivalMinute = e.ElapsedMinutes + _roller.NextGap();

@@ -4,6 +4,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
@@ -38,11 +39,20 @@ namespace UncannyValet.Bootstrap
         private LotDecor _decor;
         [SerializeField, Tooltip("Optional scenery pedestrians; they walk the routes the decor provides.")]
         private PedestrianCrowd _pedestrians;
+        [SerializeField, Tooltip("The Patron Director shell; paces arrivals while DirectorConfig is enabled.")]
+        private PatronDirector _director;
+        [SerializeField] private DirectorConfig _directorConfig;
+        [SerializeField, Tooltip("The lot's director settings: intensity curve, weights, arrival budget.")]
+        private DirectorProfile _directorProfile;
+        [SerializeField, Tooltip("F3 debug overlay for the director.")]
+        private DirectorOverlay _directorOverlay;
 
         private const int DefaultSpotSeed = 12;
 
         private ShiftScore _score;
         private ShiftFlow _flow;
+        private ShiftRandom _random;
+        private DirectorBootstrap _directorBoot;
 
         private void Awake()
         {
@@ -78,7 +88,9 @@ namespace UncannyValet.Bootstrap
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
             SpawnValet();
-            _spawner.Random = new UnityPatronRandom();
+            _random = new ShiftRandom(bus, tuning);
+            _spawner.Random = _random;
+            StartDirector(bus, tuning);
             _spawner.gameObject.SetActive(true);
             StartUi();
             _tuningPanel.gameObject.SetActive(true);
@@ -95,7 +107,20 @@ namespace UncannyValet.Bootstrap
         private void SeedTuning(ITuning tuning, int spotCount)
         {
             TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
-                spotCount > 0 ? spotCount : DefaultSpotSeed);
+                spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile);
+        }
+
+        private void StartDirector(IEventBus bus, ITuning tuning)
+        {
+            if (_director == null || _directorConfig == null || _directorProfile == null)
+            {
+                Debug.LogError("GameBootstrap is missing the director, its config or its profile: rebuild with Uncanny Valet/Setup/Build Everything. Arrivals fall back to the fixed timer.", this);
+                tuning.Seed(TuningKey.DirEnabled, 0f);
+                return;
+            }
+            _directorBoot = DirectorBootstrap.Start(bus, tuning, _clock, _lot, _director, _directorProfile, _random,
+                _shiftConfig.MaxComboMultiplier);
+            if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }
 
         private void FrameLot()
@@ -139,6 +164,8 @@ namespace UncannyValet.Bootstrap
         {
             if (_ui != null) _ui.TitleDismissed -= OnTitleDismissed;
             _flow?.Dispose();
+            _directorBoot?.Dispose();
+            _random?.Dispose();
             _score?.Dispose();
             Services.Reset();
         }

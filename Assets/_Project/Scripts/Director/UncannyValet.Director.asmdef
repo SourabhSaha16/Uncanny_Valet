@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Director",
+    "rootNamespace": "UncannyValet.Director",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

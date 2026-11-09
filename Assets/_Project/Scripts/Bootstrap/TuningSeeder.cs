@@ -1,6 +1,7 @@
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Patrons;
 
@@ -10,8 +11,13 @@ namespace UncannyValet.Bootstrap
     public static class TuningSeeder
     {
         /// <param name="spotCount">Spots in the lot; used when the plan says 0 ("all spots open").</param>
-        public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount)
+        /// <param name="director">The Patron Director's numbers; null skips them (its keys then stay unseeded).</param>
+        /// <param name="profile">The lot's director profile, which supplies the arrival budget.</param>
+        public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
+            DirectorConfig director = null, DirectorProfile profile = null)
         {
+            if (director != null && profile != null) director.SeedInto(t, profile);
+
             t.Seed(TuningKey.GameMinutesPerSecond, shift.GameMinutesPerSecond);
             t.Seed(TuningKey.ShiftLengthSeconds, shift.ShiftLengthSeconds);
 

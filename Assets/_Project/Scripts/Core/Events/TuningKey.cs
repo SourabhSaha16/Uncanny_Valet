@@ -35,5 +35,54 @@ namespace UncannyValet.Core.Events
         ChargeBonus,
         CleanBonus,
         SpeedWindowMinutes,
+
+        // Patron Director (Director module owns). 1 = on, 0 = the old fixed arrival timer.
+        DirEnabled,
+        DirTickSeconds,
+        /// <summary>0 = a fresh random seed every shift; otherwise the seed plus the shift number.</summary>
+        DirSeed,
+
+        // Director: workload cost table (seconds of player work).
+        DirHorizonSeconds,
+        DirCostPark,
+        DirCostPickup,
+        DirCostWash,
+        DirCostCharge,
+        DirCostEvict,
+        DirCostPickupSoon,
+        DirPickupSoonSeconds,
+
+        // Director: pacing.
+        DirBand,
+        DirFormInfluence,
+        DirIdleWorkload,
+        DirIdleSeconds,
+        DirUnderFactor,
+        DirOverFactor,
+        DirFactorSlew,
+        DirBudgetBlend,
+        DirMinInterval,
+        DirMaxInterval,
+        DirArrivalBudget,
+        DirBudgetSlack,
+
+        // Director: relief.
+        DirReliefWorkload,
+        DirReliefPressure,
+        DirReliefAngryCount,
+        DirReliefAngryWindow,
+        DirReliefHold,
+        DirReliefPlainCars,
+        DirReliefCooldown,
+
+        // Director: form.
+        DirFormUpdate,
+        DirFormMaxStep,
+        DirFormWindow,
+        DirFormWarmup,
+        DirFormTipWeight,
+        DirFormAngryWeight,
+        DirFormComboWeight,
+        DirFormAngryFull,
     }
 }
