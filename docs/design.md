@@ -7,12 +7,139 @@ Combined from three design docs written on Nov 2–5, 2026: the Game Design Doc,
 Architecture, and the Story Cards.
 
 
-> **CHAOS REDESIGN (branch `pivot/chaos`, from 2026-11-09).** `docs/redesign/chaos_redesign.md` overrides this
-> document wherever they conflict. The mafia, debt, strikes, boss orders and phone UI are cut; the game becomes
-> 4-minute level-based shifts scored by tips, combo and stars (Overcooked style). Sections below describe the
-> old game until the lead folds the redesign in; agents follow the redesign first.
+> **LIVING DOC.** The lead updates Part A after every merge that changes the game (see the Design log at the
+> end of Part A). Part B is the pre-pivot design, kept for history; where it conflicts with Part A, Part A wins,
+> and `docs/redesign/chaos_redesign.md` is the long-term target for what is not built yet.
+
+# Part A. Current design: chaos redesign (branch `pivot/chaos`)
+
+Status: a playable slice of one lot (Grandma's Diner) is live on GitHub Pages from `pivot/chaos`. Items marked
+(planned) come from the redesign doc and are not built; items marked (in progress) are with an agent now.
+
+## A1. Overview
+
+Uncanny Valet is a level-based chaos game in the Overcooked mould: short frantic shifts, three-star scores,
+simple verbs layered into juggling, and failures that are funny rather than punishing. You are a valet at a
+roadside diner: park patrons' cars, service them, and hand each car back when its owner returns. No mafia,
+debt, strikes or boss orders (all removed).
+
+| Field | Value |
+| --- | --- |
+| Perspective | Top-down pixel art, MetroCity tileset (CC0, JIK-A-4), 32 px tiles, PPU 32, Point filtering |
+| Session shape | One 4-minute shift per lot (240 s, last 30 s tense), instant retry |
+| Platform | Unity Web (WebGL), built locally with `tools/build-web.ps1`, deployed to GitHub Pages from `site/` |
+| Branch | `pivot/chaos` deploys to the live site; `main` still holds the old night/debt game |
+| Boss, rival | Mrs. Okafor (placeholder box on the results screen); ParkCorp rival is planned |
+
+## A2. The shift
+
+1. Title screen: "UNCANNY VALET", blinking PRESS ANY KEY. The clock does not start until a key press (also
+   unlocks browser audio).
+2. A car drives in to an arrival slot and stops (CarArrived); only then does its info box appear.
+3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (EV charging bays 13 and
+   14, wash slot), parks it, and the park window timer runs while it waits.
+4. The patron returns, the pickup is requested, the valet drives the car to the curb, tip is paid.
+5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
+
+Timers are in game minutes; 1 game minute is 1 real second. Arrivals every 15 to 25 s, up to 3 waiting.
+
+## A3. Scoring
+
+- Tip = base + speed bonus + patience bonus (up to $10) + charge bonus + clean bonus, then damage stages
+  (25% off per 25% damage, $0 at 100%; no damage source yet), then times the combo.
+- Combo 1x to 4x (cap in `ShiftConfig`): each happy delivery raises it; a $0 tip or an angry patron resets it.
+- Angry patron: either ticket timer (park or pickup) running out costs $15 from the score. The score never
+  goes below $0.
+- Stars at $150, $300, $450 (placeholders, `ShiftConfig`).
+
+## A4. What the player sees
+
+Car presentation (all per ticket):
+- A MetroCity top-down car sprite (14 regular and 2 EV cells), picked by a stable hash of the car id, half of
+  them mirrored. The body is tinted to the ticket's colour (softened; EVs lightly). Dirty cars keep the
+  dark-brown mud tint with a left-to-right wipe as they are washed.
+- Licence plate under the car, the car's identity: 3 letters + 3 numbers today; changing to 2 letters + 1 digit
+  at the car's width (in progress). Alphabet BCDFGHJKLMNPRSTVWXZ, unique among open tickets.
+- An info box above the car, only when something applies: dirty icon with a dirt meter, plug icon with a
+  charge meter (amber at full). It appears only after the car has arrived.
+- Pickup urgency flashes the plate border and pulses the body tint, faster as patience runs down (1 to 6 Hz;
+  cyan, then amber from 60%, orange-red from 85% or expired).
+- No letters on cars, no roof band, no charge slider, no timer bar (all removed).
+- Headlight highlights at the front so the player can read the car's facing (in progress).
+
+HUD (480x270 virtual canvas, integer-scaled, pixel font): shift clock top centre (amber at 30 s, blinking
+orange-red at 10 s); coin score with three stars top left; combo badge top right; key board bottom left
+listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel.
+Pickup will be shown on the key board with a bell and cyan highlight, and the separate pickup banner is removed
+(in progress).
+
+## A5. The lot and people
+
+- Lot art: grass, sidewalks, road, the tan green-roof building as the diner, trees; the old placeholder
+  rectangles are gone. Spots are painted bays; the curb is a cobbled zone with CURB text.
+- Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
+- 8 ambient pedestrians loop on fixed routes (MetroCity character parts, 4-direction run cycles). Scenery only
+  for now: no collision, no honk.
+- Patron flow (in progress): the patron steps out of the arrived car, crosses to the diner and goes inside;
+  when it is time, they come out, cross to the curb and wait. The pickup is requested only when they stand at
+  the curb. Ambient walkers come from the road sides, enter the diner and come out again.
+- Delivery rule (in progress): the patron accepts the car only when it faces down the screen toward the road
+  within a tolerance (default 35 degrees); otherwise a hint over the patron reads PLEASE PARK IT PROPERLY. The
+  curb is marked with a downward arrow. On delivery the patron gets in and the car drives away.
+
+## A6. Audio
+
+Synthesised music and effects (no external assets), driven by events. Mix tweak (in progress): effects about
+-2 dB, background about +2 to +3 dB. Combo stems, last-30-seconds tension and the title groove are planned.
+
+## A7. Architecture today
+
+Unchanged principles: four layers, typed event bus, `Services` as the only registry, one owner per piece of
+state, pure rules with EditMode tests, assemblies referencing only Core. Changes in the pivot:
+- Run state: `ShiftClock` (Night assembly) behind `IGameClock`; `ShiftScore` behind `IShiftScoreView`
+  (Economy); `ShiftConfig` (Core/Config). `NightClock`, `DebtLedger`, `StrikeTracker`, `IDebtView`, night
+  plans and the Orders module are deleted.
+- New module: `Pedestrians` (config, crowd, route walker). UI is a pixel kit (`UI/Kit`), HUD painters
+  (`UI/Hud`), results and title screens (`UI/Screens`), one `GameUi` component.
+- Events added: `ShiftPlanChanged`, `ShiftStarted`, `ShiftTick`, `ShiftLast30Seconds`, `ShiftEnded`,
+  `ScoreChanged`, `ComplaintFiled`, `ShiftResultReady`, `RetryShiftRequested`, `CarArrived`, `CarTagAssigned`,
+  `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
+- Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
+  sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
+- Tests: EditMode suite (442 at the last full run).
+
+## A8. Build state and next steps
+
+| Area | State |
+| --- | --- |
+| Shift clock, score, combo, stars, results, retry | done |
+| Title screen, pixel HUD, key board, floating info boxes | done |
+| Diner lot art, car sprites and tint, valet animation, crosswalks, ambient pedestrians | done |
+| Plates (2+1), headlights, face-down delivery rule, patron walk flow, bell on key board, audio mix | in progress |
+| Car controller upgrade: handbrake drift, grip, speed-scaled steering, forgiving parking, Perfect Park | planned (P1 scope in the redesign) |
+| Impact damage, shake, smoke, debris | planned |
+| Pedestrian reactions: honk, tumble, courtesy tips | planned |
+| Kev the rookie AI valet, task board, swap button | planned (P2) |
+| Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
+
+Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
+co-op input. Known gaps: only 14 civilian car sprites exist in the pack (variety comes from tint and mirroring);
+the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor is a placeholder box.
+
+## A9. Design log
+
+| Date | Change |
+| --- | --- |
+| 2026-11-09 | Adopted the chaos redesign on `pivot/chaos`; debt, strikes, boss orders removed; 4-minute shifts with score, combo, stars |
+| 2026-11-09 | MetroCity art imported at PPU 32; diner lot, car sprites, valet animation |
+| 2026-11-09 | Pixel UI kit, HUD, title and results screens (style guide `docs/redesign/ui_style_guide.md`) |
+| 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
+| 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
+| 2026-11-09 | Play-test notes: plate to 2+1 at car width, more zoom, people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrow, headlights (in progress) |
 
 ---
+
+# Part B. Pre-pivot design (superseded, kept for history)
 
 ## 1. Overview
 

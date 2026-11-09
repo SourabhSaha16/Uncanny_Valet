@@ -405,3 +405,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Scenes/Bootstrap.unity, configs, metas, site/
 Why: Licence plates, tinted car bodies, legacy car meters and roof stripe removed, police sprites added.
 Tests: 442 of 442 EditMode; batch setup clean; browser shows plate DLZ 595 under the car and on the key board, no meters or roof band.
+
+## lead: rewrite design.md as a living document (Part A current, Part B legacy)
+Date: 2026-11-09
+Files: docs/design.md, docs/status.md, docs/decisions.md
+Why: Human asked to keep the game design updated with every change. Part A records the chaos redesign as built, in progress and planned, with a Design log.
+Tests: docs only.
