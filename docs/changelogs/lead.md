@@ -375,3 +375,9 @@ Date: 2026-11-09
 Files: docs/redesign/ui_style_guide.md
 Why: The human supplied a scene art prompt deck; the UI-relevant parts (style bible, cast, HUD, results, title) are kept for the UI agent.
 Tests: docs only.
+
+## lead: merge pivot-ui and rebuild site with pixel UI
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, metas, site/
+Why: Pixel-style HUD, floating tickets, results and title screens per docs/redesign/ui_style_guide.md.
+Tests: 363 of 363 EditMode; batch setup compiled cleanly; browser shows title, key-press start, HUD (clock, score and stars, key board) and a car driving in; one 404 resource error (not investigated).
