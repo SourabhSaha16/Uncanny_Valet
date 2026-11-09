@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153f29ade493d3243b6e24ea7dc0371b, type: 3}
+  m_Name: ShiftConfig
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Config.ShiftConfig
+  _shiftLengthSeconds: 240
+  _gameMinutesPerSecond: 1
+  _finalStretchSeconds: 30
+  _oneStarScore: 150
+  _twoStarScore: 300
+  _threeStarScore: 450
+  _complaintPenalty: 15
+  _maxComboMultiplier: 4
+  _maxWaitingCars: 3
+  _arrivalGapScale: 1
+  _activeSpots: 0
+  _evChance: 0.3
+  _dirtyChance: 0.3
+  _lateEvChance: 0.5
+  _lateEvStart: 0.6
+  _chargingOpen: 1
+  _washOpen: 1

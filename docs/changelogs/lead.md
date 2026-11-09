@@ -345,3 +345,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Art/ThirdParty/MetroCity/**/*.meta
 Why: Unity batch import compiled the importer with no errors and sliced sheets (cars 36, characters 144, road 100, buildings 9), PPU 32, Point filter.
 Tests: batch import only; EditMode run follows with pivot-core.
+
+## lead: regenerate scene, configs and metas after pivot-core merge
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, Data/Shift/ShiftConfig.asset, new .meta files
+Why: pivot-core could not run Unity; ProjectSetup.RunBatch builds ShiftConfig and the shift scene.
+Tests: 317 of 317 EditMode passed (old night/orders tests removed with their code).
