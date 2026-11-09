@@ -17,13 +17,18 @@ namespace UncannyValet.Cars
         private SpriteRenderer _body;
         private GameObject _chargeBar;
         private GameObject _mud;
+        private CarBodyArt _art;
         private IEventBus _bus;
 
-        /// <summary>Adds the component to <paramref name="car"/>. The bar and mud children start inactive.</summary>
+        /// <summary>
+        /// Adds the component to <paramref name="car"/>. The bar and mud children start inactive.
+        /// With <paramref name="art"/> an EV swaps its sprite; without it the body colour changes.
+        /// </summary>
         public static CarTraitLook Attach(GameObject car, CarId id, CarDefinition definition,
-            SpriteRenderer body, CarChargeBar chargeBar, CarMudOverlay mud)
+            SpriteRenderer body, CarChargeBar chargeBar, CarMudOverlay mud, CarBodyArt art = null)
         {
             var look = car.AddComponent<CarTraitLook>();
+            look._art = art;
             look._id = id;
             look._definition = definition;
             look._body = body;
@@ -48,7 +53,8 @@ namespace UncannyValet.Cars
         private void OnTraits(TicketTraitsAssigned e)
         {
             if (e.Car != _id) return;
-            _body.color = e.IsEv ? _definition.EvBodyColor : _definition.Color;
+            if (_art != null) _art.SetEv(e.IsEv);
+            else _body.color = e.IsEv ? _definition.EvBodyColor : _definition.Color;
             _chargeBar.SetActive(e.IsEv);
             _mud.SetActive(e.IsDirty);
         }

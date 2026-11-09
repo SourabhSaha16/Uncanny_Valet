@@ -17,6 +17,8 @@ namespace UncannyValet.Lot
         private static readonly Color Wall = new Color(0.55f, 0.28f, 0.25f);
 
         [SerializeField] private LotConfig _config;
+        [SerializeField, Tooltip("Optional scenery art: asphalt, hedge walls, sidewalk curb and painted bays.")]
+        private LotArtConfig _art;
 
         private LotExpander _expander;
         private SpotOccupancy _occupancy;
@@ -52,7 +54,8 @@ namespace UncannyValet.Lot
             var c = _config;
             var g = new LotGeometry(c);
             _arrivalSlots = g.QueueSlots;
-            var frame = new LotFrame(rects, transform, c.WallThickness, Ground, Wall);
+            var frame = new LotFrame(rects, transform, c.WallThickness,
+                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall);
             BuildCurb(rects);
             var wash = StationBuilder.BuildWash(rects, transform, c, g.Wash);
             gameObject.AddComponent<StationSwitch>().Init(wash);
@@ -65,7 +68,8 @@ namespace UncannyValet.Lot
             {
                 var charging = i >= g.Spots.Length;
                 var area = charging ? g.ChargingSpots[i - g.Spots.Length] : g.Spots[i];
-                spots[i] = SpotBuilder.Build(rects, transform, c, i + 1, area, charging, _occupancy);
+                spots[i] = SpotBuilder.Build(rects, transform, c, i + 1, area, charging, _occupancy,
+                    _art != null ? _art.AsphaltColor : (Color?)null);
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, g, spots, frame);
@@ -75,8 +79,15 @@ namespace UncannyValet.Lot
         private void BuildCurb(RectFactory rects)
         {
             var c = _config;
-            rects.Make(transform, "Curb Edge", c.CurbPosition, c.CurbSize, CurbEdge, -7);
-            rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
+            if (_art != null && _art.SidewalkTile != null)
+            {
+                LotCurbArt.Build(rects, transform, c, _art);
+            }
+            else
+            {
+                rects.Make(transform, "Curb Edge", c.CurbPosition, c.CurbSize, CurbEdge, -7);
+                rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
+            }
             SpotLabel.Create(transform, string.Join("\n", "CURB".ToCharArray()), c.CurbPosition, c, -5, c.CurbLabelSize);
             var zone = new GameObject("CurbZone");
             zone.transform.SetParent(transform, false);
