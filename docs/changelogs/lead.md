@@ -339,3 +339,9 @@ Date: 2026-11-09
 Files: docs/redesign/chaos_redesign.md, docs/design.md, docs/decisions.md, art-src/MetroCity/*.rar, .github/workflows/ci-cd.yml
 Why: Human approved the chaos redesign. Baseline on main: 366 of 366 EditMode tests. CI now also deploys site/ from pivot/chaos so the pivot build replaces the live site.
 Tests: baseline run, 366 of 366 passed.
+
+## lead: commit generated .meta files for MetroCity art
+Date: 2026-11-09
+Files: Assets/_Project/Art/ThirdParty/MetroCity/**/*.meta
+Why: Unity batch import compiled the importer with no errors and sliced sheets (cars 36, characters 144, road 100, buildings 9), PPU 32, Point filter.
+Tests: batch import only; EditMode run follows with pivot-core.
