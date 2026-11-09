@@ -423,3 +423,9 @@ Date: 2026-11-09
 Files: docs/redesign/patron_director_spec.md, docs/decisions.md
 Why: Human supplied the spec; agents implement it in stages.
 Tests: docs only.
+
+## lead: log play-test notes decisions
+Date: 2026-11-09
+Files: docs/decisions.md
+Why: Human answered clarifying questions for the queue, wash and arrow notes; implementation is queued behind director-1.
+Tests: docs only.
