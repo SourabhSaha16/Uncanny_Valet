@@ -357,3 +357,9 @@ Date: 2026-11-09
 Files: site/
 Why: First pivot/chaos publish; replaces the live site per the human. 4-minute shift, score, combo, stars, retry; art not yet in use.
 Tests: 317 of 317 EditMode; browser smoke test shows shift clock, score overlay and car A with no console errors.
+
+## lead: changelog check ignores commits already on main for a new branch
+Date: 2026-11-09
+Files: tools/check-changelog.sh
+Why: The first push of pivot/chaos failed CI because the check walked the whole history, including two old main commits without entries.
+Tests: ran the script locally against HEAD with a zero base: passes.

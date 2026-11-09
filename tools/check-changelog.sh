@@ -16,7 +16,12 @@ else
 fi
 
 if [ -z "$BASE" ] || [ "$BASE" = "$ZERO" ]; then
-  COMMITS=$(git rev-list --no-merges "$HEAD")          # first push: check every commit
+  # First push of a branch: check only commits that are not already on origin/main.
+  if git rev-parse --verify -q origin/main >/dev/null; then
+    COMMITS=$(git rev-list --no-merges "$HEAD" ^origin/main)
+  else
+    COMMITS=$(git rev-list --no-merges "$HEAD")
+  fi
 else
   COMMITS=$(git rev-list --no-merges "$BASE..$HEAD")
 fi
