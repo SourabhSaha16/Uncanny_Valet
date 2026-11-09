@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -20,6 +21,7 @@ namespace UncannyValet.Lot
         private DecorLayout _layout;
         private bool _hasLayout;
         private WalkwayLayout _walkway;
+        private PedestrianPathMap _paths;
 
         private WalkwayLayout Walkway
             => _walkway ?? (_walkway = new WalkwayLayout(_config, Layout, _art.Walkway, _art.CrosswalkOffset));
@@ -51,22 +53,15 @@ namespace UncannyValet.Lot
             return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, bottom), rect.xMax, Mathf.Max(rect.yMax, top));
         }
 
-        /// <summary>
-        /// The routes pedestrians walk, in world coordinates (open polylines, walked to the end and back). Empty
-        /// until the decor has a LotConfig and a LotArtConfig.
-        /// </summary>
-        public Vector2[][] WalkRoutes()
+        /// <summary>The walking routes, door and curb standing spots in world coordinates; null until the decor has its configs.</summary>
+        public IPedestrianPaths Paths
         {
-            if (_config == null || _art == null) return new Vector2[0][];
-            var routes = Walkway.Routes;
-            var world = new Vector2[routes.Length][];
-            var origin = (Vector2)transform.position;
-            for (var i = 0; i < routes.Length; i++)
+            get
             {
-                world[i] = new Vector2[routes[i].Length];
-                for (var p = 0; p < routes[i].Length; p++) world[i][p] = routes[i][p] + origin;
+                if (_config == null || _art == null) return null;
+                return _paths ?? (_paths = new PedestrianPathMap(_config, Layout, _art.Walkway, _art.CrosswalkOffset,
+                    transform.position));
             }
-            return world;
         }
 
         private void Awake()

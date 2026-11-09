@@ -67,7 +67,6 @@ namespace UncannyValet.Tests.UI
             _bus.Publish(new TicketTimerExpired(T, C, TimerKind.Pickup));
             Assert.AreEqual(TicketRowState.PickupRequested, row.State);
             Assert.IsTrue(row.Expired);
-            Assert.AreEqual(1, _board.PickupCount);
         }
 
         [Test]
@@ -168,7 +167,6 @@ namespace UncannyValet.Tests.UI
             _bus.Publish(new TicketTimerExpired(T, C, TimerKind.Park));
             _bus.Publish(new TicketClosed(T, C, 0f, 0));
             Assert.AreEqual(0, _board.Count);
-            Assert.AreEqual(0, _board.PickupCount);
         }
 
         [Test]

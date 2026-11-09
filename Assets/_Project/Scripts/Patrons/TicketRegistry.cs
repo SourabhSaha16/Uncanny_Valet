@@ -14,15 +14,18 @@ namespace UncannyValet.Patrons
         private readonly TicketBook _book;
         private readonly TicketSettler _settler;
         private readonly StationService _stations;
+        private readonly CurbCall _call;
         private readonly LiveTicketTuning _live;
         private readonly List<Ticket> _scratch = new List<Ticket>();
+
+        /// <summary>Game minutes a summoned patron may walk before the pickup is requested anyway; 0 = no walk (see <see cref="CurbCall"/>).</summary>
+        public float CurbWalkTimeoutMinutes { get => _call.TimeoutMinutes; set => _call.TimeoutMinutes = value; }
 
         public int OpenCount => _book.Count;
 
         /// <summary>Tickets whose car has not been parked yet.</summary>
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
-        /// <param name="score">The shift score whose combo multiplies each tip; null means no combo (1x).</param>
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, IShiftScoreView score = null)
             : this(bus, clock, tips, ServiceTuning.Default, score) { }
 
@@ -42,9 +45,11 @@ namespace UncannyValet.Patrons
             _book = new TicketBook(tuning, plates);
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score);
             _stations = new StationService(bus, clock, _book);
+            _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
+            _bus.Subscribe<PatronReachedCurb>(OnPatronReachedCurb);
             _bus.Subscribe<CarEntered>(OnCarEntered);
             _bus.Subscribe<CarExited>(OnCarExited);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
@@ -58,6 +63,7 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
+            _bus.Unsubscribe<PatronReachedCurb>(OnPatronReachedCurb);
             _bus.Unsubscribe<CarEntered>(OnCarEntered);
             _bus.Unsubscribe<CarExited>(OnCarExited);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
@@ -82,10 +88,7 @@ namespace UncannyValet.Patrons
             return ticket;
         }
 
-        /// <summary>
-        /// Announces a created ticket in the order listeners rely on: CarSpawned, TicketOpened, CarTagAssigned,
-        /// CarPlateAssigned, TicketTraitsAssigned, and only then the initial charge and clean levels.
-        /// </summary>
+        /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
         public void AnnounceArrival(Ticket t)
         {
             _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
@@ -141,15 +144,25 @@ namespace UncannyValet.Patrons
             }
             else if (t.StayEnded(minute))
             {
-                t.MarkPickupRequested(minute);
-                t.PickupTimer.Start(minute);
-                _bus.Publish(new PickupRequested(t.TicketId, t.CarId));
-                if (t.AtCurb) Close(t);
+                if (_call.ShouldRequest(t, minute)) RequestPickup(t, minute);
             }
             else if (t.State == TicketState.PickupRequested)
             {
                 _timers.Tick(t, TimerKind.Pickup, minute);
             }
+        }
+
+        private void OnPatronReachedCurb(PatronReachedCurb e)
+        {
+            if (_book.TryGetByCar(e.Car, out var t) && CurbCall.AcceptsArrival(t)) RequestPickup(t, _clock.ElapsedMinutes);
+        }
+
+        private void RequestPickup(Ticket t, float minute)
+        {
+            t.MarkPickupRequested(minute);
+            t.PickupTimer.Start(minute);
+            _bus.Publish(new PickupRequested(t.TicketId, t.CarId));
+            if (t.AtCurb) Close(t);
         }
 
         private void Close(Ticket t) => _settler.Pay(t);

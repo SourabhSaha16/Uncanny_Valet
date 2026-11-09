@@ -33,6 +33,14 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes in the wash bay to get a dirty car clean.")]
         [SerializeField, Min(1f)] private float _washMinutes = 15f;
 
+        [Header("Walking patrons")]
+        [SerializeField, Min(0f), Tooltip("Game minutes a patron may take to walk from the diner to the curb before the pickup is requested anyway. 0 requests the pickup the moment the stay ends (no walking).")]
+        private float _curbWalkTimeoutMinutes = 40f;
+        [SerializeField, Min(0f), Tooltip("Game minutes a delivered car waits for its patron to get in before driving off anyway. 0 sends it off at once.")]
+        private float _boardingTimeoutMinutes = 6f;
+
+        public float CurbWalkTimeoutMinutes => _curbWalkTimeoutMinutes;
+        public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;
         public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes);
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;

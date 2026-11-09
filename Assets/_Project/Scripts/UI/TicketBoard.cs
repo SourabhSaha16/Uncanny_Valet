@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UncannyValet.Core.Events;
 using UncannyValet.UI.Hud;
 
@@ -16,7 +15,6 @@ namespace UncannyValet.UI
         private readonly HashSet<int> _arrived = new HashSet<int>();
 
         public int Count => _rows.Count;
-        public int PickupCount { get; private set; }
 
         public TicketBoard(IEventBus bus)
         {
@@ -69,13 +67,6 @@ namespace UncannyValet.UI
             foreach (var pair in _rows) into.Add(pair.Value);
             TicketRowOrder.Sort(into);
         }
-
-        /// <summary>
-        /// Writes one line per pending pickup (at most maxLines, then "+N more") and returns the line count; see
-        /// <see cref="PickupBannerFormatter.AppendAll"/>. <paramref name="tags"/> receives each line's tag colour.
-        /// </summary>
-        public int AppendPickups(StringBuilder text, int maxLines, List<int> tags = null)
-            => PickupBannerFormatter.AppendAll(text, _rows.Values, maxLines, tags);
 
         private void OnOpened(TicketOpened e)
         {
@@ -153,7 +144,6 @@ namespace UncannyValet.UI
             row.State = TicketRowState.PickupRequested;
             row.HasTimer = false;
             row.Expired = false;
-            PickupCount++;
         }
 
         private void OnTimerChanged(TicketTimerChanged e)
@@ -177,7 +167,6 @@ namespace UncannyValet.UI
         {
             Version++;
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
-            if (row.State == TicketRowState.PickupRequested && PickupCount > 0) PickupCount--;
             _rows.Remove(e.Ticket.Value);
             _tags.Remove(row.Car);
             _plates.Remove(row.Car);

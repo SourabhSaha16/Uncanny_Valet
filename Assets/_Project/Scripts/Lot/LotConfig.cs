@@ -22,6 +22,10 @@ namespace UncannyValet.Lot
         [SerializeField] private float _settleSeconds = 0.5f;
         [SerializeField] private float _stoppedSpeed = 0.2f;
 
+        [Header("Curb facing")]
+        [SerializeField, Range(5f, 90f), Tooltip("How far a car may be turned from pointing straight down the screen and still be handed back at the curb.")]
+        private float _curbFacingToleranceDegrees = 35f;
+
         [Header("Frame")]
         [SerializeField] private float _margin = 1.5f;
         [SerializeField] private float _wallThickness = 0.6f;
@@ -94,6 +98,7 @@ namespace UncannyValet.Lot
         public Vector2 CurbPosition => _curbPosition;
         public Vector2 CurbSize => _curbSize;
         public float CurbToSpotsGap => _curbToSpotsGap;
+        public float CurbFacingToleranceDegrees => _curbFacingToleranceDegrees;
         public float SettleSeconds => _settleSeconds;
         public float StoppedSpeed => _stoppedSpeed;
         public float Margin => _margin;

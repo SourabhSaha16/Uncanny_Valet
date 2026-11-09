@@ -106,4 +106,29 @@ namespace UncannyValet.Core.Events
         public readonly CarId Car;
         public CarDelivered(TicketId ticket, CarId car) { Ticket = ticket; Car = car; }
     }
+
+    /// <summary>
+    /// The stay is over: the patron should leave the diner and walk to the curb. Pedestrians answer with
+    /// <see cref="PatronReachedCurb"/>; Patrons then requests the pickup.
+    /// </summary>
+    public readonly struct PatronSummoned : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public PatronSummoned(TicketId ticket, CarId car) { Ticket = ticket; Car = car; }
+    }
+
+    /// <summary>The patron of this car is standing at the curb, so the pickup patience can start.</summary>
+    public readonly struct PatronReachedCurb : IGameEvent
+    {
+        public readonly CarId Car;
+        public PatronReachedCurb(CarId car) { Car = car; }
+    }
+
+    /// <summary>The patron of this car got into it after the delivery; the car may drive off now.</summary>
+    public readonly struct PatronBoarded : IGameEvent
+    {
+        public readonly CarId Car;
+        public PatronBoarded(CarId car) { Car = car; }
+    }
 }

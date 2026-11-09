@@ -33,7 +33,7 @@ namespace UncannyValet.UI.Hud
             if (camera == null) return;
             for (var i = rows.Count - 1; i >= 0; i--) // least urgent first, so urgent plates and boxes draw on top
                 if (rows[i].HasPlate && TryProject(rows[i], camera, -PlateDropWorldUnits, out var px, out var py))
-                    DrawPlate(rows[i], px, py, time);
+                    DrawPlate(rows[i], px, py, CarWidthPixels(rows[i], camera), time);
             for (var i = rows.Count - 1; i >= 0; i--)
                 if (rows[i].ShowsInfoBox && TryProject(rows[i], camera, LiftWorldUnits, out var bx, out var by))
                     DrawBox(rows[i], bx, by);
@@ -52,16 +52,24 @@ namespace UncannyValet.UI.Hud
             return true;
         }
 
-        private void DrawPlate(TicketRow row, int anchorX, int anchorY, float time)
+        // The car's width (its short side, in world units) as virtual canvas pixels at the camera's current zoom.
+        private int CarWidthPixels(TicketRow row, Camera camera)
         {
-            var width = PlateLayout.Width(row.Plate.Length);
+            if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return 0;
+            var pixelsPerUnit = _canvas.ScreenHeight / (2f * camera.orthographicSize) / _canvas.Grid.Scale;
+            return Mathf.RoundToInt(car.Transform.lossyScale.x * pixelsPerUnit);
+        }
+
+        private void DrawPlate(TicketRow row, int anchorX, int anchorY, int carWidth, float time)
+        {
+            var width = PlateLayout.WidthFor(row.Plate, carWidth);
             var x = WorldTicketLayout.ClampToCanvas(anchorX - width / 2, width, PixelGrid.Width);
             var y = WorldTicketLayout.ClampToCanvas(anchorY, PlateLayout.Height, PixelGrid.Height);
             var wanted = row.State == TicketRowState.PickupRequested;
             if (wanted && Blink.IsOn(time, PlateLayout.FlashPeriod(row.Elapsed01, row.Expired)))
-                _plates.DrawGlowing(row.Plate, x, y, AlarmColors.For(Alarm.ForPatience(row.Elapsed01, row.Expired), PixelPalette.Cyan));
+                _plates.DrawGlowing(row.Plate, x, y, width, AlarmColors.For(Alarm.ForPatience(row.Elapsed01, row.Expired), PixelPalette.Cyan));
             else
-                _plates.Draw(row.Plate, x, y, PixelPalette.Ink);
+                _plates.Draw(row.Plate, x, y, width, PixelPalette.Ink);
         }
 
         private void DrawBox(TicketRow row, int anchorX, int anchorY)

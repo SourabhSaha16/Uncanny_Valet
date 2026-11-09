@@ -12,18 +12,19 @@ namespace UncannyValet.UI.Hud
     public sealed class KeyBoardPainter
     {
         private const int Margin = 4;
-        private const int Width = 124;
+        private const int Width = 118;
         private const int RowHeight = 13;
         private const int HeaderHeight = 10;
         private const int Border = 3;
         private const int MaxRows = 5;
         private const int PlateOffset = 13;
-        private const int SpotOffset = 63;
-        private const int BarOffset = 85;
+        private const int SpotOffset = 42;
+        private const int BarOffset = 66;
         private const int BarWidth = 30;
+        private const int BellOffset = 100;
         private const int BarHeight = 5;
-        private const float BlinkPeriod = 0.5f;
-        private const float PickupGlow = 0.35f;
+        private const float LitGlow = 0.4f;
+        private const float DimGlow = 0.12f;
 
         private readonly PixelCanvas _canvas;
         private readonly PlatePainter _plates;
@@ -56,17 +57,21 @@ namespace UncannyValet.UI.Hud
 
         private void DrawRow(TicketRow row, int x, int y, float time)
         {
-            var pickup = row.State == TicketRowState.PickupRequested;
-            if (pickup)
-            {
-                var glow = PixelPalette.Cyan;
-                glow.a = Blink.IsOn(time, BlinkPeriod) ? PickupGlow : PickupGlow * 0.5f;
-                _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
-            }
+            if (PickupMark.IsRequested(row)) DrawPickupMark(row, x, y, time);
             _canvas.Icon(PixelIcon.KeyTag, x + 2, y + 2, 1, PixelPalette.TagColor(row.Tag));
             if (row.HasPlate) _plates.Draw(row.Plate, x + PlateOffset, y + 1, PixelPalette.Ink);
             DrawSpot(row.Spot, x + SpotOffset, y + 3);
             DrawBar(row, x + BarOffset, y + 4);
+        }
+
+        // Cyan row highlight and a bell, both flashing with the plate's urgency flash.
+        private void DrawPickupMark(TicketRow row, int x, int y, float time)
+        {
+            var lit = PickupMark.IsLit(row, time);
+            var glow = PickupMark.Tint(row);
+            glow.a = lit ? LitGlow : DimGlow;
+            _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
+            if (lit) _canvas.Icon(PixelIcon.Bell, x + BellOffset, y + 2, 1, Color.white);
         }
 
         private void DrawSpot(int spot, int x, int y)

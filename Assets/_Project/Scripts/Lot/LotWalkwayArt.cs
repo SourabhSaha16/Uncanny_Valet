@@ -24,18 +24,27 @@ namespace UncannyValet.Lot
             for (var i = 0; i < layout.Crossings.Length; i++)
                 Crossing(parent, rects, "Aisle Crossing " + i, layout.Crossings[i], style.CrossingBars, style.BarWidth,
                     style.BarGap, crossingColor, MarkingOrder);
-            for (var i = 0; i < layout.Arrows.Length; i++) Arrow(parent, rects, i, layout.Arrows[i], style);
+            for (var i = 0; i < layout.Arrows.Length; i++) Arrow(parent, rects, "Aisle Arrow " + i, layout.Arrows[i], style);
         }
 
-        private static void Arrow(Transform parent, RectFactory rects, int index, PaintedArrow arrow, WalkwayStyle style)
+        /// <summary>A shaft with two head strokes at the tip.</summary>
+        public static void Arrow(Transform parent, RectFactory rects, string name, PaintedArrow arrow, WalkwayStyle style)
         {
-            var name = "Aisle Arrow " + index;
             var t = style.ArrowThickness;
             rects.Segment(parent, name + " Shaft", arrow.Tail, arrow.Tip, t, style.ArrowColor, MarkingOrder);
             rects.Segment(parent, name + " Head A", arrow.Tip,
                 arrow.HeadEnd(style.ArrowHeadLength, style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
             rects.Segment(parent, name + " Head B", arrow.Tip,
                 arrow.HeadEnd(style.ArrowHeadLength, -style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
+        }
+
+        /// <summary>A "V" direction marking pointing down from <paramref name="apex"/>: two strokes meeting at the apex.</summary>
+        public static void ChevronDown(Transform parent, RectFactory rects, string name, Vector2 apex, WalkwayStyle style)
+        {
+            var arrow = new PaintedArrow(apex + Vector2.up, apex);
+            var t = style.ArrowThickness;
+            rects.Segment(parent, name + " A", apex, arrow.HeadEnd(style.ArrowHeadLength, style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
+            rects.Segment(parent, name + " B", apex, arrow.HeadEnd(style.ArrowHeadLength, -style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
         }
     }
 }

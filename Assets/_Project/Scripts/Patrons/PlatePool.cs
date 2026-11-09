@@ -28,7 +28,7 @@ namespace UncannyValet.Patrons
                 var plate = PlateFormat.FromIndex(start + i);
                 if (_held.Add(plate)) return plate;
             }
-            return PlateFormat.FromIndex(start); // every plate is taken; far beyond any real number of open tickets
+            return PlateFormat.FromIndex(start); // pool exhausted (3610 open tickets): fall back to a duplicate rather than fail
         }
 
         /// <summary>Frees a plate for reuse. Unknown plates are ignored.</summary>

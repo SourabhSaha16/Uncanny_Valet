@@ -37,9 +37,9 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void PlateBeforeTicket_IsShown()
         {
-            _bus.Publish(new CarPlateAssigned(C, "BKT 482"));
+            _bus.Publish(new CarPlateAssigned(C, "BK 4"));
             _bus.Publish(new TicketOpened(T, C, 60f));
-            Assert.AreEqual("BKT 482", Only().Plate);
+            Assert.AreEqual("BK 4", Only().Plate);
             Assert.IsTrue(Only().HasPlate);
         }
 
@@ -48,14 +48,14 @@ namespace UncannyValet.Tests.UI
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             Assert.IsFalse(Only().HasPlate);
-            _bus.Publish(new CarPlateAssigned(C, "DGH 007"));
-            Assert.AreEqual("DGH 007", Only().Plate);
+            _bus.Publish(new CarPlateAssigned(C, "DG 7"));
+            Assert.AreEqual("DG 7", Only().Plate);
         }
 
         [Test]
         public void ClosedTicketForgetsItsPlate()
         {
-            _bus.Publish(new CarPlateAssigned(C, "BKT 482"));
+            _bus.Publish(new CarPlateAssigned(C, "BK 4"));
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new TicketClosed(T, C, 5f, 10));
             _bus.Publish(new TicketOpened(new TicketId(2), C, 60f));
@@ -63,10 +63,22 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void PlateWidthGrowsWithTheTextAndFitsTheBox()
+        public void PlateTextUsesANarrowSpace()
         {
-            Assert.AreEqual(PixelTextLayout.Width(7, 1) + 2 * (PlateLayout.Border + PlateLayout.PadX), PlateLayout.Width(7));
-            Assert.Greater(PlateLayout.Width(7), PlateLayout.Width(6));
+            Assert.AreEqual(2 * PixelTextLayout.Advance + PlateLayout.SpaceAdvance + PixelGlyphs.Width, PlateLayout.TextWidth("KT 4"));
+            Assert.AreEqual(0, PlateLayout.TextWidth(""));
+            Assert.AreEqual(0, PlateLayout.TextWidth(null));
+        }
+
+        [Test]
+        public void PlateWidthFollowsTheCarButNeverBelowTheReadableMinimum()
+        {
+            var min = PlateLayout.MinWidth("KT 4");
+            Assert.AreEqual(PlateLayout.TextWidth("KT 4") + 2 * PlateLayout.Border, min);
+            Assert.AreEqual(40, PlateLayout.WidthFor("KT 4", 40));
+            Assert.AreEqual(min, PlateLayout.WidthFor("KT 4", 10));
+            Assert.AreEqual(min, PlateLayout.WidthFor("KT 4", 0));
+            Assert.Greater(PlateLayout.Width("KT 4"), min);
             Assert.AreEqual(PixelGlyphs.Height + 2 * (PlateLayout.Border + PlateLayout.PadY), PlateLayout.Height);
         }
 

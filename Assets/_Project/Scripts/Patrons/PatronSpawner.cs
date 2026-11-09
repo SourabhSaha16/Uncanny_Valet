@@ -46,7 +46,8 @@ namespace UncannyValet.Patrons
             _clock = Services.Get<IGameClock>();
             Services.TryGet<IShiftScoreView>(out var score);
             Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
-            _departure = new PatronDeparture(_bus, _cars);
+            Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
+            _departure = new PatronDeparture(_bus, _cars, _clock, _config.BoardingTimeoutMinutes);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);

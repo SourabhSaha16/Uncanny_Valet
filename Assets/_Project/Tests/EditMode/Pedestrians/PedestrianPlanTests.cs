@@ -62,32 +62,6 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
-        public void PedestriansAreDealtOutToTheRoutesInTurn()
-        {
-            Assert.AreEqual(0, PedestrianPlan.RouteFor(0, 5));
-            Assert.AreEqual(4, PedestrianPlan.RouteFor(4, 5));
-            Assert.AreEqual(0, PedestrianPlan.RouteFor(5, 5));
-            Assert.AreEqual(-1, PedestrianPlan.RouteFor(3, 0));
-        }
-
-        [Test]
-        public void WalkersSharingARouteStartAtDifferentPlaces()
-        {
-            var starts = new HashSet<float>();
-            for (var i = 0; i < 10; i++)
-                if (PedestrianPlan.RouteFor(i, 5) == 2) starts.Add(PedestrianPlan.StartFraction(i, 5, 10));
-            Assert.AreEqual(2, starts.Count);
-        }
-
-        [Test]
-        public void StartFractionIsAlwaysInsideTheCycle()
-        {
-            for (var i = 0; i < 10; i++)
-                Assert.That(PedestrianPlan.StartFraction(i, 7, 10), Is.InRange(0f, 0.9999f));
-            Assert.AreEqual(0f, PedestrianPlan.StartFraction(0, 0, 10));
-        }
-
-        [Test]
         public void SpeedStaysWithinTheConfiguredRangeAndVaries()
         {
             var speeds = new HashSet<float>();

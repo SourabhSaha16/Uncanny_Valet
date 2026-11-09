@@ -3,8 +3,7 @@ using UnityEngine;
 namespace UncannyValet.Pedestrians
 {
     /// <summary>
-    /// Pure, deterministic choices for the crowd: who wears what, who walks which route, where along it they start
-    /// and how fast. The same index always gives the same answer.
+    /// Pure, deterministic choices for the crowd: who wears what, how fast they walk. The same index always gives the same answer.
     /// </summary>
     public static class PedestrianPlan
     {
@@ -35,23 +34,6 @@ namespace UncannyValet.Pedestrians
             var stride = Mathf.Max(1, preferred);
             while (count > 1 && Gcd(stride, count) != 1) stride++;
             return stride;
-        }
-
-        /// <summary>The route a pedestrian walks; pedestrians are dealt out to the routes in turn. -1 when there are none.</summary>
-        public static int RouteFor(int index, int routeCount) => routeCount <= 0 ? -1 : index % routeCount;
-
-        /// <summary>
-        /// Where in its walk (0..1 of the there-and-back cycle) a pedestrian starts, spreading the walkers that share a
-        /// route evenly and giving each route a different phase.
-        /// </summary>
-        public static float StartFraction(int index, int routeCount, int total)
-        {
-            if (routeCount <= 0 || total <= 0) return 0f;
-            var route = index % routeCount;
-            var onRoute = (total - route + routeCount - 1) / routeCount;
-            var slot = index / routeCount;
-            var fraction = (slot + 0.5f) / Mathf.Max(1, onRoute) + route * 0.31f;
-            return fraction - Mathf.Floor(fraction);
         }
 
         /// <summary>Walking speed between <paramref name="min"/> and <paramref name="max"/>, varied by index.</summary>

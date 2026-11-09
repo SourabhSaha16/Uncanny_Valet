@@ -101,15 +101,17 @@ namespace UncannyValet.Bootstrap
         private void FrameLot()
         {
             if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
-                _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect);
+                _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect, rect);
             else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
         }
 
         private void StartPedestrians()
         {
-            if (_pedestrians == null || _decor == null) return;
+            if (_pedestrians == null || _decor == null || _decor.Paths == null) return;
+            Services.Register<IPedestrianPaths>(_decor.Paths);
+            Services.Register<IPatronLocator>(_pedestrians);
             _pedestrians.gameObject.SetActive(true);
-            _pedestrians.Begin(_decor.WalkRoutes());
+            _pedestrians.Begin();
         }
 
         private void SpawnValet()
