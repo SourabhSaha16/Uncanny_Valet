@@ -10,6 +10,7 @@
         "UncannyValet.Pedestrians",
         "UncannyValet.Economy",
         "UncannyValet.Night",
+        "UncannyValet.Director",
         "UncannyValet.Audio",
         "UncannyValet.UI"
     ],

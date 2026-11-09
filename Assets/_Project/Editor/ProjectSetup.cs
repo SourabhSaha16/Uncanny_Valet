@@ -2,6 +2,7 @@ using System.IO;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
+using UncannyValet.Director;
 using UncannyValet.Lot;
 using UncannyValet.Patrons;
 using UnityEditor;
@@ -19,6 +20,8 @@ namespace UncannyValet.EditorTools
         public const string PatronConfigPath = "Assets/_Project/Data/Patrons/PatronConfig.asset";
         public const string AudioConfigPath = "Assets/_Project/Data/Audio/AudioConfig.asset";
         public const string ShiftConfigPath = "Assets/_Project/Data/Shift/ShiftConfig.asset";
+        public const string DirectorConfigPath = "Assets/_Project/Data/Director/DirectorConfig.asset";
+        public const string DinerDirectorProfilePath = "Assets/_Project/Data/Director/DinerDirectorProfile.asset";
 
         [MenuItem("Uncanny Valet/Setup/Create Config Assets")]
         public static void CreateConfigs()
@@ -27,6 +30,8 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<PatronConfig>(PatronConfigPath);
             CreateIfMissing<AudioConfig>(AudioConfigPath);
             CreateIfMissing<ShiftConfig>(ShiftConfigPath);
+            CreateIfMissing<DirectorConfig>(DirectorConfigPath);
+            CreateIfMissing<DirectorProfile>(DinerDirectorProfilePath);
             AssetDatabase.SaveAssets();
         }
 

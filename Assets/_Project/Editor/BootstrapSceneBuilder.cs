@@ -2,6 +2,7 @@ using UncannyValet.Audio;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
+using UncannyValet.Director;
 using UncannyValet.EditorTools.Art;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
@@ -39,6 +40,9 @@ namespace UncannyValet.EditorTools
             var ui = Child<GameUi>(root, "GameUi");
             var tuningPanel = Child<TuningPanel>(root, "TuningPanel");
             var audio = Child<AudioDirector>(root, "AudioDirector");
+            var director = Child<PatronDirector>(root, "PatronDirector");
+            var directorOverlay = Child<DirectorOverlay>(root, "DirectorOverlay");
+            Set(directorOverlay, "_tuningPanel", tuningPanel);
             var carArt = CarArtBuilder.Build();
             var lotArt = LotArtBuilder.Build();
             var valet = BuildValet(root, ValetArtBuilder.Build());
@@ -71,6 +75,10 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_audio").objectReferenceValue = audio;
             so.FindProperty("_decor").objectReferenceValue = decor;
             so.FindProperty("_pedestrians").objectReferenceValue = crowd;
+            so.FindProperty("_director").objectReferenceValue = director;
+            so.FindProperty("_directorConfig").objectReferenceValue = RequireAsset<DirectorConfig>(ProjectSetup.DirectorConfigPath);
+            so.FindProperty("_directorProfile").objectReferenceValue = RequireAsset<DirectorProfile>(ProjectSetup.DinerDirectorProfilePath);
+            so.FindProperty("_directorOverlay").objectReferenceValue = directorOverlay;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

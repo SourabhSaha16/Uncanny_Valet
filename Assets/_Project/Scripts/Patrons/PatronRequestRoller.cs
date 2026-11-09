@@ -1,3 +1,5 @@
+using UncannyValet.Core.Events;
+
 namespace UncannyValet.Patrons
 {
     /// <summary>Rolls the next arrival gap and patron request from the live tuning, the shift plan and a random source.</summary>
@@ -22,6 +24,16 @@ namespace UncannyValet.Patrons
             var stay = _random.Range(_tuning.StayMin, _tuning.StayMax);
             var impatient = _random.Value() < _tuning.ImpatientChance;
             _plan.RollTraits(_random, progress, out var ev, out var dirty);
+            return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.ParkWindow, _tuning.PickupWindow, ev, dirty);
+        }
+
+        /// <summary>Like <see cref="Roll(float)"/> but the car type is dictated (by the director) instead of rolled.</summary>
+        public PatronRequest Roll(float shiftProgress01, CarArchetype archetype)
+        {
+            var stay = _random.Range(_tuning.StayMin, _tuning.StayMax);
+            var impatient = _random.Value() < _tuning.ImpatientChance;
+            _random.Value(); // the trait roll Roll() makes, so both paths draw the same number of values
+            ArchetypeTraits.Of(archetype, out var ev, out var dirty);
             return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.ParkWindow, _tuning.PickupWindow, ev, dirty);
         }
     }
