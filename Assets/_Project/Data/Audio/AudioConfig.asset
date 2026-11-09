@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AudioConfig
   m_EditorClassIdentifier: UncannyValet.Audio::UncannyValet.Audio.AudioConfig
   _masterVolume: 1
-  _musicVolume: 0.15
-  _sfxVolume: 0.5
+  _musicVolume: 0.2
+  _sfxVolume: 0.4
   _tempoBpm: 104
   _rootMidiNote: 45
   _swing: 0.15

@@ -37,6 +37,8 @@ namespace UncannyValet.UI
         private KeyBoardPainter _keyBoard;
         private NoticePainter _notices;
         private WorldTicketPainter _world;
+        private CurbHintTracker _curbHints;
+        private CurbHintPainter _hintPainter;
         private ResultsPainter _resultsPainter;
         private TitlePainter _titlePainter;
         private ResultsContent _results;
@@ -65,8 +67,10 @@ namespace UncannyValet.UI
             _canvas = new PixelCanvas(_kit);
             _hud = new HudPainter(_canvas, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>());
             _keyBoard = new KeyBoardPainter(_canvas);
-            _notices = new NoticePainter(_canvas, _board);
+            _notices = new NoticePainter(_canvas);
             _world = new WorldTicketPainter(_canvas, Services.Get<ICarFactory>());
+            _curbHints = new CurbHintTracker(_bus);
+            _hintPainter = new CurbHintPainter(_canvas, Services.Get<ICarFactory>(), _curbHints);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
@@ -83,6 +87,7 @@ namespace UncannyValet.UI
             }
             _board?.Dispose();
             _stats?.Dispose();
+            _curbHints?.Dispose();
             _kit?.Dispose();
         }
 
@@ -168,9 +173,10 @@ namespace UncannyValet.UI
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
             _board.CollectRows(_rows);
             _world.Draw(_rows, ResolveCamera(), time);
+            _hintPainter.Draw(ResolveCamera());
             _hud.Draw(time);
             _keyBoard.Draw(_rows, time);
-            _notices.Draw(_prompt(), time);
+            _notices.Draw(_prompt());
             if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);
         }
 

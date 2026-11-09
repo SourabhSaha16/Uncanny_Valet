@@ -15,6 +15,21 @@ namespace UncannyValet.Lot
             var plate = Vector2.Scale(config.CurbSize, art.CurbPlateShare);
             rects.Make(parent, "Curb Plate", config.CurbPosition, plate, art.CurbPlateColor, PaintOrder);
             Edge(rects, parent, area, art);
+            Direction(rects, parent, area, art.Walkway);
+        }
+
+        // Down arrows with a chevron under each tip beside the CURB text: the car's nose must point this way.
+        private static void Direction(RectFactory rects, Transform parent, Rect area, WalkwayStyle style)
+        {
+            var half = style.CurbArrowLength * 0.5f;
+            for (var side = -1; side <= 1; side += 2)
+            {
+                var x = area.center.x + side * area.width * style.CurbArrowSideShare;
+                var arrow = new PaintedArrow(new Vector2(x, area.center.y + half), new Vector2(x, area.center.y - half));
+                LotWalkwayArt.Arrow(parent, rects, "Curb Arrow " + side, arrow, style);
+                LotWalkwayArt.ChevronDown(parent, rects, "Curb Chevron " + side,
+                    new Vector2(x, area.center.y - half - style.CurbChevronGap), style);
+            }
         }
 
         private static void Edge(RectFactory rects, Transform parent, Rect area, LotArtConfig art)

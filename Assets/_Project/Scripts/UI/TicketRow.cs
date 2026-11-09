@@ -11,7 +11,7 @@ namespace UncannyValet.UI
         public int Car;
         /// <summary>The key-tag colour index (see TagPalette) of this ticket.</summary>
         public int Tag = NoTag;
-        /// <summary>The car's licence plate text (for example "BKT 482"); empty until it is known.</summary>
+        /// <summary>The car's licence plate text (for example "KT 4"); empty until it is known.</summary>
         public string Plate = string.Empty;
         public TicketRowState State = TicketRowState.AwaitingPark;
         public int Spot;

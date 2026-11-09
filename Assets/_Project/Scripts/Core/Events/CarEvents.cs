@@ -20,7 +20,7 @@ namespace UncannyValet.Core.Events
         public CarTagAssigned(CarId car, int tag) { Car = car; Tag = tag; }
     }
 
-    /// <summary>The car was given its licence plate (for example "ABC 123"), unique among open tickets, until its ticket ends.</summary>
+    /// <summary>The car was given its licence plate (for example "KT 4"), unique among open tickets, until its ticket ends.</summary>
     public readonly struct CarPlateAssigned : IGameEvent
     {
         public readonly CarId Car;
@@ -77,5 +77,16 @@ namespace UncannyValet.Core.Events
     {
         public readonly CarId Car;
         public CarDeparted(CarId car) { Car = car; }
+    }
+
+    /// <summary>
+    /// An empty car resting in the curb zone is (Wrong = true) or is no longer facing the wrong way. Drives the
+    /// "please park it properly" hint over the patron. Also published with Wrong = false when the car leaves.
+    /// </summary>
+    public readonly struct CurbFacingChanged : IGameEvent
+    {
+        public readonly CarId Car;
+        public readonly bool Wrong;
+        public CurbFacingChanged(CarId car, bool wrong) { Car = car; Wrong = wrong; }
     }
 }

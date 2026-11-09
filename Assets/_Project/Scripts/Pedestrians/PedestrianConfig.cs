@@ -22,6 +22,20 @@ namespace UncannyValet.Pedestrians
         [SerializeField, Tooltip("Sorting order of the body layer; outfit and hair sit just above. Stays under the cars.")]
         private int _sortingOrder = 4;
 
+        [Header("Ambient flow")]
+        [SerializeField, Tooltip("Seconds an ambient person stays in the diner (min, max).")]
+        private Vector2 _insideSeconds = new Vector2(5f, 14f);
+        [SerializeField, Tooltip("Seconds an ambient person stays out of sight before appearing at the road side again (min, max).")]
+        private Vector2 _respawnSeconds = new Vector2(1f, 7f);
+        [SerializeField, Range(0f, 0.9f), Tooltip("At the start of the night an ambient person may begin up to this share of the way along their walk, so the street is not empty.")]
+        private float _openingProgressMax = 0.7f;
+
+        [Header("Patrons")]
+        [SerializeField, Range(1, 12), Tooltip("Most patrons that can be on foot at once (pooled).")]
+        private int _patronPoolSize = 6;
+        [SerializeField, Min(0.1f), Tooltip("Walking speed of patrons, world units per second.")]
+        private float _patronSpeed = 1.7f;
+
         [Header("Animation")]
         [SerializeField, Min(1)] private int _columns = 24;
         [SerializeField, Min(1)] private int _framesPerGroup = 6;
@@ -43,6 +57,11 @@ namespace UncannyValet.Pedestrians
         public float MaxSpeed => Mathf.Max(_minSpeed, _maxSpeed);
         public float Scale => _scale;
         public int SortingOrder => _sortingOrder;
+        public Vector2 InsideSeconds => _insideSeconds;
+        public Vector2 RespawnSeconds => _respawnSeconds;
+        public float OpeningProgressMax => _openingProgressMax;
+        public int PatronPoolSize => _patronPoolSize;
+        public float PatronSpeed => _patronSpeed;
         public int Columns => _columns;
         public int FramesPerGroup => _framesPerGroup;
         public float FramesPerSecond => _framesPerSecond;

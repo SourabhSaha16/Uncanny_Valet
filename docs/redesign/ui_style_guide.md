@@ -69,3 +69,17 @@ Overrides earlier text where it conflicts.
 - **Licence plate.** Each patron car shows a small licence-plate box under it: 3 letters then 3 numbers (for example ABC 123), pixel font on a light plate with a dark border. The plate is the car's identity: the key board rows show the same plate text. Plates are unique among open tickets.
 - **No colour band on the roof.** Instead the car sprite itself is tinted to a per-ticket colour (from the tag palette, softened so the outline and windows stay readable). The key board swatch uses the same colour. The pickup flash uses an outline/glow, not a roof stripe. The dirt tint stays.
 - **Car variety.** Use many different car sprites from the MetroCity car pack (not just a handful); EVs keep their own sprites.
+
+## Revision 3 (2026-11-09, human play-test notes)
+
+Overrides earlier text where it conflicts.
+
+- **Licence plate.** 2 letters + 1 digit (for example KT 4), same restricted alphabet (BCDFGHJKLMNPRSTVWXZ), 19 x 19 x 10 = 3610 combinations, unique among open tickets (if all are taken, a duplicate is issued rather than failing). The plate box under a car is as wide as the car (plate width = car width). The pixel font cannot shrink, so the smallest readable box (text plus border, narrow word gap) is used when the car is narrower; at the default car width the plate is slightly wider than the car.
+- **Pickup is shown by a bell on the key board row, no banner.** The pickup banner under the clock is gone. A requested pickup puts a bell and a cyan highlight on that ticket's key board row, flashing with the same urgency flash as the plate (slow while calm, fast near zero; amber, then orange-red).
+- **Zoom.** About 12-15% closer than before, with the whole lot (walls included) still in frame.
+- **People flows.** Ambient walkers come from the road side (off-screen), cross at the road crosswalk, walk north through the lot along the open strip beside the curb (over the aisle crossing) and along the north sidewalk to the diner door, vanish inside, and after a while come out and walk away the same way back. Nobody has a collider.
+- **Patron flow.** When a patron car has finished driving in (CarArrived) the patron gets out, walks via the crosswalks to the diner door and goes inside. When the stay is over the patron comes out, crosses via the crosswalk to the curb and stands there; only then is the pickup requested and its patience started (the stay timer stays in game minutes; the walk is natural extra delay). On delivery the patron walks into the car and disappears, then the car drives away. If the ticket ends without a delivery the patron vanishes quietly.
+- **Face-down delivery rule.** The patron only accepts the car when it is parked in the curb zone with its nose pointing down the screen (towards the road) within a tolerance (default 35 degrees, LotConfig). A wrongly facing car in the zone is not accepted and a small amber hint appears over the patron: PLEASE PARK IT PROPERLY (two lines, pixel font). It hides when the car is turned or leaves.
+- **Curb markings.** The curb zone carries two painted down arrows, each with a chevron under its tip, in the aisle-arrow style, so the player knows which way to face.
+- **Headlights.** Every car shows two small bright yellow-white dots near its front with a soft warm glow behind them, drawn above the body and rotating with the car. They are symmetric, so a mirrored body sprite never moves them to the back.
+- **Audio.** Sound effects are about 2 dB quieter (0.5 to 0.4) and the music/ambient layer about 2.5 dB louder (0.15 to 0.2).

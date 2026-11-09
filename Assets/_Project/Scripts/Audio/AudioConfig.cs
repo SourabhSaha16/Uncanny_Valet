@@ -11,10 +11,10 @@ namespace UncannyValet.Audio
         private float _masterVolume = 1f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Music loop volume. Keep it low so effects stay readable.")]
-        private float _musicVolume = 0.15f;
+        private float _musicVolume = 0.2f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Sound effect volume.")]
-        private float _sfxVolume = 0.5f;
+        private float _sfxVolume = 0.4f;
 
         [Header("Music")]
         [SerializeField, Range(70f, 160f), Tooltip("Loop tempo in beats per minute.")]

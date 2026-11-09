@@ -32,11 +32,15 @@ namespace UncannyValet.Lot
             Routes = routes.ToArray();
         }
 
+        /// <summary>X of the open strip between the curb and the first bay column, where people cross the aisles.</summary>
+        public static float StripX(LotConfig c)
+            => c.CurbPosition.x + c.CurbSize.x * 0.5f + c.CurbToSpotsGap * 0.5f;
+
         private static void AddAisles(LotConfig c, WalkwayStyle s, List<Rect> crossings, List<PaintedArrow> arrows,
             List<Vector2[]> routes)
         {
             var spotsLeft = c.CurbPosition.x + c.CurbSize.x * 0.5f + c.CurbToSpotsGap;
-            var stripX = spotsLeft - c.CurbToSpotsGap * 0.5f;
+            var stripX = StripX(c);
             var bayX = spotsLeft + (c.SpotSize.x + c.SpotGap) - c.SpotGap * 0.5f; // between the first two bay columns
             var arrowX = (stripX + bayX) * 0.5f; // in the gap between the two crossings
             var top = (c.Rows * c.SpotSize.y + (c.Rows - 1) * c.AisleWidth) * 0.5f;

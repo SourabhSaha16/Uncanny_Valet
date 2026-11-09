@@ -12,7 +12,7 @@ namespace UncannyValet.Patrons
         /// <summary>The key-tag colour index (see TagPalette) held until the ticket ends.</summary>
         public int Tag { get; }
 
-        /// <summary>The licence plate (for example "BKT 482"), unique among open tickets; held until the ticket ends.</summary>
+        /// <summary>The licence plate (for example "KT 4"), unique among open tickets; held until the ticket ends.</summary>
         public string Plate { get; }
 
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
@@ -23,6 +23,12 @@ namespace UncannyValet.Patrons
 
         /// <summary>True while the car sits at the curb (it arrived there before pickup was requested).</summary>
         public bool AtCurb { get; set; }
+
+        /// <summary>True once the stay ended and the patron was sent to walk to the curb (see PatronSummoned).</summary>
+        public bool Summoned { get; private set; }
+
+        /// <summary>Game minute at which the patron was sent to the curb.</summary>
+        public float SummonedMinute { get; private set; }
 
         /// <summary>True once the pickup window ran out; the tip is then $0 but the car is still owed.</summary>
         public bool PickupExpired => PickupTimer.IsExpired;
@@ -66,6 +72,13 @@ namespace UncannyValet.Patrons
             if (State != TicketState.AwaitingPark) return;
             State = TicketState.Parked;
             ParkedMinute = minute;
+        }
+
+        public void MarkSummoned(float minute)
+        {
+            if (Summoned) return;
+            Summoned = true;
+            SummonedMinute = minute;
         }
 
         public void MarkPickupRequested(float minute)

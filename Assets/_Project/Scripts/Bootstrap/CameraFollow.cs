@@ -20,6 +20,8 @@ namespace UncannyValet.Bootstrap
         private float _maxOrthographicSize = 12.5f;
         [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
         private float _boundsMargin = 1f;
+        [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.87 = about 15% closer). The play area is never cropped.")]
+        private float _fitTightness = 0.87f;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
         [SerializeField, Tooltip("Shifts the view from the target when no bounds are set.")]
         private Vector2 _focusOffset = Vector2.zero;
@@ -38,6 +40,7 @@ namespace UncannyValet.Bootstrap
             }
         }
         private Rect _bounds;
+        private Rect _mustShow;
         private bool _hasBounds;
         private float _aspect;
 
@@ -49,9 +52,13 @@ namespace UncannyValet.Bootstrap
         }
 
         /// <summary>Sets the world rectangle of the lot (walls included) and refits the zoom.</summary>
-        public void SetWorldBounds(Rect bounds)
+        public void SetWorldBounds(Rect bounds) => SetWorldBounds(bounds, bounds);
+
+        /// <summary>Sets the view bounds and the play area that must stay fully in frame when zooming in.</summary>
+        public void SetWorldBounds(Rect bounds, Rect mustShow)
         {
             _bounds = bounds;
+            _mustShow = mustShow;
             _hasBounds = true;
             ApplySize();
             if (_target != null) Snap();
@@ -78,10 +85,8 @@ namespace UncannyValet.Bootstrap
             var size = _orthographicSize;
             if (_hasBounds)
             {
-                var halfH = _bounds.height * 0.5f + _boundsMargin;
-                var halfW = _bounds.width * 0.5f + _boundsMargin;
-                var fit = Mathf.Max(halfH, halfW / Mathf.Max(0.1f, _aspect));
-                size = Mathf.Clamp(fit, _orthographicSize, Mathf.Max(_orthographicSize, _maxOrthographicSize));
+                size = CameraFit.Size(_bounds, _mustShow, _aspect, _boundsMargin, _fitTightness,
+                    _orthographicSize, _maxOrthographicSize);
             }
             Cam.orthographicSize = size;
         }

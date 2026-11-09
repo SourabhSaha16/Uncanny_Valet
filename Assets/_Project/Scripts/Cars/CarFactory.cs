@@ -96,6 +96,7 @@ namespace UncannyValet.Cars
             go.AddComponent<CarAutoDrive>();
             var art = AttachBodyArt(go, id, def, renderer);
             AttachLooks(go, id, def, renderer, art);
+            CarHeadlights.Attach(go, def.Size, FlashConfig(), GetSprite());
             CarKeyTag.Attach(go, id, art, FlashConfig());
             return driver;
         }

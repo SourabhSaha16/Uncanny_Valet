@@ -36,6 +36,12 @@ namespace UncannyValet.Lot
         protected abstract void OnSettled(CarId car);
         protected abstract void OnLeft(CarId car);
 
+        /// <summary>Extra condition for a car to count as stopped; <paramref name="resting"/> is true while it is empty, slow and inside.</summary>
+        protected virtual bool Accepts(IDrivable car, bool resting) => true;
+
+        /// <summary>Called when a car is no longer tracked by the zone (left, destroyed or released), settled or not.</summary>
+        protected virtual void OnForget(CarId car) { }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             var car = other.GetComponentInParent<IDrivable>();
@@ -50,6 +56,7 @@ namespace UncannyValet.Lot
             if (car == null) return;
             if (_roster.Exit(car.Id)) OnLeft(car.Id);
             _cars.Remove(car.Id);
+            OnForget(car.Id);
         }
 
         /// <summary>Treats every car inside as having left (used when the zone is switched off).</summary>
@@ -57,18 +64,25 @@ namespace UncannyValet.Lot
         {
             if (_roster == null) return;
             _roster.Drain(_settled);
-            _cars.Clear();
             foreach (var id in _settled) OnLeft(id);
             _settled.Clear();
+            ForgetAll();
+        }
+
+        private void ForgetAll()
+        {
+            foreach (var id in _cars.Keys) OnForget(id);
+            _cars.Clear();
         }
 
         private CarReading Read(CarId id)
         {
             var car = _cars[id];
             if (car is Object unityObject && unityObject == null) return CarReading.Gone;
-            var stopped = !car.HasDriver && car.Speed < _config.StoppedSpeed
+            var resting = !car.HasDriver && car.Speed < _config.StoppedSpeed
                           && _box.OverlapPoint(car.Transform.position);
-            return stopped ? CarReading.Stopped : CarReading.Active;
+            var accepted = Accepts(car, resting);
+            return resting && accepted ? CarReading.Stopped : CarReading.Active;
         }
 
         private void Update()
@@ -80,6 +94,7 @@ namespace UncannyValet.Lot
             {
                 _cars.Remove(id);
                 if (wasSettled) OnLeft(id);
+                OnForget(id);
             }
             _settled.Clear();
             _gone.Clear();

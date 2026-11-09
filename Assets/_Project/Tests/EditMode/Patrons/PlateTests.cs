@@ -17,10 +17,10 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void FirstAndLastIndexUseTheAlphabetEnds()
         {
-            Assert.AreEqual("BBB 000", PlateFormat.FromIndex(0));
-            Assert.AreEqual("ZZZ 999", PlateFormat.FromIndex(PlateFormat.Total - 1));
-            Assert.AreEqual("BBB 001", PlateFormat.FromIndex(1));
-            Assert.AreEqual("BBC 000", PlateFormat.FromIndex(PlateFormat.NumberCount));
+            Assert.AreEqual("BB 0", PlateFormat.FromIndex(0));
+            Assert.AreEqual("ZZ 9", PlateFormat.FromIndex(PlateFormat.Total - 1));
+            Assert.AreEqual("BB 1", PlateFormat.FromIndex(1));
+            Assert.AreEqual("BC 0", PlateFormat.FromIndex(PlateFormat.NumberCount));
         }
 
         [Test]
@@ -47,12 +47,13 @@ namespace UncannyValet.Tests.Patrons
 
         [TestCase(null)]
         [TestCase("")]
-        [TestCase("AB 123")]
-        [TestCase("ABC123 ")]
-        [TestCase("BKT 48")]
-        [TestCase("BKQ 482")]
-        [TestCase("BKT 4A2")]
-        [TestCase("bkt 482")]
+        [TestCase("A 1")]
+        [TestCase("ABC 123")]
+        [TestCase("KT4 ")]
+        [TestCase("KQ 4")]
+        [TestCase("KT 4A")]
+        [TestCase("KT  4")]
+        [TestCase("kt 4")]
         public void BadShapesAreRejected(string plate) => Assert.IsFalse(PlateFormat.IsValid(plate));
 
         [Test]
@@ -102,7 +103,7 @@ namespace UncannyValet.Tests.Patrons
         public void ReleasingUnknownOrNullIsHarmless()
         {
             var pool = new PlatePool(new FixedRandom(0f));
-            Assert.DoesNotThrow(() => { pool.Release(null); pool.Release("ZZZ 999"); });
+            Assert.DoesNotThrow(() => { pool.Release(null); pool.Release("ZZ 9"); });
             Assert.AreEqual(0, pool.Count);
         }
 
@@ -115,6 +116,25 @@ namespace UncannyValet.Tests.Patrons
             pool.Reset();
             Assert.AreEqual(0, pool.Count);
             Assert.AreEqual(first, pool.Acquire());
+        }
+
+        [Test]
+        public void ThereAre3610DistinctPlates()
+        {
+            Assert.AreEqual(3610, PlateFormat.Total);
+            var seen = new HashSet<string>();
+            for (var i = 0; i < PlateFormat.Total; i++) Assert.IsTrue(seen.Add(PlateFormat.FromIndex(i)));
+        }
+
+        [Test]
+        public void ExhaustedPoolFallsBackToAValidPlateWithoutThrowing()
+        {
+            var pool = new PlatePool(new FixedRandom(0.3f));
+            for (var i = 0; i < PlateFormat.Total; i++) pool.Acquire();
+            Assert.AreEqual(PlateFormat.Total, pool.Count);
+            string extra = null;
+            Assert.DoesNotThrow(() => extra = pool.Acquire());
+            Assert.IsTrue(PlateFormat.IsValid(extra));
         }
 
         [Test]
