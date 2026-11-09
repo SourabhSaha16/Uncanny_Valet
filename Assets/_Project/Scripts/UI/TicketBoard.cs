@@ -6,12 +6,13 @@ using UncannyValet.UI.Hud;
 
 namespace UncannyValet.UI
 {
-    /// <summary>Tracks open tickets, tag colour, spot and timers from events only. The HUD reads the rows.</summary>
+    /// <summary>Tracks open tickets, tag colour, licence plate, spot and timers from events only. The HUD reads the rows.</summary>
     public sealed class TicketBoard : IDisposable
     {
         private readonly IEventBus _bus;
         private readonly SortedDictionary<int, TicketRow> _rows = new SortedDictionary<int, TicketRow>();
         private readonly Dictionary<int, int> _tags = new Dictionary<int, int>();
+        private readonly Dictionary<int, string> _plates = new Dictionary<int, string>();
         private readonly HashSet<int> _arrived = new HashSet<int>();
 
         public int Count => _rows.Count;
@@ -22,6 +23,7 @@ namespace UncannyValet.UI
             _bus = bus;
             _bus.Subscribe<TicketOpened>(OnOpened);
             _bus.Subscribe<CarTagAssigned>(OnTag);
+            _bus.Subscribe<CarPlateAssigned>(OnPlate);
             _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Subscribe<PickupRequested>(OnPickup);
@@ -41,6 +43,7 @@ namespace UncannyValet.UI
         {
             _bus.Unsubscribe<TicketOpened>(OnOpened);
             _bus.Unsubscribe<CarTagAssigned>(OnTag);
+            _bus.Unsubscribe<CarPlateAssigned>(OnPlate);
             _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
@@ -68,10 +71,8 @@ namespace UncannyValet.UI
         }
 
         /// <summary>
-        /// Writes one line per pending pickup (at most maxLines, then "+N more"), separated by newlines
-        /// with none at the end. Returns the number of lines written. When <paramref name="tags"/> is given it is
-        /// cleared and receives the tag colour index of every pickup line (not the overflow line).
-        /// Allocation-free apart from the builder.
+        /// Writes one line per pending pickup (at most maxLines, then "+N more") and returns the line count; see
+        /// <see cref="PickupBannerFormatter.AppendAll"/>. <paramref name="tags"/> receives each line's tag colour.
         /// </summary>
         public int AppendPickups(StringBuilder text, int maxLines, List<int> tags = null)
             => PickupBannerFormatter.AppendAll(text, _rows.Values, maxLines, tags);
@@ -81,6 +82,7 @@ namespace UncannyValet.UI
             Version++;
             var row = new TicketRow { Car = e.Car.Value };
             if (_tags.TryGetValue(e.Car.Value, out var tag)) row.Tag = tag;
+            if (_plates.TryGetValue(e.Car.Value, out var plate)) row.Plate = plate;
             row.Arrived = _arrived.Contains(e.Car.Value);
             _rows[e.Ticket.Value] = row;
         }
@@ -99,11 +101,7 @@ namespace UncannyValet.UI
             if (row != null) row.Arrived = false;
         }
 
-        private void OnCleanChanged(CarCleanChanged e)
-        {
-            var row = FindByCar(e.Car.Value);
-            if (row != null) row.Clean01 = e.Clean01;
-        }
+        private void OnCleanChanged(CarCleanChanged e) { var row = FindByCar(e.Car.Value); if (row != null) row.Clean01 = e.Clean01; }
 
         private void OnTraits(TicketTraitsAssigned e)
         {
@@ -112,17 +110,9 @@ namespace UncannyValet.UI
             row.IsDirty = e.IsDirty;
         }
 
-        private void OnCharge(CarChargeChanged e)
-        {
-            var row = FindByCar(e.Car.Value);
-            if (row != null) row.Charge01 = e.Charge01;
-        }
+        private void OnCharge(CarChargeChanged e) { var row = FindByCar(e.Car.Value); if (row != null) row.Charge01 = e.Charge01; }
 
-        private void OnCleaned(CarCleaned e)
-        {
-            var row = FindByCar(e.Car.Value);
-            if (row != null) row.Washed = true;
-        }
+        private void OnCleaned(CarCleaned e) { var row = FindByCar(e.Car.Value); if (row != null) row.Washed = true; }
 
         private void OnTag(CarTagAssigned e)
         {
@@ -130,6 +120,14 @@ namespace UncannyValet.UI
             _tags[e.Car.Value] = e.Tag;
             var row = FindByCar(e.Car.Value);
             if (row != null) row.Tag = e.Tag;
+        }
+
+        private void OnPlate(CarPlateAssigned e)
+        {
+            Version++;
+            _plates[e.Car.Value] = e.Plate ?? string.Empty;
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Plate = _plates[e.Car.Value];
         }
 
         private void OnParked(CarParked e)
@@ -182,6 +180,7 @@ namespace UncannyValet.UI
             if (row.State == TicketRowState.PickupRequested && PickupCount > 0) PickupCount--;
             _rows.Remove(e.Ticket.Value);
             _tags.Remove(row.Car);
+            _plates.Remove(row.Car);
             _arrived.Remove(row.Car);
         }
 

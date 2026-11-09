@@ -167,7 +167,7 @@ namespace UncannyValet.UI
             var time = Time.unscaledTime;
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
             _board.CollectRows(_rows);
-            _world.Draw(_rows, ResolveCamera());
+            _world.Draw(_rows, ResolveCamera(), time);
             _hud.Draw(time);
             _keyBoard.Draw(_rows, time);
             _notices.Draw(_prompt(), time);

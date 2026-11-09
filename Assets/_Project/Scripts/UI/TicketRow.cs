@@ -11,6 +11,8 @@ namespace UncannyValet.UI
         public int Car;
         /// <summary>The key-tag colour index (see TagPalette) of this ticket.</summary>
         public int Tag = NoTag;
+        /// <summary>The car's licence plate text (for example "BKT 482"); empty until it is known.</summary>
+        public string Plate = string.Empty;
         public TicketRowState State = TicketRowState.AwaitingPark;
         public int Spot;
         public bool HasTimer;
@@ -36,6 +38,9 @@ namespace UncannyValet.UI
 
         /// <summary>Charge at or above this counts as full.</summary>
         public const float FullCharge = 0.999f;
+
+        /// <summary>True once the plate text is known.</summary>
+        public bool HasPlate => Plate.Length > 0;
 
         /// <summary>The patron wants a wash that has not happened yet.</summary>
         public bool NeedsWash => IsDirty && !Washed;
