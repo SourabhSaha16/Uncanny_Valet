@@ -34,6 +34,8 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private CameraFollow _camera;
         [SerializeField] private ResultsScreen _results;
         [SerializeField] private AudioDirector _audio;
+        [SerializeField, Tooltip("Optional diner scenery; widens the camera frame to show the road and the diner.")]
+        private LotDecor _decor;
 
         private const int DefaultSpotSeed = 12;
 
@@ -100,16 +102,20 @@ namespace UncannyValet.Bootstrap
 
         private void FrameLot()
         {
-            if (LotBounds.TryMeasure(_lot.gameObject, out var rect)) _camera.SetWorldBounds(rect);
+            if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
+                _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect);
             else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
         }
 
         private void SpawnValet()
         {
             _valet.transform.position = Services.Get<ILotLayout>().ValetStartPoint;
-            var body = _valet.GetComponentInChildren<SpriteRenderer>();
-            body.sprite = PlaceholderSprite.Create();
-            body.color = new Color(0.95f, 0.85f, 0.2f);
+            if (_valet.GetComponent<ValetAnimator>() == null) // the animator owns the sprites when present
+            {
+                var body = _valet.GetComponentInChildren<SpriteRenderer>();
+                body.sprite = PlaceholderSprite.Create();
+                body.color = new Color(0.95f, 0.85f, 0.2f);
+            }
             _valet.SetActive(true);
             if (_camera != null) _camera.SetTarget(_valet.transform);
         }

@@ -11,6 +11,9 @@ namespace UncannyValet.Cars
     {
         [SerializeField] private CarDefinition _defaultDefinition;
 
+        [SerializeField, Tooltip("Top-down car sprites. Empty: cars are coloured rectangles.")]
+        private CarArtConfig _art;
+
         [SerializeField, Range(0.1f, 1f)] private float _labelHeight = 0.55f;
         [SerializeField] private Color _labelColor = new Color(0.1f, 0.1f, 0.1f, 1f);
 
@@ -90,19 +93,26 @@ namespace UncannyValet.Cars
             driver.Initialize(id, def);
             go.AddComponent<CarInteraction>();
             go.AddComponent<CarAutoDrive>();
-            AttachLooks(go, id, def, renderer);
+            AttachLooks(go, id, def, renderer, AttachBodyArt(go, id, def, renderer));
             CarTimerFill.Attach(go, id, def, GetSprite());
             CarLabel.Attach(go, id, def.Size, _labelHeight, _labelColor);
             return driver;
         }
 
-        private void AttachLooks(GameObject go, CarId id, CarDefinition def, SpriteRenderer body)
+        private CarBodyArt AttachBodyArt(GameObject go, CarId id, CarDefinition def, SpriteRenderer placeholder)
+        {
+            if (_art == null || !_art.HasCars) return null;
+            placeholder.enabled = false; // the sprite child replaces the coloured rectangle
+            return CarBodyArt.Attach(go, _art, id, def.Size);
+        }
+
+        private void AttachLooks(GameObject go, CarId id, CarDefinition def, SpriteRenderer body, CarBodyArt art)
         {
             var sprite = GetSprite();
-            CarMirrors.Attach(go, def.Size, def.Mirrors, sprite);
+            if (art == null) CarMirrors.Attach(go, def.Size, def.Mirrors, sprite); // sprites have their own mirrors
             var bar = CarChargeBar.Attach(go, id, def.Size, def.ChargeBar, sprite);
             var mud = CarMudOverlay.Attach(go, id, def, sprite);
-            CarTraitLook.Attach(go, id, def, body, bar, mud);
+            CarTraitLook.Attach(go, id, def, body, bar, mud, art);
         }
 
         private Sprite GetSprite()

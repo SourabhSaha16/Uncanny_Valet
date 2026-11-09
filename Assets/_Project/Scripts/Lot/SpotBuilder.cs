@@ -10,19 +10,22 @@ namespace UncannyValet.Lot
         private static readonly Color ChargeLine = new Color(0.30f, 0.60f, 1f);
         private static readonly Color ChargePad = new Color(0.14f, 0.24f, 0.46f);
         private static readonly Color Bolt = new Color(1f, 0.88f, 0.2f);
+        private const float LineWidth = 0.1f;
         private const float BoltHeight = 1.3f;
         private const float BoltThickness = 0.22f;
         private const float BoltYOffsetShare = 0.3f;
 
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
+        /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
         public static ParkingSpot Build(RectFactory rects, Transform parent, LotConfig c, int id, Rect area,
-            bool charging, SpotOccupancy occupancy)
+            bool charging, SpotOccupancy occupancy, Color? regularPad = null)
         {
             var root = new GameObject((charging ? "Charging Spot " : "Spot ") + id);
             root.transform.SetParent(parent, false);
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, c.SpotSize, charging ? ChargeLine : Line, -7);
-            rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * 0.16f, charging ? ChargePad : Pad, -6);
+            rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
+                charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
             if (charging) AddBolt(rects, root.transform, c.SpotSize.y * BoltYOffsetShare);
             root.AddComponent<BoxCollider2D>();
