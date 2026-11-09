@@ -1,4 +1,12 @@
 === Last 50 commits ===
+e434fdb  2026-11-09  lead: regenerate scene and metas after pivot-core
+fd2f4a9  2026-11-09  lead: merge pivot-core
+7717f0d  2026-11-09  pivot-core: replace nights, debt and boss orders with scored shifts
+de43667  2026-11-09  lead: commit generated art meta files
+77eb4d0  2026-11-09  lead: merge pivot-art
+be944ae  2026-11-09  pivot-art: import MetroCity art and add pixel import postprocessor
+9b5e70d  2026-11-09  lead: start pivot/chaos with redesign doc and MetroCity sources
+5a64f54  2026-11-07  lead: rebuild site for round 7, fix camera null at startup
 10b4d10  2026-11-07  lead: wire run loss guard, new run after lost run
 a1f9a14  2026-11-07  lead: merge worktree-agent-a8045495535519c56
 2ced8a5  2026-11-07  lead: merge worktree-agent-a206028ac2276dcd2
@@ -41,14 +49,6 @@ e129498  2026-11-06  lead: add ITuning, TuningKey catalog and late EV fields on 
 5dc9324  2026-11-06  lead: rebuild site with Schedule A pacing and closed spots
 0f896c7  2026-11-06  lead: apply Schedule A pacing, closed spots, $250 debt
 691a997  2026-11-06  lead: merge agent/lot closed spots
-aabb64f  2026-11-06  lead: merge agent/economy-night Schedule A and debt
-8616423  2026-11-06  lot: close spots beyond the night's ActiveSpots
-4177302  2026-11-06  economy-night: apply Schedule A pacing and $250 debt
-cc30df4  2026-11-06  lead: add ActiveSpots to NightPlan
-f0e56e1  2026-11-06  lead: merge balance simulation and fix clock line in design.md
-673f66d  2026-11-06  lead: merge balance simulation
-1d03d90  2026-11-06  qa: add lot-count balance simulation
-e1024bc  2026-11-06  lead: publish round-4 build with seven-night challenges
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -564,6 +564,30 @@ Files: Bootstrap/CameraFollow.cs, Tests/EditMode/Integration/CameraFollowTests.c
 Why: After the scene was regenerated, GameBootstrap.Awake ran before CameraFollow.Awake, so SetWorldBounds hit a null camera and aborted Bootstrap (no night started). The camera is now cached on first use. Found by running the Bootstrap scene in batch play mode.
 Tests: new regression test; full suite and a browser smoke test follow.
 
+## lead: rebuild site for round 7 (boss messages)
+Date: 2026-11-07
+Files: site/, Assets/_Project/Scenes/Bootstrap.unity, meta files
+Why: Publish boss messages: side panel, orders from night 2, strikes, run lost on the third strike, debt $500.
+Tests: 366 of 366 EditMode passed; Bootstrap scene ran in batch play mode; browser smoke test shows night 1, BOSS panel and car arriving with no new console errors.
+
+## lead: start pivot/chaos branch with redesign doc and MetroCity art sources
+Date: 2026-11-09
+Files: docs/redesign/chaos_redesign.md, docs/design.md, docs/decisions.md, art-src/MetroCity/*.rar, .github/workflows/ci-cd.yml
+Why: Human approved the chaos redesign. Baseline on main: 366 of 366 EditMode tests. CI now also deploys site/ from pivot/chaos so the pivot build replaces the live site.
+Tests: baseline run, 366 of 366 passed.
+
+## lead: commit generated .meta files for MetroCity art
+Date: 2026-11-09
+Files: Assets/_Project/Art/ThirdParty/MetroCity/**/*.meta
+Why: Unity batch import compiled the importer with no errors and sliced sheets (cars 36, characters 144, road 100, buildings 9), PPU 32, Point filter.
+Tests: batch import only; EditMode run follows with pivot-core.
+
+## lead: regenerate scene, configs and metas after pivot-core merge
+Date: 2026-11-09
+Files: Assets/_Project/Scenes/Bootstrap.unity, Data/Shift/ShiftConfig.asset, new .meta files
+Why: pivot-core could not run Unity; ProjectSetup.RunBatch builds ShiftConfig and the shift scene.
+Tests: 317 of 317 EditMode passed (old night/orders tests removed with their code).
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -704,6 +728,72 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Patrons/TicketSettler.cs, Assets/_Project/Tests/EditMode/Patrons/CarDeliveredTests.cs
 Why: Core now has CarDelivered (patron got the car back at the curb). TicketSettler.Pay, the single delivered close (normal and late pickup), publishes it right before TicketClosed; Void (vanished car, never parked, night end) does not.
 Tests: new CarDeliveredTests (normal and late pickup publish CarDelivered then TicketClosed; park-timer vanish and night end publish TicketClosed only). Unity run: see report.
+
+=== docs/changelogs/pivot-art.md ===
+# pivot-art changelog
+
+## pivot-art: import MetroCity art and add pixel import postprocessor
+Date: 2026-11-09
+Files: Assets/_Project/Art/ThirdParty/MetroCity/** (29 PNGs + CREDITS.md), Assets/_Project/Editor/Import/{ArtPostprocessor,SlicePlanner,SlicePlan,SpriteSheetBuilder}.cs, docs/changelogs/pivot-art.md
+Why: chaos_redesign.md pivot steps 4 and 5. Art extracted from art-src/MetroCity/*.rar (originals untouched; "MetroCity 2.0 4.rar" ignored as a duplicate). Native pixel grid is 32 px, so the project PPU is 32.
+Tests: none run (Unity could not be launched). Slice rules are the pure class SlicePlanner; no EditMode test added yet.
+
+### Import settings (all PNGs under Assets/_Project/Art/)
+Sprite, PPU 32, Point filter, uncompressed, no mipmaps, clamp, max size 4096 (Building.png is 4096x768).
+Re-import an asset to re-apply. The postprocessor lives in the existing UncannyValet.Editor assembly.
+
+### Verified source sizes
+Tiles.png 400x288 (irregular atlas, not a clean 32 grid), Road.png 320x320 (10x10 of 32), Tree-Sheet.png 192x64 (4 trees, 48x64 each),
+Cars-Sheet.png 1152x512 (9x4 of 128), FireTruck.png 640x160 (4 of 160x160), Character Model.png 768x192 (24x6 of 32),
+Hairs.png 768x256 (24x8), Outfit1-6.png 768x32 (24x1), Suit.png 768x128, Suit1.png and Pack20/Hair.png 768x160 (24 columns, 4-5 rows),
+Hair1-7.png and Shadow.png 32x32 (single), Environment/Buildings/Building.png 4096x768, Stations/ PNGs single images.
+
+### Sprite names (deterministic)
+- Grid sheets: `{file}_r{row}_c{col}`, row 0 = TOP row, col 0 = left. Example `Cars-Sheet_r1_c5`, `Character Model_r0_c3`. Pivot centre.
+- Auto-sliced sheets (Tiles.png, Buildings/Building.png): `{file}_{index:00}`, ordered top to bottom (64 px bands) then left to right. Pivot bottom centre.
+- Single images (Hair1-7, Shadow, Outfits are grids, Stations/*): sprite name = file name. Stations pivot bottom centre.
+
+### Cars (Art/ThirdParty/MetroCity/Cars)
+Cars-Sheet: 9 columns x 4 rows, 128 px cells, each cell is one view of one vehicle (colour variants).
+By inspection (a colour tint is baked into the outline of each variant):
+- Top-down (tall, use for gameplay): r0 c0,c1,c2(ambulance),c5,c6; r1 c0,c1,c5(green),c6(police); r2 c0,c1,c4,c5,c6(ambulance); r3 c0,c1(police),c4,c5.
+- Side/front views (wide, for menus or garage art): all remaining cells; ambulance side is r1 c4 and r3 c8.
+Top-down sprites appear to face up (nose toward the top of the cell); the lead should confirm in Unity and set the car rotation offset once.
+FireTruck.png: 4 cells of 160: c0 side, c1 top-down, c2 side (mirrored), c3 top-down (alternate colouring).
+No damage frames exist; use tint, smoke and shake.
+
+### Characters (Art/ThirdParty/MetroCity/Characters)
+All sheets are 32 px cells, 24 columns. Character Model has 6 rows = 6 skin/body variants (row 0 top). Hair, Outfit and Suit sheets use the same column layout so layers can be drawn at the same position:
+- cols 0-5: facing down (front), 6 frames
+- cols 6-11: side view, first direction
+- cols 12-17: facing up (back), 6 frames
+- cols 18-23: side view, other direction
+Each 6-frame group is a run cycle; frame 0 of a group can serve as the idle pose. Which side group is left or right, and the exact idle frame, were judged from a downscaled preview and must be confirmed in Unity (flip with SpriteRenderer.flipX if both sides look the same).
+Hairs.png: 8 hair styles/colours as rows (each row = same 24 columns). Hair is only animated facing forward per the pack notes. Outfits: Outfit1-6, one row each. Suits/Suit.png, Suit1.png and Hair/Pack20/Hair.png are the older 2.0 layers.
+Layer by stacking SpriteRenderers (model, outfit, hair) and switching all three to the same r/c frame.
+
+### Environment
+- Tiles.png (auto-sliced): grass patches, cobbles, fences, signs, props.
+- Road/Road.png (32 px grid): road, crosswalks and kerb pieces; sliced as r{row}_c{col}.
+- Trees/Tree-Sheet.png: `Tree-Sheet_r0_c0..c3`, 48x64.
+- Buildings/Building.png (auto): 9 buildings with baked shadows. Any may be used for the diner; the tan building with green roof (second row, second from left) is a good fit.
+- Stations/: Building.png (176x320 tower house), FireStation.png, PoliceStation.png as single sprites.
+
+=== docs/changelogs/pivot-core.md ===
+# Pivot core changelog
+
+Entries are added by the pivot-core agent, one per commit. Format in docs/changelogs/README.md.
+Source: docs/redesign/chaos_redesign.md, pivot steps 2 and 3 (the lead authorised touching Core, Economy, Night, Orders, Patrons, UI, Bootstrap, Editor and their tests for this step only).
+
+## pivot-core: replace nights, debt and boss orders with scored shifts
+Date: 2026-11-09
+Files:
+- Removed: Scripts/Orders (whole module, asmdef, OrdersConfig, StrikeTracker), Tests/EditMode/Orders, Data/Orders; Core IDebtView, NightEvents, NightPlan, NightSummary, OrderEvents, OrderOutcome, OrderId; Economy DebtLedger, NightTally, NightTallyRecorder, RunConfig (+ Data/Economy/RunConfig.asset); Night NightClock, INightEnder, RunLossGuard, NightPlanConfig/Defaults/Entry/Source (+ Data/Night/NightPlanConfig.asset); Bootstrap NightFlow, RunDebt, IRunReset, INightStarter, ClockNightStarter; UI MessagePanel, MessageFeed, MessageFeedSettings, MessageFormatter, MessagePanelStyles, MessageStatus, FeedMessage, NightSummaryCard, SummaryCard*; their EditMode tests.
+- Added: Core/Config/ShiftConfig, Core/Contracts/IShiftScoreView, Core/Events/{ShiftEvents,ShiftPlan,ShiftResult}; Night/{ShiftClock,ShiftTimer,ShiftTimerStep,ShiftPlanSource}; Economy/{ShiftScore,ComboTracker,StarRating,DamagePenalty}; Bootstrap/{ShiftFlow,IShiftStarter,ClockShiftStarter}; UI/{ResultsScreen,ResultsFormatter,ResultsContent,ResultsStyles,ScoreLines}.
+- Changed: IGameClock (SecondsRemaining, ShiftLengthSeconds, ElapsedMinutes, IsRunning), TipInput/TipBreakdown/TipZeroReason, TipCalculator, TipConfig, EconomyEvents (ScoreChanged, ComplaintFiled replace DebtChanged), TuningKey/TuningCatalog, ClockFormat (m:ss), Patrons (PatronSpawner, PatronPlan, PatronRequestRoller, PatronTuning, PatronConfig arrival 15-25, TicketRegistry, TicketSettler, StationService, event renames), Lot LotExpander/StationSwitch and Audio PendingCarTracker/SfxEventRouter (event renames only), DebugOverlay, GameBootstrap, TuningSeeder, Editor ProjectSetup/BootstrapSceneBuilder, asmdefs (Orders reference dropped), Data/Patrons/PatronConfig.asset.
+- Tests: Night/{ClockTests,TuningTests}, Economy/{ShiftScoreTests,ComboAndStarTests,TipCalculatorTests}, Integration/{ShiftHarness,FullShiftTests,EventLog,EventContractTests,PhysicsAndTipTests,TuningSeederTests}, UI/{ShiftFlowTests,ResultsFormatterTests}, plus mechanical event and clock renames in Patrons, Audio and Core tests.
+Why: chaos_redesign.md sections 3, 8 and 9. The mafia layer (debt, strikes, boss orders, phone UI, multi-night plan) is cut. A shift is 4 minutes from a ShiftConfig asset (length, star thresholds 150/300/450, $15 complaint penalty, combo cap 4x, pacing plan). ShiftClock counts real seconds down and publishes ShiftStarted, ShiftTick per game minute, ShiftLast30Seconds and ShiftEnded behind IGameClock. ShiftScore owns score, combo and complaints: a tip adds to the score and raises the combo, a $0 tip resets it, and either ticket timer running out (an angry patron) costs the penalty and resets it. The tip is base + speed + patience bonus + charge + clean, less damage stages, times the combo. Damage is an input defaulting to 0; nothing produces damage yet. Game minutes now default to one per real second, so patron windows (park 45, pickup 60, stay 20-45) read as seconds; arrivals are every 15-25 s. The Night assembly keeps its name (UncannyValet.Night) to avoid asmdef churn. The results screen shows stars, score and one Retry button (click, Enter or Space) that publishes RetryShiftRequested; ShiftFlow restarts the shift from a clean lot.
+Tests: added or rewrote EditMode tests for the shift timer and clock, plan source and live tuning, combo, stars, damage stages, patience bonus, complaint rules, the full shift loop, shift flow and results text. NOT run: Unity could not be launched in this sandbox, so compilation and the whole suite are unverified.
 
 === docs/changelogs/qa.md ===
 # QA changelog

@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  10b4d10
-Subject: lead: wire run loss guard, new run after lost run
-Date:    2026-11-07 10:19:43 -0800
+Commit:  e434fdb
+Subject: lead: regenerate scene and metas after pivot-core
+Date:    2026-11-09 11:15:31 -0800

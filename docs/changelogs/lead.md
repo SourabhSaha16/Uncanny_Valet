@@ -351,3 +351,9 @@ Date: 2026-11-09
 Files: Assets/_Project/Scenes/Bootstrap.unity, Data/Shift/ShiftConfig.asset, new .meta files
 Why: pivot-core could not run Unity; ProjectSetup.RunBatch builds ShiftConfig and the shift scene.
 Tests: 317 of 317 EditMode passed (old night/orders tests removed with their code).
+
+## lead: rebuild site for pivot step 2-3 (shifts, score, results)
+Date: 2026-11-09
+Files: site/
+Why: First pivot/chaos publish; replaces the live site per the human. 4-minute shift, score, combo, stars, retry; art not yet in use.
+Tests: 317 of 317 EditMode; browser smoke test shows shift clock, score overlay and car A with no console errors.
