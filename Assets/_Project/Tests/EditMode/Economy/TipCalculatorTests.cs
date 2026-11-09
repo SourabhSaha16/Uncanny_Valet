@@ -92,5 +92,72 @@ namespace UncannyValet.Tests.Economy
         [Test]
         public void Calculate_ForcedZeroNeverNegative()
             => Assert.AreEqual(0, _calc.Calculate(new TipInput(10, 0f, false, pickupExpired: true)));
+
+        [Test]
+        public void PatienceLeft_AddsAScaledBonus()
+        {
+            var full = Explain(new TipInput(10, 5f, false, patienceRemaining01: 1f));
+            Assert.AreEqual(10, full.PatienceBonus);
+            Assert.AreEqual(22, full.Total);
+            Assert.AreEqual(5, Explain(new TipInput(10, 5f, false, patienceRemaining01: 0.5f)).PatienceBonus);
+            Assert.AreEqual(0, Explain(new TipInput(10, 5f, false, patienceRemaining01: 0f)).PatienceBonus);
+            Assert.AreEqual(10, Explain(new TipInput(10, 5f, false, patienceRemaining01: 7f)).PatienceBonus, "clamped to 1");
+        }
+
+        [TestCase(0.24f, 0)]
+        [TestCase(0.25f, 25)]
+        [TestCase(0.5f, 50)]
+        [TestCase(0.99f, 75)]
+        public void Damage_TakesOffAQuarterPerStage(float damage, int percentLost)
+        {
+            var b = Explain(new TipInput(98, 5f, false, damage01: damage));
+            Assert.AreEqual(-(100 * percentLost / 100), b.DamageAdjust);
+            Assert.AreEqual(100 - 100 * percentLost / 100, b.Total);
+        }
+
+        [Test]
+        public void Wreck_PaysNothing()
+        {
+            var b = Explain(new TipInput(10, 0f, false, damage01: 1f));
+            Assert.AreEqual(0, b.Total);
+            Assert.AreEqual(TipZeroReason.Wrecked, b.ZeroReason);
+        }
+
+        [Test]
+        public void Combo_MultipliesTheFinalTip()
+        {
+            Assert.AreEqual(12, Explain(new TipInput(10, 5f, false, comboMultiplier: 1)).Total);
+            var b = Explain(new TipInput(10, 5f, false, comboMultiplier: 3));
+            Assert.AreEqual(36, b.Total);
+            Assert.AreEqual(3, b.ComboMultiplier);
+        }
+
+        [Test]
+        public void Combo_BelowOneCountsAsOne_AndDefaultInputIsSafe()
+        {
+            Assert.AreEqual(12, Explain(new TipInput(10, 5f, false, comboMultiplier: 0)).Total);
+            Assert.GreaterOrEqual(_calc.Calculate(default), 0);
+        }
+
+        [Test]
+        public void Combo_AppliesAfterDamage()
+        {
+            var b = Explain(new TipInput(98, 5f, false, damage01: 0.5f, comboMultiplier: 2));
+            Assert.AreEqual(100, b.Total, "(98 + 2) * 0.5 * 2");
+        }
+
+        [Test]
+        public void ForcedZero_IgnoresCombo()
+            => Assert.AreEqual(0, _calc.Calculate(new TipInput(10, 0f, false, pickupExpired: true, comboMultiplier: 4)));
+
+        [Test]
+        public void DamagePenalty_IsPure()
+        {
+            Assert.AreEqual(0f, DamagePenalty.Share(0f, 0.25f, 0.25f));
+            Assert.AreEqual(0.5f, DamagePenalty.Share(0.5f, 0.25f, 0.25f), 1e-5f);
+            Assert.AreEqual(1f, DamagePenalty.Share(1f, 0.25f, 0.25f), 1e-5f);
+            Assert.IsTrue(DamagePenalty.IsWrecked(1f));
+            Assert.IsFalse(DamagePenalty.IsWrecked(0.99f));
+        }
     }
 }

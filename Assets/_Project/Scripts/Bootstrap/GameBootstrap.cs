@@ -2,12 +2,12 @@ using System.Collections;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
+using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
-using UncannyValet.Orders;
 using UncannyValet.Patrons;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -21,41 +21,39 @@ namespace UncannyValet.Bootstrap
     /// </summary>
     public sealed class GameBootstrap : MonoBehaviour
     {
-        [SerializeField] private RunConfig _runConfig;
+        [SerializeField] private ShiftConfig _shiftConfig;
         [SerializeField] private TipConfig _tipConfig;
-        [SerializeField] private NightPlanConfig _planConfig;
         [SerializeField] private CarFactory _carFactory;
         [SerializeField] private LotLayoutBuilder _lot;
-        [SerializeField] private NightClock _clock;
+        [SerializeField] private ShiftClock _clock;
         [SerializeField] private GameObject _valet;
         [SerializeField] private PatronConfig _patronConfig;
         [SerializeField] private PatronSpawner _spawner;
         [SerializeField] private DebugOverlay _overlay;
         [SerializeField] private TuningPanel _tuningPanel;
         [SerializeField] private CameraFollow _camera;
-        [SerializeField] private NightSummaryCard _summaryCard;
+        [SerializeField] private ResultsScreen _results;
         [SerializeField] private AudioDirector _audio;
-        [SerializeField] private MessagePanel _messagePanel;
-        [SerializeField] private OrdersConfig _ordersConfig;
-        [SerializeField] private BossOrderDirector _orders;
 
         private const int DefaultSpotSeed = 12;
 
-        private RunDebt _debt;
-        private NightTallyRecorder _recorder;
-        private NightFlow _flow;
-        private RunLossGuard _runLoss;
+        private ShiftScore _score;
+        private ShiftFlow _flow;
 
         private void Awake()
         {
+            if (_shiftConfig == null)
+            {
+                Debug.LogError("GameBootstrap has no ShiftConfig: rebuild with Uncanny Valet/Setup/Build Everything.", this);
+                enabled = false;
+                return;
+            }
             Services.Reset();
             var bus = new EventBus();
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
             var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping);
             var tuning = new TuningStore(bus);
-            _debt = new RunDebt(bus, _runConfig.StartingDebt);
-            _recorder = new NightTallyRecorder(bus, _debt, _runConfig.Nights,
-                n => _planConfig.For(n).NewTonight);
+            _score = new ShiftScore(bus, _shiftConfig);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
@@ -66,41 +64,37 @@ namespace UncannyValet.Bootstrap
             Services.Register<IInputSource>(input);
             Services.Register<IGameClock>(_clock);
             Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
-            Services.Register<IDebtView>(_debt);
+            Services.Register<IShiftScoreView>(_score);
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
             SeedTuning(tuning, _lot.SpotIds.Count);
             FrameLot();
             _clock.gameObject.SetActive(true);
-            _clock.Initialize(bus, _runConfig.NightLengthMinutes, _runConfig.GameMinutesPerSecond, _planConfig);
-            _runLoss = new RunLossGuard(bus, _clock);
+            _clock.Initialize(bus, _shiftConfig);
             SpawnValet();
             _spawner.Random = new UnityPatronRandom();
             _spawner.gameObject.SetActive(true);
             StartOverlay();
             _tuningPanel.gameObject.SetActive(true);
-            _summaryCard.gameObject.SetActive(true);
-            ActivateBossUi();
-            ActivateOrders();
+            _results.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
-            _flow = new NightFlow(bus, new ClockNightStarter(_clock),
-                new ValetPlacer(_valet, _lot, _camera), _debt, _runConfig.Nights);
+            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
         }
 
         // One frame later, so every component activated above has run Start (StationSwitch subscribes to
-        // NightPlanChanged there) before night 1's plan is published.
+        // ShiftPlanChanged there) before the shift's plan is published.
         private IEnumerator Start()
         {
             yield return null;
-            _flow.StartFirstNight();
+            _flow?.StartFirstShift();
         }
 
         // Seeds before any module is active so none reads an unseeded key. Called again once the lot knows its
-        // spot count, which only matters when the first plan says 0 ("all spots open").
+        // spot count, which only matters when the plan says 0 ("all spots open").
         private void SeedTuning(ITuning tuning, int spotCount)
         {
-            TuningSeeder.Seed(tuning, _runConfig, _patronConfig, _tipConfig, _ordersConfig, _planConfig.For(1),
+            TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed);
         }
 
@@ -120,42 +114,17 @@ namespace UncannyValet.Bootstrap
             if (_camera != null) _camera.SetTarget(_valet.transform);
         }
 
-        // Boss UI only listens for Orders events, so it is safe to activate before the director.
-        private void ActivateBossUi()
-        {
-            if (_messagePanel == null)
-            {
-                Debug.LogError("Boss UI missing: rebuild the scene with Uncanny Valet/Setup/Build Everything.", this);
-                return;
-            }
-            _messagePanel.gameObject.SetActive(true);
-        }
-
-        // The director builds itself in Start, which runs before the one-frame-late first night (see Start below),
-        // so it hears NightStarted for night 1 and resets its strikes.
-        private void ActivateOrders()
-        {
-            if (_orders == null)
-            {
-                Debug.LogError("BossOrderDirector missing: rebuild the scene with Uncanny Valet/Setup/Build Everything.", this);
-                return;
-            }
-            _orders.gameObject.SetActive(true);
-        }
-
         private void StartOverlay()
         {
             var interactor = _valet.GetComponent<Interactor>();
-            _overlay.Configure(() => interactor.CurrentPrompt, m => ClockFormat.Format(m));
+            _overlay.Configure(() => interactor.CurrentPrompt, s => ClockFormat.Format(s));
             _overlay.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
         {
             _flow?.Dispose();
-            _runLoss?.Dispose();
-            _recorder?.Dispose();
-            _debt?.Dispose();
+            _score?.Dispose();
             Services.Reset();
         }
     }

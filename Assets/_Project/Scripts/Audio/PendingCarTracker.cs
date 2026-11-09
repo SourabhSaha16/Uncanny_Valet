@@ -33,8 +33,8 @@ namespace UncannyValet.Audio
             _bus.Subscribe<PickupRequested>(OnPickupRequested);
             _bus.Subscribe<TicketClosed>(OnTicketClosed);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
-            _bus.Subscribe<NightStarted>(OnNightStarted);
-            _bus.Subscribe<NightEnded>(OnNightEnded);
+            _bus.Subscribe<ShiftStarted>(OnShiftStarted);
+            _bus.Subscribe<ShiftEnded>(OnShiftEnded);
         }
 
         public void Unsubscribe()
@@ -46,8 +46,8 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
             _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
-            _bus.Unsubscribe<NightStarted>(OnNightStarted);
-            _bus.Unsubscribe<NightEnded>(OnNightEnded);
+            _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
+            _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
         }
 
         private void OnTicketOpened(TicketOpened e) => _awaitingPark.Add(e.Car);
@@ -65,8 +65,8 @@ namespace UncannyValet.Audio
             if (e.Kind == TimerKind.Park) _awaitingPark.Remove(e.Car);
         }
 
-        private void OnNightStarted(NightStarted e) => Clear();
-        private void OnNightEnded(NightEnded e) => Clear();
+        private void OnShiftStarted(ShiftStarted e) => Clear();
+        private void OnShiftEnded(ShiftEnded e) => Clear();
 
         private void Clear()
         {

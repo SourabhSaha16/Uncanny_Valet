@@ -1,7 +1,7 @@
+using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Economy;
-using UncannyValet.Orders;
 using UncannyValet.Patrons;
 
 namespace UncannyValet.Bootstrap
@@ -10,11 +10,10 @@ namespace UncannyValet.Bootstrap
     public static class TuningSeeder
     {
         /// <param name="spotCount">Spots in the lot; used when the plan says 0 ("all spots open").</param>
-        public static void Seed(ITuning t, RunConfig run, PatronConfig patrons, TipConfig tips,
-            OrdersConfig orders, NightPlan firstNight, int spotCount)
+        public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount)
         {
-            t.Seed(TuningKey.GameMinutesPerSecond, run.GameMinutesPerSecond);
-            t.Seed(TuningKey.NightLengthMinutes, run.NightLengthMinutes);
+            t.Seed(TuningKey.GameMinutesPerSecond, shift.GameMinutesPerSecond);
+            t.Seed(TuningKey.ShiftLengthSeconds, shift.ShiftLengthSeconds);
 
             var service = patrons.Tuning;
             t.Seed(TuningKey.ParkWindowMinutes, patrons.ParkWindowMinutes);
@@ -32,15 +31,14 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.CleanBonus, tips.CleanBonus);
             t.Seed(TuningKey.SpeedWindowMinutes, tips.SpeedBonusWindowMinutes);
 
-            orders.SeedInto(t);
-
-            t.Seed(TuningKey.PlanMaxWaitingCars, firstNight.MaxWaitingCars);
-            t.Seed(TuningKey.PlanArrivalGapScale, firstNight.ArrivalGapScale);
-            t.Seed(TuningKey.PlanActiveSpots, firstNight.ActiveSpots > 0 ? firstNight.ActiveSpots : spotCount);
-            t.Seed(TuningKey.PlanEvChance, firstNight.EvChance);
-            t.Seed(TuningKey.PlanDirtyChance, firstNight.DirtyChance);
-            t.Seed(TuningKey.PlanLateEvChance, firstNight.LateEvChance);
-            t.Seed(TuningKey.PlanLateEvStart, firstNight.LateEvStart);
+            var plan = shift.Plan;
+            t.Seed(TuningKey.PlanMaxWaitingCars, plan.MaxWaitingCars);
+            t.Seed(TuningKey.PlanArrivalGapScale, plan.ArrivalGapScale);
+            t.Seed(TuningKey.PlanActiveSpots, plan.ActiveSpots > 0 ? plan.ActiveSpots : spotCount);
+            t.Seed(TuningKey.PlanEvChance, plan.EvChance);
+            t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
+            t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
+            t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
         }
     }
 }

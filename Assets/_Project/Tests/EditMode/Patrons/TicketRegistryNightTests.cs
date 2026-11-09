@@ -12,8 +12,9 @@ namespace UncannyValet.Tests.Patrons
     {
         private sealed class FakeClock : IGameClock
         {
-            public int Night => 1;
-            public float MinuteOfNight { get; set; }
+            public float SecondsRemaining => 0f;
+            public float ShiftLengthSeconds => 0f;
+            public float ElapsedMinutes { get; set; }
             public bool IsRunning => true;
         }
 
@@ -57,13 +58,13 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NightEnded_ClosesEveryOpenTicketWithZeroTipAndDepartsCars()
+        public void ShiftEnded_ClosesEveryOpenTicketWithZeroTipAndDepartsCars()
         {
             var waiting = Open(1);
             var parked = Open(2);
             _bus.Publish(new CarParked(parked.CarId, 1));
 
-            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new ShiftEnded());
 
             Assert.AreEqual(TicketState.Closed, waiting.State);
             Assert.AreEqual(TicketState.Closed, parked.State);
@@ -77,22 +78,22 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NightEnded_StopsRunningTimers()
+        public void ShiftEnded_StopsRunningTimers()
         {
             Open(1);
-            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new ShiftEnded());
             Assert.AreEqual(1, Count<TicketTimerStopped>());
         }
 
         [Test]
-        public void NightEndedTwice_AndLateCurb_DoNotCloseAgain()
+        public void ShiftEndedTwice_AndLateCurb_DoNotCloseAgain()
         {
             var t = Open(1);
             _bus.Publish(new CarParked(t.CarId, 1));
-            _clock.MinuteOfNight = 30f;
-            _bus.Publish(new NightTick(1, 30f));
-            _bus.Publish(new NightEnded(1));
-            _bus.Publish(new NightEnded(1));
+            _clock.ElapsedMinutes = 30f;
+            _bus.Publish(new ShiftTick(30f));
+            _bus.Publish(new ShiftEnded());
+            _bus.Publish(new ShiftEnded());
             _bus.Publish(new CarAtCurb(t.CarId));
 
             Assert.AreEqual(1, Count<TicketClosed>());
@@ -101,12 +102,12 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NextNight_StartsCleanAndLettersRestartFromA()
+        public void NextShift_StartsCleanAndLettersRestartFromA()
         {
             Open(1); Open(2); var third = Open(3);
             Assert.AreEqual('C', third.Letter);
-            _bus.Publish(new NightEnded(1));
-            _bus.Publish(new NightStarted(2));
+            _bus.Publish(new ShiftEnded());
+            _bus.Publish(new ShiftStarted());
 
             Assert.AreEqual(0, _registry.OpenCount);
             Assert.AreEqual(0, _registry.AwaitingParkCount);

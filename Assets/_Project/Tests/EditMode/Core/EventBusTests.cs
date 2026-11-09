@@ -36,7 +36,7 @@ namespace UncannyValet.Tests.Core
         public void Publish_WithNoSubscribers_DoesNothing()
         {
             var bus = new EventBus();
-            Assert.DoesNotThrow(() => bus.Publish(new NightStarted(1)));
+            Assert.DoesNotThrow(() => bus.Publish(new ShiftStarted()));
         }
     }
 }

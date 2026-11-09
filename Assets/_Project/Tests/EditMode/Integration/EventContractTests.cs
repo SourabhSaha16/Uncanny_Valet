@@ -14,9 +14,9 @@ namespace UncannyValet.Tests.Integration
     /// <summary>Events are published exactly once, in the agreed order, and never go negative.</summary>
     public class EventContractTests
     {
-        private NightHarness _h;
+        private ShiftHarness _h;
 
-        [SetUp] public void SetUp() { _h = new NightHarness(1000); _h.StartNight(1); }
+        [SetUp] public void SetUp() { _h = new ShiftHarness(); _h.StartShift(); }
         [TearDown] public void TearDown() { _h.Dispose(); }
 
         private Ticket ParkedTicket(float stay = 10f, int baseTip = 20)
@@ -51,7 +51,7 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(1, _h.Log.Count<TipEarned>());
             Assert.AreEqual(1, _h.Log.Count<CarDeparted>());
             Assert.AreEqual(1, _h.Cars.DespawnCount);
-            Assert.AreEqual(22, _h.Ledger.TipsTonight);
+            Assert.AreEqual(22, _h.Score.Score);
         }
 
         [Test]
@@ -107,13 +107,12 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void NightEnds_WithOpenTicket_ClosesItWithNoTipAndEndsOnce()
+        public void ShiftEnds_WithOpenTicket_ClosesItWithNoTipAndEndsOnce()
         {
             ParkedTicket(30f);
             _h.Minutes(500);
-            Assert.AreEqual(1, _h.Log.Count<NightEnded>());
-            Assert.AreEqual(1000, _h.Ledger.DebtRemaining);
-            // Round 3: every open ticket closes with $0 when the night ends (design.md section 10).
+            Assert.AreEqual(1, _h.Log.Count<ShiftEnded>());
+            // Every open ticket closes with $0 when the shift ends.
             Assert.AreEqual(0, _h.Registry.OpenCount);
         }
 

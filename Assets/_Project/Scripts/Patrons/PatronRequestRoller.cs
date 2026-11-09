@@ -1,6 +1,6 @@
 namespace UncannyValet.Patrons
 {
-    /// <summary>Rolls the next arrival gap and patron request from the live tuning, the night plan and a random source.</summary>
+    /// <summary>Rolls the next arrival gap and patron request from the live tuning, the shift plan and a random source.</summary>
     public sealed class PatronRequestRoller
     {
         private readonly PatronConfig _config;
@@ -15,11 +15,10 @@ namespace UncannyValet.Patrons
 
         public float NextGap() => _random.Range(_tuning.GapMin, _tuning.GapMax) * _plan.ArrivalGapScale;
 
-        /// <summary>Rolls one request for a car arriving at this minute of the night.</summary>
-        public PatronRequest Roll(float minuteOfNight)
+        /// <summary>Rolls one request for a car arriving this far (0..1) into the shift.</summary>
+        public PatronRequest Roll(float shiftProgress01)
         {
-            var length = _tuning.NightLength;
-            var progress = length > 0f ? minuteOfNight / length : 0f;
+            var progress = shiftProgress01;
             var stay = _random.Range(_tuning.StayMin, _tuning.StayMax);
             var impatient = _random.Value() < _tuning.ImpatientChance;
             _plan.RollTraits(_random, progress, out var ev, out var dirty);

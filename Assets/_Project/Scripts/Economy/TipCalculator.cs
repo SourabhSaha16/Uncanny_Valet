@@ -4,7 +4,10 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Economy
 {
-    /// <summary>Base, speed bonus or wait penalty, charge and clean bonuses; $0 when forced. Never below 0.</summary>
+    /// <summary>
+    /// Base, speed bonus or wait penalty, patience, charge and clean bonuses, then less damage, then times the
+    /// combo. $0 when forced. Never below 0.
+    /// </summary>
     public sealed class TipCalculator : ITipCalculator
     {
         private readonly TipConfig _config;
@@ -22,18 +25,35 @@ namespace UncannyValet.Economy
         {
             if (input.PickupExpired) return Zeroed(TipZeroReason.PickupExpired);
             if (input.UncleanedDirty) return Zeroed(TipZeroReason.NotCleaned);
+            if (DamagePenalty.IsWrecked(input.Damage01)) return Zeroed(TipZeroReason.Wrecked);
             var speed = SpeedAdjust(input);
             var baseTip = Live(TuningKey.BaseTip, input.BaseTip);
             var charge = input.ChargedEv ? Live(TuningKey.ChargeBonus, _config.ChargeBonus) : 0;
             var clean = input.CleanedDirty ? Live(TuningKey.CleanBonus, _config.CleanBonus) : 0;
-            var total = Math.Max(0, baseTip + speed + charge + clean);
-            return new TipBreakdown(baseTip, speed, charge, clean, total, TipZeroReason.None);
+            var patience = PatienceBonus(input);
+            var subtotal = Math.Max(0, baseTip + speed + charge + clean + patience);
+            var damage = DamageAdjust(input, subtotal);
+            var combo = Math.Max(1, input.ComboMultiplier);
+            var total = Math.Max(0, subtotal + damage) * combo;
+            return new TipBreakdown(baseTip, speed, charge, clean, total, TipZeroReason.None, patience, damage, combo);
         }
 
         private int Live(TuningKey key, int configured)
             => _tuning != null && _tuning.TryGet(key, out var v) ? (int)Math.Round(v, MidpointRounding.AwayFromZero) : configured;
 
         private static TipBreakdown Zeroed(TipZeroReason reason) => new TipBreakdown(0, 0, 0, 0, 0, reason);
+
+        private int PatienceBonus(in TipInput input)
+        {
+            var left = Math.Min(1f, Math.Max(0f, input.PatienceRemaining01));
+            return (int)Math.Round(left * _config.MaxPatienceBonus, MidpointRounding.AwayFromZero);
+        }
+
+        private int DamageAdjust(in TipInput input, int subtotal)
+        {
+            var share = DamagePenalty.Share(input.Damage01, _config.DamageStageSize, _config.DamagePenaltyPerStage);
+            return -(int)Math.Round(subtotal * share, MidpointRounding.AwayFromZero);
+        }
 
         private int SpeedAdjust(in TipInput input)
         {

@@ -6,8 +6,8 @@ namespace UncannyValet.Patrons
     [CreateAssetMenu(menuName = "Uncanny Valet/Patron Config", fileName = "PatronConfig")]
     public class PatronConfig : ScriptableObject
     {
-        [Tooltip("Game minutes between arrivals (min, max).")]
-        [SerializeField] private Vector2 _arrivalIntervalRange = new Vector2(8f, 15f);
+        [Tooltip("Game minutes between arrivals (min, max). With the default clock one game minute is one second, so 15-25 s.")]
+        [SerializeField] private Vector2 _arrivalIntervalRange = new Vector2(15f, 25f);
 
         [Tooltip("Game minutes a car stays parked before pickup is requested (min, max).")]
         [SerializeField] private Vector2 _stayRange = new Vector2(20f, 45f);

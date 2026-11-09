@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8a66a9b7f933174fbfa78fe45b517d1, type: 3}
   m_Name: PatronConfig
   m_EditorClassIdentifier: UncannyValet.Patrons::UncannyValet.Patrons.PatronConfig
-  _arrivalIntervalRange: {x: 8, y: 15}
+  _arrivalIntervalRange: {x: 15, y: 25}
   _stayRange: {x: 20, y: 45}
   _baseTip: 20
   _impatientChance: 0.25

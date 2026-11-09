@@ -27,8 +27,8 @@ namespace UncannyValet.Audio
             _bus.Subscribe<PickupRequested>(OnPickupRequested);
             _bus.Subscribe<TipEarned>(OnTipEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
-            _bus.Subscribe<NightEnded>(OnNightEnded);
-            _bus.Subscribe<NextNightRequested>(OnNextNightRequested);
+            _bus.Subscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Subscribe<RetryShiftRequested>(OnRetryShiftRequested);
             _bus.Subscribe<CarFullyCharged>(OnCarFullyCharged);
             _bus.Subscribe<CarCleaned>(OnCarCleaned);
             _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
@@ -45,8 +45,8 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
             _bus.Unsubscribe<TipEarned>(OnTipEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
-            _bus.Unsubscribe<NightEnded>(OnNightEnded);
-            _bus.Unsubscribe<NextNightRequested>(OnNextNightRequested);
+            _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Unsubscribe<RetryShiftRequested>(OnRetryShiftRequested);
             _bus.Unsubscribe<CarFullyCharged>(OnCarFullyCharged);
             _bus.Unsubscribe<CarCleaned>(OnCarCleaned);
             _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
@@ -59,8 +59,8 @@ namespace UncannyValet.Audio
         private void OnPickupRequested(PickupRequested e) => _play(SfxId.PickupRequested);
         private void OnTipEarned(TipEarned e) { if (e.Amount > 0) _play(SfxId.TipEarned); }
         private void OnTimerExpired(TicketTimerExpired e) => _play(SfxId.CarVanished);
-        private void OnNightEnded(NightEnded e) => _play(SfxId.NightEnded);
-        private void OnNextNightRequested(NextNightRequested e) => _play(SfxId.ButtonClick);
+        private void OnShiftEnded(ShiftEnded e) => _play(SfxId.NightEnded);
+        private void OnRetryShiftRequested(RetryShiftRequested e) => _play(SfxId.ButtonClick);
         private void OnCarFullyCharged(CarFullyCharged e) => _play(SfxId.Charged);
         private void OnCarCleaned(CarCleaned e) => _play(SfxId.Washed);
         private void OnCarEnteredStation(CarEnteredStation e) => _play(SfxId.StationStart);

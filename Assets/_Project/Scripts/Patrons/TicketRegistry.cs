@@ -22,30 +22,33 @@ namespace UncannyValet.Patrons
         /// <summary>Tickets whose car has not been parked yet.</summary>
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips)
-            : this(bus, clock, tips, ServiceTuning.Default) { }
+        /// <param name="score">The shift score whose combo multiplies each tip; null means no combo (1x).</param>
+        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, IShiftScoreView score = null)
+            : this(bus, clock, tips, ServiceTuning.Default, score) { }
 
         /// <summary>Registry whose charge, wash and window numbers follow the live tuning.</summary>
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning)
-            : this(bus, clock, tips, tuning.Service)
+        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning,
+            IShiftScoreView score = null)
+            : this(bus, clock, tips, tuning.Service, score)
         {
             _live = new LiveTicketTuning(bus, tuning, _book);
         }
 
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning)
+        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning,
+            IShiftScoreView score = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
             _book = new TicketBook(tuning);
-            _settler = new TicketSettler(bus, clock, tips, _timers, _book);
+            _settler = new TicketSettler(bus, clock, tips, _timers, _book, score);
             _stations = new StationService(bus, clock, _book);
             _bus.Subscribe<CarParked>(OnCarParked);
-            _bus.Subscribe<NightTick>(OnNightTick);
+            _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Subscribe<CarEntered>(OnCarEntered);
             _bus.Subscribe<CarExited>(OnCarExited);
-            _bus.Subscribe<NightEnded>(OnNightEnded);
-            _bus.Subscribe<NightStarted>(OnNightStarted);
+            _bus.Subscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Subscribe<ShiftStarted>(OnShiftStarted);
         }
 
         public void Dispose()
@@ -53,12 +56,12 @@ namespace UncannyValet.Patrons
             _stations.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
-            _bus.Unsubscribe<NightTick>(OnNightTick);
+            _bus.Unsubscribe<ShiftTick>(OnShiftTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Unsubscribe<CarEntered>(OnCarEntered);
             _bus.Unsubscribe<CarExited>(OnCarExited);
-            _bus.Unsubscribe<NightEnded>(OnNightEnded);
-            _bus.Unsubscribe<NightStarted>(OnNightStarted);
+            _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
         }
 
         public bool TryGet(TicketId id, out Ticket ticket) => _book.TryGet(id, out ticket);
@@ -75,7 +78,7 @@ namespace UncannyValet.Patrons
         public Ticket Create(CarId car, PatronRequest request)
         {
             var ticket = _book.Add(car, request);
-            ticket.ParkTimer.Start(_clock.MinuteOfNight);
+            ticket.ParkTimer.Start(_clock.ElapsedMinutes);
             return ticket;
         }
 
@@ -98,7 +101,7 @@ namespace UncannyValet.Patrons
             t.AtCurb = false;
             if (t.State != TicketState.AwaitingPark) return;
             _timers.Stop(t, TimerKind.Park);
-            t.MarkParked(_clock.MinuteOfNight);
+            t.MarkParked(_clock.ElapsedMinutes);
         }
 
         private void OnCarEntered(CarEntered e)
@@ -106,14 +109,14 @@ namespace UncannyValet.Patrons
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
             t.Driven = true;
-            t.SyncParkTimer(_clock.MinuteOfNight);
+            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
         private void OnCarExited(CarExited e)
         {
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.Driven = false;
-            t.SyncParkTimer(_clock.MinuteOfNight);
+            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
         private void OnCarAtCurb(CarAtCurb e)
@@ -123,10 +126,10 @@ namespace UncannyValet.Patrons
             if (t.State == TicketState.PickupRequested) Close(t);
         }
 
-        private void OnNightTick(NightTick e)
+        private void OnShiftTick(ShiftTick e)
         {
             _book.CopyTo(_scratch);
-            foreach (var t in _scratch) Advance(t, e.MinuteOfNight);
+            foreach (var t in _scratch) Advance(t, e.ElapsedMinutes);
         }
 
         private void Advance(Ticket t, float minute)
@@ -157,16 +160,16 @@ namespace UncannyValet.Patrons
             _settler.Void(t);
         }
 
-        private void OnNightEnded(NightEnded e) => CloseAllUnpaid();
+        private void OnShiftEnded(ShiftEnded e) => CloseAllUnpaid();
 
         // A new shift starts clean: nothing should be left, but make sure of it and restart the letters.
-        private void OnNightStarted(NightStarted e)
+        private void OnShiftStarted(ShiftStarted e)
         {
             CloseAllUnpaid();
             _book.ResetLetters();
         }
 
-        /// <summary>Night over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>
+        /// <summary>Shift over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>
         private void CloseAllUnpaid()
         {
             _book.CopyTo(_scratch);

@@ -1,12 +1,16 @@
 namespace UncannyValet.Core.Contracts
 {
-    /// <summary>Night time. Implemented by the Night module.</summary>
+    /// <summary>The shift clock. Implemented by the Night module.</summary>
     public interface IGameClock
     {
-        int Night { get; }
+        /// <summary>Real seconds left in the shift.</summary>
+        float SecondsRemaining { get; }
 
-        /// <summary>Game minutes since the shift started.</summary>
-        float MinuteOfNight { get; }
+        /// <summary>Real seconds a whole shift lasts.</summary>
+        float ShiftLengthSeconds { get; }
+
+        /// <summary>Game minutes since the shift started. Patron timers count in these.</summary>
+        float ElapsedMinutes { get; }
 
         bool IsRunning { get; }
     }

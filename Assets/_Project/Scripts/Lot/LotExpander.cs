@@ -7,7 +7,7 @@ namespace UncannyValet.Lot
 {
     /// <summary>
     /// Makes the lot match the night plan: only open spots exist (the others are switched off), and the
-    /// ground and walls move to fit what is open. Reacts to every NightPlanChanged and to cars leaving a
+    /// ground and walls move to fit what is open. Reacts to every ShiftPlanChanged and to cars leaving a
     /// spot (a spot kept open by its car closes once it is empty). Never allocates after setup.
     /// </summary>
     public sealed class LotExpander : MonoBehaviour
@@ -50,17 +50,17 @@ namespace UncannyValet.Lot
         private void OnDisable()
         {
             if (_bus == null) return;
-            _bus.Unsubscribe<NightPlanChanged>(OnPlan);
+            _bus.Unsubscribe<ShiftPlanChanged>(OnPlan);
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
         }
 
         private void Subscribe()
         {
-            _bus.Subscribe<NightPlanChanged>(OnPlan);
+            _bus.Subscribe<ShiftPlanChanged>(OnPlan);
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
         }
 
-        private void OnPlan(NightPlanChanged e)
+        private void OnPlan(ShiftPlanChanged e)
         {
             _occupancy.SetActiveSpots(e.Plan.ActiveSpots);
             _occupancy.SetChargingOpen(e.Plan.ChargingOpen);

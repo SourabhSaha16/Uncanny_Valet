@@ -17,14 +17,14 @@ namespace UncannyValet.Patrons
             _bus = bus; _clock = clock; _book = book;
             _bus.Subscribe<CarEnteredStation>(OnEntered);
             _bus.Subscribe<CarLeftStation>(OnLeft);
-            _bus.Subscribe<NightTick>(OnNightTick);
+            _bus.Subscribe<ShiftTick>(OnShiftTick);
         }
 
         public void Dispose()
         {
             _bus.Unsubscribe<CarEnteredStation>(OnEntered);
             _bus.Unsubscribe<CarLeftStation>(OnLeft);
-            _bus.Unsubscribe<NightTick>(OnNightTick);
+            _bus.Unsubscribe<ShiftTick>(OnShiftTick);
         }
 
         /// <summary>Publishes the starting charge (EV) or clean level (dirty) of a new car.</summary>
@@ -47,10 +47,10 @@ namespace UncannyValet.Patrons
                 return;
             }
             t.InWashBay = inside;
-            t.SyncParkTimer(_clock.MinuteOfNight);
+            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
-        private void OnNightTick(NightTick e)
+        private void OnShiftTick(ShiftTick e)
         {
             _book.CopyTo(_scratch);
             foreach (var t in _scratch)

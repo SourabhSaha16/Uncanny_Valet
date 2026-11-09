@@ -10,7 +10,6 @@
         "UncannyValet.Economy",
         "UncannyValet.Night",
         "UncannyValet.Audio",
-        "UncannyValet.Orders",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap",
         "UnityEngine.TestRunner",

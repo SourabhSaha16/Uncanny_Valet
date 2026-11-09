@@ -14,8 +14,9 @@ namespace UncannyValet.Tests.Patrons
 
         private sealed class FakeClock : IGameClock
         {
-            public int Night => 1;
-            public float MinuteOfNight { get; set; }
+            public float SecondsRemaining => 0f;
+            public float ShiftLengthSeconds => 0f;
+            public float ElapsedMinutes { get; set; }
             public bool IsRunning => true;
         }
 
@@ -47,8 +48,8 @@ namespace UncannyValet.Tests.Patrons
 
         private void Tick(float minute)
         {
-            _clock.MinuteOfNight = minute;
-            _bus.Publish(new NightTick(1, minute));
+            _clock.ElapsedMinutes = minute;
+            _bus.Publish(new ShiftTick(minute));
         }
 
         private void AssertClosedWithoutDelivery()
@@ -93,7 +94,7 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void NightEndBeforeParking_ClosesWithoutCarDelivered()
         {
-            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new ShiftEnded());
             AssertClosedWithoutDelivery();
         }
 
@@ -102,7 +103,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus.Publish(new CarParked(_car, 1));
             Tick(20f);
-            _bus.Publish(new NightEnded(1));
+            _bus.Publish(new ShiftEnded());
             AssertClosedWithoutDelivery();
         }
     }

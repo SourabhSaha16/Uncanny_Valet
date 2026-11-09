@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var plan = new PatronPlan(3);
             Assert.AreEqual(3, plan.MaxWaitingCars);
-            plan.Apply(new NightPlan(1, 1, 1.5f, 0.3f, 0.2f, true, false, ""));
+            plan.Apply(new ShiftPlan(1, 1.5f, 0.3f, 0.2f, true, false));
             Assert.AreEqual(1, plan.MaxWaitingCars);
             Assert.AreEqual(1.5f, plan.ArrivalGapScale);
             Assert.AreEqual(-1, ArrivalGate.FirstFreeSlot(1, plan.MaxWaitingCars, new[] { false, false, false }));
@@ -56,7 +56,7 @@ namespace UncannyValet.Tests.Patrons
         public void Plan_RollsTraits_NeverBoth(float roll, bool ev, bool dirty)
         {
             var plan = new PatronPlan(3);
-            plan.Apply(new NightPlan(2, 2, 1f, 0.3f, 0.3f, true, true, ""));
+            plan.Apply(new ShiftPlan(2, 1f, 0.3f, 0.3f, true, true));
             plan.RollTraits(new ScriptedRandom { Next = roll }, 0f, out var isEv, out var isDirty);
             Assert.AreEqual(ev, isEv);
             Assert.AreEqual(dirty, isDirty);
