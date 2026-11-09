@@ -6,6 +6,12 @@ changes it. Only the lead edits this file, and every edit gets an entry in `docs
 Combined from three design docs written on Nov 2–5, 2026: the Game Design Doc, the Game Object
 Architecture, and the Story Cards.
 
+
+> **CHAOS REDESIGN (branch `pivot/chaos`, from 2026-11-09).** `docs/redesign/chaos_redesign.md` overrides this
+> document wherever they conflict. The mafia, debt, strikes, boss orders and phone UI are cut; the game becomes
+> 4-minute level-based shifts scored by tips, combo and stars (Overcooked style). Sections below describe the
+> old game until the lead folds the redesign in; agents follow the redesign first.
+
 ---
 
 ## 1. Overview

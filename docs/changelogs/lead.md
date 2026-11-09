@@ -333,3 +333,9 @@ Date: 2026-11-07
 Files: site/, Assets/_Project/Scenes/Bootstrap.unity, meta files
 Why: Publish boss messages: side panel, orders from night 2, strikes, run lost on the third strike, debt $500.
 Tests: 366 of 366 EditMode passed; Bootstrap scene ran in batch play mode; browser smoke test shows night 1, BOSS panel and car arriving with no new console errors.
+
+## lead: start pivot/chaos branch with redesign doc and MetroCity art sources
+Date: 2026-11-09
+Files: docs/redesign/chaos_redesign.md, docs/design.md, docs/decisions.md, art-src/MetroCity/*.rar, .github/workflows/ci-cd.yml
+Why: Human approved the chaos redesign. Baseline on main: 366 of 366 EditMode tests. CI now also deploys site/ from pivot/chaos so the pivot build replaces the live site.
+Tests: baseline run, 366 of 366 passed.

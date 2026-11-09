@@ -6,7 +6,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [main, pivot/chaos]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
 
   deploy:
     name: Publish site/ to GitHub Pages
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/pivot/chaos')
     needs: changelog
     runs-on: ubuntu-latest
     permissions:

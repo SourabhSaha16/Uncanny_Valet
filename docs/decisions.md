@@ -35,3 +35,4 @@ Every question an agent asked, and the answer. Newest at the bottom.
 | 2026-11-06 | lead | Round 5 choices | Charging spots accept any car (only EVs charge); EVs stay on from night 3 with unlocks layered; the panel covers all pacing numbers. Lead picked the faster pacing table (design.md section 10) and EV surge 0.6 to 0.75 | Human, chat (first three); lead (rest) |
 
 | 2026-11-06 | Round 6: starting debt $500; pacing reverted to round-5 table | Human asked for $500 "only extremely good players can reach", then reverted the pacing increase. Debt kept at $500 with round-5 pacing, so $500 may be very hard; tune live with F2. |
+| 2026-11-09 | lead | Adopt the chaos redesign? | Yes, on branch pivot/chaos. Placeholder diner building: any MetroCity building. Old debt/orders code is deleted on the branch (main keeps it). The pivot build replaces the live GitHub Pages site (workflow deploys pivot/chaos) | Human, chat |
