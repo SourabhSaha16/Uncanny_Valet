@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UncannyValet.Core.Events;
+using UncannyValet.UI.Hud;
 
 namespace UncannyValet.UI
 {
-    /// <summary>Tracks open tickets, letter, spot and timers from events only. Text comes from TicketRowFormatter.</summary>
+    /// <summary>Tracks open tickets, letter, spot and timers from events only. The HUD reads the rows.</summary>
     public sealed class TicketBoard : IDisposable
     {
         private readonly IEventBus _bus;
@@ -48,19 +49,15 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<CarCleaned>(OnCleaned);
         }
 
-        public void AppendLines(StringBuilder text, int maxLines)
+        /// <summary>Counts every change that could alter what the HUD shows about parking and pickups.</summary>
+        public int Version { get; private set; }
+
+        /// <summary>Clears <paramref name="into"/> and fills it with the open tickets, most urgent first.</summary>
+        public void CollectRows(List<TicketRow> into)
         {
-            var shown = 0;
-            foreach (var pair in _rows)
-            {
-                if (shown++ >= maxLines)
-                {
-                    text.Append("  +").Append(_rows.Count - maxLines).AppendLine(" more");
-                    break;
-                }
-                TicketRowFormatter.Append(text, pair.Value);
-                text.AppendLine();
-            }
+            into.Clear();
+            foreach (var pair in _rows) into.Add(pair.Value);
+            TicketRowOrder.Sort(into);
         }
 
         /// <summary>
@@ -87,6 +84,7 @@ namespace UncannyValet.UI
 
         private void OnOpened(TicketOpened e)
         {
+            Version++;
             var row = new TicketRow { Car = e.Car.Value };
             if (_letters.TryGetValue(e.Car.Value, out var letter)) row.Letter = letter;
             _rows[e.Ticket.Value] = row;
@@ -113,6 +111,7 @@ namespace UncannyValet.UI
 
         private void OnLetter(CarLetterAssigned e)
         {
+            Version++;
             _letters[e.Car.Value] = e.Letter;
             var row = FindByCar(e.Car.Value);
             if (row != null) row.Letter = e.Letter;
@@ -120,6 +119,7 @@ namespace UncannyValet.UI
 
         private void OnParked(CarParked e)
         {
+            Version++;
             var row = FindByCar(e.Car.Value);
             if (row == null) return;
             row.Spot = e.SpotId;
@@ -128,12 +128,14 @@ namespace UncannyValet.UI
 
         private void OnLeftSpot(CarLeftSpot e)
         {
+            Version++;
             var row = FindByCar(e.Car.Value);
             if (row != null && row.Spot == e.SpotId) row.Spot = 0;
         }
 
         private void OnPickup(PickupRequested e)
         {
+            Version++;
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
             row.State = TicketRowState.PickupRequested;
             row.HasTimer = false;
@@ -160,6 +162,7 @@ namespace UncannyValet.UI
 
         private void OnClosed(TicketClosed e)
         {
+            Version++;
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
             if (row.State == TicketRowState.PickupRequested && PickupCount > 0) PickupCount--;
             _rows.Remove(e.Ticket.Value);

@@ -27,6 +27,15 @@ namespace UncannyValet.UI
         /// <summary>True once a dirty car has been washed.</summary>
         public bool Washed;
 
+        /// <summary>Charge at or above this counts as full.</summary>
+        public const float FullCharge = 0.999f;
+
+        /// <summary>The patron wants a wash that has not happened yet.</summary>
+        public bool NeedsWash => IsDirty && !Washed;
+
+        /// <summary>An EV that is not fully charged yet (an unknown level counts as not charged).</summary>
+        public bool NeedsCharge => IsEv && Charge01 < FullCharge;
+
         public void StartTimer(TimerKind kind, float elapsed01)
         {
             HasTimer = true;

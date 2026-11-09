@@ -34,9 +34,8 @@ namespace UncannyValet.EditorTools
             var lot = Child<LotLayoutBuilder>(root, "Lot");
             var clock = Child<ShiftClock>(root, "ShiftClock");
             var spawner = Child<PatronSpawner>(root, "PatronSpawner");
-            var overlay = Child<DebugOverlay>(root, "DebugOverlay");
+            var ui = Child<GameUi>(root, "GameUi");
             var tuningPanel = Child<TuningPanel>(root, "TuningPanel");
-            var results = Child<ResultsScreen>(root, "ResultsScreen");
             var audio = Child<AudioDirector>(root, "AudioDirector");
             var carArt = CarArtBuilder.Build();
             var lotArt = LotArtBuilder.Build();
@@ -62,9 +61,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_clock").objectReferenceValue = clock;
             so.FindProperty("_valet").objectReferenceValue = valet;
             so.FindProperty("_spawner").objectReferenceValue = spawner;
-            so.FindProperty("_overlay").objectReferenceValue = overlay;
+            so.FindProperty("_ui").objectReferenceValue = ui;
             so.FindProperty("_camera").objectReferenceValue = camera;
-            so.FindProperty("_results").objectReferenceValue = results;
             so.FindProperty("_audio").objectReferenceValue = audio;
             so.FindProperty("_decor").objectReferenceValue = decor;
             so.ApplyModifiedPropertiesWithoutUndo();

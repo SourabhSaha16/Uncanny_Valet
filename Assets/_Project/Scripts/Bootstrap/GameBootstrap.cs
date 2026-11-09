@@ -1,4 +1,3 @@
-using System.Collections;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
@@ -29,10 +28,10 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private GameObject _valet;
         [SerializeField] private PatronConfig _patronConfig;
         [SerializeField] private PatronSpawner _spawner;
-        [SerializeField] private DebugOverlay _overlay;
+        [SerializeField, Tooltip("Title screen, HUD and results screen on the 480x270 pixel canvas.")]
+        private GameUi _ui;
         [SerializeField] private TuningPanel _tuningPanel;
         [SerializeField] private CameraFollow _camera;
-        [SerializeField] private ResultsScreen _results;
         [SerializeField] private AudioDirector _audio;
         [SerializeField, Tooltip("Optional diner scenery; widens the camera frame to show the road and the diner.")]
         private LotDecor _decor;
@@ -53,7 +52,7 @@ namespace UncannyValet.Bootstrap
             Services.Reset();
             var bus = new EventBus();
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
-            var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping);
+            var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping || _ui.IsTitleShowing);
             var tuning = new TuningStore(bus);
             _score = new ShiftScore(bus, _shiftConfig);
             _carFactory.Bus = bus;
@@ -77,20 +76,15 @@ namespace UncannyValet.Bootstrap
             SpawnValet();
             _spawner.Random = new UnityPatronRandom();
             _spawner.gameObject.SetActive(true);
-            StartOverlay();
+            StartUi();
             _tuningPanel.gameObject.SetActive(true);
-            _results.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
             _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
         }
 
-        // One frame later, so every component activated above has run Start (StationSwitch subscribes to
-        // ShiftPlanChanged there) before the shift's plan is published.
-        private IEnumerator Start()
-        {
-            yield return null;
-            _flow?.StartFirstShift();
-        }
+        // The shift (and with it the clock and the patrons) starts only when the title screen is dismissed. By then
+        // every component activated above has run Start (StationSwitch subscribes to ShiftPlanChanged there).
+        private void OnTitleDismissed() => _flow?.StartFirstShift();
 
         // Seeds before any module is active so none reads an unseeded key. Called again once the lot knows its
         // spot count, which only matters when the plan says 0 ("all spots open").
@@ -120,15 +114,17 @@ namespace UncannyValet.Bootstrap
             if (_camera != null) _camera.SetTarget(_valet.transform);
         }
 
-        private void StartOverlay()
+        private void StartUi()
         {
             var interactor = _valet.GetComponent<Interactor>();
-            _overlay.Configure(() => interactor.CurrentPrompt, s => ClockFormat.Format(s));
-            _overlay.gameObject.SetActive(true);
+            _ui.Configure(() => interactor.CurrentPrompt);
+            _ui.TitleDismissed += OnTitleDismissed;
+            _ui.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
         {
+            if (_ui != null) _ui.TitleDismissed -= OnTitleDismissed;
             _flow?.Dispose();
             _score?.Dispose();
             Services.Reset();
