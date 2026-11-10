@@ -80,7 +80,7 @@ separate pickup banner is gone.
 
 ## A5. The lot and people
 
-> **Lot v2 (2026-11-10), layout merged; traffic wiring in progress.** Spec: `docs/redesign/lot_v2_layout.md` (binding).
+> **Lot v2 (2026-11-10), layout and traffic merged.** Spec: `docs/redesign/lot_v2_layout.md` (binding).
 
 - Lot layout (v2): diner on the left with a side door (ambient people) and a main door (patrons); the curb touches
   the diner right of the main door; a 3-slot arrival queue sits in a column under the curb (nose up); two rows of 4
@@ -139,7 +139,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
 | Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
-| Traffic module (lane following, car following, yielding, ambient cars) | built and tested; wiring into arrival and departure in progress |
+| Traffic module (lane following, car following, yielding, ambient cars), wired into patron arrival and departure; F2 Traffic rows | done; first browser check showed a patron car entering up the queue column, road mostly cropped by the camera |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
