@@ -23,3 +23,9 @@ Date: 2026-11-10
 Files: Scripts/UI/{TicketRow,TicketBoard,GameUi}.cs, Scripts/UI/Hud/{KeyBoardRows,KeyBoardPainter}.cs, Tests/EditMode/UI/TicketBoardTests.cs
 Why: human request (design.md A5 key board): a car in the arrival queue or being driven no longer shows on the key board; it appears when CarParked (spot) or CarEnteredStation (wash or charger) fires and stays until the ticket closes (delivered). TicketBoard keeps a Placed flag per row (also for a car parked before its ticket opens); the pure KeyBoardRows rule filters the rows for the key board only, other painters still see every ticket.
 Tests: TicketBoardTests (not listed on arrival, listed when parked, stays through leaving the spot and the pickup, gone on close, station parking, parked before ticket).
+
+## lot-v4: key board panel renamed CAR SLOTS
+Date: 2026-11-10
+Files: Scripts/UI/Hud/KeyBoardPainter.cs
+Why: human request (design.md A5): the bottom-left panel title KEY BOARD becomes CAR SLOTS. Type and file names are unchanged. The style guide mention is for the lead.
+Tests: none (a title string); full EditMode run at the end of the series.

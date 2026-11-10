@@ -43,7 +43,7 @@ namespace UncannyValet.UI.Hud
             var x = Margin;
             var y = PixelGrid.Height - Margin - height;
             _canvas.Panel(x, y, Width, height, PixelPalette.PanelDark);
-            _canvas.Text("KEY BOARD", x + 5, y + 4, PixelPalette.Gold);
+            _canvas.Text("CAR SLOTS", x + 5, y + 4, PixelPalette.Gold);
             if (rows.Count > shown) DrawOverflow(rows.Count - shown, x + Width - 22, y + 4);
             for (var i = 0; i < shown; i++)
                 DrawRow(rows[i], x + Border, y + Border + HeaderHeight + i * RowHeight, time);
