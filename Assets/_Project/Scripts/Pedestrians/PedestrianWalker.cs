@@ -1,27 +1,34 @@
 using System;
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Ids;
 using UnityEngine;
 
 namespace UncannyValet.Pedestrians
 {
     /// <summary>
-    /// One pooled person: three stacked sprite layers that walk a route and can be hidden. Scenery only: no collider,
-    /// no body. Moves the transform directly and allocates nothing per frame. The crowd decides what it does next.
+    /// One pooled person: three stacked sprite layers that walk a route and can be hidden. Solid while walking: a circle
+    /// collider on a kinematic body (layer <see cref="PhysicsLayers.Pedestrian"/>) moved in FixedUpdate. It looks ahead
+    /// and waits when a car, the valet, a wall or another person is in the way (see <see cref="PedestrianBlockRule"/>).
+    /// Allocates nothing per frame. The crowd decides what it does next.
     /// </summary>
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public sealed class PedestrianWalker : MonoBehaviour
     {
         private readonly PathFollower _path = new PathFollower();
+        private readonly PedestrianBlockRule _block = new PedestrianBlockRule();
         private readonly List<Vector2> _single = new List<Vector2>(1);
         private PedestrianConfig _config;
         private PedestrianLook _look;
+        private readonly PedestrianBounceRule _bounce = new PedestrianBounceRule();
+        private WalkerBody _body;
         private SpriteRenderer _model;
         private SpriteRenderer _outfit;
         private SpriteRenderer _hair;
         private WalkFacing _facing = WalkFacing.Down;
         private Vector2 _lookAt;
         private bool _hasLookAt;
+        private bool _moving;
         private float _speed;
         private float _walkSeconds;
         private int _shownColumn = -1;
@@ -51,24 +58,30 @@ namespace UncannyValet.Pedestrians
         /// <summary>Raised once when a walk reaches its end.</summary>
         public event Action<PedestrianWalker> RouteFinished;
 
+        /// <summary>Raised when a car or the valet bumps this person; the value is the bump strength (0..1).</summary>
+        public event Action<PedestrianWalker, float> Bumped;
+
         /// <summary>Where the person stands now.</summary>
         public Vector2 Position => transform.position;
 
-        /// <summary>Builds the sprite layers. Called once when the crowd creates this person.</summary>
+        /// <summary>Builds the body, collider and sprite layers. Called once when the crowd creates this person.</summary>
         public void Create(PedestrianConfig config)
         {
             _config = config;
             transform.localScale = new Vector3(config.Scale, config.Scale, 1f);
+            _body = new WalkerBody(gameObject, config);
+            _bounce.Configure(config.BounceDistance, config.BounceSeconds, config.BounceCooldown);
             _model = Layer("Model", config.SortingOrder);
             _outfit = Layer("Outfit", config.SortingOrder + 1);
             _hair = Layer("Hair", config.SortingOrder + 2);
         }
 
-        /// <summary>Gives the person a new look and walking speed.</summary>
-        public void Dress(PedestrianLook look, float speed)
+        /// <summary>Gives the person a new look and walking speed; <paramref name="patience01"/> (0..1) sets how long they wait when blocked.</summary>
+        public void Dress(PedestrianLook look, float speed, float patience01 = 0.5f)
         {
             _look = look;
             _speed = speed;
+            _block.Configure(_config.WaitFor(patience01), _config.PassSeconds);
             _shownColumn = -1;
         }
 
@@ -82,7 +95,9 @@ namespace UncannyValet.Pedestrians
             _single.Add(position);
             _path.Begin(_single);
             _hasLookAt = false;
-            transform.position = position;
+            _moving = false;
+            _body.Teleport(position);
+            _body.SetSolid(_config.StandingSolid);
             Show();
         }
 
@@ -99,8 +114,22 @@ namespace UncannyValet.Pedestrians
         {
             _path.Begin(route, startFraction);
             _hasLookAt = false;
-            transform.position = _path.Position;
+            _moving = _path.Walking;
+            _block.Reset();
+            _body.Teleport(_path.Position);
+            _body.SetSolid(true);
             Show();
+        }
+
+        // A car or the valet (a dynamic body) ran into this person: a tiny rubber-ball bounce away from it.
+        private void OnCollisionEnter2D(Collision2D hit)
+        {
+            var other = hit.rigidbody;
+            if (other == null || other.bodyType != RigidbodyType2D.Dynamic) return;
+            var strength = PedestrianBounceRule.Strength(hit.relativeVelocity.magnitude, _config.BounceMinSpeed, _config.BounceFullSpeed);
+            if (!_bounce.TryStart((Vector2)transform.position - other.position, strength)) return;
+            _moving = false;
+            Bumped?.Invoke(this, strength);
         }
 
         private SpriteRenderer Layer(string layerName, int order)
@@ -114,12 +143,35 @@ namespace UncannyValet.Pedestrians
 
         private void Update()
         {
-            if (!_path.Walking) return;
-            var finished = _path.Advance(_speed * Time.deltaTime);
+            if (!_moving) return;
             _walkSeconds += Time.deltaTime;
-            transform.position = _path.Position;
             Show();
-            if (finished) RouteFinished?.Invoke(this);
+        }
+
+        private void FixedUpdate()
+        {
+            var dt = Time.fixedDeltaTime;
+            if (_bounce.Active)
+            {
+                _bounce.Step(dt);
+                _body.MoveTo(_path.Position + _bounce.Offset);
+                return;
+            }
+            _bounce.Step(dt);
+            if (!_path.Walking) return;
+            var step = _speed * dt;
+            var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlocked(_path.Heading, step + _config.LookAhead);
+            var state = _block.Evaluate(dt, blocked);
+            _body.SetSolid(state != PedestrianBlockState.Passing);
+            _moving = state != PedestrianBlockState.Waiting;
+            if (!_moving) { Show(); return; }
+            var finished = _path.Advance(step);
+            _body.MoveTo(_path.Position);
+            if (!finished) return;
+            _moving = false;
+            _body.SetSolid(_config.StandingSolid);
+            Show();
+            RouteFinished?.Invoke(this);
         }
 
         private void Show()
@@ -127,8 +179,7 @@ namespace UncannyValet.Pedestrians
             _facing = _hasLookAt && !_path.Walking
                 ? WalkAnimMath.FacingToward(transform.position, _lookAt, _facing)
                 : WalkAnimMath.Facing(_path.Heading, _facing);
-            var moving = _path.Walking;
-            var frame = moving ? WalkAnimMath.Frame(_walkSeconds, _config.FramesPerSecond, _config.FramesPerGroup) : 0;
+            var frame = _moving ? WalkAnimMath.Frame(_walkSeconds, _config.FramesPerSecond, _config.FramesPerGroup) : 0;
             var column = _config.GroupStart(_facing) + frame;
             var flip = _config.Flip(_facing);
             if (column == _shownColumn && flip == _shownFlip) return;

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Checks which arrival slots have a car in them. Trigger colliders (stop zones, sensors) never count, and the
+    /// Checks which arrival slots have a car in them. Trigger colliders (stop zones, sensors) and pedestrians never count, and the
     /// scan reuses its buffers, so it never allocates.
     /// </summary>
     public sealed class ArrivalSlotScanner : IArrivalScan
@@ -22,6 +23,7 @@ namespace UncannyValet.Patrons
             _lot = lot;
             _filter = new ContactFilter2D();
             _filter.useTriggers = false;
+            _filter.SetLayerMask(~PhysicsLayers.PedestrianMask);
         }
 
         /// <summary>Tests the first <paramref name="maxSlots"/> slots. The result is valid until the next scan.</summary>

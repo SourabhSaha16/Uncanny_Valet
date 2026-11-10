@@ -20,6 +20,10 @@ namespace UncannyValet.Audio
         private const float ClickSeconds = 0.03f;
         private const float ClickHighPassHz = 3000f;
         private const float ClickToneHz = 880f;
+        private const float BumpStartHz = 170f;
+        private const float BumpEndHz = 340f;
+        private const float BumpSeconds = 0.14f;
+        private const float BumpGain = 0.5f;
         private static readonly int[] JingleMidi = { 72, 76, 79, 84 };
 
         public static float[] PickupRequested(int rate)
@@ -65,6 +69,16 @@ namespace UncannyValet.Audio
                     .Blend(Waveform.Square, 0.3f);
                 b.AddVoice(i * JingleStep, note);
             }
+            return SfxActions.Finish(b);
+        }
+
+        /// <summary>A short, quiet rubber-ball "boing" for a car or the valet bumping a pedestrian.</summary>
+        public static float[] PedestrianBump(int rate)
+        {
+            var b = new MixBuffer(rate * 25 / 100, rate, false);
+            var boing = VoiceSpec.Tone(Waveform.Sine, BumpStartHz, BumpSeconds, BumpGain).Gliding(BumpEndHz)
+                .WithEnvelope(new Adsr(0.003f, BumpSeconds, 0f, 0.05f));
+            b.AddVoice(0f, boing);
             return SfxActions.Finish(b);
         }
 

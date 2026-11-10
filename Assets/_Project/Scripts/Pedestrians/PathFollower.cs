@@ -41,6 +41,18 @@ namespace UncannyValet.Pedestrians
             if (Walking) Advance(Mathf.Clamp01(startFraction) * Length * StartLimit);
         }
 
+        /// <summary>Distance still to walk along the route (zero when not walking).</summary>
+        public float Remaining
+        {
+            get
+            {
+                if (!Walking || _next >= _points.Count) return 0f;
+                var left = Vector2.Distance(_position, _points[_next]);
+                for (var i = _next + 1; i < _points.Count; i++) left += Vector2.Distance(_points[i - 1], _points[i]);
+                return left;
+            }
+        }
+
         /// <summary>Stops walking and keeps the current position.</summary>
         public void Stop() => Walking = false;
 

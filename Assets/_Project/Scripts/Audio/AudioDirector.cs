@@ -36,7 +36,7 @@ namespace UncannyValet.Audio
                 _config = ScriptableObject.CreateInstance<AudioConfig>();
             }
             BuildAudio();
-            _router = new SfxEventRouter(bus, Play);
+            _router = new SfxEventRouter(bus, Play, () => Time.unscaledTime);
             _pending = new PendingCarTracker(bus);
             _urgency = new UrgencyRule(_config.MinTempoMultiplier, _config.MaxTempoMultiplier,
                 _config.PendingForMaxTempo, _config.TempoSmoothingSeconds);

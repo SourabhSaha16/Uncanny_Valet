@@ -22,6 +22,7 @@ namespace UncannyValet.Audio
                 case SfxId.Charged: return SfxStations.Charged(sampleRate);
                 case SfxId.Washed: return SfxStations.Washed(sampleRate);
                 case SfxId.StationStart: return SfxStations.StationStart(sampleRate);
+                case SfxId.PedestrianBump: return SfxAlerts.PedestrianBump(sampleRate);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");
             }
         }

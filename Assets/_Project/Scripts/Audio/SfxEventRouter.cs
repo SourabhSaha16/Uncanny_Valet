@@ -8,12 +8,19 @@ namespace UncannyValet.Audio
     {
         private readonly IEventBus _bus;
         private readonly Action<SfxId> _play;
+        private readonly Func<float> _clock;
+        private readonly SfxRateLimiter _bumpLimit = new SfxRateLimiter(BumpMinInterval);
         private bool _active;
 
-        public SfxEventRouter(IEventBus bus, Action<SfxId> play)
+        /// <summary>Fewest seconds between two pedestrian bump sounds.</summary>
+        public const float BumpMinInterval = 0.15f;
+
+        /// <param name="clock">Seconds clock used to rate-limit repeated sounds; without one nothing is limited.</param>
+        public SfxEventRouter(IEventBus bus, Action<SfxId> play, Func<float> clock = null)
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _play = play ?? throw new ArgumentNullException(nameof(play));
+            _clock = clock;
         }
 
         public void Subscribe()
@@ -32,6 +39,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<CarFullyCharged>(OnCarFullyCharged);
             _bus.Subscribe<CarCleaned>(OnCarCleaned);
             _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
+            _bus.Subscribe<PedestrianBumped>(OnPedestrianBumped);
         }
 
         public void Unsubscribe()
@@ -50,6 +58,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<CarFullyCharged>(OnCarFullyCharged);
             _bus.Unsubscribe<CarCleaned>(OnCarCleaned);
             _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
+            _bus.Unsubscribe<PedestrianBumped>(OnPedestrianBumped);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -64,5 +73,10 @@ namespace UncannyValet.Audio
         private void OnCarFullyCharged(CarFullyCharged e) => _play(SfxId.Charged);
         private void OnCarCleaned(CarCleaned e) => _play(SfxId.Washed);
         private void OnCarEnteredStation(CarEnteredStation e) => _play(SfxId.StationStart);
+
+        private void OnPedestrianBumped(PedestrianBumped e)
+        {
+            if (_clock == null || _bumpLimit.TryPass(_clock())) _play(SfxId.PedestrianBump);
+        }
     }
 }
