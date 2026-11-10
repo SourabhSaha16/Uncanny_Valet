@@ -489,3 +489,9 @@ Date: 2026-11-10
 Files: merge of worktree-agent-a467414c00b26f057, docs/design.md, site/
 Why: the human's 8 play-test changes (docs/changelogs/lot-v3.md).
 Tests: 707 of 707 EditMode; browser shows the new look, no console errors.
+
+## lead: merge lot-v4, update design doc, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-aca42b483dd08be4f, docs/design.md, docs/redesign/ui_style_guide.md, site/
+Why: the human's 7 play-test notes (docs/changelogs/lot-v4.md).
+Tests: 712 of 712 EditMode; browser shows the gap, fewer arrows, no console errors.

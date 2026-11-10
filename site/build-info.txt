@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  1b84215
-Subject: lot-v3: entry and exit car speed in the F2 panel
-Date:    2026-11-10 10:19:55 -0800
+Commit:  5914f39
+Subject: lot-v4: shift the pickup zone right, patrons wait in the gap
+Date:    2026-11-10 11:36:55 -0800

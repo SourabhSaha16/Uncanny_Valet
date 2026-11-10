@@ -90,6 +90,12 @@ separate pickup banner is gone.
   two-lane road: eastbound lane (next to the lot, patron cars) and westbound lane (ambient cars). `IRoadLayout` (Core)
   exposes the lanes, the queue turn, the curb merge and the entry and exit routes. The diner is placeholder
   a red-roof MetroCity building (roof tiles, window band, striped awnings over both doors, small DINER sign) and a BUS shelter.
+- Lot v4 (2026-11-10): the VALET PICKUP zone sits 1.75 units right of the diner wall (`SiteLayout.CurbGap`);
+  patrons wait in that gap and always face east to the zone (set in `WalkerRouter.Apply` while Waiting); the queue
+  column stays under the zone; the exit route has about 4 arrows (5.5 units apart). The key board panel is titled
+  CAR SLOTS and lists a car only once it is parked in a spot or station (it stays until its ticket closes). The
+  results screen no longer shows cars returned. Traffic defaults from the human's F2 tuning: 13 ambient cars a
+  minute, ambient speed scale 1.25, entry speed 7.3 and exit speed 5 units/s (the panel value is the real speed).
 - Lot v3 look (2026-11-10): the curb zone is labelled VALET PICKUP (two stacked columns); patrons at the curb face it
   (`IPedestrianPaths.CurbCenter`); the arrival queue is three dotted car-sized boxes (no arrows); crosswalks are white
   zebra stripes; the ground outside the lot is dark asphalt (no grass or trees); small arrows along the delivered
@@ -127,7 +133,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (707 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (712 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -144,6 +150,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
 | Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
 | Lot v3 polish: patrons face the pickup, VALET PICKUP label, dotted queue boxes, zebra crosswalks, real building, asphalt surround, exit-route arrows, F2 entry and exit speed | done, first browser check only |
+| Lot v4: pickup zone gap, CAR SLOTS board (parked cars only), fewer arrows, traffic defaults, results without cars returned | done, first browser check only |
 | Traffic module (lane following, car following, yielding, ambient cars), wired into patron arrival and departure; F2 Traffic rows (ambient rate and speed, entry speed, exit speed) | done; first browser check showed a patron car entering up the queue column, road mostly cropped by the camera |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
@@ -200,6 +207,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-10 | Pedestrian count added to the F2 panel (0 to 10, starts at 3); the human likes the director pacing |
 | 2026-11-10 | Lot v2 from the human's sketch (`docs/redesign/lot_v2_layout.md`): 6 regular + 1 EV (id 7) + 1 wash, queue of 3 under the curb, road below, side and main doors, right strip as ambient spawn, fixed frame; director retuned (LotTight 1, LastBay for one bay); Traffic module built (arrival and departure wiring in progress); 672 tests |
 | 2026-11-10 | Lot v3 polish (8 items from play-test) merged: see A5; 707 tests |
+| 2026-11-10 | Lot v4 play-test fixes merged (pickup zone gap, CAR SLOTS only parked cars, fewer exit arrows, traffic defaults, no cars returned stat, patron facing fix); 712 tests |
 
 ---
 
