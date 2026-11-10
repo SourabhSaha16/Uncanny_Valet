@@ -26,20 +26,20 @@ namespace UncannyValet.Lot
         private float _laneInset = 1.25f;
         [Header("Curb direction marking")]
         [SerializeField, Min(0.5f), Tooltip("Length of the down arrows painted on the curb zone.")]
-        private float _curbArrowLength = 3.4f;
+        private float _curbArrowLength = 1.6f;
         [SerializeField, Range(0.1f, 0.45f), Tooltip("Distance of each curb arrow from the zone centre, as a share of the zone width.")]
         private float _curbArrowSideShare = 0.3f;
         [SerializeField, Min(0f), Tooltip("Gap between a curb arrow tip and the chevron under it.")]
-        private float _curbChevronGap = 0.35f;
+        private float _curbChevronGap = 0.15f;
         [Header("Big direction marks (curb and arrival slots)")]
         [SerializeField, Min(0.1f), Tooltip("Stroke width of the big curb and arrival arrows.")]
-        private float _markThickness = 0.4f;
+        private float _markThickness = 0.16f;
         [SerializeField, Min(0.1f), Tooltip("Length of the head and chevron strokes of the big arrows.")]
-        private float _markHeadLength = 1.1f;
+        private float _markHeadLength = 0.45f;
         [SerializeField, Min(0f), Tooltip("Dark outline added around every stroke of the big arrows so they read on any ground.")]
-        private float _markOutline = 0.12f;
+        private float _markOutline = 0.05f;
         [SerializeField, Min(0.5f), Tooltip("Length of the up arrows painted at each arrival slot.")]
-        private float _arrivalArrowLength = 3f;
+        private float _arrivalArrowLength = 1.4f;
         [SerializeField] private Color _markColor = new Color(1f, 1f, 0.96f, 1f);
         [SerializeField] private Color _markOutlineColor = new Color(0.1f, 0.09f, 0.15f, 1f);
         [Header("Standing spots and doorway")]

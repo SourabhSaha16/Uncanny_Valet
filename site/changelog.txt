@@ -1,4 +1,5 @@
 === Last 50 commits ===
+5265f0a  2026-11-09  lead: merge pivot-queue, fix tests, rebuild site
 ec0eedf  2026-11-09  lead: merge pivot-queue
 7a9b900  2026-11-09  pivot-queue: queue of 4, no park timer, single wash slot, plug icons, big arrows
 9886dd3  2026-11-09  lead: merge director-1, fix tests, rebuild site
@@ -48,7 +49,6 @@ e3fd0cb  2026-11-07  lot: implement ILotLayout.IsChargingSpot
 af64037  2026-11-07  lead: add IsChargingSpot and RunLost to Core contracts
 b60c5a2  2026-11-07  lead: merge worktree-agent-a4ee71813c0b93344
 4ffbfb9  2026-11-07  lead: merge worktree-agent-a20b965c9a6557245
-32d59d9  2026-11-07  lead: merge worktree-agent-a933081ef1be51da2
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -689,6 +689,12 @@ Date: 2026-11-09
 Files: Assets scene and metas, Tests/EditMode/Director (FakeClock public, fixture lists cleared in SetUp), docs/design.md, site/
 Why: Patron Director steps 1-2. The merged tests had an accessibility compile error and shared event lists across tests (NUnit reuses the fixture).
 Tests: 557 of 557 EditMode; browser: F3 overlay shows Director ON, phase BuildUp, W/T/P/F, arrivals 1/14, next in 24.6 s, decision log.
+
+## lead: merge pivot-queue, narrow queue gap and fix tests, update design, rebuild site
+Date: 2026-11-09
+Files: Lot/LotConfig.cs (queue slot gap 0.6 to 0.15), Tests/EditMode/Patrons/TicketRegistryNightTests.cs, docs/design.md, scene and metas, site/
+Why: Queue of 4 widened the lot past the camera and geometry limits (two Lot tests); one Patrons test still expected the removed park timer.
+Tests: 565 of 565 EditMode; browser shows 4 arrival slots with up arrows, curb down arrows, plug icons under 13 and 14, key board without a bar before pickup.
 
 === docs/changelogs/lot.md ===
 # Lot changelog

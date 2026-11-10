@@ -10,7 +10,7 @@ namespace UncannyValet.Lot
         private static readonly Color ChargeLine = new Color(0.30f, 0.60f, 1f);
         private static readonly Color ChargePad = new Color(0.14f, 0.24f, 0.46f);
         private const float LineWidth = 0.1f;
-        private const float PlugPixel = 0.16f;
+        private const float PlugPixel = 0.07f;
         private const float PlugYOffsetShare = -0.33f;
         private const int PlugOrder = -4;
 

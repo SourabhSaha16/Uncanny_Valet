@@ -59,13 +59,13 @@ MonoBehaviour:
     _arrowHeadLength: 0.6
     _arrowHeadDegrees: 35
     _laneInset: 1.25
-    _curbArrowLength: 3.4
+    _curbArrowLength: 1.6
     _curbArrowSideShare: 0.3
-    _curbChevronGap: 0.35
-    _markThickness: 0.4
-    _markHeadLength: 1.1
-    _markOutline: 0.12
-    _arrivalArrowLength: 3
+    _curbChevronGap: 0.15
+    _markThickness: 0.16
+    _markHeadLength: 0.45
+    _markOutline: 0.05
+    _arrivalArrowLength: 1.4
     _markColor: {r: 1, g: 1, b: 0.96, a: 1}
     _markOutlineColor: {r: 0.1, g: 0.09, b: 0.15, a: 1}
     _waitInset: 0.9

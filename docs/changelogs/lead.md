@@ -441,3 +441,9 @@ Date: 2026-11-09
 Files: Lot/LotConfig.cs (queue slot gap 0.6 to 0.15), Tests/EditMode/Patrons/TicketRegistryNightTests.cs, docs/design.md, scene and metas, site/
 Why: Queue of 4 widened the lot past the camera and geometry limits (two Lot tests); one Patrons test still expected the removed park timer.
 Tests: 565 of 565 EditMode; browser shows 4 arrival slots with up arrows, curb down arrows, plug icons under 13 and 14, key board without a bar before pickup.
+
+## lead: shrink curb and arrival arrows and EV plug icons, rebuild site
+Date: 2026-11-09
+Files: Lot/WalkwayStyle.cs defaults, Data/Lot/LotArtConfig.asset, Lot/SpotBuilder.cs (PlugPixel 0.16 to 0.07), site/
+Why: Human found the arrows and plug icons far too large. Curb arrow 3.4 to 1.6, stroke 0.4 to 0.16, head 1.1 to 0.45, arrival arrow 3 to 1.4, plug pixel 0.07.
+Tests: 565 of 565 EditMode; browser shows small arrows and plugs.
