@@ -465,3 +465,9 @@ Date: 2026-11-10
 Files: TuningKey.cs, TuningCatalog.cs, TuningSeeder.cs, GameBootstrap.cs, PedestrianConfig.cs, PedestrianCrowd.cs, docs/design.md, site/
 Why: the human wants fewer pedestrians at the start and control over the number (design.md A4).
 Tests: 625 of 625 EditMode.
+
+## lead: lot v2 spec, IRoadLayout contract, design doc updates
+Date: 2026-11-10
+Files: docs/redesign/lot_v2_layout.md, docs/redesign/lot_v2_sketch.png, docs/design.md, docs/decisions.md, Core/Contracts/IRoadLayout.cs
+Why: the human's sketch and answers (design.md A5, A8, A9).
+Tests: none (spec and an interface).

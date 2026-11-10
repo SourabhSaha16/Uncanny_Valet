@@ -81,6 +81,14 @@ separate pickup banner is gone.
 
 ## A5. The lot and people
 
+> **In progress (2026-11-10): Lot v2.** The layout below is being replaced by the human's sketch, spec in
+> `docs/redesign/lot_v2_layout.md` (binding): diner on the left with a side door (ambient people) and a main door
+> (patrons), a curb beside it, two rows of 4 tall bays (top: 4 regular; bottom: EV, regular, wash, regular; so 6
+> regular, 1 EV, 1 wash), a 3-slot arrival queue under the curb, a right strip as the road and bus stop where ambient
+> walkers appear, and a two-lane road below the lot with real traffic (patron cars enter from the left and turn into
+> the queue; delivered cars drive down, wait for a gap and leave to the right; ambient cars run both ways).
+> The queue limit becomes 3 and the bay ids change (EV bay 7). Until it is merged the text below still describes the build.
+
 - Lot layout: a 2 x 6 grid numbered from the curb. Column 1 holds the two EV charging bays (ids 10 and 11, plug
   icon under the number), the top of column 2 is the wash slot (wash icon, one car only), and the other 9 cells are
   regular spots 1 to 9. The old station strip at the top is gone.
@@ -132,6 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
+| Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, traffic with yielding, new ambient pedestrian spawn points | in progress (two agents) |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
@@ -184,6 +193,8 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-09 | Stations moved into the spot grid (EV bays 10 and 11 in column 1, wash in column 2, 9 regular spots), wash icon, much smaller score and combo HUD |
 | 2026-11-09 | Queue of 4 with any car takeable, park timer removed (pickup timer only), wash slot single occupancy with OCCUPIED hint, plug icons under EV bays, delivery accepts any down-facing car (80 degrees), big curb and arrival arrows |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
+| 2026-11-10 | Pedestrian count added to the F2 panel (0 to 10, starts at 3); the human likes the director pacing |
+| 2026-11-10 | Lot v2 adopted from the human's sketch (`docs/redesign/lot_v2_layout.md`): 6 regular + 1 EV + 1 wash, queue of 3, road below with yielding traffic, side door and main door, right strip as ambient spawn. In progress |
 
 ---
 
