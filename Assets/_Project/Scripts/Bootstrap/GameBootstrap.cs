@@ -127,7 +127,8 @@ namespace UncannyValet.Bootstrap
                 Debug.LogError("GameBootstrap has no TrafficModule: rebuild with Uncanny Valet/Setup/Build Everything. Cars drive in and out without a road.", this);
                 return;
             }
-            _trafficLink = new TrafficTuningLink(bus, _traffic.SetAmbientRate, _traffic.SetSpeedScale);
+            _trafficLink = new TrafficTuningLink(bus, _traffic.SetAmbientRate, _traffic.SetSpeedScale,
+                _traffic.SetEntrySpeed, _traffic.SetExitSpeed);
             _traffic.gameObject.SetActive(true);
         }
 

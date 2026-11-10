@@ -22,6 +22,9 @@ namespace UncannyValet.Traffic
         /// <inheritdoc />
         public int Id { get; private set; }
 
+        // The turn speed, scaled live by the entry speed tuning.
+        private float TurnSpeed => _ctx.Tuning.TurnSpeed * _ctx.Speeds.EntryScale;
+
         /// <summary>Starts the trip toward arrival slot <paramref name="slot"/> under trip id <paramref name="id"/>.</summary>
         public void Begin(int id, int slot)
         {
@@ -53,7 +56,7 @@ namespace UncannyValet.Traffic
         {
             if (_ctx.CanJoinEast(0f))
             {
-                _lane = _ctx.JoinEast(0f, _ctx.Tuning.TurnSpeed);
+                _lane = _ctx.JoinEast(0f, TurnSpeed);
                 _phase = TripPhase.OnLane;
             }
             return LanePose(_phase, 0f);
@@ -62,8 +65,9 @@ namespace UncannyValet.Traffic
         private TripPose StepLane(float dt)
         {
             float turnAt = _ctx.Road.QueueTurnDistance;
-            float cap = ApproachSpeed.Cap(turnAt - _lane.Distance, _ctx.Tuning.TurnSpeed, _ctx.Follow.Brake);
-            LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, _ctx.Follow.DesiredSpeed, cap, _ctx.Occupancy, _ctx.Follow, dt);
+            float cap = ApproachSpeed.Cap(turnAt - _lane.Distance, TurnSpeed, _ctx.Follow.Brake);
+            float cruise = _ctx.Follow.DesiredSpeed * _ctx.Speeds.EntryScale;
+            LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, cruise, cap, _ctx.Occupancy, _ctx.Follow, dt);
             if (_lane.Distance < turnAt) return LanePose(TripPhase.OnLane, _lane.Speed);
             _lane.Distance = turnAt;
             _route.Speed = _lane.Speed;
@@ -75,7 +79,7 @@ namespace UncannyValet.Traffic
 
         private TripPose StepRoute(float dt)
         {
-            _route.Step(_ctx.Tuning.TurnSpeed, true, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
+            _route.Step(TurnSpeed, true, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
             if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
             return _route.Pose(TripPhase.Finished, 0f);
         }

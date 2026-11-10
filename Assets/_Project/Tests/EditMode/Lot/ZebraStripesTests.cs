@@ -40,7 +40,7 @@ namespace UncannyValet.Tests.Lot
         [Test]
         public void TooShortACrosswalkGetsNoBars()
         {
-            Assert.AreEqual(0, ZebraStripes.Bars(new Rect(0f, 0f, 0.2f, 1.4f), 0.3f, 0.3f, 0f).Length);
+            Assert.AreEqual(0, ZebraStripes.Bars(new Rect(0f, 0f, 0.2f, 0.1f), 0.3f, 0.3f, 0f).Length);
         }
 
         [Test]

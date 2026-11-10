@@ -36,6 +36,7 @@ namespace UncannyValet.Tests.Traffic
 
         private LaneOccupancy _occupancy;
         private TripRouter _router;
+        private TripSpeeds _speeds;
 
         [SetUp]
         public void SetUp()
@@ -47,7 +48,8 @@ namespace UncannyValet.Tests.Traffic
             var follow = new FollowSettings(5f, 0.6f, 0.8f, 3f, 6f);
             var merge = new MergeGapRule(2.5f, 2.5f, 0.8f);
             var tuning = new TripTuning(CarLength, 2f, 2.5f, 2f, 0.02f);
-            _router = new TripRouter(new TripContext(road, east, _occupancy, follow, merge, tuning), 4);
+            _speeds = new TripSpeeds(5f, 2.5f);
+            _router = new TripRouter(new TripContext(road, east, _occupancy, follow, merge, tuning, _speeds), 4);
         }
 
         private TripPose RunUntilFinished(int trip, out int steps)
@@ -136,6 +138,66 @@ namespace UncannyValet.Tests.Traffic
                 mergedWhileBlocked |= pose.Phase == TripPhase.OnLane;
             }
             Assert.IsFalse(mergedWhileBlocked);
+        }
+
+        [Test]
+        public void Entry_ARaisedEntrySpeedGetsTheCarInSooner()
+        {
+            RunUntilFinished(_router.BeginEntry(0), out int normal);
+            _speeds.SetEntrySpeed(10f);
+            RunUntilFinished(_router.BeginEntry(0), out int fast);
+            Assert.Less(fast, normal);
+        }
+
+        [Test]
+        public void Entry_ALoweredEntrySpeedSlowsTheTurn()
+        {
+            _speeds.SetEntrySpeed(2.5f);
+            int trip = _router.BeginEntry(0);
+            float speedAtTurn = float.MaxValue;
+            for (int i = 0; i < MaxSteps; i++)
+            {
+                _router.Step(trip, Dt, out TripPose pose);
+                if (pose.Phase == TripPhase.OnRoute) { speedAtTurn = pose.Speed; break; }
+            }
+            Assert.LessOrEqual(speedAtTurn, 1.2f);
+        }
+
+        [Test]
+        public void Exit_ARaisedExitSpeedGetsTheCarAwaySooner()
+        {
+            RunUntilFinished(_router.BeginExit(), out int normal);
+            _speeds.SetExitSpeed(5f);
+            RunUntilFinished(_router.BeginExit(), out int fast);
+            Assert.Less(fast, normal);
+        }
+
+        [Test]
+        public void TheExitSpeedDoesNotChangeEntryAndTheEntrySpeedDoesNotChangeExit()
+        {
+            RunUntilFinished(_router.BeginEntry(0), out int entryBefore);
+            RunUntilFinished(_router.BeginExit(), out int exitBefore);
+            _speeds.SetExitSpeed(10f);
+            RunUntilFinished(_router.BeginEntry(0), out int entryAfter);
+            _speeds.SetExitSpeed(2.5f);
+            _speeds.SetEntrySpeed(10f);
+            RunUntilFinished(_router.BeginExit(), out int exitAfter);
+            Assert.AreEqual(entryBefore, entryAfter);
+            Assert.AreEqual(exitBefore, exitAfter);
+        }
+
+        [Test]
+        public void TripSpeedsScaleIsTheTunedSpeedOverTheConfigSpeed()
+        {
+            var speeds = new TripSpeeds(5f, 2.5f);
+            Assert.AreEqual(1f, speeds.EntryScale);
+            Assert.AreEqual(1f, speeds.ExitScale);
+            speeds.SetEntrySpeed(10f);
+            speeds.SetExitSpeed(1.25f);
+            Assert.AreEqual(2f, speeds.EntryScale, 1e-4f);
+            Assert.AreEqual(0.5f, speeds.ExitScale, 1e-4f);
+            speeds.SetEntrySpeed(0f);
+            Assert.AreEqual(TripSpeeds.MinScale, speeds.EntryScale, 1e-4f);
         }
 
         [Test]

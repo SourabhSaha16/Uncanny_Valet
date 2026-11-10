@@ -51,7 +51,7 @@ namespace UncannyValet.Traffic
             float mergeAt = _ctx.Road.CurbMergeDistance;
             bool open = _ctx.CanJoinEast(mergeAt);
             bool yielding = _route.Remaining <= _ctx.Tuning.YieldDistance && !open;
-            _route.Step(_ctx.Tuning.RouteSpeed, yielding, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
+            _route.Step(_ctx.Tuning.RouteSpeed * _ctx.Speeds.ExitScale, yielding, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
             if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
             if (!open) return _route.Pose(TripPhase.Yielding, 0f);
             _lane = _ctx.JoinEast(mergeAt, _route.Speed);
@@ -62,7 +62,7 @@ namespace UncannyValet.Traffic
         private TripPose StepLane(float dt)
         {
             LanePath path = _ctx.EastPath;
-            LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, _ctx.Follow.DesiredSpeed, float.PositiveInfinity,
+            LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, _ctx.Follow.DesiredSpeed * _ctx.Speeds.ExitScale, float.PositiveInfinity,
                 _ctx.Occupancy, _ctx.Follow, dt);
             TripPhase phase = _lane.Distance >= path.Length ? TripPhase.Finished : TripPhase.OnLane;
             return new TripPose(path.PositionAt(_lane.Distance), path.HeadingAt(_lane.Distance), _lane.Speed, phase);

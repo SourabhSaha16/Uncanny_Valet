@@ -57,6 +57,8 @@ namespace UncannyValet.Bootstrap
             var config = traffic != null ? traffic : ScriptableObject.CreateInstance<TrafficConfig>();
             t.Seed(TuningKey.TrafficAmbientPerMinute, config.AmbientPerMinute);
             t.Seed(TuningKey.TrafficSpeedScale, config.SpeedScale);
+            t.Seed(TuningKey.TrafficEntrySpeed, config.CruiseSpeed);
+            t.Seed(TuningKey.TrafficExitSpeed, config.RouteSpeed);
             if (traffic == null) Object.DestroyImmediate(config);
         }
     }

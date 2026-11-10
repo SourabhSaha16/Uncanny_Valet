@@ -10,14 +10,21 @@ namespace UncannyValet.Bootstrap
         private readonly IEventBus _bus;
         private readonly Action<float> _setAmbientRate;
         private readonly Action<float> _setSpeedScale;
+        private readonly Action<float> _setEntrySpeed;
+        private readonly Action<float> _setExitSpeed;
 
         /// <param name="setAmbientRate">Receives the ambient cars per minute.</param>
         /// <param name="setSpeedScale">Receives the ambient speed multiplier.</param>
-        public TrafficTuningLink(IEventBus bus, Action<float> setAmbientRate, Action<float> setSpeedScale)
+        /// <param name="setEntrySpeed">Receives the speed of patron cars driving in (units per second); null ignores the key.</param>
+        /// <param name="setExitSpeed">Receives the speed of delivered cars driving off (units per second); null ignores the key.</param>
+        public TrafficTuningLink(IEventBus bus, Action<float> setAmbientRate, Action<float> setSpeedScale,
+            Action<float> setEntrySpeed = null, Action<float> setExitSpeed = null)
         {
             _bus = bus;
             _setAmbientRate = setAmbientRate;
             _setSpeedScale = setSpeedScale;
+            _setEntrySpeed = setEntrySpeed;
+            _setExitSpeed = setExitSpeed;
             _bus.Subscribe<TuningChanged>(OnChanged);
         }
 
@@ -26,8 +33,13 @@ namespace UncannyValet.Bootstrap
 
         private void OnChanged(TuningChanged e)
         {
-            if (e.Key == TuningKey.TrafficAmbientPerMinute) _setAmbientRate(e.Value);
-            else if (e.Key == TuningKey.TrafficSpeedScale) _setSpeedScale(e.Value);
+            switch (e.Key)
+            {
+                case TuningKey.TrafficAmbientPerMinute: _setAmbientRate(e.Value); break;
+                case TuningKey.TrafficSpeedScale: _setSpeedScale(e.Value); break;
+                case TuningKey.TrafficEntrySpeed: _setEntrySpeed?.Invoke(e.Value); break;
+                case TuningKey.TrafficExitSpeed: _setExitSpeed?.Invoke(e.Value); break;
+            }
         }
     }
 }

@@ -115,5 +115,9 @@ namespace UncannyValet.Core.Events
         // Road traffic (Traffic module owns). Ambient cars per minute (0 = off) and a speed multiplier.
         TrafficAmbientPerMinute,
         TrafficSpeedScale,
+        // Patron cars: speed of cars driving in (lane cruise, the turn into the queue scales with it) and of delivered
+        // cars driving off (curb route, the lane after merging scales with it), in units per second.
+        TrafficEntrySpeed,
+        TrafficExitSpeed,
     }
 }

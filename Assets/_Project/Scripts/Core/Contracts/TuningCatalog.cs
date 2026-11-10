@@ -32,6 +32,8 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.PedestrianCount, "Pedestrians", "Ambient pedestrians (walking in/out)", 0, 10, 1),
             new TuningInfo(TuningKey.TrafficAmbientPerMinute, "Traffic", "Ambient cars per minute (0 = off)", 0, 40, 1),
             new TuningInfo(TuningKey.TrafficSpeedScale, "Traffic", "Ambient car speed scale", 0.2f, 2f, 0.05f),
+            new TuningInfo(TuningKey.TrafficEntrySpeed, "Traffic", "Entry car speed (units/s)", 0.5f, 12f, 0.1f),
+            new TuningInfo(TuningKey.TrafficExitSpeed, "Traffic", "Exit car speed (units/s)", 0.5f, 12f, 0.1f),
             new TuningInfo(TuningKey.DirEnabled, "Director", "Director on (0 = old fixed timer)", 0, 1, 1),
             new TuningInfo(TuningKey.DirTickSeconds, "Director", "Tick every (s)", 0.1f, 2f, 0.1f),
             new TuningInfo(TuningKey.DirSeed, "Director", "Seed (0 = random each shift)", 0, 9999, 1),

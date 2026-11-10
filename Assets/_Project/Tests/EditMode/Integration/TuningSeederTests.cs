@@ -38,6 +38,29 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
+        public void Seed_SeedsTheEntryAndExitSpeedsFromTheTrafficConfig()
+        {
+            var tuning = new TuningStore(new EventBus());
+            var shift = ScriptableObject.CreateInstance<ShiftConfig>();
+            var patrons = ScriptableObject.CreateInstance<PatronConfig>();
+            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var traffic = ScriptableObject.CreateInstance<UncannyValet.Traffic.TrafficConfig>();
+            try
+            {
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, traffic: traffic);
+                Assert.AreEqual(traffic.CruiseSpeed, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
+                Assert.AreEqual(traffic.RouteSpeed, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(shift);
+                Object.DestroyImmediate(patrons);
+                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(traffic);
+            }
+        }
+
+        [Test]
         public void Seed_SeedsTheDirectorFromItsConfigAndProfile()
         {
             var tuning = new TuningStore(new EventBus());

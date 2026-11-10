@@ -12,6 +12,8 @@ namespace UncannyValet.Traffic
     [DisallowMultipleComponent]
     public sealed class TrafficModule : MonoBehaviour
     {
+        private const float NoSpeed = -1f;
+
         [SerializeField] private TrafficConfig _config;
 
         private readonly LanePath _east = new LanePath();
@@ -24,6 +26,9 @@ namespace UncannyValet.Traffic
         private MergeGapRule _merge;
         private float _ambientRate;
         private float _speedScale = 1f;
+        private TripSpeeds _speeds;
+        private float _pendingEntrySpeed = NoSpeed;
+        private float _pendingExitSpeed = NoSpeed;
         private bool _ready;
 
         /// <summary>Ambient cars per minute; 0 switches ambient traffic off. Starts at the config value.</summary>
@@ -31,6 +36,20 @@ namespace UncannyValet.Traffic
 
         /// <summary>Multiplier on the speed of ambient cars (a live tuning value).</summary>
         public void SetSpeedScale(float scale) => _speedScale = Mathf.Max(0f, scale);
+
+        /// <summary>Speed of patron cars driving in: lane cruise in units per second (the turn into the queue scales with it). A live tuning value.</summary>
+        public void SetEntrySpeed(float speed)
+        {
+            if (_speeds != null) _speeds.SetEntrySpeed(speed);
+            else _pendingEntrySpeed = speed;
+        }
+
+        /// <summary>Speed of delivered cars driving off: the curb route in units per second (the lane after merging scales with it). A live tuning value.</summary>
+        public void SetExitSpeed(float speed)
+        {
+            if (_speeds != null) _speeds.SetExitSpeed(speed);
+            else _pendingExitSpeed = speed;
+        }
 
         private void Start()
         {
@@ -70,7 +89,10 @@ namespace UncannyValet.Traffic
         private void RegisterTrips(IRoadLayout road)
         {
             var tuning = new TripTuning(_config.CarLength, _config.TurnSpeed, _config.RouteSpeed, _config.YieldDistance, _config.ArriveTolerance);
-            var router = new TripRouter(new TripContext(road, _east, _occupancy, _follow, _merge, tuning), _config.MaxCars);
+            _speeds = new TripSpeeds(_config.CruiseSpeed, _config.RouteSpeed);
+            if (_pendingEntrySpeed > NoSpeed) _speeds.SetEntrySpeed(_pendingEntrySpeed);
+            if (_pendingExitSpeed > NoSpeed) _speeds.SetExitSpeed(_pendingExitSpeed);
+            var router = new TripRouter(new TripContext(road, _east, _occupancy, _follow, _merge, tuning, _speeds), _config.MaxCars);
             Services.Register<IEntryRouter>(router);
             Services.Register<IExitRouter>(router);
             Services.Register<ITripDriver>(router);

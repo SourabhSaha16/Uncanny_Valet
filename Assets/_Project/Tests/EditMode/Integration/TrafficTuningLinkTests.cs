@@ -32,6 +32,32 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
+        public void ForwardsTheEntryAndExitSpeeds()
+        {
+            float entry = -1f;
+            float exit = -1f;
+            using (new TrafficTuningLink(_bus, r => _rate = r, s => _scale = s, v => entry = v, v => exit = v))
+            {
+                _bus.Publish(new TuningChanged(TuningKey.TrafficEntrySpeed, 7f));
+                _bus.Publish(new TuningChanged(TuningKey.TrafficExitSpeed, 3.5f));
+            }
+            Assert.AreEqual(7f, entry);
+            Assert.AreEqual(3.5f, exit);
+            Assert.AreEqual(-1f, _rate);
+            Assert.AreEqual(-1f, _scale);
+        }
+
+        [Test]
+        public void EntryAndExitKeysAreIgnoredWithoutSetters()
+        {
+            using (new TrafficTuningLink(_bus, r => _rate = r, s => _scale = s))
+            {
+                Assert.DoesNotThrow(() => _bus.Publish(new TuningChanged(TuningKey.TrafficEntrySpeed, 7f)));
+                Assert.DoesNotThrow(() => _bus.Publish(new TuningChanged(TuningKey.TrafficExitSpeed, 7f)));
+            }
+        }
+
+        [Test]
         public void IgnoresOtherKeysAndStopsAfterDispose()
         {
             var link = new TrafficTuningLink(_bus, r => _rate = r, s => _scale = s);

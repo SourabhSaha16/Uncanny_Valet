@@ -15,11 +15,13 @@ namespace UncannyValet.Traffic
         public readonly FollowSettings Follow;
         public readonly MergeGapRule Merge;
         public readonly TripTuning Tuning;
+        /// <summary>Live entry and exit speed scales.</summary>
+        public readonly TripSpeeds Speeds;
         /// <summary>Reusable buffer for fetching routes from the road layout.</summary>
         public readonly List<Vector2> Scratch = new List<Vector2>(ScratchCapacity);
 
         public TripContext(IRoadLayout road, LanePath eastPath, LaneOccupancy occupancy,
-            FollowSettings follow, MergeGapRule merge, TripTuning tuning)
+            FollowSettings follow, MergeGapRule merge, TripTuning tuning, TripSpeeds speeds = null)
         {
             Road = road;
             EastPath = eastPath;
@@ -27,6 +29,7 @@ namespace UncannyValet.Traffic
             Follow = follow;
             Merge = merge;
             Tuning = tuning;
+            Speeds = speeds ?? new TripSpeeds(1f, 1f);
         }
 
         /// <summary>True when a car centred at <paramref name="distance"/> on the east lane has room to join it now.</summary>
