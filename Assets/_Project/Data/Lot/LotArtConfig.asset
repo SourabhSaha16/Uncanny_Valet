@@ -52,6 +52,7 @@ MonoBehaviour:
     _barWidth: 0.45
     _barGap: 0.45
     _bayEntry: 1.5
+    _gapEntry: 0
     _roadReach: 7
     _northMargin: 2
     _arrowLength: 1.5

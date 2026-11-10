@@ -447,3 +447,9 @@ Date: 2026-11-09
 Files: Lot/WalkwayStyle.cs defaults, Data/Lot/LotArtConfig.asset, Lot/SpotBuilder.cs (PlugPixel 0.16 to 0.07), site/
 Why: Human found the arrows and plug icons far too large. Curb arrow 3.4 to 1.6, stroke 0.4 to 0.16, head 1.1 to 0.45, arrival arrow 3 to 1.4, plug pixel 0.07.
 Tests: 565 of 565 EditMode; browser shows small arrows and plugs.
+
+## lead: merge pivot-stations, update design doc, rebuild site
+Date: 2026-11-09
+Files: scene and metas, docs/design.md, site/
+Why: EV bays and the wash slot moved into the spot grid (bays numbered 10 and 11), wash icon, smaller score and combo HUD.
+Tests: 577 of 577 EditMode; browser shows the new layout.

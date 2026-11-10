@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  5265f0a
-Subject: lead: merge pivot-queue, fix tests, rebuild site
-Date:    2026-11-09 19:15:41 -0800
+Commit:  095d12a
+Subject: lead: merge pivot-stations
+Date:    2026-11-09 20:02:12 -0800

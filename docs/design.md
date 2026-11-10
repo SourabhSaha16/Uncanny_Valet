@@ -38,8 +38,8 @@ debt, strikes or boss orders (all removed).
 2. A car drives in to one of 4 side-by-side arrival slots and stops (CarArrived); only then does its info box
    appear. Any waiting car can be taken. When all 4 slots are full no new car arrives. Waiting cars have no timer
    and never leave on their own.
-3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (EV charging bays 13 and
-   14, wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
+3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (EV charging bays 10 and
+   11, wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
    hint shows.
 4. The patron returns, the pickup is requested, the valet drives the car to the curb, tip is paid.
 5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
@@ -74,13 +74,16 @@ Car presentation (all per ticket):
   facing; tunables in `CarFlashConfig` (small at the current zoom, to be checked in play).
 
 HUD (480x270 virtual canvas, integer-scaled, pixel font): shift clock top centre (amber at 30 s, blinking
-orange-red at 10 s); coin score with three stars top left; combo badge top right; key board bottom left
+orange-red at 10 s); a small coin score with three stars top left; a small combo badge top right; key board bottom left
 listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel.
 Pickup is shown on the key board row with a bell and cyan highlight, flashing with the urgency maths; the
 separate pickup banner is gone.
 
 ## A5. The lot and people
 
+- Lot layout: a 2 x 6 grid numbered from the curb. Column 1 holds the two EV charging bays (ids 10 and 11, plug
+  icon under the number), the top of column 2 is the wash slot (wash icon, one car only), and the other 9 cells are
+  regular spots 1 to 9. The old station strip at the top is gone.
 - Lot art: grass, sidewalks, road, the tan green-roof building as the diner, trees; the old placeholder
   rectangles are gone. Spots are painted bays; the curb is a cobbled zone with CURB text.
 - Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
@@ -114,7 +117,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (565 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (577 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -164,6 +167,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
 | 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
 | 2026-11-09 | Patron Director spec adopted; steps 1 and 2 built (snapshot, F3 overlay, workload, form, pacer, relief, budget) |
+| 2026-11-09 | Stations moved into the spot grid (EV bays 10 and 11 in column 1, wash in column 2, 9 regular spots), wash icon, much smaller score and combo HUD |
 | 2026-11-09 | Queue of 4 with any car takeable, park timer removed (pickup timer only), wash slot single occupancy with OCCUPIED hint, plug icons under EV bays, delivery accepts any down-facing car (80 degrees), big curb and arrival arrows |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
 
