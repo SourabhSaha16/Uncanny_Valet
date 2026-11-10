@@ -23,7 +23,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<CarEntered>(OnCarEntered);
             _bus.Subscribe<CarExited>(OnCarExited);
             _bus.Subscribe<CarParked>(OnCarParked);
-            _bus.Subscribe<TicketOpened>(OnTicketOpened);
+            _bus.Subscribe<CarArrived>(OnCarArrived);
             _bus.Subscribe<PickupRequested>(OnPickupRequested);
             _bus.Subscribe<TipEarned>(OnTipEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
@@ -41,7 +41,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<CarEntered>(OnCarEntered);
             _bus.Unsubscribe<CarExited>(OnCarExited);
             _bus.Unsubscribe<CarParked>(OnCarParked);
-            _bus.Unsubscribe<TicketOpened>(OnTicketOpened);
+            _bus.Unsubscribe<CarArrived>(OnCarArrived);
             _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
             _bus.Unsubscribe<TipEarned>(OnTipEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
@@ -55,7 +55,7 @@ namespace UncannyValet.Audio
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
         private void OnCarExited(CarExited e) => _play(SfxId.CarExit);
         private void OnCarParked(CarParked e) => _play(SfxId.CarParked);
-        private void OnTicketOpened(TicketOpened e) => _play(SfxId.CarArrives);
+        private void OnCarArrived(CarArrived e) => _play(SfxId.CarArrives);
         private void OnPickupRequested(PickupRequested e) => _play(SfxId.PickupRequested);
         private void OnTipEarned(TipEarned e) { if (e.Amount > 0) _play(SfxId.TipEarned); }
         private void OnTimerExpired(TicketTimerExpired e) => _play(SfxId.CarVanished);

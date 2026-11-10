@@ -50,5 +50,21 @@ namespace UncannyValet.Tests.Audio
             bus.Publish(new CarCleaned(new CarId(1)));
             Assert.AreEqual(7, played.Count);
         }
+
+        [Test]
+        public void CarArrivesSoundPlaysOnCarArrivedNotOnTicketOpened()
+        {
+            var bus = new EventBus();
+            var played = new System.Collections.Generic.List<SfxId>();
+            var router = new SfxEventRouter(bus, played.Add);
+            router.Subscribe();
+            bus.Publish(new TicketOpened(new TicketId(1), new CarId(1), 10f));
+            CollectionAssert.IsEmpty(played);
+            bus.Publish(new CarArrived(new CarId(1)));
+            CollectionAssert.AreEqual(new[] { SfxId.CarArrives }, played);
+            router.Unsubscribe();
+            bus.Publish(new CarArrived(new CarId(2)));
+            Assert.AreEqual(1, played.Count);
+        }
     }
 }

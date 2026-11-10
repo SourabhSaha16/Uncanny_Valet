@@ -25,3 +25,9 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Audio/{UrgencyRule,PendingCarTracker,AudioConfig,AudioDirector}.cs, Assets/_Project/Data/Audio/AudioConfig.asset, Assets/_Project/Tests/EditMode/Audio/UrgencyTests.cs
 Why: Play-test round 5: the funk groove speeds up as more cars wait to be parked or handed back, and relaxes as the queue clears (design.md section 10). PendingCarTracker counts waiting cars from TicketOpened, CarParked, PickupRequested, TicketClosed, park-timer expiry and night start/end; UrgencyRule maps the count to a smoothed multiplier applied to the music AudioSource pitch each frame (no allocation, no clip regeneration, no click). SFX sources and M mute are untouched.
 Tests: UrgencyTests (curve, smoothing, tracker counts, resets, unsubscribe). Not run (Unity not launched).
+
+## audio: play car-arrives sound when the car stops
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Audio/SfxEventRouter.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
+Why: Play-test note: SfxId.CarArrives played at spawn (TicketOpened). It now plays on CarArrived, published by CarAutoDrive.ArriveAtTarget once the trip finishes and the car rests in its slot. Trip path verified by reading; no Cars/Traffic change needed.
+Tests: SfxTests.CarArrivesSoundPlaysOnCarArrivedNotOnTicketOpened added; full EditMode suite run, all passing.
