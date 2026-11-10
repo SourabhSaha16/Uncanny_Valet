@@ -52,6 +52,41 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual(0.5f, row.Elapsed01, 0.001f);
         }
 
+        private List<TicketRow> KeyRows()
+        {
+            var rows = new List<TicketRow>();
+            _board.CollectKeyBoardRows(rows);
+            return rows;
+        }
+
+        [Test]
+        public void KeyBoard_ListsACarOnlyOnceParked_AndKeepsItUntilDelivered()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            Assert.AreEqual(0, KeyRows().Count);
+            Assert.AreEqual(1, _board.Count);
+            _bus.Publish(new CarParked(C, 3));
+            Assert.AreEqual(1, KeyRows().Count);
+            _bus.Publish(new CarLeftSpot(C, 3));
+            _bus.Publish(new PickupRequested(T, C));
+            Assert.AreEqual(1, KeyRows().Count);
+            _bus.Publish(new TicketClosed(T, C, 0f, 0));
+            Assert.AreEqual(0, KeyRows().Count);
+        }
+
+        [Test]
+        public void KeyBoard_ListsACarParkedInAStation_AndOneParkedBeforeItsTicket()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarEnteredStation(C, StationKind.Charging));
+            Assert.AreEqual(1, KeyRows().Count);
+            var early = new CarId(5);
+            _bus.Publish(new CarParked(early, 2));
+            _bus.Publish(new TicketOpened(new TicketId(2), early, 60f));
+            Assert.AreEqual(2, KeyRows().Count);
+        }
+
         [Test]
         public void ParkedStopsTimer_ThenPickupExpiresLate()
         {

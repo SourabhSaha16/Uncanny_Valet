@@ -25,6 +25,7 @@ namespace UncannyValet.UI
         private float _titleKeyDelaySeconds = 0.3f;
 
         private readonly List<TicketRow> _rows = new List<TicketRow>(8);
+        private readonly List<TicketRow> _keyRows = new List<TicketRow>(8);
         private Func<string> _prompt = NoPrompt;
         private UiPhase _phase = UiPhase.Title;
         private float _phaseStartedAt;
@@ -183,7 +184,8 @@ namespace UncannyValet.UI
             _hintPainter.Draw(ResolveCamera());
             _occupiedPainter.Draw(ResolveCamera());
             _hud.Draw(time);
-            _keyBoard.Draw(_rows, time);
+            _board.CollectKeyBoardRows(_keyRows);
+            _keyBoard.Draw(_keyRows, time);
             _notices.Draw(_prompt());
             if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);
         }

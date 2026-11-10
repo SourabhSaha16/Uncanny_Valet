@@ -21,6 +21,9 @@ namespace UncannyValet.UI
         public float Elapsed01;
         public bool Expired;
 
+        /// <summary>True once the car was parked in a spot or a station; the key board lists a car from then on until it is delivered.</summary>
+        public bool Placed;
+
         /// <summary>True from the moment the car has finished driving in until it leaves.</summary>
         public bool Arrived;
 

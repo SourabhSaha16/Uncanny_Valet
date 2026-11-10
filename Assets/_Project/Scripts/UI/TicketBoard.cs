@@ -13,6 +13,7 @@ namespace UncannyValet.UI
         private readonly Dictionary<int, int> _tags = new Dictionary<int, int>();
         private readonly Dictionary<int, string> _plates = new Dictionary<int, string>();
         private readonly HashSet<int> _arrived = new HashSet<int>();
+        private readonly HashSet<int> _placed = new HashSet<int>();
 
         public int Count => _rows.Count;
 
@@ -23,6 +24,7 @@ namespace UncannyValet.UI
             _bus.Subscribe<CarTagAssigned>(OnTag);
             _bus.Subscribe<CarPlateAssigned>(OnPlate);
             _bus.Subscribe<CarParked>(OnParked);
+            _bus.Subscribe<CarEnteredStation>(OnEnteredStation);
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Subscribe<PickupRequested>(OnPickup);
             _bus.Subscribe<TicketTimerChanged>(OnTimerChanged);
@@ -43,6 +45,7 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<CarTagAssigned>(OnTag);
             _bus.Unsubscribe<CarPlateAssigned>(OnPlate);
             _bus.Unsubscribe<CarParked>(OnParked);
+            _bus.Unsubscribe<CarEnteredStation>(OnEnteredStation);
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
             _bus.Unsubscribe<TicketTimerChanged>(OnTimerChanged);
@@ -55,6 +58,13 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
             _bus.Unsubscribe<CarArrived>(OnArrived);
             _bus.Unsubscribe<CarDeparted>(OnDeparted);
+        }
+
+        /// <summary>Clears <paramref name="into"/> and fills it with the open tickets the key board lists (cars parked in a spot or station), most urgent first.</summary>
+        public void CollectKeyBoardRows(List<TicketRow> into)
+        {
+            CollectRows(into);
+            KeyBoardRows.Filter(into);
         }
 
         /// <summary>Counts every change that could alter what the HUD shows about parking and pickups.</summary>
@@ -75,6 +85,7 @@ namespace UncannyValet.UI
             if (_tags.TryGetValue(e.Car.Value, out var tag)) row.Tag = tag;
             if (_plates.TryGetValue(e.Car.Value, out var plate)) row.Plate = plate;
             row.Arrived = _arrived.Contains(e.Car.Value);
+            row.Placed = _placed.Contains(e.Car.Value);
             _rows[e.Ticket.Value] = row;
         }
 
@@ -124,10 +135,20 @@ namespace UncannyValet.UI
         private void OnParked(CarParked e)
         {
             Version++;
+            _placed.Add(e.Car.Value);
             var row = FindByCar(e.Car.Value);
             if (row == null) return;
+            row.Placed = true;
             row.Spot = e.SpotId;
             if (row.State == TicketRowState.AwaitingPark) row.State = TicketRowState.Parked;
+        }
+
+        private void OnEnteredStation(CarEnteredStation e)
+        {
+            Version++;
+            _placed.Add(e.Car.Value);
+            var row = FindByCar(e.Car.Value);
+            if (row != null) row.Placed = true;
         }
 
         private void OnLeftSpot(CarLeftSpot e)
@@ -171,6 +192,7 @@ namespace UncannyValet.UI
             _tags.Remove(row.Car);
             _plates.Remove(row.Car);
             _arrived.Remove(row.Car);
+            _placed.Remove(row.Car);
         }
 
         private TicketRow FindByCar(int car)

@@ -17,3 +17,9 @@ Date: 2026-11-10
 Files: Scripts/Pedestrians/{WalkAnimMath,WalkerRouter,PatronWalkers}.cs, Tests/EditMode/Pedestrians/WalkAnimMathTests.cs
 Why: human play test (design.md A5, image 6): some patrons at the curb faced down. Root cause: they turned toward the zone centre point and FacingToward lets the dominant axis win, so a patron standing well above or below the (tall) zone centre faced up or down along the curb instead of across to it. Now the look point is the centre x at the patron own height (WalkAnimMath.CurbLookPoint), so they face straight across, and the facing is set in WalkerRouter.Apply for the Waiting phase, so any re-apply of that phase restores it, not only the arrival moment.
 Tests: WalkAnimMathTests.CurbLookPoint_FacesAcrossToTheZoneHoweverFarUpOrDownItsCentreIs (regression; shows the old rule gave Up).
+
+## lot-v4: key board lists a car only once it is parked
+Date: 2026-11-10
+Files: Scripts/UI/{TicketRow,TicketBoard,GameUi}.cs, Scripts/UI/Hud/{KeyBoardRows,KeyBoardPainter}.cs, Tests/EditMode/UI/TicketBoardTests.cs
+Why: human request (design.md A5 key board): a car in the arrival queue or being driven no longer shows on the key board; it appears when CarParked (spot) or CarEnteredStation (wash or charger) fires and stays until the ticket closes (delivered). TicketBoard keeps a Placed flag per row (also for a car parked before its ticket opens); the pure KeyBoardRows rule filters the rows for the key board only, other painters still see every ticket.
+Tests: TicketBoardTests (not listed on arrival, listed when parked, stays through leaving the spot and the pickup, gone on close, station parking, parked before ticket).

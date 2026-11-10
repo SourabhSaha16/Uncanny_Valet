@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// The key board panel at the bottom left: one row per open ticket with its coloured key tag (the same colour
+    /// The key board panel at the bottom left: one row per parked car (in a spot or station) with its coloured key tag (the same colour
     /// as the car body), the licence plate, the spot number and a patience bar. Most urgent tickets first.
     /// </summary>
     public sealed class KeyBoardPainter
