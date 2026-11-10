@@ -85,5 +85,11 @@ Later content:
 
 ## G. Housekeeping
 
+- [ ] G3. Split `Tests/EditMode/UI/TicketBoardTests.cs` (314 lines, limit 200). Owner: integration.
+- [ ] G4. Remove unused `TicketRow.ShowsInfoBox`, `ShowsDirtMeter`, `ShowsChargeMeter`, `ChargeShown`, `Dirt01` and their tests. Owner: integration.
+- [ ] G5. Check `CarAutoDrive._finalRotation` after a queue retarget (stays the first slot's rotation). Owner: cars.
+- [ ] G6. Find the real cause of the failed arrival spawn (pacer now retries); consider a "spawner blocked" hold reason in the F3 overlay.
+- [ ] G7. Play-test: slot tint colours, droplet/plug icon beside the plate, camera 0.78, pedestrian bounce feel and boing loudness, walkers vs cars and valet.
+
 - [ ] G1. Optional: install the `mattpocock-skills` plugin (`claude plugin install mattpocock-skills@claude-plugins-official`), then decide which skills clash with `CLAUDE.md`.
 - [ ] G2. Update `docs/status.md` with a short line pointing to this file.

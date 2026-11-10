@@ -23,6 +23,17 @@ MonoBehaviour:
   _openingProgressMax: 0.7
   _patronPoolSize: 6
   _patronSpeed: 1.7
+  _colliderRadius: 0.22
+  _lookAhead: 0.35
+  _waitSeconds: {x: 1.5, y: 3}
+  _passSeconds: 1.5
+  _arrivalRadius: 1.4
+  _standingSolid: 0
+  _bounceDistance: 0.2
+  _bounceSeconds: 0.25
+  _bounceCooldown: 0.6
+  _bounceMinSpeed: 0.4
+  _bounceFullSpeed: 5
   _columns: 24
   _framesPerGroup: 6
   _framesPerSecond: 10

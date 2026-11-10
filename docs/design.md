@@ -140,7 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (772 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (811 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -165,6 +165,8 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
 co-op input. Known gaps: only 14 civilian car sprites exist in the pack (variety comes from tint and mirroring);
 the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor is a placeholder box.
+
+| 2026-11-10 | Play-test round: CAR SLOTS Washed and Charged are short-lived flags set on `CarCleaned` / `CarFullyCharged` and cleared on `CarParked` (a washed car now reads Parked once parked; a full EV never charged here reads Parked); the car-arrived sound plays on `CarArrived` (car stopped in its queue slot), not at spawn; camera fit tightness 0.87 to 0.78 (play area never cropped); the big world box over cars is gone: the wash slot and charging bays light up while serving (aqua for wash, lime for charge, brighter with progress, flash then 1.5 s fade when done) and a small droplet or plug icon sits beside the plate; pedestrians are solid (kinematic body, circle collider on physics layer Pedestrian, wait 1.5-3 s then walk through for 1.5 s, never freezes a route, standing patrons not solid), a car or the valet bumping one gives a tiny rubber bounce (0.2 units, 0.25 s) and a quiet boing (`PedestrianBumped`, rate-limited); 811 tests |
 
 ## A10. Patron Director
 

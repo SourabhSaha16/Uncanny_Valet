@@ -507,3 +507,9 @@ Date: 2026-11-10
 Files: merge of worktree-agent-a39105b32d5892f2e, docs/design.md, docs/pending_tasks.md, Assets/_Project/Scenes/Bootstrap.unity (regenerated), site/
 Why: the human's notes: arrivals stopped late in a shift, and queue cars parked behind an empty slot (docs/changelogs/patrons.md). Approved the new Core contract IQueueSlotSource and the CarAutoDrive snap-to-final-pose edit.
 Tests: 772 of 772 EditMode; browser smoke test with no console errors. Not played; the real cause of the failed spawn is unconfirmed.
+
+## lead: merge arrival-sfx, status-camera, slot-tint, ped-collision; update docs; rebuild site
+Date: 2026-11-10
+Files: merges of worktree-agent-a7bab8b9a3bcd29a6, -af222a4dbf298956c, -af78fe44b6f7ba760, -a3350361302357c08; docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity and PedestrianConfig.asset, site/
+Why: the human's play-test notes (status after wash, arrival sound on stop, camera zoom, big box replaced by slot tint, pedestrian collision with bounce and sound). Approved new Core files PhysicsLayers and PedestrianEvents and the ArrivalSlotScanner layer filter.
+Tests: 811 of 811 EditMode; browser smoke test with no console errors. Not played.
