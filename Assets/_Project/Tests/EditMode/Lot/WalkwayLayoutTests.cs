@@ -59,6 +59,31 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void TheCrossingBetweenTheBayColumns_NeverEntersTheStationsOrBays()
+        {
+            var geo = new LotGeometry(_config);
+            var crossing = _layout.Crossings[1];
+            var route = _layout.Routes[1];
+            Assert.AreEqual(crossing.center.x, route[0].x, 1e-4f);
+            foreach (var point in route)
+            {
+                Assert.LessOrEqual(point.y, geo.ChargingSpots[0].yMin + 1e-4f, "stays below the top row of bays");
+                Assert.GreaterOrEqual(point.y, geo.ChargingSpots[1].yMax - 1e-4f, "stays above the bottom row of bays");
+            }
+            Assert.AreEqual(0f, _style.GapEntry, "walkers do not walk into the gap beside the stations");
+        }
+
+        [Test]
+        public void TheStripBesideTheCurb_IsClearOfEveryStation()
+        {
+            var geo = new LotGeometry(_config);
+            var stripX = WalkwayLayout.StripX(_config);
+            foreach (var bay in geo.ChargingSpots) Assert.Less(stripX, bay.xMin);
+            Assert.Less(stripX, geo.Wash.xMin);
+            Assert.Greater(stripX, geo.Curb.xMax);
+        }
+
+        [Test]
         public void RoadRoutesCrossAtTheRoadCrosswalk()
         {
             var crossX = _config.CurbPosition.x + 5f;

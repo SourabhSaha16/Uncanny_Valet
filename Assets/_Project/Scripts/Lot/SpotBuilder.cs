@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -10,9 +11,6 @@ namespace UncannyValet.Lot
         private static readonly Color ChargeLine = new Color(0.30f, 0.60f, 1f);
         private static readonly Color ChargePad = new Color(0.14f, 0.24f, 0.46f);
         private const float LineWidth = 0.1f;
-        private const float PlugPixel = 0.07f;
-        private const float PlugYOffsetShare = -0.33f;
-        private const int PlugOrder = -4;
 
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
         /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
@@ -26,7 +24,9 @@ namespace UncannyValet.Lot
             rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
                 charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
-            if (charging) PlugDecal.Build(rects, root.transform, new Vector2(0f, c.SpotSize.y * PlugYOffsetShare), PlugPixel, PlugOrder);
+            if (charging)
+                PixelDecal.Build(rects, root.transform, new Vector2(0f, c.SpotSize.y * PixelDecal.YOffsetShare),
+                    PlugIconArt.Rows, PlugIconArt.TryColor);
             root.AddComponent<BoxCollider2D>();
             var spot = root.AddComponent<ParkingSpot>();
             spot.Init(id, c, occupancy, charging);

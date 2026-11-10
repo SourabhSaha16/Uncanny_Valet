@@ -25,8 +25,8 @@ namespace UncannyValet.Tests.Lot
             var c = ScriptableObject.CreateInstance<LotConfig>();
             foreach (var text in new[] { "CHARGE", "WASH" })
             {
-                var size = LabelFit.Size(text.Length, c.StationSize.x, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
-                Assert.Less(text.Length * c.LabelCharWidth * size, c.StationSize.x);
+                var size = LabelFit.Size(text.Length, c.SpotSize.x, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
+                Assert.Less(text.Length * c.LabelCharWidth * size, c.SpotSize.x);
             }
         }
     }

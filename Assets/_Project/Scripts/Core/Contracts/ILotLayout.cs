@@ -19,6 +19,12 @@ namespace UncannyValet.Core.Contracts
 
         IReadOnlyList<int> SpotIds { get; }
 
+        /// <summary>Regular numbered spots the lot has (ids 1..n), open or not; the stations are not counted.</summary>
+        int RegularSpotCount { get; }
+
+        /// <summary>EV charging bays the lot has (ids n + 1..), open or not.</summary>
+        int ChargingSpotCount { get; }
+
         bool IsSpotFree(int spotId);
 
         /// <summary>True for the charging spots (specialised spots only open on charging nights).</summary>

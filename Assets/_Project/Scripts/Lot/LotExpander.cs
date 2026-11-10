@@ -18,7 +18,6 @@ namespace UncannyValet.Lot
         private ParkingSpot[] _spots = new ParkingSpot[0];
         private LotFrame _frame;
         private IEventBus _bus;
-        private bool _washOpen;
 
         /// <summary>Ids of the spots that are open now (regular and charging), ascending.</summary>
         public IReadOnlyList<int> OpenIds => _openIds;
@@ -64,7 +63,6 @@ namespace UncannyValet.Lot
         {
             _occupancy.SetActiveSpots(e.Plan.ActiveSpots);
             _occupancy.SetChargingOpen(e.Plan.ChargingOpen);
-            _washOpen = e.Plan.WashOpen;
             Refresh();
         }
 
@@ -82,7 +80,7 @@ namespace UncannyValet.Lot
                 if (!open) _spots[i].ReleaseAll();
                 _spots[i].gameObject.SetActive(open);
             }
-            Frame = LotFrameRule.Frame(_geometry, _occupancy, _washOpen);
+            Frame = LotFrameRule.Frame(_geometry, _occupancy);
             _frame.Apply(Frame);
         }
     }

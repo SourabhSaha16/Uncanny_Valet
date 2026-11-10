@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UnityEngine;
 
@@ -19,6 +20,8 @@ namespace UncannyValet.Lot
             rects.Make(root.transform, "Fill", Vector2.zero, area.size - Vector2.one * 0.3f, WashFill, -6);
             var size = LabelFit.Size(WashText.Length, area.width, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
             SpotLabel.Create(root.transform, WashText, Vector2.zero, c, -5, size);
+            PixelDecal.Build(rects, root.transform, new Vector2(0f, area.height * PixelDecal.YOffsetShare),
+                WashIconArt.Rows, WashIconArt.TryColor);
             root.AddComponent<BoxCollider2D>();
             var zone = root.AddComponent<StationZone>();
             zone.Init(StationKind.Wash, c);
@@ -34,7 +37,7 @@ namespace UncannyValet.Lot
             go.transform.SetParent(parent, false);
             go.AddComponent<BoxCollider2D>();
             var blocker = go.AddComponent<StationBlocker>();
-            blocker.Init(StationKind.Wash, c.StationSize, c.RefusalRepeatSeconds);
+            blocker.Init(StationKind.Wash, c.SpotSize, c.RefusalRepeatSeconds);
             return blocker;
         }
     }

@@ -23,7 +23,7 @@ namespace UncannyValet.Tests.Integration
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 12, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 9, director, profile);
                 foreach (var info in TuningCatalog.All)
                     Assert.IsTrue(tuning.TryGet(info.Key, out _), info.Key + " was not seeded");
             }
@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.Integration
             var tips = ScriptableObject.CreateInstance<TipConfig>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 12, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 9, director, profile);
                 Assert.AreEqual(1f, tuning.Get(TuningKey.DirEnabled));
                 Assert.AreEqual(14f, tuning.Get(TuningKey.DirArrivalBudget));
                 Assert.AreEqual(2f, tuning.Get(TuningKey.DirBudgetSlack));
@@ -75,9 +75,9 @@ namespace UncannyValet.Tests.Integration
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 12, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, tips, 9, director, profile);
                 Assert.AreEqual(240f, tuning.Get(TuningKey.ShiftLengthSeconds));
-                Assert.AreEqual(12f, tuning.Get(TuningKey.PlanActiveSpots), "a plan of 0 opens every spot");
+                Assert.AreEqual(9f, tuning.Get(TuningKey.PlanActiveSpots), "a plan of 0 opens every spot");
                 Assert.AreEqual(15f, patrons.ArrivalIntervalRange.x);
                 Assert.AreEqual(25f, patrons.ArrivalIntervalRange.y);
             }

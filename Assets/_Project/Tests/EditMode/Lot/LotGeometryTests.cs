@@ -17,6 +17,9 @@ namespace UncannyValet.Tests.Lot
             _geo = new LotGeometry(_config);
         }
 
+        [TearDown]
+        public void TearDown() => Object.DestroyImmediate(_config);
+
         private Dictionary<string, Rect> AllRects()
         {
             var all = new Dictionary<string, Rect> { ["curb"] = _geo.Curb };
@@ -28,16 +31,36 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void SpotIds_RunColumnByColumnFromTheCurb()
+        public void TheGridHasNineRegularSpotsTwoChargingBaysAndTheWash()
+        {
+            Assert.AreEqual(9, _geo.Spots.Length);
+            Assert.AreEqual(2, _geo.ChargingSpots.Length);
+            Assert.AreEqual(_config.Rows * _config.SpotsPerRow, _geo.Spots.Length + _geo.ChargingSpots.Length + 1);
+        }
+
+        [Test]
+        public void StationsFillTheFirstGridCells_ChargingBaysInTheCurbColumn_WashTopOfTheNext()
+        {
+            Assert.AreEqual(_geo.ChargingSpots[0].x, _geo.ChargingSpots[1].x, 0.001f, "both bays share the column nearest the curb");
+            Assert.Greater(_geo.ChargingSpots[0].y, _geo.ChargingSpots[1].y, "top then bottom");
+            Assert.Greater(_geo.Wash.x, _geo.ChargingSpots[0].x, "the wash is in the second column");
+            Assert.AreEqual(_geo.ChargingSpots[0].y, _geo.Wash.y, 0.001f, "the top row");
+            foreach (var spot in _geo.ChargingSpots) Assert.AreEqual(_config.SpotSize, spot.size);
+            Assert.AreEqual(_config.SpotSize, _geo.Wash.size);
+        }
+
+        [Test]
+        public void RegularSpotIds_RunColumnByColumnFromTheCurb_AfterTheStations()
         {
             var rows = _config.Rows;
+            Assert.Greater(_geo.Spots[0].x, _geo.ChargingSpots[0].x, "spot 1 is not in the station column");
+            Assert.AreEqual(_geo.Wash.x, _geo.Spots[0].x, 0.001f, "spot 1 is the free cell under the wash");
+            Assert.Less(_geo.Spots[0].y, _geo.Wash.y);
             for (var i = 1; i < _geo.Spots.Length; i++)
-            {
-                var prev = _geo.Spots[i - 1];
-                var cur = _geo.Spots[i];
-                Assert.GreaterOrEqual(cur.x, prev.x - 0.001f, "x never decreases from one id to the next");
-                if (i % rows != 0) Assert.AreEqual(prev.x, cur.x, 0.001f, "same column within a group of rows");
-            }
+                Assert.GreaterOrEqual(_geo.Spots[i].x, _geo.Spots[i - 1].x - 0.001f, "x never decreases from one id to the next");
+            Assert.AreEqual(_geo.Spots[1].x, _geo.Spots[2].x, 0.001f);
+            Assert.AreNotEqual(_geo.Spots[1].x, _geo.Spots[0].x);
+            Assert.AreEqual(rows, 2, "this test assumes the default two rows");
         }
 
         [Test]
@@ -67,31 +90,34 @@ namespace UncannyValet.Tests.Lot
         {
             Assert.AreEqual(_config.ChargingBays, _geo.ChargingSpots.Length);
             Assert.AreEqual(_geo.Spots.Length + 1, _geo.FirstChargingId);
+            Assert.AreEqual(10, _geo.FirstChargingId);
         }
 
         [Test]
-        public void ChargingSpotsAndWash_LeaveAWalkwayToTheSpots()
+        public void Stations_LeaveTheWalkwayBesideTheCurbClear()
         {
             foreach (var spot in _geo.ChargingSpots)
-                Assert.GreaterOrEqual(_geo.Spots[0].xMin - spot.xMax, 2f);
-            Assert.GreaterOrEqual(_geo.Spots[0].xMin - _geo.Wash.xMax, 2f);
+                Assert.GreaterOrEqual(spot.xMin - _geo.Curb.xMax, 2f);
+            Assert.GreaterOrEqual(_geo.Wash.xMin - _geo.Curb.xMax, 2f);
         }
 
         [Test]
-        public void ColumnsFor_RoundsUpAndClamps()
+        public void ColumnsFor_CountsTheStationCellsFirst_RoundsUpAndClamps()
         {
-            var rows = _config.Rows;
-            Assert.AreEqual(1, _geo.ColumnsFor(0));
-            Assert.AreEqual(1, _geo.ColumnsFor(rows));
-            Assert.AreEqual(2, _geo.ColumnsFor(rows + 1));
+            Assert.AreEqual(2, _geo.ColumnsFor(0), "the stations alone fill the first two columns");
+            Assert.AreEqual(2, _geo.ColumnsFor(1));
+            Assert.AreEqual(3, _geo.ColumnsFor(2));
+            Assert.AreEqual(3, _geo.ColumnsFor(3));
+            Assert.AreEqual(4, _geo.ColumnsFor(4));
+            Assert.AreEqual(_config.SpotsPerRow, _geo.ColumnsFor(_geo.Spots.Length));
             Assert.AreEqual(_config.SpotsPerRow, _geo.ColumnsFor(int.MaxValue / 2));
         }
 
         [Test]
         public void Frame_GrowsToTheRightOnlyWithMoreColumns()
         {
-            var one = _geo.FrameFor(1, false, false);
-            var four = _geo.FrameFor(4, false, false);
+            var one = _geo.FrameFor(1);
+            var four = _geo.FrameFor(4);
             Assert.AreEqual(one.xMin, four.xMin, 0.001f);
             Assert.AreEqual(one.yMin, four.yMin, 0.001f);
             Assert.AreEqual(one.yMax, four.yMax, 0.001f);
@@ -99,22 +125,27 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void Frame_ContainsEveryOpenSpot_AndTheMaxFrameIsTheBounds()
+        public void Frame_ContainsEveryRegularSpotItShows_AndTheMaxFrameIsTheBounds()
         {
-            var cols = _config.SpotsPerRow;
-            Assert.AreEqual(_geo.Bounds, _geo.FrameFor(cols, true, true));
-            var frame = _geo.FrameFor(2, true, false);
-            var lastOpen = _geo.Spots[2 * _config.Rows - 1];
-            Assert.LessOrEqual(lastOpen.xMax, frame.xMax);
+            Assert.AreEqual(_geo.Bounds, _geo.FrameFor(_config.SpotsPerRow));
+            var frame = _geo.FrameFor(_geo.ColumnsFor(3));
+            Assert.IsTrue(Contains(frame, _geo.Spots[2]));
             foreach (var spot in _geo.ChargingSpots) Assert.IsTrue(Contains(frame, spot));
+            Assert.IsTrue(Contains(frame, _geo.Wash));
         }
 
         [Test]
-        public void EightSpotsAndChargingFrame_StaysInsideTheWiderLot()
+        public void StationsNoLongerStretchTheFrameUpward()
         {
-            var frame = _geo.FrameFor(_geo.ColumnsFor(8), true, true);
+            var spotsHalf = (_config.Rows * _config.SpotSize.y + (_config.Rows - 1) * _config.AisleWidth) * 0.5f;
+            Assert.AreEqual(spotsHalf + _config.Margin, _geo.Bounds.yMax, 0.001f, "the top edge is the top spot row plus the margin");
+        }
+
+        [Test]
+        public void NineSpotsFrame_StaysInsideTheWiderLot()
+        {
+            var frame = _geo.FrameFor(_geo.ColumnsFor(9));
             Assert.LessOrEqual(frame.width, _geo.Bounds.width);
-            Assert.Less(frame.width, 26f, "8 spots + 2 charging fit about 26 units wide");
         }
 
         private static bool Contains(Rect outer, Rect inner) =>

@@ -13,6 +13,8 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0f)] private float _barGap = 0.45f;
         [SerializeField, Min(0f), Tooltip("How far a crossing route walks past the aisle edge into the bays or the open strip.")]
         private float _bayEntry = 1.5f;
+        [SerializeField, Min(0f), Tooltip("How far the crossing between the first bay columns walks past the aisle edge. 0 keeps walkers out of the gap beside the EV bays and the wash slot, which is narrower than a person.")]
+        private float _gapEntry;
         [SerializeField, Min(1f), Tooltip("How far the road routes walk along the sidewalks either side of the road crossing.")]
         private float _roadReach = 7f;
         [SerializeField, Min(0f), Tooltip("Margin kept at both ends of the north sidewalk route.")]
@@ -59,6 +61,7 @@ namespace UncannyValet.Lot
         public float BarWidth => _barWidth;
         public float BarGap => _barGap;
         public float BayEntry => _bayEntry;
+        public float GapEntry => _gapEntry;
         public float RoadReach => _roadReach;
         public float NorthMargin => _northMargin;
         public float ArrowLength => _arrowLength;

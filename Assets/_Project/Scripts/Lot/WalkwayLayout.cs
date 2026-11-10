@@ -48,16 +48,20 @@ namespace UncannyValet.Lot
             {
                 var yTop = top - (r + 1) * c.SpotSize.y - r * c.AisleWidth;
                 var yBottom = yTop - c.AisleWidth;
-                foreach (var x in new[] { stripX, bayX })
-                {
-                    crossings.Add(new Rect(x - s.CrossingWidth * 0.5f, yBottom, s.CrossingWidth, c.AisleWidth));
-                    routes.Add(new[] { new Vector2(x, yTop + s.BayEntry), new Vector2(x, yBottom - s.BayEntry) });
-                }
+                AddCrossing(c, s, stripX, yTop, yBottom, s.BayEntry, crossings, routes);
+                AddCrossing(c, s, bayX, yTop, yBottom, s.GapEntry, crossings, routes);
                 var mid = (yTop + yBottom) * 0.5f;
                 var half = s.ArrowLength * 0.5f;
                 arrows.Add(new PaintedArrow(new Vector2(arrowX - half, mid + s.LaneInset), new Vector2(arrowX + half, mid + s.LaneInset)));
                 arrows.Add(new PaintedArrow(new Vector2(arrowX + half, mid - s.LaneInset), new Vector2(arrowX - half, mid - s.LaneInset)));
             }
+        }
+
+        private static void AddCrossing(LotConfig c, WalkwayStyle s, float x, float yTop, float yBottom, float entry,
+            List<Rect> crossings, List<Vector2[]> routes)
+        {
+            crossings.Add(new Rect(x - s.CrossingWidth * 0.5f, yBottom, s.CrossingWidth, c.AisleWidth));
+            routes.Add(new[] { new Vector2(x, yTop + entry), new Vector2(x, yBottom - entry) });
         }
 
         private static void AddRoad(LotConfig c, DecorLayout d, WalkwayStyle s, float crossOffset, List<Vector2[]> routes)
