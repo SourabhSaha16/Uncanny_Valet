@@ -13,6 +13,8 @@ namespace UncannyValet.Traffic
         private readonly RouteRunner _route = new RouteRunner();
         private LaneState _lane;
         private TripPhase _phase;
+        private int _slot;
+        private float _sinceAsk;
 
         public EntryTrip(TripContext context)
         {
@@ -29,6 +31,8 @@ namespace UncannyValet.Traffic
         public void Begin(int id, int slot)
         {
             Id = id;
+            _slot = slot;
+            _sinceAsk = 0f;
             _ctx.Road.QueueEntryRoute(slot, _ctx.Scratch);
             _route.Begin(_ctx.Scratch);
             _lane = default;
@@ -38,6 +42,7 @@ namespace UncannyValet.Traffic
         /// <inheritdoc />
         public void Step(float dt, out TripPose pose)
         {
+            Reevaluate(dt);
             if (_phase == TripPhase.Waiting) pose = StepWaiting();
             else if (_phase == TripPhase.OnLane) pose = StepLane(dt);
             else pose = StepRoute(dt);
@@ -50,6 +55,19 @@ namespace UncannyValet.Traffic
             if (_lane.Id != 0) _ctx.Occupancy.Remove(_lane.Id);
             _lane = default;
             Id = TripId.None;
+        }
+
+        // While driving in, ask now and then whether a slot nearer the curb has freed up, and head for it instead.
+        private void Reevaluate(float dt)
+        {
+            _sinceAsk += dt;
+            if (_sinceAsk < _ctx.Tuning.RetargetSeconds || !_ctx.TryGetSlots(out var source)) return;
+            _sinceAsk = 0f;
+            int slot = source.Reevaluate(_slot);
+            if (slot >= _slot) return;
+            _slot = slot;
+            _ctx.Road.QueueEntryRoute(slot, _ctx.Scratch);
+            _route.Retarget(_ctx.Scratch);
         }
 
         private TripPose StepWaiting()

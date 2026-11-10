@@ -16,6 +16,12 @@ namespace UncannyValet.Patrons
         public float StayMax => Read(TuningKey.StayMaxMinutes, _config.StayRange.y);
         public float GapMin => Read(TuningKey.ArrivalGapMinMinutes, _config.ArrivalIntervalRange.x);
         public float GapMax => Read(TuningKey.ArrivalGapMaxMinutes, _config.ArrivalIntervalRange.y);
+        public float LateStayLead => _config.LateStayLeadMinutes;
+        public float LateStayFloor => _config.LateStayFloorMinutes;
+
+        /// <summary>Game minutes that pass per real second on the shift clock.</summary>
+        public float MinutesPerSecond => Read(TuningKey.GameMinutesPerSecond, 1f);
+
         public float ImpatientChance => Read(TuningKey.ImpatientChance, _config.ImpatientChance);
 
         /// <summary>Charge and wash numbers for tickets created from now on.</summary>
