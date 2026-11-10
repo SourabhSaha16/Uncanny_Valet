@@ -17,7 +17,7 @@ namespace UncannyValet.Lot
             root.transform.SetParent(parent, false);
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, area.size, WashLine, -7);
-            rects.Make(root.transform, "Fill", Vector2.zero, area.size - Vector2.one * 0.3f, WashFill, -6);
+            var fill = rects.Make(root.transform, "Fill", Vector2.zero, area.size - Vector2.one * 0.3f, WashFill, -6);
             var size = LabelFit.Size(WashText.Length, area.width, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
             SpotLabel.Create(root.transform, WashText, Vector2.zero, c, -5, size);
             PixelDecal.Build(rects, root.transform, new Vector2(0f, area.height * PixelDecal.YOffsetShare),
@@ -25,6 +25,7 @@ namespace UncannyValet.Lot
             root.AddComponent<BoxCollider2D>();
             var zone = root.AddComponent<StationZone>();
             zone.Init(StationKind.Wash, c);
+            root.AddComponent<SlotTint>().Init(zone, StationKind.Wash, fill.GetComponent<SpriteRenderer>(), c.WashLitColor, c);
             zone.UseBlocker(BuildBlocker(root.transform, c));
             root.SetActive(false);
             return zone;

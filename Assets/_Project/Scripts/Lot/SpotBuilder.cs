@@ -1,4 +1,5 @@
 using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -21,7 +22,7 @@ namespace UncannyValet.Lot
             root.transform.SetParent(parent, false);
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, c.SpotSize, charging ? ChargeLine : Line, -7);
-            rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
+            var pad = rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
                 charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
             if (charging)
@@ -30,6 +31,8 @@ namespace UncannyValet.Lot
             root.AddComponent<BoxCollider2D>();
             var spot = root.AddComponent<ParkingSpot>();
             spot.Init(id, c, occupancy, charging);
+            if (charging)
+                root.AddComponent<SlotTint>().Init(spot, StationKind.Charging, pad.GetComponent<SpriteRenderer>(), c.ChargeLitColor, c);
             root.SetActive(false);
             return spot;
         }

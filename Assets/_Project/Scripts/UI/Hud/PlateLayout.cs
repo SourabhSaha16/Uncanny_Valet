@@ -39,5 +39,14 @@ namespace UncannyValet.UI.Hud
         /// <summary>Plate height in virtual pixels.</summary>
         public static int Height => PixelGlyphs.Height + 2 * (Border + PadY);
 
+        /// <summary>Pixels between the plate's right edge and its service icon.</summary>
+        public const int IconGap = 2;
+
+        /// <summary>X of the service icon: just right of a plate at <paramref name="plateX"/>.</summary>
+        public static int IconX(int plateX, int plateWidth) => plateX + plateWidth + IconGap;
+
+        /// <summary>Y of a service icon of the given height, centred on a plate at <paramref name="plateY"/>.</summary>
+        public static int IconY(int plateY, int iconHeight) => plateY + (Height - iconHeight) / 2;
+
     }
 }

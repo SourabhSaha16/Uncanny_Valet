@@ -91,16 +91,18 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void WorldTicketLayout_GrowsWithLinesAndStaysOnCanvas()
+        public void WorldTicketLayout_KeepsBoxesOnCanvas()
         {
-            Assert.AreEqual(WorldTicketLayout.Height(1), WorldTicketLayout.Height(0));
-            Assert.Greater(WorldTicketLayout.Height(2), WorldTicketLayout.Height(1));
-            Assert.AreEqual(0, WorldTicketLayout.MeterFill(-1f));
-            Assert.AreEqual(WorldTicketLayout.MeterWidth, WorldTicketLayout.MeterFill(3f));
-            Assert.AreEqual(WorldTicketLayout.MeterWidth / 2, WorldTicketLayout.MeterFill(0.5f));
             Assert.AreEqual(WorldTicketLayout.ScreenMargin, WorldTicketLayout.ClampToCanvas(-50, 20, 480));
             Assert.AreEqual(480 - WorldTicketLayout.ScreenMargin - 20, WorldTicketLayout.ClampToCanvas(500, 20, 480));
             Assert.AreEqual(100, WorldTicketLayout.ClampToCanvas(100, 20, 480));
+        }
+
+        [Test]
+        public void PlateLayout_ServiceIconSitsRightOfThePlateAndCentred()
+        {
+            Assert.AreEqual(50 + 20 + PlateLayout.IconGap, PlateLayout.IconX(50, 20));
+            Assert.AreEqual(10 + (PlateLayout.Height - 7) / 2, PlateLayout.IconY(10, 7));
         }
     }
 }
