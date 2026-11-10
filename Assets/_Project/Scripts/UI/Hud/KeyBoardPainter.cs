@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.UI.Kit;
+using UncannyValet.UI.Status;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
     /// The key board panel at the bottom left: one row per parked car (in a spot or station) with its coloured key tag (the same colour
-    /// as the car body), the licence plate, the spot number and a patience bar. Most urgent tickets first.
+    /// as the car body), the licence plate, the spot number and a status word (Parked, Washing, Pick Up ...). Most urgent tickets first.
     /// </summary>
     public sealed class KeyBoardPainter
     {
@@ -19,15 +20,14 @@ namespace UncannyValet.UI.Hud
         private const int MaxRows = 5;
         private const int PlateOffset = 13;
         private const int SpotOffset = 42;
-        private const int BarOffset = 66;
-        private const int BarWidth = 30;
+        private const int StatusOffset = 56;
         private const int BellOffset = 100;
-        private const int BarHeight = 5;
         private const float LitGlow = 0.4f;
         private const float DimGlow = 0.12f;
 
         private readonly PixelCanvas _canvas;
         private readonly PlatePainter _plates;
+        private readonly CarStatusResolver _status = CarStatusResolver.CreateDefault();
 
         public KeyBoardPainter(PixelCanvas canvas)
         {
@@ -60,8 +60,8 @@ namespace UncannyValet.UI.Hud
             if (PickupMark.IsRequested(row)) DrawPickupMark(row, x, y, time);
             _canvas.Icon(PixelIcon.KeyTag, x + 2, y + 2, 1, PixelPalette.TagColor(row.Tag));
             if (row.HasPlate) _plates.Draw(row.Plate, x + PlateOffset, y + 1, PixelPalette.Ink);
-            DrawSpot(row.Spot, x + SpotOffset, y + 3);
-            DrawBar(row, x + BarOffset, y + 4);
+            if (row.Spot > 0) DrawSpot(row.Spot, x + SpotOffset, y + 3);
+            DrawStatus(row, x + StatusOffset, y + 3);
         }
 
         // Cyan row highlight and a bell, both flashing with the plate's urgency flash.
@@ -74,31 +74,18 @@ namespace UncannyValet.UI.Hud
             if (lit) _canvas.Icon(PixelIcon.Bell, x + BellOffset, y + 2, 1, Color.white);
         }
 
-        private void DrawSpot(int spot, int x, int y)
+        // The status text replaces the old timer bar; a label wider than the room left in the row is shortened.
+        private void DrawStatus(TicketRow row, int x, int y)
         {
-            if (spot <= 0)
-            {
-                _canvas.Char('-', x + PixelTextLayout.Advance, y, PixelPalette.Grey, 1);
-                return;
-            }
-            _canvas.Char('#', x, y, PixelPalette.Cream, 1);
-            _canvas.Text(SmallNumbers.Get(spot), x + PixelTextLayout.Advance, y, PixelPalette.Cream);
+            var status = _status.Resolve(row);
+            var label = CarStatusTable.LabelFitting(status, Width - Border * 2 - StatusOffset);
+            _canvas.Text(label, x, y, CarStatusTable.ColorOf(status));
         }
 
-        // The patience bar belongs to the pickup timer, so there is no bar until a pickup is requested.
-        private void DrawBar(TicketRow row, int x, int y)
+        private void DrawSpot(int spot, int x, int y)
         {
-            if (row.State != TicketRowState.PickupRequested) return;
-            _canvas.Fill(x - 1, y - 1, BarWidth + 2, BarHeight + 2, PixelPalette.Track);
-            var calm = PixelPalette.Cyan;
-            if (!row.HasTimer && !row.Expired)
-            {
-                _canvas.Fill(x, y, BarWidth, BarHeight, calm);
-                return;
-            }
-            var elapsed = row.Expired ? 1f : row.Elapsed01;
-            var color = AlarmColors.For(Alarm.ForPatience(elapsed, row.Expired), calm);
-            _canvas.Fill(x, y, row.Expired ? BarWidth : Alarm.PatienceFill(elapsed, BarWidth), BarHeight, color);
+            _canvas.Char('#', x, y, PixelPalette.Cream, 1);
+            _canvas.Text(SmallNumbers.Get(spot), x + PixelTextLayout.Advance, y, PixelPalette.Cream);
         }
     }
 }

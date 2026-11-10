@@ -25,6 +25,7 @@ namespace UncannyValet.UI
             _bus.Subscribe<CarPlateAssigned>(OnPlate);
             _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<CarEnteredStation>(OnEnteredStation);
+            _bus.Subscribe<CarLeftStation>(OnLeftStation);
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Subscribe<PickupRequested>(OnPickup);
             _bus.Subscribe<TicketTimerChanged>(OnTimerChanged);
@@ -46,6 +47,7 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<CarPlateAssigned>(OnPlate);
             _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<CarEnteredStation>(OnEnteredStation);
+            _bus.Unsubscribe<CarLeftStation>(OnLeftStation);
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
             _bus.Unsubscribe<TicketTimerChanged>(OnTimerChanged);
@@ -148,7 +150,17 @@ namespace UncannyValet.UI
             Version++;
             _placed.Add(e.Car.Value);
             var row = FindByCar(e.Car.Value);
-            if (row != null) row.Placed = true;
+            if (row == null) return;
+            row.Placed = true;
+            row.HasStation = true;
+            row.Station = e.Station;
+        }
+
+        private void OnLeftStation(CarLeftStation e)
+        {
+            Version++;
+            var row = FindByCar(e.Car.Value);
+            if (row != null && row.InStation(e.Station)) row.HasStation = false;
         }
 
         private void OnLeftSpot(CarLeftSpot e)

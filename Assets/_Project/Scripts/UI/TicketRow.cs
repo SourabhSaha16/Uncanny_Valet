@@ -24,6 +24,10 @@ namespace UncannyValet.UI
         /// <summary>True once the car was parked in a spot or a station; the key board lists a car from then on until it is delivered.</summary>
         public bool Placed;
 
+        /// <summary>True while the car sits in a station (the wash slot or a charger); <see cref="Station"/> says which.</summary>
+        public bool HasStation;
+        public StationKind Station;
+
         /// <summary>True from the moment the car has finished driving in until it leaves.</summary>
         public bool Arrived;
 
@@ -41,6 +45,9 @@ namespace UncannyValet.UI
 
         /// <summary>Charge at or above this counts as full.</summary>
         public const float FullCharge = 0.999f;
+
+        /// <summary>True while the car is in the given kind of station.</summary>
+        public bool InStation(StationKind kind) => HasStation && Station == kind;
 
         /// <summary>True once the plate text is known.</summary>
         public bool HasPlate => Plate.Length > 0;
