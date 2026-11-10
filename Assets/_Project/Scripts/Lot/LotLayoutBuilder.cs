@@ -58,8 +58,9 @@ namespace UncannyValet.Lot
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap);
             BuildDiner(g);
             BuildCurb(rects);
-            LotQueueArt.Build(transform, rects, g.QueueCars, _art != null ? _art.Walkway : new WalkwayStyle(),
-                _art != null ? _art.CrosswalkColor : Color.white);
+            var style = _art != null ? _art.Walkway : new WalkwayStyle();
+            LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
+            LotRouteArrows.Build(transform, rects, _road, transform.position, style);
             var wash = StationBuilder.BuildWash(rects, transform, c, g.Wash);
             gameObject.AddComponent<StationSwitch>().Init(wash);
 

@@ -35,3 +35,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{DecorLayout,LotDecor,LotArtConfig,SpriteTiler}.cs, Editor/Art/LotArtBuilder.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/DecorLayoutTests.cs
 Why: human play test (design.md A5): the ground outside the lot (left, right, top, around the bus stop strip and the road) is now darker asphalt (LotArtConfig.OutsideColor, 0.36) instead of grass. The road keeps the lot asphalt (0.53) with its dashed lane line and edge lines, so it reads as a road and the lot as a lot. Trees and grass tufts are removed (kept clean); the hedge walls stay.
 Tests: DecorLayoutTests: outside ground covers lot, road and far sidewalk and reaches past the walls; the tree and tuft tests are removed with the code.
+
+## lot-v3: painted arrows along the car exit route
+Date: 2026-11-10
+Files: Scripts/Lot/{RouteMark,RouteMarks,LotRouteArrows,LotCurbArt,LotLayoutBuilder,WalkwayStyle}.cs (LotArrowMarks removed), Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/RouteMarksTests.cs
+Why: human play test (design.md A5): the curb's two down arrows are gone. Small outlined arrows are painted every 2.4 units along RoadLayout.CurbExitRoute (leaving the curb zone, down the corridor, round the turn east onto the road), each pointing along the direction of travel there, so the valet can keep clear of cars driving off. Spacing, size and start distance are WalkwayStyle fields; the mark placement is a pure tested class.
+Tests: RouteMarksTests added (spacing, carry round a corner, no spacing, the real curb exit route runs down the corridor and turns east).

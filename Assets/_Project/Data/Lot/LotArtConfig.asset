@@ -52,11 +52,6 @@ MonoBehaviour:
     _zebraGap: 0.3
     _zebraMargin: 0.05
     _arrowHeadDegrees: 35
-    _curbArrowLength: 1.6
-    _curbArrowSideShare: 0.3
-    _curbChevronGap: 0.15
-    _markThickness: 0.16
-    _markHeadLength: 0.45
     _markOutline: 0.05
     _slotLine: 0.1
     _slotDash: 0.4

@@ -16,19 +16,18 @@ namespace UncannyValet.Lot
         private float _zebraMargin = 0.05f;
         [Header("Arrow heads")]
         [SerializeField, Range(10f, 80f)] private float _arrowHeadDegrees = 35f;
-        [Header("Curb direction marking")]
-        [SerializeField, Min(0.5f), Tooltip("Length of the down arrows painted on the curb zone.")]
-        private float _curbArrowLength = 1.6f;
-        [SerializeField, Range(0.1f, 0.45f), Tooltip("Distance of the curb arrows beyond the zone's aisle-side edge, as a share of the zone width.")]
-        private float _curbArrowSideShare = 0.3f;
-        [SerializeField, Min(0f), Tooltip("Gap between a curb arrow tip and the chevron under it.")]
-        private float _curbChevronGap = 0.15f;
-        [Header("Big direction marks (curb and arrival slots)")]
-        [SerializeField, Min(0.1f), Tooltip("Stroke width of the big curb and arrival arrows.")]
-        private float _markThickness = 0.16f;
-        [SerializeField, Min(0.1f), Tooltip("Length of the head and chevron strokes of the big arrows.")]
-        private float _markHeadLength = 0.45f;
-        [SerializeField, Min(0f), Tooltip("Dark outline added around every stroke of the big arrows so they read on any ground.")]
+        [Header("Leaving route arrows (curb to the road)")]
+        [SerializeField, Min(0.2f), Tooltip("Length of one painted arrow on the route a delivered car drives.")]
+        private float _routeArrowLength = 0.9f;
+        [SerializeField, Min(0.02f), Tooltip("Stroke width of a route arrow.")]
+        private float _routeArrowThickness = 0.1f;
+        [SerializeField, Min(0.05f), Tooltip("Length of the two head strokes of a route arrow.")]
+        private float _routeArrowHead = 0.3f;
+        [SerializeField, Min(0.5f), Tooltip("Distance along the route between two arrows.")]
+        private float _routeArrowSpacing = 2.4f;
+        [SerializeField, Min(0f), Tooltip("Distance along the route from the curb zone to the first arrow.")]
+        private float _routeArrowStart = 2.4f;
+        [SerializeField, Min(0f), Tooltip("Dark outline added around every stroke of a route arrow so it reads on any ground.")]
         private float _markOutline = 0.05f;
         [Header("Arrival queue slots (dotted boxes)")]
         [SerializeField, Min(0.02f), Tooltip("Line thickness of the dotted box around each arrival slot.")]
@@ -53,11 +52,11 @@ namespace UncannyValet.Lot
         public float ZebraGap => _zebraGap;
         public float ZebraMargin => _zebraMargin;
         public float ArrowHeadDegrees => _arrowHeadDegrees;
-        public float CurbArrowLength => _curbArrowLength;
-        public float CurbArrowSideShare => _curbArrowSideShare;
-        public float CurbChevronGap => _curbChevronGap;
-        public float MarkThickness => _markThickness;
-        public float MarkHeadLength => _markHeadLength;
+        public float RouteArrowLength => _routeArrowLength;
+        public float RouteArrowThickness => _routeArrowThickness;
+        public float RouteArrowHead => _routeArrowHead;
+        public float RouteArrowSpacing => _routeArrowSpacing;
+        public float RouteArrowStart => _routeArrowStart;
         public float MarkOutline => _markOutline;
         public float SlotLine => _slotLine;
         public float SlotDash => _slotDash;
