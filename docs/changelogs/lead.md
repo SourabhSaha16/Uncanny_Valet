@@ -483,3 +483,9 @@ Date: 2026-11-10
 Files: merge of worktree-agent-a23a9621f7d814729, scene and configs, site/
 Why: road traffic wired into patron arrival and departure (docs/redesign/lot_v2_layout.md).
 Tests: 680 of 680 EditMode.
+
+## lead: merge lot-v3, update design doc, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a467414c00b26f057, docs/design.md, site/
+Why: the human's 8 play-test changes (docs/changelogs/lot-v3.md).
+Tests: 707 of 707 EditMode; browser shows the new look, no console errors.
