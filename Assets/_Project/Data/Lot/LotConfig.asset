@@ -15,9 +15,9 @@ MonoBehaviour:
   _spotSize: {x: 2.6, y: 4.4}
   _spotGap: 0.6
   _aisleWidth: 4.6
-  _curbPosition: {x: -10, y: 0}
+  _curbPosition: {x: -8.25, y: 0}
   _curbSize: {x: 3, y: 5}
-  _curbToSpotsGap: 6
+  _curbToSpotsGap: 5.25
   _settleSeconds: 0.5
   _stoppedSpeed: 0.2
   _margin: 1.5

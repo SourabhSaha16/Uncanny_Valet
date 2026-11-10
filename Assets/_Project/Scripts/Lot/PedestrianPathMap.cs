@@ -8,7 +8,7 @@ namespace UncannyValet.Lot
     /// Pure walking routes of lot v2, in world coordinates. Ambient people appear on the right strip (the outside road and
     /// bus stop), walk along the long crossing over the drive aisle, up the north-south crosswalk and along the side-door
     /// leg to the side door. Patrons use the main door only: from their car (or the diner) via the corridor crosswalk and
-    /// over the curb. Curb standing spots sit on the aisle side of the curb zone.
+    /// over the curb. Curb standing spots sit in the open gap between the diner wall and the curb zone, so patrons face east to the zone.
     /// </summary>
     public sealed class PedestrianPathMap : IPedestrianPaths
     {
@@ -50,7 +50,7 @@ namespace UncannyValet.Lot
             var count = _style.WaitSlots;
             var index = Mathf.Clamp(slot, 0, count - 1);
             var y = _g.Curb.center.y + (index - (count - 1) * 0.5f) * _style.WaitSpacing;
-            return new Vector2(_g.Curb.xMax + _style.WaitInset, y) + _origin;
+            return new Vector2(_g.CurbGap.center.x, y) + _origin;
         }
 
         public void RoadRoute(int index, bool leaving, List<Vector2> into)

@@ -95,11 +95,33 @@ namespace UncannyValet.Tests.Lot
         [Test]
         public void CurbSitsRightOfTheMainDoorAndTheSideDoorIsAboveIt()
         {
-            Assert.AreEqual(_geo.Diner.xMax, _geo.Curb.xMin, 1e-4f, "the curb touches the diner");
+            Assert.AreEqual(_config.Site.CurbGap, _geo.Curb.xMin - _geo.Diner.xMax, 1e-4f, "an open gap lies between the diner and the curb");
+            Assert.AreEqual(_geo.Diner.xMax, _geo.CurbGap.xMin, 1e-4f);
+            Assert.AreEqual(_geo.Curb.xMin, _geo.CurbGap.xMax, 1e-4f);
+            Assert.IsFalse(_geo.CurbGap.Overlaps(_geo.Diner));
+            Assert.IsFalse(_geo.CurbGap.Overlaps(_geo.Curb));
             Assert.AreEqual(_geo.Curb.center.y, _geo.MainDoor.center.y, 1e-4f);
             Assert.Greater(_geo.SideDoor.yMin, _geo.Curb.yMax, "the side door is above the curb");
             Assert.Greater(_geo.SideDoor.center.y, _geo.MainDoor.center.y);
             Assert.AreEqual(_geo.MainDoor.xMax, _geo.Diner.xMax, 1e-4f, "both doors sit on the diner's right face");
+        }
+
+        [Test]
+        public void TheCurbGapIsWideEnoughForAPatronAndInsideTheFrame()
+        {
+            Assert.GreaterOrEqual(_geo.CurbGap.width, 1.5f);
+            Assert.GreaterOrEqual(_geo.CurbGap.xMin, _geo.Bounds.xMin);
+            Assert.AreEqual(_geo.Curb.center.y, _geo.CurbGap.center.y, 1e-4f);
+        }
+
+        [Test]
+        public void ExitCarAndCrosswalkFitInTheCorridorWithoutTouching()
+        {
+            var half = _config.QueueCarSize.x * 0.5f;
+            var walkwayHalf = _config.Site.WalkwayWidth * 0.5f;
+            Assert.GreaterOrEqual(_geo.ExitX - half, _geo.CrossingX + walkwayHalf, "exit car clear of the crosswalk");
+            Assert.LessOrEqual(_geo.ExitX + half, _geo.Corridor.xMax + 1e-4f, "exit car clear of the first bay column");
+            Assert.GreaterOrEqual(_geo.CrossingX - walkwayHalf, _geo.Curb.xMax, "crosswalk starts east of the curb");
         }
 
         [Test]

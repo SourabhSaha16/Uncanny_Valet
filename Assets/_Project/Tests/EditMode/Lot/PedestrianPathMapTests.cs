@@ -107,11 +107,17 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void CurbSlotsAreSpreadAlongTheCurbOnTheAisleSide()
+        public void CurbSlotsAreSpreadAlongTheCurbInTheGapWestOfTheCurbZone()
         {
             Assert.AreEqual(_style.WaitSlots, _map.CurbSlotCount);
-            var edge = _geo.Curb.xMax + Origin.x;
-            Assert.Greater(_map.CurbSlot(0).x, edge);
+            for (var slot = 0; slot < _map.CurbSlotCount; slot++)
+            {
+                var at = _map.CurbSlot(slot);
+                Assert.Greater(at.x, _geo.Diner.xMax + Origin.x, "east of the diner wall");
+                Assert.Less(at.x, _geo.Curb.xMin + Origin.x, "west of the curb zone");
+                Assert.Less(at.x, _map.CurbCenter.x, "the curb zone is to the patron's east");
+            }
+            Assert.IsTrue(_geo.CurbGap.Contains(_map.CurbSlot(0) - Origin));
             Assert.AreNotEqual(_map.CurbSlot(0).y, _map.CurbSlot(1).y);
             Assert.AreEqual(_map.CurbSlot(_map.CurbSlotCount - 1), _map.CurbSlot(99));
         }

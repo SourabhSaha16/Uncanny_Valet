@@ -8,7 +8,9 @@ namespace UncannyValet.Lot
     public sealed class SiteLayout
     {
         [Header("Diner")]
-        [SerializeField, Min(2f), Tooltip("Width of the diner, which fills the left side of the lot up to the curb.")]
+        [SerializeField, Min(0.5f), Tooltip("Open gap between the diner's right wall and the curb zone. Waiting patrons stand in it and face the curb zone.")]
+        private float _curbGap = 1.75f;
+        [SerializeField, Min(2f), Tooltip("Width of the diner, which fills the left side of the lot up to the curb gap.")]
         private float _dinerWidth = 8f;
         [SerializeField, Min(0f), Tooltip("Gap between the diner and the top and bottom walls.")]
         private float _dinerInset = 1f;
@@ -33,7 +35,7 @@ namespace UncannyValet.Lot
 
         [Header("Road below the lot")]
         [SerializeField, Range(0.1f, 0.95f), Tooltip("Where cars leaving the curb run down the corridor (0 = curb side, 1 = bay side).")]
-        private float _exitShare = 0.8f;
+        private float _exitShare = 0.75f;
         [SerializeField, Min(0.5f), Tooltip("Width of one road lane.")]
         private float _laneWidth = 3.2f;
         [SerializeField, Min(5f), Tooltip("How far the road and its lane routes reach past the lot walls, to either side, so cars start off screen.")]
@@ -43,6 +45,7 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0f), Tooltip("Opening kept in the south wall beside the queue column and the exit corridor.")]
         private float _entryPadding = 0.3f;
 
+        public float CurbGap => _curbGap;
         public float DinerWidth => _dinerWidth;
         public float DinerInset => _dinerInset;
         public Vector2 DoorSize => _doorSize;

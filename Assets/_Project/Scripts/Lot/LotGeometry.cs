@@ -3,7 +3,7 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Pure placement maths for lot v2: the bay grid (<see cref="BayPlan"/>), the curb, the queue column under the
+    /// Pure placement maths for lot v2: the bay grid (<see cref="BayPlan"/>), the curb with the gap west of it, the queue column under the
     /// curb, the diner with its two doors, the right strip, the walkway lines and the road below, all computed from a
     /// <see cref="LotConfig"/>. Local lot coordinates, y up. The frame is fixed: it holds every bay.
     /// </summary>
@@ -16,6 +16,8 @@ namespace UncannyValet.Lot
         /// <summary>The wash slot.</summary>
         public Rect Wash { get; }
         public Rect Curb { get; }
+        /// <summary>The open ground between the diner wall and the curb zone, where waiting patrons stand (same height as the curb).</summary>
+        public Rect CurbGap { get; }
         /// <summary>Waiting car centres; slot 0 is nearest the curb, later slots lie further down the screen.</summary>
         public Vector2[] QueueSlots { get; }
         public Rect[] QueueCars { get; }
@@ -67,10 +69,12 @@ namespace UncannyValet.Lot
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
             var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin);
             Strip = new Rect(baysRight + s.StripGap, bottom, s.StripWidth, top - bottom);
-            Bounds = Rect.MinMaxRect(Curb.xMin - s.DinerWidth, bottom, Strip.xMax, top);
-            Diner = Rect.MinMaxRect(Bounds.xMin, bottom + s.DinerInset, Curb.xMin, top - s.DinerInset);
-            SideDoor = Box(new Vector2(Curb.xMin - s.DoorSize.x * 0.5f, sideY), s.DoorSize);
-            MainDoor = Box(new Vector2(Curb.xMin - s.DoorSize.x * 0.5f, Curb.center.y), s.DoorSize);
+            var dinerRight = Curb.xMin - s.CurbGap;
+            Bounds = Rect.MinMaxRect(dinerRight - s.DinerWidth, bottom, Strip.xMax, top);
+            Diner = Rect.MinMaxRect(Bounds.xMin, bottom + s.DinerInset, dinerRight, top - s.DinerInset);
+            CurbGap = Rect.MinMaxRect(dinerRight, Curb.yMin, Curb.xMin, Curb.yMax);
+            SideDoor = Box(new Vector2(dinerRight - s.DoorSize.x * 0.5f, sideY), s.DoorSize);
+            MainDoor = Box(new Vector2(dinerRight - s.DoorSize.x * 0.5f, Curb.center.y), s.DoorSize);
             Corridor = Rect.MinMaxRect(Curb.xMax, bottom, spotsLeft, top);
             CrossingX = Curb.xMax + c.CurbToSpotsGap * s.CrossingShare;
             ExitX = Curb.xMax + c.CurbToSpotsGap * s.ExitShare;

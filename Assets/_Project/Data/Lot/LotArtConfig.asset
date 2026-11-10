@@ -64,6 +64,5 @@ MonoBehaviour:
     _slotInset: 0.12
     _markColor: {r: 1, g: 1, b: 0.96, a: 1}
     _markOutlineColor: {r: 0.1, g: 0.09, b: 0.15, a: 1}
-    _waitInset: 0.9
     _waitSpacing: 1.6
     _waitSlots: 3

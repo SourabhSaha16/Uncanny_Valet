@@ -15,11 +15,11 @@ namespace UncannyValet.Lot
         private float _aisleWidth = 4.6f;
 
         [Header("Curb")]
-        [SerializeField, Tooltip("Centre of the curb zone; it sits right of the diner's main door. The top bay row is aligned with the curb's top edge.")]
-        private Vector2 _curbPosition = new Vector2(-10f, 0f);
+        [SerializeField, Tooltip("Centre of the curb zone; it sits right of the diner's main door with an open gap between (SiteLayout.CurbGap). The top bay row is aligned with the curb's top edge.")]
+        private Vector2 _curbPosition = new Vector2(-8.25f, 0f);
         [SerializeField] private Vector2 _curbSize = new Vector2(3f, 5f);
         [SerializeField, Tooltip("Width of the open corridor between the curb and the first bay column (queue exit, crosswalk, car exit).")]
-        private float _curbToSpotsGap = 6f;
+        private float _curbToSpotsGap = 5.25f;
 
         [Header("Parked rule")]
         [SerializeField] private float _settleSeconds = 0.5f;

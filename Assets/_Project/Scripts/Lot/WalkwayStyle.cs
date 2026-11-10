@@ -40,9 +40,7 @@ namespace UncannyValet.Lot
         private float _slotInset = 0.12f;
         [SerializeField] private Color _markColor = new Color(1f, 1f, 0.96f, 1f);
         [SerializeField] private Color _markOutlineColor = new Color(0.1f, 0.09f, 0.15f, 1f);
-        [Header("Curb standing spots")]
-        [SerializeField, Min(0.1f), Tooltip("Distance of the curb standing spots from the curb zone's east edge.")]
-        private float _waitInset = 0.9f;
+        [Header("Curb standing spots (in the gap west of the curb zone)")]
         [SerializeField, Min(0.1f), Tooltip("Spacing between curb standing spots along the curb.")]
         private float _waitSpacing = 1.6f;
         [SerializeField, Range(1, 5), Tooltip("Number of curb standing spots.")]
@@ -64,7 +62,6 @@ namespace UncannyValet.Lot
         public float SlotInset => _slotInset;
         public Color MarkColor => _markColor;
         public Color MarkOutlineColor => _markOutlineColor;
-        public float WaitInset => _waitInset;
         public float WaitSpacing => _waitSpacing;
         public int WaitSlots => _waitSlots;
     }
