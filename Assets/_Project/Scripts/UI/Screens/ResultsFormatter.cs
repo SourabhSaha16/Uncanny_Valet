@@ -14,7 +14,7 @@ namespace UncannyValet.UI.Screens
         public const string TopMarks = "THREE STARS! TOP MARKS!";
         public const int MaxStars = 3;
 
-        public static ResultsContent Build(in ShiftResult result, int carsParked, int carsReturned, int bestCombo)
+        public static ResultsContent Build(in ShiftResult result, int carsParked, int bestCombo)
         {
             return new ResultsContent
             {
@@ -25,7 +25,6 @@ namespace UncannyValet.UI.Screens
                 Stats = new[]
                 {
                     new StatLine(PixelIcon.Tyre, "CARS PARKED", carsParked.ToString()),
-                    new StatLine(PixelIcon.Car, "CARS RETURNED", carsReturned.ToString()),
                     new StatLine(PixelIcon.StarLit, "BEST COMBO", "X" + bestCombo),
                     new StatLine(PixelIcon.Bell, "COMPLAINTS", result.Complaints.ToString()),
                 },

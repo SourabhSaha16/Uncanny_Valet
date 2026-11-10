@@ -14,23 +14,23 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void Build_ShowsScoreStarsAndStatLines()
         {
-            var content = ResultsFormatter.Build(Result(320, 2, 1), 7, 5, 3);
+            var content = ResultsFormatter.Build(Result(320, 2, 1), 7, 3);
             Assert.AreEqual("$320", content.Score);
             Assert.AreEqual(2, content.Stars);
-            Assert.AreEqual(new[] { "7", "5", "X3", "1" },
-                new[] { content.Stats[0].Value, content.Stats[1].Value, content.Stats[2].Value, content.Stats[3].Value });
+            Assert.AreEqual(new[] { "7", "X3", "1" },
+                new[] { content.Stats[0].Value, content.Stats[1].Value, content.Stats[2].Value });
         }
 
         [Test]
         public void Build_NamesTheNextStarTarget()
         {
-            Assert.AreEqual("NEXT STAR AT $150 (50 TO GO)", ResultsFormatter.Build(Result(100, 0), 0, 0, 1).Goal);
-            Assert.AreEqual("NEXT STAR AT $450 (130 TO GO)", ResultsFormatter.Build(Result(320, 2), 0, 0, 1).Goal);
+            Assert.AreEqual("NEXT STAR AT $150 (50 TO GO)", ResultsFormatter.Build(Result(100, 0), 0, 1).Goal);
+            Assert.AreEqual("NEXT STAR AT $450 (130 TO GO)", ResultsFormatter.Build(Result(320, 2), 0, 1).Goal);
         }
 
         [Test]
         public void Build_ThreeStars_HasNoNextTarget()
-            => Assert.AreEqual(ResultsFormatter.TopMarks, ResultsFormatter.Build(Result(500, 3), 0, 0, 1).Goal);
+            => Assert.AreEqual(ResultsFormatter.TopMarks, ResultsFormatter.Build(Result(500, 3), 0, 1).Goal);
 
         [Test]
         public void StarStamp_StartsBigAndSlamsToNormalSize()
@@ -61,7 +61,7 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void ShiftStats_CountsParkedCarsOnceReturnsAndBestCombo_ThenResets()
+        public void ShiftStats_CountsParkedCarsOnceAndBestCombo_ThenResets()
         {
             var bus = new EventBus();
             using (var stats = new ShiftStats(bus))
@@ -69,15 +69,12 @@ namespace UncannyValet.Tests.UI
                 bus.Publish(new CarParked(new CarId(1), 2));
                 bus.Publish(new CarParked(new CarId(1), 3));
                 bus.Publish(new CarParked(new CarId(2), 1));
-                bus.Publish(new CarDelivered(new TicketId(1), new CarId(1)));
                 bus.Publish(new ScoreChanged(50, 3, 0, 0));
                 bus.Publish(new ScoreChanged(60, 1, 1, 0));
                 Assert.AreEqual(2, stats.CarsParked);
-                Assert.AreEqual(1, stats.CarsReturned);
                 Assert.AreEqual(3, stats.BestCombo);
                 bus.Publish(new ShiftStarted());
                 Assert.AreEqual(0, stats.CarsParked);
-                Assert.AreEqual(0, stats.CarsReturned);
                 Assert.AreEqual(1, stats.BestCombo);
             }
         }
