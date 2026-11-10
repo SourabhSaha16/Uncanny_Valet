@@ -10,7 +10,6 @@ namespace UncannyValet.Tests.Patrons
 {
     public class TicketRegistryTimerTests
     {
-        private const float ParkWindow = 45f;
         private const float PickupWindow = 60f;
 
         private sealed class FakeClock : IGameClock
@@ -54,7 +53,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         private PatronRequest Request(float stay = 20f) =>
-            new PatronRequest(stay, 20, false, ParkWindow, PickupWindow);
+            new PatronRequest(stay, 20, false, PickupWindow);
 
         private Ticket OpenTicket(CarId car, float stay = 20f)
         {
@@ -76,58 +75,35 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ParkTimer_PublishesProgressEachMinute()
+        public void UnparkedCar_HasNoTimer_AndPublishesNoProgress()
         {
             OpenTicket(_car);
-            Tick(1f); Tick(2f);
-            var changed = (TicketTimerChanged)_log[1];
-            Assert.AreEqual(TimerKind.Park, changed.Kind);
-            Assert.AreEqual(2f / ParkWindow, changed.Elapsed01, 0.0001f);
-            Assert.AreEqual(2, Count<TicketTimerChanged>());
+            for (var m = 1; m <= 200; m++) Tick(m);
+            Assert.AreEqual(0, Count<TicketTimerChanged>());
+            Assert.AreEqual(0, Count<TicketTimerExpired>());
         }
 
         [Test]
-        public void ParkTimerExpiry_PatronLeavesWithNoTip()
+        public void UnparkedCar_WaitsForever_NeverLeavesOnItsOwn()
         {
             var ticket = OpenTicket(_car);
-            for (var m = 1; m <= (int)ParkWindow; m++) Tick(m);
+            for (var m = 1; m <= 200; m++) Tick(m);
 
-            Assert.AreEqual(1, Count<TicketTimerExpired>());
-            var closed = (TicketClosed)_log.Find(e => e is TicketClosed);
-            Assert.AreEqual(0, closed.Tip);
-            Assert.AreEqual(1, Count<CarDeparted>());
-            Assert.AreEqual(1, _cars.DespawnCount);
-            Assert.AreEqual(TicketState.Closed, ticket.State);
-            Assert.AreEqual(0, _registry.OpenCount);
-            Assert.AreEqual(0, _tips.Calls);
+            Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
+            Assert.AreEqual(1, _registry.OpenCount);
+            Assert.AreEqual(0, Count<TicketClosed>());
+            Assert.AreEqual(0, Count<CarDeparted>());
+            Assert.AreEqual(0, _cars.DespawnCount);
         }
 
         [Test]
-        public void ParkTimer_PausesWhileValetDrives()
-        {
-            OpenTicket(_car);
-            Tick(10f);
-            _bus.Publish(new CarEntered(_car));
-            Tick(100f);
-            Assert.AreEqual(0, Count<TicketTimerExpired>());
-            _clock.ElapsedMinutes = 100f;
-            _bus.Publish(new CarExited(_car));
-            Tick(134f);
-            Assert.AreEqual(0, Count<TicketTimerExpired>());
-            Tick(135f);
-            Assert.AreEqual(1, Count<TicketTimerExpired>());
-        }
-
-        [Test]
-        public void CarParked_StopsParkTimer()
+        public void CarParked_PublishesNoTimerEvents()
         {
             OpenTicket(_car);
             Tick(5f);
             _bus.Publish(new CarParked(_car, 2));
-            Assert.AreEqual(1, Count<TicketTimerStopped>());
-            Tick(200f);
-            Assert.AreEqual(0, Count<TicketTimerExpired>());
-            Assert.AreEqual(1, Count<TicketTimerChanged>());
+            Assert.AreEqual(0, Count<TicketTimerStopped>());
+            Assert.AreEqual(0, Count<TicketTimerChanged>());
         }
 
         [Test]
@@ -181,10 +157,10 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void VanishedCar_FreesItsTagAndTicket()
+        public void ShiftEnd_ClosesAnUnparkedTicket_AndFreesItsTag()
         {
             var first = OpenTicket(new CarId(1));
-            for (var m = 1; m <= (int)ParkWindow; m++) Tick(m);
+            _bus.Publish(new ShiftEnded());
 
             Assert.AreEqual(0, first.Tag);
             Assert.AreEqual(0, _registry.OpenCount);

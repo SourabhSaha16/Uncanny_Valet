@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<PickupRequested>(e => _log.Add(e));
             _bus.Subscribe<CarDeparted>(e => _log.Add(e));
             _cars.Spawn(_car, UnityEngine.Vector2.zero, 0f);
-            _registry.Open(_car, new PatronRequest(Stay, 20, false, 45f, 60f));
+            _registry.Open(_car, new PatronRequest(Stay, 20, false, 60f));
             _bus.Publish(new CarParked(_car, 1));
         }
 

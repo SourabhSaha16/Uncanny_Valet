@@ -81,7 +81,7 @@ namespace UncannyValet.Tests.UI
         private static TicketRow Row(int car, TicketRowState state, bool timer = false, float elapsed = 0f)
         {
             var row = new TicketRow { Car = car, State = state };
-            if (timer) row.StartTimer(UncannyValet.Core.Events.TimerKind.Park, elapsed);
+            if (timer) row.StartTimer(UncannyValet.Core.Events.TimerKind.Pickup, elapsed);
             return row;
         }
 

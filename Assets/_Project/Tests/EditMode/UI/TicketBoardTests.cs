@@ -45,7 +45,7 @@ namespace UncannyValet.Tests.UI
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarTagAssigned(C, 0));
-            _bus.Publish(new TicketTimerChanged(T, C, TimerKind.Park, 0.5f));
+            _bus.Publish(new TicketTimerChanged(T, C, TimerKind.Pickup, 0.5f));
             var row = Only();
             Assert.AreEqual(0, row.Tag);
             Assert.IsTrue(row.HasTimer);
@@ -161,10 +161,10 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void ParkExpiryClose_RemovesRow()
+        public void ExpiryClose_RemovesRow()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTimerExpired(T, C, TimerKind.Park));
+            _bus.Publish(new TicketTimerExpired(T, C, TimerKind.Pickup));
             _bus.Publish(new TicketClosed(T, C, 0f, 0));
             Assert.AreEqual(0, _board.Count);
         }
@@ -183,7 +183,7 @@ namespace UncannyValet.Tests.UI
         public void CollectRows_PutsPickupsAndLowPatienceFirst()
         {
             for (var i = 1; i <= 3; i++) _bus.Publish(new TicketOpened(new TicketId(i), new CarId(i), 60f));
-            _bus.Publish(new TicketTimerChanged(new TicketId(2), new CarId(2), TimerKind.Park, 0.8f));
+            _bus.Publish(new TicketTimerChanged(new TicketId(2), new CarId(2), TimerKind.Pickup, 0.8f));
             _bus.Publish(new PickupRequested(new TicketId(3), new CarId(3)));
             _board.CollectRows(_rows);
             Assert.AreEqual(new[] { 3, 2, 1 }, new[] { _rows[0].Car, _rows[1].Car, _rows[2].Car });

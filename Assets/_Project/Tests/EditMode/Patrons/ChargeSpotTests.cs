@@ -41,7 +41,7 @@ namespace UncannyValet.Tests.Patrons
 
         private Ticket Arrive(bool ev)
         {
-            var t = _registry.Create(_car, new PatronRequest(100f, 20, false, 45f, 60f, ev, false));
+            var t = _registry.Create(_car, new PatronRequest(100f, 20, false, 60f, ev, false));
             _registry.AnnounceArrival(t);
             return t;
         }
@@ -61,7 +61,6 @@ namespace UncannyValet.Tests.Patrons
             var before = _charges;
             Tick(1f); Tick(2f);
             Assert.AreEqual(TicketState.Parked, t.State);
-            Assert.IsFalse(t.ParkTimer.IsActive);
             Assert.AreEqual(before + 2, _charges);
             _bus.Publish(new CarLeftStation(_car, StationKind.Charging));
             Tick(3f);
@@ -69,7 +68,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void NonEvParkedInChargingSpot_ParkTimerStopsAndNothingCharges()
+        public void NonEvParkedInChargingSpot_NothingCharges()
         {
             var t = Arrive(false);
             _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
@@ -81,12 +80,12 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ChargingStationEntry_DoesNotPauseParkTimer()
+        public void UnparkedEvInChargingStation_NeverExpiresAnything()
         {
             Arrive(true);
             _bus.Publish(new CarEnteredStation(_car, StationKind.Charging));
-            Tick(50f);
-            Assert.AreEqual(1, _expired);
+            Tick(200f);
+            Assert.AreEqual(0, _expired);
         }
     }
 }

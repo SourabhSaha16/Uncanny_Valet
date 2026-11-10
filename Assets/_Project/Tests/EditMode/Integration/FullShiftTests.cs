@@ -126,7 +126,7 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void ParkWindowRunningOut_FilesAComplaint_AndResetsTheCombo()
+        public void UnparkedCarWaiting_FilesNoComplaint_AndKeepsTheCombo()
         {
             _h.StartShift();
             Deliver();
@@ -135,12 +135,12 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(22 + 44, _h.Score.Score);
 
             _h.Spawn(new PatronRequest(10f, 20, false));
-            _h.Minutes(50);
+            _h.Minutes(200);
 
-            Assert.AreEqual(1, _h.Log.Count<ComplaintFiled>());
-            Assert.AreEqual(1, _h.Score.Complaints);
-            Assert.AreEqual(1, _h.Score.ComboMultiplier);
-            Assert.AreEqual(22 + 44 - 15, _h.Score.Score);
+            Assert.AreEqual(0, _h.Log.Count<ComplaintFiled>());
+            Assert.AreEqual(0, _h.Score.Complaints);
+            Assert.AreEqual(3, _h.Score.ComboMultiplier);
+            Assert.AreEqual(22 + 44, _h.Score.Score);
         }
 
         [Test]

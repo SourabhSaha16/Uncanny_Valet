@@ -82,17 +82,19 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ParkWindowChange_ReachesRunningTimer()
+        public void PickupWindowChange_ReachesRunningTimer()
         {
             var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
             var expired = 0;
             _bus.Subscribe<TicketTimerExpired>(e => expired++);
-            registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 45f, 60f));
+            var t = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f));
+            _bus.Publish(new CarParked(t.CarId, 1));
             _clock.ElapsedMinutes = 20f; _bus.Publish(new ShiftTick(20f));
+            _clock.ElapsedMinutes = 40f; _bus.Publish(new ShiftTick(40f));
             Assert.AreEqual(0, expired);
-            _tuning.Set(TuningKey.ParkWindowMinutes, 15f);
-            _bus.Publish(new TuningChanged(TuningKey.ParkWindowMinutes, 15f));
-            _clock.ElapsedMinutes = 21f; _bus.Publish(new ShiftTick(21f));
+            _tuning.Set(TuningKey.PickupWindowMinutes, 15f);
+            _bus.Publish(new TuningChanged(TuningKey.PickupWindowMinutes, 15f));
+            _clock.ElapsedMinutes = 41f; _bus.Publish(new ShiftTick(41f));
             Assert.AreEqual(1, expired);
         }
 
@@ -101,10 +103,10 @@ namespace UncannyValet.Tests.Patrons
         {
             var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
             _tuning.Seed(TuningKey.ChargeMinutes, 20f);
-            var first = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 45f, 60f, true));
+            var first = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f, true));
             _tuning.Set(TuningKey.ChargeMinutes, 10f);
             _bus.Publish(new TuningChanged(TuningKey.ChargeMinutes, 10f));
-            var second = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 45f, 60f, true));
+            var second = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 60f, true));
             first.Charge.Advance(true);
             second.Charge.Advance(true);
             Assert.AreEqual(first.Charge.Charge01 + 0.05f, second.Charge.Charge01, 1e-4f);

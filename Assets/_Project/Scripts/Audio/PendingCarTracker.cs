@@ -32,7 +32,6 @@ namespace UncannyValet.Audio
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<PickupRequested>(OnPickupRequested);
             _bus.Subscribe<TicketClosed>(OnTicketClosed);
-            _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
         }
@@ -45,7 +44,6 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
             _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
-            _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
         }
@@ -58,11 +56,6 @@ namespace UncannyValet.Audio
         {
             _awaitingPark.Remove(e.Car);
             _awaitingPickup.Remove(e.Car);
-        }
-
-        private void OnTimerExpired(TicketTimerExpired e)
-        {
-            if (e.Kind == TimerKind.Park) _awaitingPark.Remove(e.Car);
         }
 
         private void OnShiftStarted(ShiftStarted e) => Clear();

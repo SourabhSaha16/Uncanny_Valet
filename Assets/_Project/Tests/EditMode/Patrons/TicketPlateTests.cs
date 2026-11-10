@@ -49,7 +49,7 @@ namespace UncannyValet.Tests.Patrons
 
         private Ticket Arrive(int car)
         {
-            var ticket = _registry.Create(new CarId(car), new PatronRequest(20f, 20, false, 45f, 60f));
+            var ticket = _registry.Create(new CarId(car), new PatronRequest(20f, 20, false, 60f));
             _registry.AnnounceArrival(ticket);
             return ticket;
         }
@@ -95,11 +95,11 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void AbandonedTicketReleasesItsPlate()
+        public void ShiftEndReleasesAnUnparkedTicketsPlate()
         {
             var first = Arrive(1);
             var plate = first.Plate;
-            _bus.Publish(new ShiftTick(10000f));
+            _bus.Publish(new ShiftEnded());
             Assert.AreEqual(0, _registry.OpenCount);
             Assert.AreEqual(plate, Arrive(2).Plate);
         }

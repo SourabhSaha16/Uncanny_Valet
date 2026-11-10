@@ -12,7 +12,7 @@ namespace UncannyValet.Patrons
         /// <summary>Ticks one timer for this game minute. Returns true if it expired on this call.</summary>
         public bool Tick(Ticket t, TimerKind kind, float minute)
         {
-            var timer = kind == TimerKind.Park ? t.ParkTimer : t.PickupTimer;
+            var timer = t.PickupTimer;
             if (!timer.IsActive || timer.IsExpired) return false;
             var expired = timer.Tick(minute);
             _bus.Publish(new TicketTimerChanged(t.TicketId, t.CarId, kind, timer.Elapsed01));
@@ -23,7 +23,7 @@ namespace UncannyValet.Patrons
         /// <summary>Stops one timer and announces it, unless it was never running.</summary>
         public void Stop(Ticket t, TimerKind kind)
         {
-            var timer = kind == TimerKind.Park ? t.ParkTimer : t.PickupTimer;
+            var timer = t.PickupTimer;
             if (timer.Stop()) _bus.Publish(new TicketTimerStopped(t.TicketId, t.CarId));
         }
     }

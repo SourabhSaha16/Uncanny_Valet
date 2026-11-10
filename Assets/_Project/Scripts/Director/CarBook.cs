@@ -104,11 +104,10 @@ namespace UncannyValet.Director
 
         public void PickupRequested(CarId car) { if (_cars.TryGetValue(car, out var r)) r.PickupRequested = true; }
 
-        public void TimerChanged(CarId car, TimerKind kind, float elapsed01)
+        /// <summary>Records pickup progress; the pickup timer is the only ticket timer.</summary>
+        public void TimerChanged(CarId car, float elapsed01)
         {
-            if (!_cars.TryGetValue(car, out var r)) return;
-            if (kind == TimerKind.Park) r.ParkElapsed01 = elapsed01;
-            else r.PickupElapsed01 = elapsed01;
+            if (_cars.TryGetValue(car, out var r)) r.PickupElapsed01 = elapsed01;
         }
 
         public void Closed(CarId car)

@@ -10,7 +10,6 @@ namespace UncannyValet.Tests.Patrons
 {
     public class CarDeliveredTests
     {
-        private const float ParkWindow = 45f;
 
         private sealed class FakeClock : IGameClock
         {
@@ -43,7 +42,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<CarDelivered>(e => _log.Add(e));
             _bus.Subscribe<TicketClosed>(e => _log.Add(e));
             cars.Spawn(_car, UnityEngine.Vector2.zero, 0f);
-            _registry.Open(_car, new PatronRequest(20f, 20, false, ParkWindow, 60f));
+            _registry.Open(_car, new PatronRequest(20f, 20, false, 60f));
         }
 
         private void Tick(float minute)
@@ -82,13 +81,6 @@ namespace UncannyValet.Tests.Patrons
             Assert.AreEqual(2, _log.Count);
             Assert.IsInstanceOf<CarDelivered>(_log[0]);
             Assert.IsInstanceOf<TicketClosed>(_log[1]);
-        }
-
-        [Test]
-        public void VanishedCar_ClosesWithoutCarDelivered()
-        {
-            for (var m = 1; m <= (int)ParkWindow; m++) Tick(m);
-            AssertClosedWithoutDelivery();
         }
 
         [Test]

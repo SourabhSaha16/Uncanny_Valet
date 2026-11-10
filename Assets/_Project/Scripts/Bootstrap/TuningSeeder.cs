@@ -22,7 +22,6 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ShiftLengthSeconds, shift.ShiftLengthSeconds);
 
             var service = patrons.Tuning;
-            t.Seed(TuningKey.ParkWindowMinutes, patrons.ParkWindowMinutes);
             t.Seed(TuningKey.PickupWindowMinutes, patrons.PickupWindowMinutes);
             t.Seed(TuningKey.StayMinMinutes, patrons.StayRange.x);
             t.Seed(TuningKey.StayMaxMinutes, patrons.StayRange.y);

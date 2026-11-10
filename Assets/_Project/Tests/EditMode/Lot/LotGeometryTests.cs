@@ -121,6 +121,14 @@ namespace UncannyValet.Tests.Lot
             inner.xMin >= outer.xMin && inner.xMax <= outer.xMax && inner.yMin >= outer.yMin && inner.yMax <= outer.yMax;
 
         [Test]
+        public void QueueHasFourSideBySideSlotsOnOneLine()
+        {
+            Assert.AreEqual(4, _geo.QueueSlots.Length);
+            for (var i = 1; i < _geo.QueueSlots.Length; i++)
+                Assert.AreEqual(_geo.QueueSlots[0].y, _geo.QueueSlots[i].y, 0.001f);
+        }
+
+        [Test]
         public void SlotZero_IsTheFirstQueueCar_BelowTheCurb()
         {
             Assert.AreEqual(_geo.QueueSlots[0], _geo.QueueCars[0].center);

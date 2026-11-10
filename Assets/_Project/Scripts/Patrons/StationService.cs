@@ -4,17 +4,16 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Tracks which station each car is stopped in, charges EVs and washes cars each minute, and pauses park timers while washing.</summary>
+    /// <summary>Tracks which station each car is stopped in, charges EVs and washes cars each minute.</summary>
     public sealed class StationService
     {
         private readonly IEventBus _bus;
-        private readonly IGameClock _clock;
         private readonly TicketBook _book;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
-        public StationService(IEventBus bus, IGameClock clock, TicketBook book)
+        public StationService(IEventBus bus, TicketBook book)
         {
-            _bus = bus; _clock = clock; _book = book;
+            _bus = bus; _book = book;
             _bus.Subscribe<CarEnteredStation>(OnEntered);
             _bus.Subscribe<CarLeftStation>(OnLeft);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -47,7 +46,6 @@ namespace UncannyValet.Patrons
                 return;
             }
             t.InWashBay = inside;
-            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
         private void OnShiftTick(ShiftTick e)

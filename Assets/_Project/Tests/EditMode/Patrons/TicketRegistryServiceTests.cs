@@ -56,7 +56,7 @@ namespace UncannyValet.Tests.Patrons
 
         private Ticket Arrive(bool ev, bool dirty)
         {
-            var t = _registry.Create(_car, new PatronRequest(10f, 20, false, 45f, 60f, ev, dirty));
+            var t = _registry.Create(_car, new PatronRequest(10f, 20, false, 60f, ev, dirty));
             _registry.AnnounceArrival(t);
             return t;
         }
@@ -131,17 +131,15 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ParkTimer_PausesWhileInWashBay()
+        public void UnparkedCarInWashBay_NeverExpiresAnything()
         {
             Arrive(false, false);
             Tick(10f);
             _bus.Publish(new CarEnteredStation(_car, StationKind.Wash));
             Tick(60f);
             _bus.Publish(new CarLeftStation(_car, StationKind.Wash));
-            Tick(80f);
+            Tick(200f);
             Assert.AreEqual(0, Count<TicketTimerExpired>());
-            Tick(100f);
-            Assert.AreEqual(1, Count<TicketTimerExpired>());
         }
 
         [Test]

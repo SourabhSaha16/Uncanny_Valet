@@ -23,8 +23,8 @@ namespace UncannyValet.Lot
         [SerializeField] private float _stoppedSpeed = 0.2f;
 
         [Header("Curb facing")]
-        [SerializeField, Range(5f, 90f), Tooltip("How far a car may be turned from pointing straight down the screen and still be handed back at the curb.")]
-        private float _curbFacingToleranceDegrees = 35f;
+        [SerializeField, Range(5f, 90f), Tooltip("Largest angle from pointing straight down the screen at which the patron still takes the car (80 = any car pointing towards the road).")]
+        private float _curbFacingToleranceDegrees = 80f;
 
         [Header("Frame")]
         [SerializeField] private float _margin = 1.5f;
@@ -34,8 +34,8 @@ namespace UncannyValet.Lot
         [SerializeField] private float _valetStartOffset = 1.5f;
 
         [Header("Arrival queue")]
-        [Min(1), Tooltip("Number of waiting slots; slot 0 is the arrival point.")]
-        [SerializeField] private int _queueSlotCount = 3;
+        [Range(1, 8), Tooltip("Number of side-by-side waiting slots; slot 0 is the arrival point. The queue cap is 4.")]
+        [SerializeField] private int _queueSlotCount = 4;
         [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
         [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
         [Min(0f), Tooltip("Gap between the sides of neighbouring waiting cars.")]
@@ -65,12 +65,17 @@ namespace UncannyValet.Lot
         [Range(0.3f, 1f), Tooltip("Share of the station width the label may use; the rest is margin.")]
         [SerializeField] private float _stationLabelFill = 0.7f;
 
+        [Header("Single-occupancy stations")]
+        [SerializeField, Min(0.05f), Tooltip("Least time between two OCCUPIED refusals while a driven car keeps pushing into the taken wash slot.")]
+        private float _refusalRepeatSeconds = 0.25f;
+
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
         [SerializeField] private float _curbLabelSize = 1f;
         [SerializeField] private float _labelSize = 1.6f;
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
 
+        public float RefusalRepeatSeconds => _refusalRepeatSeconds;
         public float LabelSize => _labelSize;
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;

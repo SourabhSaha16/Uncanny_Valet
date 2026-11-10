@@ -59,7 +59,7 @@ MonoBehaviour:
     _arrowHeadLength: 0.6
     _arrowHeadDegrees: 35
     _laneInset: 1.25
-    _curbArrowLength: 2.2
+    _curbArrowLength: 3.4
     _curbArrowSideShare: 0.3
     _curbChevronGap: 0.35
     _waitInset: 0.9

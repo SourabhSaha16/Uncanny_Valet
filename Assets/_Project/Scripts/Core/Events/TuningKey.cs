@@ -15,7 +15,6 @@ namespace UncannyValet.Core.Events
         PlanLateEvStart,
 
         // Patrons.
-        ParkWindowMinutes,
         PickupWindowMinutes,
         StayMinMinutes,
         StayMaxMinutes,

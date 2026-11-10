@@ -15,11 +15,8 @@ namespace UncannyValet.Patrons
         [SerializeField, Min(0)] private int _baseTip = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
-        [Tooltip("Cars awaiting parking at once. Parked cars do not count.")]
-        [SerializeField, Min(1)] private int _maxWaitingCars = 3;
-
-        [Tooltip("Game minutes to get a waiting car parked before the patron takes it and leaves.")]
-        [SerializeField, Min(1f)] private float _parkWindowMinutes = PatronRequest.DefaultParkWindowMinutes;
+        [Tooltip("Cars waiting at the arrival slots at once. Parked cars do not count.")]
+        [SerializeField, Range(1, 4)] private int _maxWaitingCars = 4;
 
         [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
@@ -47,7 +44,6 @@ namespace UncannyValet.Patrons
         public Vector2 StayRange => _stayRange;
         public int BaseTip => _baseTip;
         public float ImpatientChance => _impatientChance;
-        public float ParkWindowMinutes => _parkWindowMinutes;
         public float PickupWindowMinutes => _pickupWindowMinutes;
         public float ChargeMinutes => _chargeMinutes;
         public float WashMinutes => _washMinutes;
