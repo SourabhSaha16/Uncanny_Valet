@@ -1,4 +1,7 @@
 === Last 50 commits ===
+dcc59fa  2026-11-10  lead: merge agent/queue-director-fix
+fe1657a  2026-11-10  patrons: fix stalled arrivals, queue slot re-evaluation, late stays
+1e5ac34  2026-11-10  lead: merge ui-status, update docs, rebuild site
 c669f27  2026-11-10  ui-status: split TicketBoard and GameUi under 200 lines
 1f35e62  2026-11-10  ui-status: pickup emotions on patron bubble, plate and row
 5be8e76  2026-11-10  ui-status: plate shows only once the car is parked
@@ -46,9 +49,6 @@ ec0eedf  2026-11-09  lead: merge pivot-queue
 21052f7  2026-11-09  lead: log queue and wash decisions
 b8a2fe4  2026-11-09  lead: save patron director spec
 a3a7257  2026-11-09  lead: merge pivot-crowd, fix seeded random, rebuild site
-77143b0  2026-11-09  lead: merge pivot-crowd
-49b4d0e  2026-11-09  pivot-crowd: short plates, pickup bell, walking patrons, face-down delivery, headlights
-18b210b  2026-11-09  lead: make design.md a living doc with the current chaos design
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -767,6 +767,12 @@ Files: merge of worktree-agent-aca42b483dd08be4f, docs/design.md, docs/redesign/
 Why: the human's 7 play-test notes (docs/changelogs/lot-v4.md).
 Tests: 712 of 712 EditMode; browser shows the gap, fewer arrows, no console errors.
 
+## lead: merge ui-status, update design doc and style guide, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a92c1ead62b9e0ed2, docs/design.md, docs/redesign/ui_style_guide.md, site/
+Why: the human's UI notes: status words, plate only when parked, pickup emotions (docs/changelogs/ui-status.md).
+Tests: 737 of 737 EditMode; browser smoke test with no console errors.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1021,6 +1027,12 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Patrons/TicketSettler.cs, Assets/_Project/Tests/EditMode/Patrons/CarDeliveredTests.cs
 Why: Core now has CarDelivered (patron got the car back at the curb). TicketSettler.Pay, the single delivered close (normal and late pickup), publishes it right before TicketClosed; Void (vanished car, never parked, night end) does not.
 Tests: new CarDeliveredTests (normal and late pickup publish CarDelivered then TicketClosed; park-timer vanish and night end publish TicketClosed only). Unity run: see report.
+
+## patrons: fix stalled arrivals, queue slot re-evaluation, late stays
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Core/Contracts/IQueueSlotSource.cs, Assets/_Project/Scripts/Director/ArrivalPacer.cs, Assets/_Project/Scripts/Director/PacingSettings.cs, Assets/_Project/Scripts/Patrons/{ArrivalReservations,ArrivalSlotScanner,IArrivalScan,QueueSlotAllocator,QueueSlotChooser,StayFit,PatronRequest,PatronConfig,PatronTuning,PatronSpawner,TicketRegistry}.cs, Assets/_Project/Scripts/Traffic/{EntryTrip,RouteRunner,TripContext,TripTuning}.cs, Assets/_Project/Scripts/Cars/CarAutoDrive.cs, Assets/_Project/Tests/EditMode/{Director/ArrivalPacerStuckTests,Patrons/QueueSlotChooserTests,Patrons/QueueSlotAllocatorTests,Patrons/StayFitTests,Patrons/ArrivalReservationsTests,Traffic/EntryRetargetTests}.cs
+Why: Bug 1: a Spawn decision the spawner could not execute left the pacer waiting for a CarSpawned forever (overlay "next in 0.0 s", RELIEF stuck); it now times out and re-sends. Late arrivals could get a stay running past the shift end, so their patron never came back; stays are now cut to fit (StayFit). The slot scan ignores trigger colliders. Bug 2: arrival slots were fixed at spawn and reservations lived until the car parked, so a freed slot stayed "full"; reservations now end on CarArrived and arriving cars re-ask IQueueSlotSource (QueueSlotAllocator) and move up to the first free slot. design.md sections 5, 9, 10.
+Tests: new QueueSlotChooser, QueueSlotAllocator, StayFit, ArrivalPacerStuck and EntryRetarget tests; ArrivalReservations tests rewritten. Unity run: full EditMode suite 772/772 passed.
 
 === docs/changelogs/pivot-art.md ===
 # pivot-art changelog

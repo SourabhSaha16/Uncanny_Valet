@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  c669f27
-Subject: ui-status: split TicketBoard and GameUi under 200 lines
-Date:    2026-11-10 12:26:50 -0800
+Commit:  dcc59fa
+Subject: lead: merge agent/queue-director-fix
+Date:    2026-11-10 14:22:03 -0800

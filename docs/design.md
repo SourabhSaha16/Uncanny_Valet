@@ -140,7 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (737 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (772 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -217,6 +217,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-10 | Lot v3 polish (8 items from play-test) merged: see A5; 707 tests |
 | 2026-11-10 | Lot v4 play-test fixes merged (pickup zone gap, CAR SLOTS only parked cars, fewer exit arrows, traffic defaults, no cars returned stat, patron facing fix); 712 tests |
 | 2026-11-10 | UI status and emotions merged: CAR SLOTS status words (extensible), plate only when parked, patron mood bubble, green/yellow/red plate flash at 1.5/3/7 Hz; 737 tests |
+| 2026-11-10 | Queue and Director fixes: an arriving patron car re-checks its queue slot every 0.2 s and always takes the first free slot (it moves up when a car ahead leaves; never two cars in one slot; slot reservations are per car and released on arrival, ticket close and shift change; Core `IQueueSlotSource`). The Director pacer re-sends an arrival that was never acknowledged after 8 s, so a failed spawn can no longer stall arrivals (it showed as 'next in 0.0 s' with RELIEF stuck). Late arrivals get a shorter stay (`StayFit`) so every patron can ask for the car before the shift ends. Cause of the failed spawn not confirmed; slot scan now ignores trigger colliders; 772 tests |
 
 ---
 
