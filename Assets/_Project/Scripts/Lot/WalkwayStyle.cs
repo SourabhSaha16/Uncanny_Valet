@@ -3,15 +3,17 @@ using UnityEngine;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Tunables for the painted walkway bands, the curb and arrival direction marks and the curb standing spots. World units.</summary>
+    /// <summary>Tunables for the crosswalk zebra bars, the curb and arrival direction marks and the curb standing spots. World units.</summary>
     [Serializable]
     public sealed class WalkwayStyle
     {
-        [Header("Walkway bands")]
-        [SerializeField, Min(0.02f), Tooltip("Thickness of the painted edge lines of a walkway band.")]
-        private float _bandEdge = 0.12f;
-        [SerializeField, Range(0f, 1f), Tooltip("Opacity of the band fill (the crosswalk colour over the asphalt).")]
-        private float _bandFillAlpha = 0.22f;
+        [Header("Crosswalk zebra bars")]
+        [SerializeField, Min(0.05f), Tooltip("Length of one zebra bar along the walking direction.")]
+        private float _zebraBar = 0.3f;
+        [SerializeField, Min(0.05f), Tooltip("Gap between two zebra bars.")]
+        private float _zebraGap = 0.3f;
+        [SerializeField, Min(0f), Tooltip("How far each zebra bar stops short of the crosswalk edge, on both sides.")]
+        private float _zebraMargin = 0.05f;
         [Header("Arrow heads")]
         [SerializeField, Range(10f, 80f)] private float _arrowHeadDegrees = 35f;
         [Header("Curb direction marking")]
@@ -47,8 +49,9 @@ namespace UncannyValet.Lot
         [SerializeField, Range(1, 5), Tooltip("Number of curb standing spots.")]
         private int _waitSlots = 3;
 
-        public float BandEdge => _bandEdge;
-        public float BandFillAlpha => _bandFillAlpha;
+        public float ZebraBar => _zebraBar;
+        public float ZebraGap => _zebraGap;
+        public float ZebraMargin => _zebraMargin;
         public float ArrowHeadDegrees => _arrowHeadDegrees;
         public float CurbArrowLength => _curbArrowLength;
         public float CurbArrowSideShare => _curbArrowSideShare;

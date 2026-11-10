@@ -12,6 +12,12 @@ namespace UncannyValet.Lot
         /// <summary>Painted bands, in the order: side door leg, north crosswalk, aisle crossing, south crossing.</summary>
         public Rect[] Bands { get; }
 
+        /// <summary>
+        /// The same crossings cut so they never overlap, for painting zebra bars: the side-door leg stops at the north crosswalk,
+        /// the aisle crossing starts beside the corridor, and the corridor column runs unbroken from the side door to the south wall.
+        /// </summary>
+        public Rect[] Crosswalks { get; }
+
         public WalkwayLayout(LotGeometry g, float width)
         {
             var half = width * 0.5f;
@@ -22,6 +28,13 @@ namespace UncannyValet.Lot
                 Rect.MinMaxRect(g.Diner.xMax, sideY - half, x + half, sideY + half),
                 Rect.MinMaxRect(x - half, g.AisleY - half, x + half, sideY + half),
                 Rect.MinMaxRect(x - half, g.AisleY - half, g.Strip.xMin, g.AisleY + half),
+                Rect.MinMaxRect(x - half, g.Bounds.yMin, x + half, g.AisleY + half)
+            };
+            Crosswalks = new[]
+            {
+                Rect.MinMaxRect(g.Diner.xMax, sideY - half, x - half, sideY + half),
+                Rect.MinMaxRect(x - half, g.AisleY + half, x + half, sideY + half),
+                Rect.MinMaxRect(x + half, g.AisleY - half, g.Strip.xMin, g.AisleY + half),
                 Rect.MinMaxRect(x - half, g.Bounds.yMin, x + half, g.AisleY + half)
             };
         }

@@ -46,8 +46,6 @@ MonoBehaviour:
   _busStopSize: {x: 1.2, y: 3}
   _busStopFromBottom: 2
   _walkway:
-    _bandEdge: 0.12
-    _bandFillAlpha: 0.22
     _arrowHeadDegrees: 35
     _curbArrowLength: 1.6
     _curbArrowSideShare: 0.3

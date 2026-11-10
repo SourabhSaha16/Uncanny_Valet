@@ -17,3 +17,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{DashedOutline,LotQueueArt,LotArrowMarks,LotLayoutBuilder,WalkwayStyle}.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/DashedOutlineTests.cs
 Why: human play test (design.md A5, sketch lot_v2_sketch.png): the arrival column shows three dotted outline boxes, one per car slot (nose-up car footprint), instead of up arrows. Dash, gap, line and inset are WalkwayStyle fields; the dash layout is a pure tested class.
 Tests: DashedOutlineTests added (dashes inside the box, edges start and end on a dash, gap size, short run).
+
+## lot-v3: crosswalks become white zebra stripes
+Date: 2026-11-10
+Files: Scripts/Lot/{ZebraStripes,WalkwayLayout,LotWalkwayArt,WalkwayStyle}.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/ZebraStripesTests.cs
+Why: human play test (design.md A5): crosswalks read as grey boxes. Every crosswalk (side-door leg, north, aisle, corridor/south) is now white zebra bars across the walking direction, painted on the asphalt. WalkwayLayout.Crosswalks is the non-overlapping cut of the bands for painting (Bands is unchanged for the walking routes). The old band fill and edge lines are gone.
+Tests: ZebraStripesTests added (bar orientation, count, centring, gap, no overlapping crosswalks).
