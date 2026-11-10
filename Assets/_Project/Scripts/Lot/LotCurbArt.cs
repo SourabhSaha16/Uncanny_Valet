@@ -2,11 +2,12 @@ using UnityEngine;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Dresses the curb zone as a cobbled sidewalk with a yellow painted edge and a plate behind the CURB text.</summary>
+    /// <summary>Dresses the curb zone as a cobbled sidewalk with a yellow painted edge and a plate behind the curb text.</summary>
     public static class LotCurbArt
     {
         private const int TileOrder = -7;
         private const int PaintOrder = -6;
+        private const int LabelOrder = -5;
         private const float ArrowRowShare = 0.25f; // of the curb height, above and below its middle
 
         public static void Build(RectFactory rects, Transform parent, LotConfig config, LotArtConfig art)
@@ -17,6 +18,18 @@ namespace UncannyValet.Lot
             rects.Make(parent, "Curb Plate", config.CurbPosition, plate, art.CurbPlateColor, PaintOrder);
             Edge(rects, parent, area, art);
             Direction(rects, parent, area, art.Walkway);
+        }
+
+        /// <summary>The curb zone's text: each configured word written vertically in its own column (VALET PICKUP).</summary>
+        public static void BuildLabel(Transform parent, LotConfig config)
+        {
+            var words = config.CurbLabelWords;
+            for (var i = 0; i < words.Length; i++)
+            {
+                var x = StackedText.ColumnOffset(i, words.Length, config.CurbLabelColumnSpacing);
+                var at = config.CurbPosition + new Vector2(x, 0f);
+                SpotLabel.Create(parent, StackedText.Stack(words[i]), at, config, LabelOrder, config.CurbLabelSize);
+            }
         }
 
         // Two big outlined down arrows with a chevron under each tip on the aisle side, just outside the curb zone's

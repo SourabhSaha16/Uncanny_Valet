@@ -37,7 +37,7 @@ MonoBehaviour:
   _dashTileShift: 0.27
   _tuftCount: 40
   _curbEdgeWidth: 0.15
-  _curbPlateShare: {x: 0.5, y: 0.8}
+  _curbPlateShare: {x: 0.7, y: 0.92}
   _dinerWallColor: {r: 0.78, g: 0.62, b: 0.42, a: 1}
   _dinerRoofColor: {r: 0.36, g: 0.52, b: 0.34, a: 1}
   _doorColor: {r: 0.32, g: 0.2, b: 0.12, a: 1}

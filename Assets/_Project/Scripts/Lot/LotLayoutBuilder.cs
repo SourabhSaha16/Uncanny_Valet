@@ -100,7 +100,7 @@ namespace UncannyValet.Lot
                 rects.Make(transform, "Curb Edge", c.CurbPosition, c.CurbSize, CurbEdge, -7);
                 rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
             }
-            SpotLabel.Create(transform, string.Join("\n", "CURB".ToCharArray()), c.CurbPosition, c, -5, c.CurbLabelSize);
+            LotCurbArt.BuildLabel(transform, c);
             var zone = new GameObject("CurbZone");
             zone.transform.SetParent(transform, false);
             zone.transform.localPosition = c.CurbPosition;

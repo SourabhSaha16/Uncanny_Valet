@@ -25,7 +25,7 @@ namespace UncannyValet.Lot
         private float _dashTileShift = 0.27f;
         [SerializeField, Min(0)] private int _tuftCount = 40;
         [SerializeField, Min(0.01f)] private float _curbEdgeWidth = 0.15f;
-        [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.5f, 0.8f);
+        [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.7f, 0.92f);
         [Header("Diner and bus stop")]
         [SerializeField] private Color _dinerWallColor = new Color(0.78f, 0.62f, 0.42f);
         [SerializeField] private Color _dinerRoofColor = new Color(0.36f, 0.52f, 0.34f);

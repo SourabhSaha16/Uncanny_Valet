@@ -68,8 +68,12 @@ namespace UncannyValet.Lot
         private float _refusalRepeatSeconds = 0.25f;
 
         [Header("Labels")]
-        [Min(0.1f), Tooltip("Size of the vertical CURB text; 4 lines must fit inside the curb height.")]
-        [SerializeField] private float _curbLabelSize = 1f;
+        [Min(0.1f), Tooltip("Size of the vertical curb text; the longest word's letters must fit inside the curb height (about 1.15 lines per size).")]
+        [SerializeField] private float _curbLabelSize = 0.65f;
+        [Tooltip("Words written vertically (one column each, left to right) on the curb zone.")]
+        [SerializeField] private string[] _curbLabelWords = { "VALET", "PICKUP" };
+        [Min(0.1f), Tooltip("Distance between the columns of the curb text.")]
+        [SerializeField] private float _curbLabelColumnSpacing = 0.95f;
         [SerializeField] private float _labelSize = 1.6f;
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
 
@@ -77,6 +81,8 @@ namespace UncannyValet.Lot
         public float LabelSize => _labelSize;
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;
+        public string[] CurbLabelWords => _curbLabelWords;
+        public float CurbLabelColumnSpacing => _curbLabelColumnSpacing;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
         public SiteLayout Site => _site;
         public float StationLabelSize => _stationLabelSize;
