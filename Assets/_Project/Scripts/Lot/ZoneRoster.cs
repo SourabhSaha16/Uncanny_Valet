@@ -21,6 +21,9 @@ namespace UncannyValet.Lot
 
         public int Count => _timers.Count;
 
+        /// <summary>True while the car is inside and has settled (stopped and empty long enough).</summary>
+        public bool IsSettled(CarId car) => _timers.TryGetValue(car, out var timer) && timer.IsDone;
+
         public void Enter(CarId car)
         {
             if (!_timers.ContainsKey(car)) _timers[car] = new StopTimer(_settleSeconds);

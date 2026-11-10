@@ -67,6 +67,18 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0.05f), Tooltip("Least time between two OCCUPIED refusals while a driven car keeps pushing into the taken wash slot.")]
         private float _refusalRepeatSeconds = 0.25f;
 
+        [Header("Service tint (slot lights up while a car is washed or charged)")]
+        [SerializeField, Tooltip("Lit colour of the wash slot: a bright aqua against its dark teal fill.")]
+        private Color _washLitColor = new Color(0.45f, 0.95f, 0.90f);
+        [SerializeField, Tooltip("Lit colour of a charging bay: a lime green, clearly apart from the blue bay and the aqua wash slot.")]
+        private Color _chargeLitColor = new Color(0.65f, 0.95f, 0.30f);
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the way from the idle colour to the lit colour when the service has just started.")]
+        private float _tintMinShare = 0.35f;
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the way to the lit colour when the service is complete.")]
+        private float _tintMaxShare = 0.9f;
+        [SerializeField, Min(0.1f), Tooltip("Seconds the slot stays lit, fading out, after the service finished.")]
+        private float _tintDoneSeconds = 1.5f;
+
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical curb text; the longest word's letters must fit inside the curb height (about 1.15 lines per size).")]
         [SerializeField] private float _curbLabelSize = 0.65f;
@@ -78,6 +90,11 @@ namespace UncannyValet.Lot
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
 
         public float RefusalRepeatSeconds => _refusalRepeatSeconds;
+        public Color WashLitColor => _washLitColor;
+        public Color ChargeLitColor => _chargeLitColor;
+        public float TintMinShare => _tintMinShare;
+        public float TintMaxShare => Mathf.Max(_tintMinShare, _tintMaxShare);
+        public float TintDoneSeconds => _tintDoneSeconds;
         public float LabelSize => _labelSize;
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;

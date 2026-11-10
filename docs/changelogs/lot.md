@@ -61,3 +61,9 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Lot/{LotLayoutBuilder,SpotOccupancy}.cs, Assets/_Project/Tests/EditMode/Lot/ChargingSpotTests.cs
 Why: Core's ILotLayout gained IsChargingSpot (design.md sections 4/10). LotLayoutBuilder delegates to SpotOccupancy.IsCharging, which now returns false for unknown ids.
 Tests: ChargingSpotTests (3: regular false, charging true, unknown false); Unity not run.
+
+## lot: light up wash and charging slots, drop the big ticket box
+Date: 2026-11-10
+Files: Scripts/Lot/{SlotTint,SlotTintRule,SlotTintPhase,LotConfig,SpotBuilder,StationBuilder,StopZone,ZoneRoster}.cs; Scripts/UI/Hud/{WorldTicketPainter,WorldTicketLayout,PlateLayout,ServiceIcons}.cs; Tests/EditMode/Lot/SlotTintRuleTests.cs; Tests/EditMode/UI/{ServiceIconsTests,HudRulesTests}.cs
+Why: Play-test: the world-space info box over cars was too big. The slot itself now lights (aqua wash, lime charge, fading flash when done) and a small droplet/plug icon sits beside the plate (design.md Part A, stations).
+Tests: 20 new EditMode tests (tint rule replays, icon rule, plate icon layout); full suite 791 passed, 0 failed.

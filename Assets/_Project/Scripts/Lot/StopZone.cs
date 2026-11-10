@@ -36,6 +36,9 @@ namespace UncannyValet.Lot
         protected abstract void OnSettled(CarId car);
         protected abstract void OnLeft(CarId car);
 
+        /// <summary>True while this car is inside the zone and has settled.</summary>
+        public bool Holds(CarId car) => _roster != null && _roster.IsSettled(car);
+
         /// <summary>The live car with this id inside the zone, if it is still tracked.</summary>
         protected bool TryGetCar(CarId id, out IDrivable car) => _cars.TryGetValue(id, out car);
 

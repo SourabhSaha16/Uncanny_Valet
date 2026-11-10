@@ -8,14 +8,13 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// The info box floating over a car that has finished arriving: its key-tag colour, a dirt meter that drains
-    /// while the car is washed and a charge meter that fills while it charges (amber when full). Cars with
-    /// no needs get no box. Every ticketed car also carries its licence plate just under it; the plate border and
-    /// glow flash in the patron's emotion colour once they want the car back. Projected from the car's world position so it shares the pixel scale.
+    /// Every placed ticketed car carries its licence plate just under it; the plate border and glow flash in the
+    /// patron's emotion colour once they want the car back. While the car is washed or charged a small droplet or
+    /// plug icon sits beside the plate (the slot itself lights up in the lot). Projected from the car's world
+    /// position so it shares the pixel scale.
     /// </summary>
     public sealed class WorldTicketPainter
     {
-        private const float LiftWorldUnits = 1.5f;
         private const float PlateDropWorldUnits = 1.3f;
 
         private readonly PixelCanvas _canvas;
@@ -34,12 +33,9 @@ namespace UncannyValet.UI.Hud
         public void Draw(List<TicketRow> rows, Camera camera, float time)
         {
             if (camera == null) return;
-            for (var i = rows.Count - 1; i >= 0; i--) // least urgent first, so urgent plates and boxes draw on top
+            for (var i = rows.Count - 1; i >= 0; i--) // least urgent first, so urgent plates draw on top
                 if (rows[i].ShowsPlate && TryProject(rows[i], camera, -PlateDropWorldUnits, out var px, out var py))
                     DrawPlate(rows[i], px, py, CarWidthPixels(rows[i], camera), time);
-            for (var i = rows.Count - 1; i >= 0; i--)
-                if (rows[i].ShowsInfoBox && TryProject(rows[i], camera, LiftWorldUnits, out var bx, out var by))
-                    DrawBox(rows[i], bx, by);
         }
 
         // Canvas position of the point <offsetY> world units above the car; false when the car is gone or behind the camera.
@@ -74,38 +70,15 @@ namespace UncannyValet.UI.Hud
                 _plates.DrawGlowing(row.Plate, x, y, width, _style.ColorOf(emotion));
             else
                 _plates.Draw(row.Plate, x, y, width, PixelPalette.Ink);
+            if (ServiceIcons.TryGet(row, out var icon)) DrawServiceIcon(icon, x, y, width);
         }
 
-        private void DrawBox(TicketRow row, int anchorX, int anchorY)
+        private void DrawServiceIcon(PixelIcon icon, int plateX, int plateY, int plateWidth)
         {
-            var lines = (row.ShowsDirtMeter ? 1 : 0) + (row.ShowsChargeMeter ? 1 : 0);
-            var width = WorldTicketLayout.Width;
-            var height = WorldTicketLayout.Height(lines);
-            var x = WorldTicketLayout.ClampToCanvas(anchorX - width / 2, width, PixelGrid.Width);
-            var y = WorldTicketLayout.ClampToCanvas(anchorY - height, height, PixelGrid.Height);
-            _canvas.Panel(x, y, width, height, PixelPalette.PanelDark);
-            _canvas.Icon(PixelIcon.KeyTag, x + WorldTicketLayout.Border, y + WorldTicketLayout.Border, 1,
-                PixelPalette.TagColor(row.Tag));
-            var line = 0;
-            if (row.ShowsDirtMeter)
-                DrawLine(PixelIcon.Wash, row.Dirt01, PixelPalette.Mud, x, y + WorldTicketLayout.LineY(line++));
-            if (row.ShowsChargeMeter)
-            {
-                var full = row.ChargeShown >= TicketRow.FullCharge;
-                DrawLine(PixelIcon.Plug, row.ChargeShown, full ? PixelPalette.Amber : PixelPalette.Cyan,
-                    x, y + WorldTicketLayout.LineY(line));
-            }
-        }
-
-        private void DrawLine(PixelIcon icon, float level01, Color fill, int boxX, int lineY)
-        {
-            var iconX = boxX + WorldTicketLayout.LineX;
-            _canvas.Icon(icon, iconX, lineY, 1, Color.white);
-            var meterX = iconX + WorldTicketLayout.IconSize + WorldTicketLayout.IconGap;
-            var meterY = lineY + (WorldTicketLayout.IconSize - WorldTicketLayout.MeterHeight) / 2;
-            _canvas.Fill(meterX - 1, meterY - 1, WorldTicketLayout.MeterWidth + 2, WorldTicketLayout.MeterHeight + 2,
-                PixelPalette.Track);
-            _canvas.Fill(meterX, meterY, WorldTicketLayout.MeterFill(level01), WorldTicketLayout.MeterHeight, fill);
+            var iconWidth = _canvas.IconWidth(icon);
+            var x = WorldTicketLayout.ClampToCanvas(PlateLayout.IconX(plateX, plateWidth), iconWidth, PixelGrid.Width);
+            var y = PlateLayout.IconY(plateY, _canvas.IconHeight(icon));
+            _canvas.Icon(icon, x, y, 1, Color.white);
         }
     }
 }
