@@ -471,3 +471,9 @@ Date: 2026-11-10
 Files: docs/redesign/lot_v2_layout.md, docs/redesign/lot_v2_sketch.png, docs/design.md, docs/decisions.md, Core/Contracts/IRoadLayout.cs
 Why: the human's sketch and answers (design.md A5, A8, A9).
 Tests: none (spec and an interface).
+
+## lead: merge lot-v2 and traffic, update design doc
+Date: 2026-11-10
+Files: merges of worktree-agent-aed01734270b59177 and worktree-agent-ad7a2343048ede8aa, docs/design.md
+Why: Lot v2 layout and the Traffic module per docs/redesign/lot_v2_layout.md.
+Tests: 672 of 672 EditMode.

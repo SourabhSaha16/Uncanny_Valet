@@ -35,11 +35,10 @@ debt, strikes or boss orders (all removed).
 
 1. Title screen: "UNCANNY VALET", blinking PRESS ANY KEY. The clock does not start until a key press (also
    unlocks browser audio).
-2. A car drives in to one of 4 side-by-side arrival slots and stops (CarArrived); only then does its info box
-   appear. Any waiting car can be taken. When all 4 slots are full no new car arrives. Waiting cars have no timer
+2. A car drives in to one of 3 arrival slots stacked under the curb and stops (CarArrived); only then does its info box
+   appear. Any waiting car can be taken. When all 3 slots are full no new car arrives. Waiting cars have no timer
    and never leave on their own.
-3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (EV charging bays 10 and
-   11, wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
+3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (the EV charging bay 7, the wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
    hint shows.
 4. The patron returns, the pickup is requested, the valet drives the car to the curb, tip is paid.
 5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
@@ -81,17 +80,16 @@ separate pickup banner is gone.
 
 ## A5. The lot and people
 
-> **In progress (2026-11-10): Lot v2.** The layout below is being replaced by the human's sketch, spec in
-> `docs/redesign/lot_v2_layout.md` (binding): diner on the left with a side door (ambient people) and a main door
-> (patrons), a curb beside it, two rows of 4 tall bays (top: 4 regular; bottom: EV, regular, wash, regular; so 6
-> regular, 1 EV, 1 wash), a 3-slot arrival queue under the curb, a right strip as the road and bus stop where ambient
-> walkers appear, and a two-lane road below the lot with real traffic (patron cars enter from the left and turn into
-> the queue; delivered cars drive down, wait for a gap and leave to the right; ambient cars run both ways).
-> The queue limit becomes 3 and the bay ids change (EV bay 7). Until it is merged the text below still describes the build.
+> **Lot v2 (2026-11-10), layout merged; traffic wiring in progress.** Spec: `docs/redesign/lot_v2_layout.md` (binding).
 
-- Lot layout: a 2 x 6 grid numbered from the curb. Column 1 holds the two EV charging bays (ids 10 and 11, plug
-  icon under the number), the top of column 2 is the wash slot (wash icon, one car only), and the other 9 cells are
-  regular spots 1 to 9. The old station strip at the top is gone.
+- Lot layout (v2): diner on the left with a side door (ambient people) and a main door (patrons); the curb touches
+  the diner right of the main door; a 3-slot arrival queue sits in a column under the curb (nose up); two rows of 4
+  tall bays (2.6 x 4.4, pitch 3.2): top row regular spots 1 to 4, bottom row EV bay (id 7), regular 5, wash, regular 6;
+  a wide aisle with a long crosswalk between the rows; a right strip (x 10.7 to 14.2) is the road and bus stop where
+  ambient walkers appear. The frame is fixed (spots open and close but the walls never move). Below the lot a
+  two-lane road: eastbound lane (next to the lot, patron cars) and westbound lane (ambient cars). `IRoadLayout` (Core)
+  exposes the lanes, the queue turn, the curb merge and the entry and exit routes. The diner is placeholder
+  rectangles with a DINER label and a BUS shelter (real diner art still to author).
 - Lot art: grass, sidewalks, road, the tan green-roof building as the diner, trees; the old placeholder
   rectangles are gone. Spots are painted bays; the curb is a cobbled zone with CURB text.
 - Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
@@ -125,7 +123,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (625 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (672 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -140,7 +138,8 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
-| Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, traffic with yielding, new ambient pedestrian spawn points | in progress (two agents) |
+| Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
+| Traffic module (lane following, car following, yielding, ambient cars) | built and tested; wiring into arrival and departure in progress |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
@@ -194,7 +193,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-09 | Queue of 4 with any car takeable, park timer removed (pickup timer only), wash slot single occupancy with OCCUPIED hint, plug icons under EV bays, delivery accepts any down-facing car (80 degrees), big curb and arrival arrows |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
 | 2026-11-10 | Pedestrian count added to the F2 panel (0 to 10, starts at 3); the human likes the director pacing |
-| 2026-11-10 | Lot v2 adopted from the human's sketch (`docs/redesign/lot_v2_layout.md`): 6 regular + 1 EV + 1 wash, queue of 3, road below with yielding traffic, side door and main door, right strip as ambient spawn. In progress |
+| 2026-11-10 | Lot v2 from the human's sketch (`docs/redesign/lot_v2_layout.md`): 6 regular + 1 EV (id 7) + 1 wash, queue of 3 under the curb, road below, side and main doors, right strip as ambient spawn, fixed frame; director retuned (LotTight 1, LastBay for one bay); Traffic module built (arrival and departure wiring in progress); 672 tests |
 
 ---
 
