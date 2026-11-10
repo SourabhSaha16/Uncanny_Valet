@@ -5,13 +5,14 @@ using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
 using UncannyValet.UI;
 using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
 using UncannyValet.UI.Status;
 
 namespace UncannyValet.Tests.UI
 {
     public class CarStatusTests
     {
-        private static readonly CarStatusResolver Resolver = CarStatusResolver.CreateDefault();
+        private static readonly CarStatusResolver Resolver = CarStatusResolver.CreateDefault(new EmotionRule(0.6f, 0.85f));
 
         private static TicketRow Parked() => new TicketRow { Placed = true, State = TicketRowState.Parked };
 

@@ -81,15 +81,5 @@ namespace UncannyValet.Tests.UI
             Assert.Greater(PlateLayout.Width("KT 4"), min);
             Assert.AreEqual(PixelGlyphs.Height + 2 * (PlateLayout.Border + PlateLayout.PadY), PlateLayout.Height);
         }
-
-        [Test]
-        public void FlashPeriodShrinksAsPatienceRunsOut()
-        {
-            Assert.AreEqual(PlateLayout.SlowPeriod, PlateLayout.FlashPeriod(0f, false), 1e-5f);
-            Assert.AreEqual(PlateLayout.FastPeriod, PlateLayout.FlashPeriod(1f, false), 1e-5f);
-            Assert.AreEqual(PlateLayout.FastPeriod, PlateLayout.FlashPeriod(0.2f, true), 1e-5f);
-            Assert.Less(PlateLayout.FlashPeriod(0.7f, false), PlateLayout.FlashPeriod(0.3f, false));
-            Assert.AreEqual(PlateLayout.SlowPeriod, PlateLayout.FlashPeriod(-4f, false), 1e-5f);
-        }
     }
 }

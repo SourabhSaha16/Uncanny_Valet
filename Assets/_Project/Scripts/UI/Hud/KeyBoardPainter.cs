@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
 using UncannyValet.UI.Status;
 using UnityEngine;
 
@@ -27,11 +28,14 @@ namespace UncannyValet.UI.Hud
 
         private readonly PixelCanvas _canvas;
         private readonly PlatePainter _plates;
-        private readonly CarStatusResolver _status = CarStatusResolver.CreateDefault();
+        private readonly CarStatusResolver _status;
+        private readonly EmotionStyle _style;
 
-        public KeyBoardPainter(PixelCanvas canvas)
+        public KeyBoardPainter(PixelCanvas canvas, EmotionStyle style)
         {
             _canvas = canvas;
+            _style = style;
+            _status = CarStatusResolver.CreateDefault(style.Rule);
             _plates = new PlatePainter(canvas);
         }
 
@@ -64,11 +68,11 @@ namespace UncannyValet.UI.Hud
             DrawStatus(row, x + StatusOffset, y + 3);
         }
 
-        // Cyan row highlight and a bell, both flashing with the plate's urgency flash.
+        // Emotion-coloured row highlight and a bell, both flashing like the plate.
         private void DrawPickupMark(TicketRow row, int x, int y, float time)
         {
-            var lit = PickupMark.IsLit(row, time);
-            var glow = PickupMark.Tint(row);
+            var lit = PickupMark.IsLit(row, time, _style);
+            var glow = PickupMark.Tint(row, _style);
             glow.a = lit ? LitGlow : DimGlow;
             _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
             if (lit) _canvas.Icon(PixelIcon.Bell, x + BellOffset, y + 2, 1, Color.white);

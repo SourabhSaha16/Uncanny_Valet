@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
@@ -10,7 +11,7 @@ namespace UncannyValet.UI.Hud
     /// The info box floating over a car that has finished arriving: its key-tag colour, a dirt meter that drains
     /// while the car is washed and a charge meter that fills while it charges (amber when full). Cars with
     /// no needs get no box. Every ticketed car also carries its licence plate just under it; the plate border and
-    /// glow flash once the patron wants the car back. Projected from the car's world position so it shares the pixel scale.
+    /// glow flash in the patron's emotion colour once they want the car back. Projected from the car's world position so it shares the pixel scale.
     /// </summary>
     public sealed class WorldTicketPainter
     {
@@ -20,11 +21,13 @@ namespace UncannyValet.UI.Hud
         private readonly PixelCanvas _canvas;
         private readonly ICarFactory _cars;
         private readonly PlatePainter _plates;
+        private readonly EmotionStyle _style;
 
-        public WorldTicketPainter(PixelCanvas canvas, ICarFactory cars)
+        public WorldTicketPainter(PixelCanvas canvas, ICarFactory cars, EmotionStyle style)
         {
             _canvas = canvas;
             _cars = cars;
+            _style = style;
             _plates = new PlatePainter(canvas);
         }
 
@@ -66,8 +69,9 @@ namespace UncannyValet.UI.Hud
             var x = WorldTicketLayout.ClampToCanvas(anchorX - width / 2, width, PixelGrid.Width);
             var y = WorldTicketLayout.ClampToCanvas(anchorY, PlateLayout.Height, PixelGrid.Height);
             var wanted = row.State == TicketRowState.PickupRequested;
-            if (wanted && Blink.IsOn(time, PlateLayout.FlashPeriod(row.Elapsed01, row.Expired)))
-                _plates.DrawGlowing(row.Plate, x, y, width, AlarmColors.For(Alarm.ForPatience(row.Elapsed01, row.Expired), PixelPalette.Cyan));
+            var emotion = _style.Rule.Resolve(row);
+            if (wanted && _style.IsLit(emotion, time))
+                _plates.DrawGlowing(row.Plate, x, y, width, _style.ColorOf(emotion));
             else
                 _plates.Draw(row.Plate, x, y, width, PixelPalette.Ink);
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.UI.Mood;
 
 namespace UncannyValet.UI.Status
 {
@@ -17,9 +18,9 @@ namespace UncannyValet.UI.Status
         }
 
         /// <summary>The game's rules: Cust. Angry, Pick Up, Washing, Charging, Washed, Charged, then Parked.</summary>
-        public static CarStatusResolver CreateDefault() => new CarStatusResolver(new ICarStatusRule[]
+        public static CarStatusResolver CreateDefault(EmotionRule emotions) => new CarStatusResolver(new ICarStatusRule[]
         {
-            new CustAngryStatusRule(),
+            new CustAngryStatusRule(emotions),
             new PickUpStatusRule(),
             new WashingStatusRule(),
             new ChargingStatusRule(),

@@ -1,11 +1,11 @@
-using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Pure rules for the pickup mark on a key board row: a cyan row highlight and a bell that flash with the same
-    /// urgency maths as the plate (slow while patience is fresh, fast as it runs out; amber, then orange-red).
+    /// Pure rules for the pickup mark on a key board row: a highlight and a bell that flash with the patron's emotion,
+    /// the same colour and speed as the plate (green slow, yellow faster, red very fast).
     /// </summary>
     public static class PickupMark
     {
@@ -13,11 +13,10 @@ namespace UncannyValet.UI.Hud
         public static bool IsRequested(TicketRow row) => row.State == TicketRowState.PickupRequested;
 
         /// <summary>True during the lit half of the current flash.</summary>
-        public static bool IsLit(TicketRow row, float time)
-            => Blink.IsOn(time, PlateLayout.FlashPeriod(row.Elapsed01, row.Expired));
+        public static bool IsLit(TicketRow row, float time, EmotionStyle style)
+            => style.IsLit(style.Rule.Resolve(row), time);
 
-        /// <summary>Highlight colour: cyan, amber when patience is running low, orange-red when expired or nearly so.</summary>
-        public static Color Tint(TicketRow row)
-            => AlarmColors.For(Alarm.ForPatience(row.Elapsed01, row.Expired), PixelPalette.Cyan);
+        /// <summary>Highlight colour: the emotion colour.</summary>
+        public static Color Tint(TicketRow row, EmotionStyle style) => style.ColorOf(style.Rule.Resolve(row));
     }
 }

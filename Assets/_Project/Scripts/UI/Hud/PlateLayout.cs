@@ -4,7 +4,7 @@ using UncannyValet.UI.Kit;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Pure sizes and flash timing of a licence plate box: a light plate with a dark border and pixel text.
+    /// Pure sizes of a licence plate box: a light plate with a dark border and pixel text.
     /// The word gap is narrower than a full glyph so "KT 4" stays small enough to sit under a car.
     /// </summary>
     public static class PlateLayout
@@ -16,10 +16,6 @@ namespace UncannyValet.UI.Hud
         public const int SpaceAdvance = 2;
         /// <summary>Thickness of the flashing glow drawn around a plate whose car is wanted back.</summary>
         public const int Glow = 2;
-        /// <summary>Seconds per flash right after the pickup is requested.</summary>
-        public const float SlowPeriod = 1f;
-        /// <summary>Seconds per flash when patience is gone.</summary>
-        public const float FastPeriod = 1f / 6f;
 
         /// <summary>Pixel width of the plate text (glyphs plus gaps, narrow spaces).</summary>
         public static int TextWidth(string plate)
@@ -43,11 +39,5 @@ namespace UncannyValet.UI.Hud
         /// <summary>Plate height in virtual pixels.</summary>
         public static int Height => PixelGlyphs.Height + 2 * (Border + PadY);
 
-        /// <summary>Seconds per flash: slow while patience is fresh, fast as it runs out.</summary>
-        public static float FlashPeriod(float elapsed01, bool expired)
-        {
-            var t = expired ? 1f : Math.Min(1f, Math.Max(0f, elapsed01));
-            return SlowPeriod + (FastPeriod - SlowPeriod) * t;
-        }
     }
 }

@@ -1,12 +1,26 @@
 using NUnit.Framework;
 using UncannyValet.UI;
 using UncannyValet.UI.Hud;
-using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
+using UnityEngine;
 
 namespace UncannyValet.Tests.UI
 {
     public class PickupMarkTests
     {
+        private HudEmotionConfig _config;
+        private EmotionStyle _style;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _config = ScriptableObject.CreateInstance<HudEmotionConfig>();
+            _style = new EmotionStyle(_config);
+        }
+
+        [TearDown]
+        public void TearDown() => Object.DestroyImmediate(_config);
+
         private static TicketRow Row(TicketRowState state, float elapsed, bool expired = false)
             => new TicketRow { State = state, Elapsed01 = elapsed, Expired = expired };
 
@@ -19,21 +33,21 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void FlashFollowsThePlateUrgencyPeriod()
+        public void FlashSpeedFollowsTheEmotion()
         {
-            var calm = Row(TicketRowState.PickupRequested, 0f);
-            var urgent = Row(TicketRowState.PickupRequested, 1f);
-            Assert.IsTrue(PickupMark.IsLit(calm, 0.1f));
-            Assert.IsFalse(PickupMark.IsLit(calm, 0.6f)); // slow period 1 s: lit for the first half
-            Assert.IsFalse(PickupMark.IsLit(urgent, 0.1f)); // fast period 1/6 s: dark again after 1/12 s
+            var happy = Row(TicketRowState.PickupRequested, 0f);
+            var angry = Row(TicketRowState.PickupRequested, 1f);
+            Assert.IsTrue(PickupMark.IsLit(happy, 0.1f, _style));
+            Assert.IsFalse(PickupMark.IsLit(happy, 0.5f, _style)); // 1.5 Hz: period 0.67 s, lit for the first 0.33 s
+            Assert.IsFalse(PickupMark.IsLit(angry, 0.1f, _style)); // 7 Hz: dark again after 0.07 s
         }
 
         [Test]
-        public void TintFollowsTheAlarmColours()
+        public void TintIsTheEmotionColour()
         {
-            Assert.AreEqual(PixelPalette.Cyan, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.1f)));
-            Assert.AreEqual(PixelPalette.Amber, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.7f)));
-            Assert.AreEqual(PixelPalette.OrangeRed, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true)));
+            Assert.AreEqual(_config.HappyColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.1f), _style));
+            Assert.AreEqual(_config.ImpatientColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.7f), _style));
+            Assert.AreEqual(_config.AngryColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true), _style));
         }
     }
 }

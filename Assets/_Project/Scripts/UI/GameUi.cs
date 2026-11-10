@@ -5,6 +5,7 @@ using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.UI.Hud;
 using UncannyValet.UI.Kit;
+using UncannyValet.UI.Mood;
 using UncannyValet.UI.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,6 +25,9 @@ namespace UncannyValet.UI
         [SerializeField, Min(0f), Tooltip("Seconds before a key dismisses the title screen.")]
         private float _titleKeyDelaySeconds = 0.3f;
 
+        [SerializeField, Tooltip("Emotion thresholds, flash speeds and colours of the pickup mark. Set by Setup/Build Everything.")]
+        private HudEmotionConfig _emotions;
+
         private readonly List<TicketRow> _rows = new List<TicketRow>(8);
         private readonly List<TicketRow> _keyRows = new List<TicketRow>(8);
         private Func<string> _prompt = NoPrompt;
@@ -38,6 +42,7 @@ namespace UncannyValet.UI
         private KeyBoardPainter _keyBoard;
         private NoticePainter _notices;
         private WorldTicketPainter _world;
+        private PatronMoodPainter _mood;
         private CurbHintTracker _curbHints;
         private CurbHintPainter _hintPainter;
         private OccupiedHintTracker _occupiedHints;
@@ -71,9 +76,11 @@ namespace UncannyValet.UI
             _kit = new PixelKit();
             _canvas = new PixelCanvas(_kit);
             _hud = new HudPainter(_canvas, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>());
-            _keyBoard = new KeyBoardPainter(_canvas);
+            var style = new EmotionStyle(EmotionConfig());
+            _keyBoard = new KeyBoardPainter(_canvas, style);
             _notices = new NoticePainter(_canvas);
-            _world = new WorldTicketPainter(_canvas, Services.Get<ICarFactory>());
+            _world = new WorldTicketPainter(_canvas, Services.Get<ICarFactory>(), style);
+            _mood = new PatronMoodPainter(_canvas, style);
             _curbHints = new CurbHintTracker(_bus);
             _hintPainter = new CurbHintPainter(_canvas, Services.Get<ICarFactory>(), _curbHints);
             _occupiedHints = new OccupiedHintTracker(_bus, UnscaledTime);
@@ -83,6 +90,14 @@ namespace UncannyValet.UI
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftResultReady>(OnResult);
             SetPhase(UiPhase.Title);
+        }
+
+        private HudEmotionConfig EmotionConfig()
+        {
+            if (_emotions != null) return _emotions;
+            Debug.LogError("GameUi has no HudEmotionConfig; using defaults. Rebuild with Setup/Build Everything.", this);
+            _emotions = ScriptableObject.CreateInstance<HudEmotionConfig>();
+            return _emotions;
         }
 
         private void OnDisable()
@@ -181,6 +196,7 @@ namespace UncannyValet.UI
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
             _board.CollectRows(_rows);
             _world.Draw(_rows, ResolveCamera(), time);
+            _mood.Draw(_rows, ResolveCamera());
             _hintPainter.Draw(ResolveCamera());
             _occupiedPainter.Draw(ResolveCamera());
             _hud.Draw(time);

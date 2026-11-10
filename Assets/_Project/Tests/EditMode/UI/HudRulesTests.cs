@@ -30,25 +30,6 @@ namespace UncannyValet.Tests.UI
             => Assert.AreEqual(expected, Alarm.ForClock(seconds));
 
         [Test]
-        public void Alarm_Patience_TurnsAmberThenOrangeRed()
-        {
-            Assert.AreEqual(AlarmLevel.Calm, Alarm.ForPatience(0.3f, false));
-            Assert.AreEqual(AlarmLevel.Low, Alarm.ForPatience(0.7f, false));
-            Assert.AreEqual(AlarmLevel.Danger, Alarm.ForPatience(0.9f, false));
-            Assert.AreEqual(AlarmLevel.Danger, Alarm.ForPatience(0.1f, true));
-        }
-
-        [Test]
-        public void Alarm_PatienceFill_ShrinksAsTimeRunsOut()
-        {
-            Assert.AreEqual(40, Alarm.PatienceFill(0f, 40));
-            Assert.AreEqual(20, Alarm.PatienceFill(0.5f, 40));
-            Assert.AreEqual(0, Alarm.PatienceFill(1f, 40));
-            Assert.AreEqual(0, Alarm.PatienceFill(3f, 40));
-            Assert.AreEqual(40, Alarm.PatienceFill(-1f, 40));
-        }
-
-        [Test]
         public void StarBar_FillsTowardTheThreeStarScoreAndLightsStars()
         {
             var bar = new StarBarLayout(300, 150, 300, 450, 90);

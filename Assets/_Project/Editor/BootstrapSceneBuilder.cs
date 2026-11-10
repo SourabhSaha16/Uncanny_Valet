@@ -11,6 +11,7 @@ using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
+using UncannyValet.UI.Mood;
 using UncannyValet.Valet;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -24,6 +25,7 @@ namespace UncannyValet.EditorTools
         public const string ScenePath = "Assets/_Project/Scenes/Bootstrap.unity";
         private const string DefaultCarPath = "Assets/_Project/Data/Cars/Sedan.asset";
         private const string CarFlashConfigPath = "Assets/_Project/Data/Cars/CarFlashConfig.asset";
+        private const string HudEmotionConfigPath = "Assets/_Project/Data/UI/HudEmotionConfig.asset";
         private const float ValetScale = 1.4f;
         private const float ValetColliderRadius = 0.3f; // times the scale: about the old 0.4 world radius
         private const int ValetSortingOrder = 20;
@@ -61,6 +63,7 @@ namespace UncannyValet.EditorTools
             Set(lot, "_art", lotArt);
             Set(factory, "_art", carArt);
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
+            Set(ui, "_emotions", ArtAssetUtil.LoadOrCreate<HudEmotionConfig>(HudEmotionConfigPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
