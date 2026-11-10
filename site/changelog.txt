@@ -1,4 +1,9 @@
 === Last 50 commits ===
+c669f27  2026-11-10  ui-status: split TicketBoard and GameUi under 200 lines
+1f35e62  2026-11-10  ui-status: pickup emotions on patron bubble, plate and row
+5be8e76  2026-11-10  ui-status: plate shows only once the car is parked
+3102d0a  2026-11-10  ui-status: CAR SLOTS rows show a status word
+8149a0a  2026-11-10  lead: merge lot-v4, update design doc, rebuild site
 5914f39  2026-11-10  lot-v4: shift the pickup zone right, patrons wait in the gap
 7d25542  2026-11-10  lot-v4: fewer exit route arrows
 ab582e0  2026-11-10  lot-v4: rename the key board panel to CAR SLOTS
@@ -44,11 +49,6 @@ a3a7257  2026-11-09  lead: merge pivot-crowd, fix seeded random, rebuild site
 77143b0  2026-11-09  lead: merge pivot-crowd
 49b4d0e  2026-11-09  pivot-crowd: short plates, pickup bell, walking patrons, face-down delivery, headlights
 18b210b  2026-11-09  lead: make design.md a living doc with the current chaos design
-f57ff6f  2026-11-09  lead: merge pivot-plates, rebuild site
-1acd085  2026-11-09  lead: merge pivot-plates
-5831ff6  2026-11-09  pivot-plates: licence plates, tinted car bodies, remove legacy meters
-14806da  2026-11-09  lead: UI style guide revision 2
-ba1e09d  2026-11-09  lead: merge pivot-polish, rebuild site
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -761,6 +761,12 @@ Files: merge of worktree-agent-a467414c00b26f057, docs/design.md, site/
 Why: the human's 8 play-test changes (docs/changelogs/lot-v3.md).
 Tests: 707 of 707 EditMode; browser shows the new look, no console errors.
 
+## lead: merge lot-v4, update design doc, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-aca42b483dd08be4f, docs/design.md, docs/redesign/ui_style_guide.md, site/
+Why: the human's 7 play-test notes (docs/changelogs/lot-v4.md).
+Tests: 712 of 712 EditMode; browser shows the gap, fewer arrows, no console errors.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1260,6 +1266,33 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Traffic/* (new assembly UncannyValet.Traffic), Assets/_Project/Tests/EditMode/Traffic/{CarFollowingTests,LanePathTests,LaneOccupancyTests,MergeGapRuleTests,AmbientSpawnerTests,TripTests}.cs, Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef (reference added)
 Why: docs/redesign/lot_v2_layout.md "Road below the lot" and "Traffic mechanics". Pure rules (lane path, car following, merge gap, ambient spawner, occupancy registry), pooled visual-only ambient cars on both lanes (TrafficModule + TrafficConfig), and entry/exit trips (IEntryRouter, IExitRouter, ITripDriver) for patron cars, built on the Core IRoadLayout contract.
 Tests: six EditMode fixtures written; Unity not run in this sandbox, the lead compiles and runs them.
+
+=== docs/changelogs/ui-status.md ===
+# ui-status changelog
+
+## ui-status: CAR SLOTS rows show a status word
+Date: 2026-11-10
+Files: Scripts/UI/Status/{CarStatus,ICarStatusRule,CarStatusResolver,CarStatusTable,CustAngryStatusRule,PickUpStatusRule,WashingStatusRule,ChargingStatusRule,WashedStatusRule,ChargedStatusRule}.cs, Scripts/UI/{TicketRow,TicketBoard}.cs, Scripts/UI/Hud/KeyBoardPainter.cs, Tests/EditMode/UI/CarStatusTests.cs
+Why: human request (design.md A4 / style guide rev 6): each CAR SLOTS row shows Parked, Washing, Washed, Charging, Charged, Pick Up or Cust. Angry instead of the dash and the patience bar; the spot number and the pickup bell stay. The resolver takes the first applying rule of an ordered list (Cust. Angry, Pick Up, Washing, Charging, Washed, Charged, else Parked); a new status is one enum id, one rule class, one table entry. TicketRow now remembers the station the car is in (CarEnteredStation / CarLeftStation); no new gameplay state. "Cust. Angry" is 65 px wide and the row has 56 px left, so the table has a short label (Angry) used only when the full one does not fit.
+Tests: CarStatusTests (priorities, station transitions, table completeness, abbreviation, an extra rule joining the list, board tracks stations).
+
+## ui-status: licence plate shows only once the car is parked
+Date: 2026-11-10
+Files: Scripts/UI/TicketRow.cs, Scripts/UI/Hud/WorldTicketPainter.cs, Tests/EditMode/UI/TicketBoardTests.cs
+Why: human saw a plate at the screen edge before the car was in view (design.md A4). The plate is drawn by the UI world painter (not a Cars component) and was gated only on HasPlate, with its position clamped to the canvas, so a plate for an off-screen car pinned itself to the edge. New TicketRow.ShowsPlate = HasPlate && Placed, the same Placed flag the CAR SLOTS list uses (CarParked or CarEnteredStation); the plate-assigned event still only fills the row text.
+Tests: TicketBoardTests.PlateShowsOnlyOnceTheCarIsParked (regression: hidden while queued and after CarArrived, shown after CarParked), PlateShowsOnceTheCarEntersAStation.
+
+## ui-status: pickup emotions on a patron bubble, the plate and the row
+Date: 2026-11-10
+Files: Scripts/UI/Mood/{Emotion,EmotionRule,EmotionStyle,HudEmotionConfig,MoodBubbleLayout}.cs, Scripts/UI/Hud/{PatronMoodPainter,PickupMark,PlateLayout,Alarm,WorldTicketPainter,KeyBoardPainter}.cs, Scripts/UI/{GameUi}.cs, Scripts/UI/Status/{CustAngryStatusRule,CarStatusResolver}.cs, Editor/BootstrapSceneBuilder.cs, Data/UI/HudEmotionConfig.asset, Scenes/Bootstrap.unity (regenerated: GameUi gets the config reference; the file shows id churn), Tests/EditMode/UI/{EmotionTests,PickupMarkTests,HudRulesTests,PlateUiTests,CarStatusTests}.cs
+Why: human request (design.md A4 pickup urgency). One pure EmotionRule (patience fraction to Happy / Impatient / Angry; angry also when expired) feeds (a) a small pixel chat bubble with a face over the waiting patron, placed through IPatronLocator so it follows them and vanishes when they stop waiting or the ticket closes, (b) the plate flash colour and speed, (c) the CAR SLOTS highlight, bell and the Cust. Angry status. Colours green / yellow / red, flash 1.5 / 3 / 7 Hz, thresholds 0.6 / 0.85 (the old amber and danger levels) all live in the new HudEmotionConfig asset with [Min]/[Range]/[Tooltip]. The old cyan/amber/orange-red plate flash, FlashPeriod, the patience constants and the patience bar maths in Alarm are removed (dead code). The Cars-module body tint pulse (CarFlashConfig) is untouched and still uses cyan/amber/orange-red.
+Tests: EmotionTests (thresholds, expiry, rates and colours, bubble faces, Cust. Angry follows Angry), PickupMarkTests rewritten for emotion tint and speed. Full EditMode run at this commit.
+
+## ui-status: split TicketBoard and GameUi under the 200-line limit
+Date: 2026-11-10
+Files: Scripts/UI/{TicketBoard,TicketNeedsTracker,GameUi}.cs, Scripts/UI/Hud/PlayingHud.cs
+Why: CLAUDE.md file-size limit, no behaviour change. TicketNeedsTracker takes the EV, dirty, charge and wash-progress handlers (and the shared FindByCar); PlayingHud owns the ticket board, the in-shift painters and the hint trackers that GameUi built and drew directly.
+Tests: full EditMode run, 737 passed, 0 failed.
 
 === docs/changelogs/valet.md ===
 # Valet changelog

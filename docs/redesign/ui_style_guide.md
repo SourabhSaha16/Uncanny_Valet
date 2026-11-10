@@ -107,3 +107,9 @@ Overrides earlier text where it conflicts.
 - The bottom-left panel is titled CAR SLOTS (was KEY BOARD) and lists a car only once it is parked in a spot or station.
 - The results screen has no cars returned line.
 - The VALET PICKUP zone is set 1.75 units off the diner wall; patrons wait in the gap and face it. Exit-route arrows are sparse (about one per 5.5 units).
+
+## Revision 7 (2026-11-10, human play-test notes)
+
+- Each CAR SLOTS row shows a status word instead of a timer: Parked, Washing, Washed, Charging, Charged, Pick Up, Cust. Angry. Statuses are table-driven so new ones (Overheating, On Fire) are easy to add.
+- A car's licence plate is drawn only once the car is parked.
+- Pickup emotions: green happy, yellow impatient, red angry. A chat bubble over the waiting patron and the plate flash use them; flash speeds slow, faster, very fast (1.5, 3, 7 Hz). This replaces the cyan/amber/orange-red plate flash.

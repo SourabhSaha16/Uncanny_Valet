@@ -495,3 +495,9 @@ Date: 2026-11-10
 Files: merge of worktree-agent-aca42b483dd08be4f, docs/design.md, docs/redesign/ui_style_guide.md, site/
 Why: the human's 7 play-test notes (docs/changelogs/lot-v4.md).
 Tests: 712 of 712 EditMode; browser shows the gap, fewer arrows, no console errors.
+
+## lead: merge ui-status, update design doc and style guide, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a92c1ead62b9e0ed2, docs/design.md, docs/redesign/ui_style_guide.md, site/
+Why: the human's UI notes: status words, plate only when parked, pickup emotions (docs/changelogs/ui-status.md).
+Tests: 737 of 737 EditMode; browser smoke test with no console errors.

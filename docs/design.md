@@ -66,8 +66,11 @@ Car presentation (all per ticket):
   Alphabet BCDFGHJKLMNPRSTVWXZ, unique among open tickets (a duplicate is issued if the 3610 combinations run out).
 - An info box above the car, only when something applies: dirty icon with a dirt meter, plug icon with a
   charge meter (amber at full). It appears only after the car has arrived.
-- Pickup urgency flashes the plate border and pulses the body tint, faster as patience runs down (1 to 6 Hz;
-  cyan, then amber from 60%, orange-red from 85% or expired).
+- Pickup emotion: from the pickup patience fraction, Happy (green, under 60%), Impatient (yellow, from 60%) or Angry
+  (red, from 85% or expired). The plate border flashes in that colour at 1.5, 3 and 7 Hz (`HudEmotionConfig`), a
+  small chat bubble with a face floats over the waiting patron in the same colour, and the CAR SLOTS row and bell
+  use it too. The car body tint pulse still uses the old cyan/amber/orange-red colours (known mismatch).
+- The plate shows under a car only once it is parked in a spot or station.
 - No letters on cars, no roof band, no charge slider, no timer bar (all removed).
 - Headlight highlights (two bright dots and a warm glow) at the nose of every car so the player can read the
   facing; tunables in `CarFlashConfig` (small at the current zoom, to be checked in play).
@@ -90,6 +93,10 @@ separate pickup banner is gone.
   two-lane road: eastbound lane (next to the lot, patron cars) and westbound lane (ambient cars). `IRoadLayout` (Core)
   exposes the lanes, the queue turn, the curb merge and the entry and exit routes. The diner is placeholder
   a red-roof MetroCity building (roof tiles, window band, striped awnings over both doors, small DINER sign) and a BUS shelter.
+- CAR SLOTS status word (2026-11-10): each row shows Parked, Washing, Washed, Charging, Charged, Pick Up or Cust.
+  Angry (shortened to Angry when it does not fit) instead of the timer bar. A new status is one enum id, one rule
+  class and one row in the label/colour table (`Scripts/UI/Status/`), in priority order Cust. Angry > Pick Up >
+  Washing > Charging > Washed > Charged > Parked.
 - Lot v4 (2026-11-10): the VALET PICKUP zone sits 1.75 units right of the diner wall (`SiteLayout.CurbGap`);
   patrons wait in that gap and always face east to the zone (set in `WalkerRouter.Apply` while Waiting); the queue
   column stays under the zone; the exit route has about 4 arrows (5.5 units apart). The key board panel is titled
@@ -133,7 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (712 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (737 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -151,6 +158,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
 | Lot v3 polish: patrons face the pickup, VALET PICKUP label, dotted queue boxes, zebra crosswalks, real building, asphalt surround, exit-route arrows, F2 entry and exit speed | done, first browser check only |
 | Lot v4: pickup zone gap, CAR SLOTS board (parked cars only), fewer arrows, traffic defaults, results without cars returned | done, first browser check only |
+| CAR SLOTS status words, plate only when parked, pickup emotions (patron bubble, plate flash colours and speeds) | done, not played |
 | Traffic module (lane following, car following, yielding, ambient cars), wired into patron arrival and departure; F2 Traffic rows (ambient rate and speed, entry speed, exit speed) | done; first browser check showed a patron car entering up the queue column, road mostly cropped by the camera |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
@@ -208,6 +216,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-10 | Lot v2 from the human's sketch (`docs/redesign/lot_v2_layout.md`): 6 regular + 1 EV (id 7) + 1 wash, queue of 3 under the curb, road below, side and main doors, right strip as ambient spawn, fixed frame; director retuned (LotTight 1, LastBay for one bay); Traffic module built (arrival and departure wiring in progress); 672 tests |
 | 2026-11-10 | Lot v3 polish (8 items from play-test) merged: see A5; 707 tests |
 | 2026-11-10 | Lot v4 play-test fixes merged (pickup zone gap, CAR SLOTS only parked cars, fewer exit arrows, traffic defaults, no cars returned stat, patron facing fix); 712 tests |
+| 2026-11-10 | UI status and emotions merged: CAR SLOTS status words (extensible), plate only when parked, patron mood bubble, green/yellow/red plate flash at 1.5/3/7 Hz; 737 tests |
 
 ---
 
