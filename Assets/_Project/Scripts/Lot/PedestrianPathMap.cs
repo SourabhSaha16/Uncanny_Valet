@@ -39,6 +39,8 @@ namespace UncannyValet.Lot
         /// <summary>The side door in world coordinates: where ambient people vanish and appear.</summary>
         public Vector2 SideDoor => _sideDoor + _origin;
 
+        public Vector2 CurbCenter => _g.Curb.center + _origin;
+
         public int CurbSlotCount => _style.WaitSlots;
 
         public int RoadRouteCount => StartShares.Length;

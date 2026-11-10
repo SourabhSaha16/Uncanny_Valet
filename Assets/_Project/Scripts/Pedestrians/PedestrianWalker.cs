@@ -20,6 +20,8 @@ namespace UncannyValet.Pedestrians
         private SpriteRenderer _outfit;
         private SpriteRenderer _hair;
         private WalkFacing _facing = WalkFacing.Down;
+        private Vector2 _lookAt;
+        private bool _hasLookAt;
         private float _speed;
         private float _walkSeconds;
         private int _shownColumn = -1;
@@ -79,7 +81,16 @@ namespace UncannyValet.Pedestrians
             _single.Clear();
             _single.Add(position);
             _path.Begin(_single);
+            _hasLookAt = false;
             transform.position = position;
+            Show();
+        }
+
+        /// <summary>Makes a standing person turn to face <paramref name="point"/> (cleared by the next walk or placement).</summary>
+        public void FaceToward(Vector2 point)
+        {
+            _lookAt = point;
+            _hasLookAt = true;
             Show();
         }
 
@@ -87,6 +98,7 @@ namespace UncannyValet.Pedestrians
         public void Walk(List<Vector2> route, float startFraction = 0f)
         {
             _path.Begin(route, startFraction);
+            _hasLookAt = false;
             transform.position = _path.Position;
             Show();
         }
@@ -112,7 +124,9 @@ namespace UncannyValet.Pedestrians
 
         private void Show()
         {
-            _facing = WalkAnimMath.Facing(_path.Heading, _facing);
+            _facing = _hasLookAt && !_path.Walking
+                ? WalkAnimMath.FacingToward(transform.position, _lookAt, _facing)
+                : WalkAnimMath.Facing(_path.Heading, _facing);
             var moving = _path.Walking;
             var frame = moving ? WalkAnimMath.Frame(_walkSeconds, _config.FramesPerSecond, _config.FramesPerGroup) : 0;
             var column = _config.GroupStart(_facing) + frame;

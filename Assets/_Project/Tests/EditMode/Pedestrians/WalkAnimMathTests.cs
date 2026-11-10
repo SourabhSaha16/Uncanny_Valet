@@ -23,6 +23,15 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
+        public void FacingTowardTurnsAPatronToTheCurbZone()
+        {
+            var slot = new Vector2(10f, 4f);
+            Assert.AreEqual(WalkFacing.Left, WalkAnimMath.FacingToward(slot, new Vector2(8f, 4f), WalkFacing.Down));
+            Assert.AreEqual(WalkFacing.Up, WalkAnimMath.FacingToward(slot, new Vector2(9.8f, 8f), WalkFacing.Right));
+            Assert.AreEqual(WalkFacing.Right, WalkAnimMath.FacingToward(slot, slot, WalkFacing.Right));
+        }
+
+        [Test]
         public void FrameCyclesThroughTheGroup()
         {
             Assert.AreEqual(0, WalkAnimMath.Frame(0f, 10f, 6));

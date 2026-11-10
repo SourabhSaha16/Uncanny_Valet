@@ -13,6 +13,9 @@ namespace UncannyValet.Core.Contracts
         /// <summary>The diner door, where people vanish and appear.</summary>
         Vector2 DinerDoor { get; }
 
+        /// <summary>The middle of the curb zone (the valet pickup spot), which waiting patrons face.</summary>
+        Vector2 CurbCenter { get; }
+
         /// <summary>Number of standing spots at the curb.</summary>
         int CurbSlotCount { get; }
 

@@ -71,7 +71,9 @@ namespace UncannyValet.Pedestrians
         {
             walker.Brain.ReachedRouteEnd();
             _router.Apply(walker);
-            if (walker.Brain.Phase == PedestrianPhase.Waiting) _bus.Publish(new PatronReachedCurb(walker.Car));
+            if (walker.Brain.Phase != PedestrianPhase.Waiting) return;
+            walker.FaceToward(_paths.CurbCenter);
+            _bus.Publish(new PatronReachedCurb(walker.Car));
         }
 
         private void OnCarArrived(CarArrived e)

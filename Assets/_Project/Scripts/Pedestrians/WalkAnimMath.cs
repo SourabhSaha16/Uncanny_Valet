@@ -15,6 +15,10 @@ namespace UncannyValet.Pedestrians
             return heading.y > 0f ? WalkFacing.Up : WalkFacing.Down;
         }
 
+        /// <summary>Facing of a person standing at <paramref name="from"/> who looks at <paramref name="target"/>; keeps the current facing when the two are level or on the spot.</summary>
+        public static WalkFacing FacingToward(Vector2 from, Vector2 target, WalkFacing current)
+            => Facing(target - from, current);
+
         /// <summary>Run-cycle frame 0..frames-1 for the time spent walking. Returns 0 when frames is 0 or less.</summary>
         public static int Frame(float walkingSeconds, float framesPerSecond, int frames)
         {
