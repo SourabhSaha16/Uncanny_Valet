@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Traffic",
+    "rootNamespace": "UncannyValet.Traffic",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}
