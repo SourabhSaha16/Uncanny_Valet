@@ -1,4 +1,12 @@
 === Last 50 commits ===
+7dea408  2026-11-10  lead: merge traffic-wire, rebuild site
+3356086  2026-11-10  traffic-wire: hook up road traffic, patron arrival and departure trips
+2896813  2026-11-10  lead: merge lot-v2 and traffic, update design doc
+d5f0bdc  2026-11-10  Merge branch 'worktree-agent-ad7a2343048ede8aa' into pivot/chaos
+8c1fe75  2026-11-10  lot-v2: rebuild lot to the sketch, road below, new routes
+2baa4b5  2026-11-10  traffic: add road traffic module with car following and patron trips
+fb6af92  2026-11-10  lead: lot v2 spec, IRoadLayout contract, design doc updates
+6cc1cfc  2026-11-10  lead: add pedestrian count to F2 panel, start at 3
 b45677a  2026-11-09  lead: merge director-2, rebuild site
 f616bb4  2026-11-09  lead: merge director-2
 11109c8  2026-11-09  director-2: archetype picker, dilemma rules and gate, soak test
@@ -41,14 +49,6 @@ fd2f4a9  2026-11-09  lead: merge pivot-core
 7717f0d  2026-11-09  pivot-core: replace nights, debt and boss orders with scored shifts
 de43667  2026-11-09  lead: commit generated art meta files
 77eb4d0  2026-11-09  lead: merge pivot-art
-be944ae  2026-11-09  pivot-art: import MetroCity art and add pixel import postprocessor
-9b5e70d  2026-11-09  lead: start pivot/chaos with redesign doc and MetroCity sources
-5a64f54  2026-11-07  lead: rebuild site for round 7, fix camera null at startup
-10b4d10  2026-11-07  lead: wire run loss guard, new run after lost run
-a1f9a14  2026-11-07  lead: merge worktree-agent-a8045495535519c56
-2ced8a5  2026-11-07  lead: merge worktree-agent-a206028ac2276dcd2
-a487025  2026-11-07  lead: merge worktree-agent-a69166817be7fa9e1
-1292ace  2026-11-07  lead: merge worktree-agent-a9436e6604dcfb3ee
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -737,6 +737,42 @@ Files: TuningKey.cs, TuningCatalog.cs, TuningSeeder.cs, GameBootstrap.cs, Pedest
 Why: the human wants fewer pedestrians at the start and control over the number (design.md A4).
 Tests: 625 of 625 EditMode.
 
+## lead: lot v2 spec, IRoadLayout contract, design doc updates
+Date: 2026-11-10
+Files: docs/redesign/lot_v2_layout.md, docs/redesign/lot_v2_sketch.png, docs/design.md, docs/decisions.md, Core/Contracts/IRoadLayout.cs
+Why: the human's sketch and answers (design.md A5, A8, A9).
+Tests: none (spec and an interface).
+
+## lead: merge lot-v2 and traffic, update design doc
+Date: 2026-11-10
+Files: merges of worktree-agent-aed01734270b59177 and worktree-agent-ad7a2343048ede8aa, docs/design.md
+Why: Lot v2 layout and the Traffic module per docs/redesign/lot_v2_layout.md.
+Tests: 672 of 672 EditMode.
+
+## lead: merge traffic-wire, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a23a9621f7d814729, scene and configs, site/
+Why: road traffic wired into patron arrival and departure (docs/redesign/lot_v2_layout.md).
+Tests: 680 of 680 EditMode.
+
+=== docs/changelogs/lot-v2.md ===
+# lot-v2 changelog
+
+## lot-v2: rebuild lot to the sketch, road below, new routes, retune
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Lot/ (BayPlan, SiteLayout, RoadLayout, LotDinerArt new; LotConfig, LotGeometry, LotFrame, LotExpander,
+LotLayoutBuilder, LotDecor, DecorLayout, WalkwayLayout, WalkwayStyle, LotWalkwayArt, PedestrianPathMap, LotArtConfig, ArrivalQueue changed;
+LotFrameRule removed), Scripts/Patrons/ (ArrivalReach new, ArrivalReservations, PatronConfig), Scripts/Core/ (TuningCatalog, ShiftConfig,
+IRoadLayout.cs.meta), Scripts/Director/ (DirectorBrain, DilemmaRuleSettings, LastBayRule), Scripts/Bootstrap/ (GameBootstrap, CameraFollow),
+Editor/Art/LotArtBuilder.cs, Data/Lot/*.asset, Data/Patrons/PatronConfig.asset, Data/Shift/ShiftConfig.asset, Scenes/Bootstrap.unity (camera max zoom),
+Tests/EditMode/ Lot, Patrons, Director, Integration.
+Why: docs/redesign/lot_v2_layout.md (design.md A5): diner left with side and main doors, curb beside the main door, 2 x 4 bays (6 regular, EV 7,
+wash), a column of 3 arrival slots under the curb, a right strip for ambient people, a two-lane road below with IRoadLayout; queue limit 3;
+director retuned for one EV bay, six spots, lot tight at 1 free spot.
+Tests: new and rewritten EditMode tests (LotGeometry, RoadLayout, PedestrianPathMap, WalkwayLayout, DecorLayout, ArrivalReach, LastBay single bay).
+Full EditMode run in Unity 6000.2.5f1 batch mode: 636 passed, 0 failed (includes the director soak test). The Bootstrap scene was regenerated with
+ProjectSetup.RunBatch (no errors) and then reverted to the committed scene plus the camera max zoom change, because regeneration only reordered ids.
+
 === docs/changelogs/lot.md ===
 # Lot changelog
 
@@ -1104,6 +1140,24 @@ Date: 2026-11-06
 Files: tools/sim/{params,rules,geometry,policies,car,valet,tasks,night,stats,grid,runs,schedule,lot_sim,selftest}.py, tools/sim/.gitignore, tools/sim/results/{report.md,grid.csv}, docs/balance.md
 Why: design.md section 10 (pressure rules, night length, challenge schedule): a seeded Monte Carlo of one night with one valet to find how many spots, cars and what arrival pace keep nights 1-7 moderately challenging, and whether the $1500 debt is reachable. Analysis only; no game code, scene or Data asset changed.
 Tests: python tools/sim/selftest.py passes (tip rules mirror TipCalculatorTests, LotConfig geometry, motion maths, seeded reproducibility and bookkeeping invariants). Full run (500 nights per cell, 441 grid cells plus schedule search) completed with seed 20261106.
+
+=== docs/changelogs/traffic-wire.md ===
+# traffic-wire changelog
+
+## traffic-wire: hook up road traffic, patron arrival and departure trips
+Date: 2026-11-10
+Files: Scripts/Core/Contracts/{ITripDriver,IEntryRouter,IExitRouter,TripPose,TripPhase,TripId,ICarFactory,TuningCatalog}.cs (trip types moved from Traffic, namespace UncannyValet.Core.Contracts; SpawnArriving gains an arrivalSlot), Scripts/Core/Events/TuningKey.cs, Scripts/Traffic/ (usings, TrafficConfig.SpeedScale, TrafficModule), Scripts/Cars/{CarTrip,TripStatus,CarAutoDrive,CarAutoDriveMath,CarAutoDriveStyle,CarFactory}.cs, Scripts/Patrons/PatronSpawner.cs, Scripts/Bootstrap/{GameBootstrap,TuningSeeder,TrafficTuningLink}.cs and asmdef, Scripts/Lot/{LotCurbArt,WalkwayStyle}.cs, Editor/{BootstrapSceneBuilder,Art/TrafficArtBuilder}.cs and asmdef, Data/Traffic/TrafficConfig.asset, Scenes/Bootstrap.unity, Traffic .meta files, Tests/EditMode/{Cars/CarTripTests,Integration/TrafficTuningLinkTests,Integration/FakeCarFactory,Patrons/ArrivalReservationsTests}.cs
+Why: docs/redesign/lot_v2_layout.md "Road below the lot" and "Traffic mechanics". A new patron car now waits off-screen left for a gap on the east lane, drives it with car following and turns into its queue slot (IEntryRouter); a delivered car leaves the curb along the curb exit route, yields and merges, and drives off right (IExitRouter). CarArrived is published when the car stops, as before. Cars that are not at the curb (end of shift) still drive straight out; with no TrafficModule the old drive-in remains. The ArrivalReach slot rule is unchanged: the spawner picks the slot, the router drives to it. The curb exit route passes 5 units right of the queue column, so RoadLayout needed no change. Tuning keys TrafficAmbientPerMinute and TrafficSpeedScale appear in the F2 panel under "Traffic". Curb down arrows moved to the aisle side of the curb zone.
+Tests: CarTripTests and TrafficTuningLinkTests added; see the final report for the EditMode run.
+
+=== docs/changelogs/traffic.md ===
+# Traffic changelog
+
+## traffic: add road traffic module with car following and patron trips
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Traffic/* (new assembly UncannyValet.Traffic), Assets/_Project/Tests/EditMode/Traffic/{CarFollowingTests,LanePathTests,LaneOccupancyTests,MergeGapRuleTests,AmbientSpawnerTests,TripTests}.cs, Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef (reference added)
+Why: docs/redesign/lot_v2_layout.md "Road below the lot" and "Traffic mechanics". Pure rules (lane path, car following, merge gap, ambient spawner, occupancy registry), pooled visual-only ambient cars on both lanes (TrafficModule + TrafficConfig), and entry/exit trips (IEntryRouter, IExitRouter, ITripDriver) for patron cars, built on the Core IRoadLayout contract.
+Tests: six EditMode fixtures written; Unity not run in this sandbox, the lead compiles and runs them.
 
 === docs/changelogs/valet.md ===
 # Valet changelog

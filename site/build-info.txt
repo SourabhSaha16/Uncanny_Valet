@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  b45677a
-Subject: lead: merge director-2, rebuild site
-Date:    2026-11-09 20:37:25 -0800
+Commit:  7dea408
+Subject: lead: merge traffic-wire, rebuild site
+Date:    2026-11-10 08:36:49 -0800
