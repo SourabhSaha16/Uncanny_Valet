@@ -9,10 +9,9 @@ namespace UncannyValet.Lot
         [Header("Sprites")]
         [SerializeField] private Sprite _sidewalkTile;
         [SerializeField, Tooltip("Road tile with the dashed centre line near its top edge.")] private Sprite _roadDashTile;
-        [SerializeField] private Sprite[] _trees = new Sprite[0];
-        [SerializeField] private Sprite[] _tufts = new Sprite[0];
         [Header("Colours")]
-        [SerializeField] private Color _grassColor = new Color(0.42f, 0.66f, 0.28f);
+        [SerializeField, Tooltip("The ground outside the lot walls (left, right, above and around the road): darker than the lot asphalt.")]
+        private Color _outsideColor = new Color(0.36f, 0.36f, 0.38f);
         [SerializeField, Tooltip("Matches the plain asphalt of the road tiles.")] private Color _asphaltColor = new Color(0.53f, 0.53f, 0.53f);
         [SerializeField] private Color _hedgeColor = new Color(0.2f, 0.42f, 0.22f);
         [SerializeField] private Color _crosswalkColor = new Color(0.97f, 0.97f, 0.94f);
@@ -20,10 +19,9 @@ namespace UncannyValet.Lot
         [SerializeField] private Color _curbPlateColor = new Color(0f, 0f, 0f, 0.45f);
         [Header("Layout")]
         [SerializeField, Min(0.5f)] private float _sidewalkDepth = 1.5f;
-        [SerializeField, Min(1f)] private float _grassReach = 40f;
+        [SerializeField, Min(1f), Tooltip("How far the outside ground reaches past the lot and the road.")] private float _outsideReach = 40f;
         [SerializeField, Tooltip("Height of the dash tile centre below the road middle (the dash sits near the tile top).")]
         private float _dashTileShift = 0.27f;
-        [SerializeField, Min(0)] private int _tuftCount = 40;
         [SerializeField, Min(0.01f)] private float _curbEdgeWidth = 0.15f;
         [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.7f, 0.92f);
         [Header("Diner and bus stop")]
@@ -55,9 +53,7 @@ namespace UncannyValet.Lot
 
         public Sprite SidewalkTile => _sidewalkTile;
         public Sprite RoadDashTile => _roadDashTile;
-        public Sprite[] Trees => _trees;
-        public Sprite[] Tufts => _tufts;
-        public Color GrassColor => _grassColor;
+        public Color OutsideColor => _outsideColor;
         public Color AsphaltColor => _asphaltColor;
         public Color HedgeColor => _hedgeColor;
         public Color CrosswalkColor => _crosswalkColor;
@@ -78,9 +74,8 @@ namespace UncannyValet.Lot
         public Vector2 BusStopSize => _busStopSize;
         public float BusStopFromBottom => _busStopFromBottom;
         public float SidewalkDepth => _sidewalkDepth;
-        public float GrassReach => _grassReach;
+        public float OutsideReach => _outsideReach;
         public float DashTileShift => _dashTileShift;
-        public int TuftCount => _tuftCount;
         public float CurbEdgeWidth => _curbEdgeWidth;
         public Vector2 CurbPlateShare => _curbPlateShare;
         public WalkwayStyle Walkway => _walkway;

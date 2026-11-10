@@ -54,28 +54,21 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void TreesAndTuftsNeverStandInsideTheLotOrOnTheRoad()
+        public void TheOutsideGroundCoversTheLotTheRoadAndTheFarSidewalk()
         {
-            foreach (var tree in _layout.TreeBases())
-            {
-                Assert.IsFalse(_geo.Bounds.Contains(tree), "tree " + tree);
-                Assert.IsFalse(_layout.Road.Contains(tree), "tree on road " + tree);
-            }
-            foreach (var tuft in _layout.TuftSpots(60))
-            {
-                Assert.IsFalse(_geo.Bounds.Contains(tuft), "tuft " + tuft);
-                Assert.IsFalse(_layout.Road.Contains(tuft), "tuft on road " + tuft);
-            }
+            Assert.IsTrue(_layout.Outside.Contains(_geo.Bounds.min));
+            Assert.IsTrue(_layout.Outside.Contains(_geo.Bounds.max));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.Road.min));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.Road.max));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.FarSidewalk.min));
         }
 
         [Test]
-        public void TuftsAreDeterministicAndCounted()
+        public void TheOutsideGroundReachesPastTheWallsOnEverySide()
         {
-            var a = _layout.TuftSpots(10);
-            var b = _layout.TuftSpots(10);
-            Assert.AreEqual(10, a.Length);
-            Assert.AreEqual(a, b);
-            Assert.AreEqual(0, _layout.TuftSpots(0).Length);
+            Assert.Less(_layout.Outside.xMin, _geo.Bounds.xMin - _config.WallThickness);
+            Assert.Greater(_layout.Outside.xMax, _geo.Bounds.xMax + _config.WallThickness);
+            Assert.Greater(_layout.Outside.yMax, _geo.Bounds.yMax + _config.WallThickness);
         }
     }
 }

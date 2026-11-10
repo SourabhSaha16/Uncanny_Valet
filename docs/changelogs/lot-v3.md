@@ -29,3 +29,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{DinerSlices,LotDinerArt,LotArtConfig}.cs, Editor/Art/LotArtBuilder.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/DinerSlicesTests.cs
 Why: human play test (design.md A5): the green DINER rectangle is replaced by a building cut from the tall MetroCity sprite Environment/Stations/Building.png (found in the sheets; the tan green-roof house is not tall enough): a tiled red roof, a front face of windows along the bottom, a striped awning over each door, the two doors (still at the pedestrian door points) and a small DINER sign. Slice rectangles, band count and awning/sign values are LotArtConfig fields; the slices are cut at runtime with Sprite.Create (tiled draw mode, point filtered). The old wall/roof colour fields are removed.
 Tests: DinerSlicesTests added (texture rect flip, pixels per unit, whole facade bands). ProjectSetup.RunBatch ran clean; scene churn reverted.
+
+## lot-v3: dark asphalt outside the lot instead of grass
+Date: 2026-11-10
+Files: Scripts/Lot/{DecorLayout,LotDecor,LotArtConfig,SpriteTiler}.cs, Editor/Art/LotArtBuilder.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/DecorLayoutTests.cs
+Why: human play test (design.md A5): the ground outside the lot (left, right, top, around the bus stop strip and the road) is now darker asphalt (LotArtConfig.OutsideColor, 0.36) instead of grass. The road keeps the lot asphalt (0.53) with its dashed lane line and edge lines, so it reads as a road and the lot as a lot. Trees and grass tufts are removed (kept clean); the hedge walls stay.
+Tests: DecorLayoutTests: outside ground covers lot, road and far sidewalk and reaches past the walls; the tree and tuft tests are removed with the code.

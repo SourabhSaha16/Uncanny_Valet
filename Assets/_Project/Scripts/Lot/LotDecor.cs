@@ -4,17 +4,16 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Builds the lot v2 scenery once at Awake: grass, the two-lane road below the lot with markings and a far sidewalk,
-    /// the right strip with the bus stop, the diner with its doors, the walkway bands and the trees. Lives next to the lot
+    /// Builds the lot v2 scenery once at Awake: the dark asphalt outside the lot, the two-lane road below the lot with markings and a far sidewalk,
+    /// the right strip with the bus stop, the diner with its doors and the crosswalk stripes. Lives next to the lot
     /// (not under it) and sits at the same origin. Purely visual: it has no colliders and never touches the lot rules.
     /// </summary>
     public sealed class LotDecor : MonoBehaviour
     {
-        private const int GrassOrder = -30;
+        private const int OutsideOrder = -30;
         private const int GroundOrder = -25;
         private const int MarkingOrder = -24;
         private const int StripOrder = -9;
-        private const int PropOrder = 1;
         private const float EdgeLineWidth = 0.12f;
 
         [SerializeField] private LotConfig _config;
@@ -30,8 +29,8 @@ namespace UncannyValet.Lot
         {
             get
             {
-                if (_layout.Grass.width > 0f) return _layout;
-                _layout = new DecorLayout(Geometry, _config.WallThickness, _art.SidewalkDepth, _art.GrassReach,
+                if (_layout.Outside.width > 0f) return _layout;
+                _layout = new DecorLayout(Geometry, _config.WallThickness, _art.SidewalkDepth, _art.OutsideReach,
                     _art.BusStopSize, _art.BusStopFromBottom);
                 return _layout;
             }
@@ -64,12 +63,11 @@ namespace UncannyValet.Lot
             }
             var rects = new RectFactory();
             var l = Layout;
-            rects.Make(transform, "Grass", l.Grass.center, l.Grass.size, _art.GrassColor, GrassOrder);
+            rects.Make(transform, "Outside Ground", l.Outside.center, l.Outside.size, _art.OutsideColor, OutsideOrder);
             BuildRoad(rects, l);
             BuildStrip(rects, l);
             LotWalkwayArt.Build(transform, rects, new WalkwayLayout(Geometry, _config.Site.WalkwayWidth), _art.Walkway, _art.CrosswalkColor);
             LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config);
-            BuildProps(l);
         }
 
         private void BuildRoad(RectFactory rects, DecorLayout l)
@@ -87,22 +85,6 @@ namespace UncannyValet.Lot
         {
             SpriteTiler.Fill(transform, "Right Strip", _art.SidewalkTile, Geometry.Strip, StripOrder);
             LotDinerArt.BuildBusStop(transform, rects, l, _art, _config);
-        }
-
-        private void BuildProps(DecorLayout l)
-        {
-            var trees = _art.Trees;
-            var treeBases = l.TreeBases();
-            for (var i = 0; trees.Length > 0 && i < treeBases.Length; i++)
-            {
-                var tree = trees[i % trees.Length];
-                var lift = tree.rect.height / tree.pixelsPerUnit * 0.5f; // tree sprites pivot at their centre
-                SpriteTiler.Single(transform, "Tree " + i, tree, treeBases[i] + Vector2.up * lift, PropOrder);
-            }
-            var tufts = _art.Tufts;
-            var spots = l.TuftSpots(tufts.Length > 0 ? _art.TuftCount : 0);
-            for (var i = 0; i < spots.Length; i++)
-                SpriteTiler.Single(transform, "Tuft " + i, tufts[i % tufts.Length], spots[i], GroundOrder);
         }
     }
 }

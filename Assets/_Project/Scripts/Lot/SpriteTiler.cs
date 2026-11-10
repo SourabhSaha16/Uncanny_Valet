@@ -28,16 +28,6 @@ namespace UncannyValet.Lot
             return group;
         }
 
-        /// <summary>One sprite whose pivot sits at <paramref name="position"/> (parent-local).</summary>
-        public static void Single(Transform parent, string name, Sprite sprite, Vector2 position, int order)
-        {
-            if (sprite == null) return;
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            go.transform.localPosition = position;
-            Place(go.AddComponent<SpriteRenderer>(), sprite, order);
-        }
-
         private static void Place(SpriteRenderer renderer, Sprite sprite, int order)
         {
             renderer.sprite = sprite;
