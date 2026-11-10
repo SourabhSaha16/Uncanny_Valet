@@ -90,6 +90,8 @@ namespace UncannyValet.Traffic
         {
             var tuning = new TripTuning(_config.CarLength, _config.TurnSpeed, _config.RouteSpeed, _config.YieldDistance, _config.ArriveTolerance);
             _speeds = new TripSpeeds(_config.CruiseSpeed, _config.RouteSpeed);
+            _speeds.SetEntrySpeed(_config.EntrySpeed);
+            _speeds.SetExitSpeed(_config.ExitSpeed);
             if (_pendingEntrySpeed > NoSpeed) _speeds.SetEntrySpeed(_pendingEntrySpeed);
             if (_pendingExitSpeed > NoSpeed) _speeds.SetExitSpeed(_pendingExitSpeed);
             var router = new TripRouter(new TripContext(road, _east, _occupancy, _follow, _merge, tuning, _speeds), _config.MaxCars);

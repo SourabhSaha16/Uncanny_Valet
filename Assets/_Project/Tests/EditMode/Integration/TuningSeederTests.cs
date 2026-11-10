@@ -48,8 +48,12 @@ namespace UncannyValet.Tests.Integration
             try
             {
                 TuningSeeder.Seed(tuning, shift, patrons, tips, 6, traffic: traffic);
-                Assert.AreEqual(traffic.CruiseSpeed, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
-                Assert.AreEqual(traffic.RouteSpeed, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
+                Assert.AreEqual(traffic.EntrySpeed, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
+                Assert.AreEqual(traffic.ExitSpeed, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
+                Assert.AreEqual(7.3f, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
+                Assert.AreEqual(5f, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
+                Assert.AreEqual(13f, tuning.Get(TuningKey.TrafficAmbientPerMinute), 0.0001f);
+                Assert.AreEqual(1.25f, tuning.Get(TuningKey.TrafficSpeedScale), 0.0001f);
             }
             finally
             {

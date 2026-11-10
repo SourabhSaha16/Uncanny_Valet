@@ -26,7 +26,11 @@ namespace UncannyValet.Traffic
         [Tooltip("Speed along a curb exit route.")]
         [SerializeField, Min(0.1f)] private float _routeSpeed = 2.5f;
         [Tooltip("Starting multiplier on ambient car speed (the F2 panel can change it live).")]
-        [SerializeField, Min(0.05f)] private float _speedScale = 1f;
+        [SerializeField, Min(0.05f)] private float _speedScale = 1.25f;
+        [Tooltip("Starting speed of patron cars driving in, in units per second (the F2 panel can change it live). The cruise speed above is its scale-1 reference.")]
+        [SerializeField, Min(0.1f)] private float _entrySpeed = 7.3f;
+        [Tooltip("Starting speed of delivered cars driving off, in units per second (the F2 panel can change it live). The route speed above is its scale-1 reference.")]
+        [SerializeField, Min(0.1f)] private float _exitSpeed = 5f;
         [Tooltip("Lowest and highest multiplier on cruise speed for ambient cars.")]
         [SerializeField] private Vector2 _speedScaleRange = new Vector2(0.85f, 1.15f);
         [Tooltip("Speed gained per second.")]
@@ -50,7 +54,7 @@ namespace UncannyValet.Traffic
 
         [Header("Ambient traffic")]
         [Tooltip("Ambient cars per minute over both lanes. 0 switches ambient traffic off.")]
-        [SerializeField, Min(0f)] private float _ambientPerMinute = 8f;
+        [SerializeField, Min(0f)] private float _ambientPerMinute = 13f;
         [Tooltip("0 = exact interval, 1 = anywhere from nothing to double the mean.")]
         [SerializeField, Range(0f, 1f)] private float _intervalSpread = 0.6f;
         [Tooltip("Chance that an ambient car takes the east lane (the lane next to the lot).")]
@@ -68,6 +72,8 @@ namespace UncannyValet.Traffic
         public float TurnSpeed => _turnSpeed;
         public float RouteSpeed => _routeSpeed;
         public float SpeedScale => _speedScale;
+        public float EntrySpeed => _entrySpeed;
+        public float ExitSpeed => _exitSpeed;
         public Vector2 SpeedScaleRange => _speedScaleRange;
         public float Acceleration => _acceleration;
         public float Brake => _brake;
