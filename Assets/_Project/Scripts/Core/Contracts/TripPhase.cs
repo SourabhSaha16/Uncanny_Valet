@@ -1,4 +1,4 @@
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>Where a patron car is in its entry or exit trip.</summary>
     public enum TripPhase

@@ -12,6 +12,7 @@
         "UncannyValet.Night",
         "UncannyValet.Director",
         "UncannyValet.Audio",
+        "UncannyValet.Traffic",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap"
     ],

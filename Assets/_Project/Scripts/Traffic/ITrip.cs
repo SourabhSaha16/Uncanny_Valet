@@ -1,3 +1,5 @@
+using UncannyValet.Core.Contracts;
+
 namespace UncannyValet.Traffic
 {
     /// <summary>One running patron trip (entry or exit). Pooled: <see cref="Id"/> is <see cref="TripId.None"/> while idle.</summary>

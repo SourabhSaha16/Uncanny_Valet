@@ -4,6 +4,8 @@ using UncannyValet.Core.Events;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Patrons;
+using UncannyValet.Traffic;
+using UnityEngine;
 
 namespace UncannyValet.Bootstrap
 {
@@ -13,10 +15,12 @@ namespace UncannyValet.Bootstrap
         /// <param name="spotCount">Spots in the lot; used when the plan says 0 ("all spots open").</param>
         /// <param name="director">The Patron Director's numbers; null skips them (its keys then stay unseeded).</param>
         /// <param name="profile">The lot's director profile, which supplies the arrival budget.</param>
+        /// <param name="traffic">The road traffic config; null seeds the config defaults.</param>
         /// <param name="pedestrians">How many ambient pedestrians start active (the F2 panel can change it).</param>
         public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
-            DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0)
+            DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null)
         {
+            SeedTraffic(t, traffic);
             t.Seed(TuningKey.PedestrianCount, pedestrians);
             if (director != null && profile != null) director.SeedInto(t, profile);
 
@@ -46,6 +50,14 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
+        }
+
+        private static void SeedTraffic(ITuning t, TrafficConfig traffic)
+        {
+            var config = traffic != null ? traffic : ScriptableObject.CreateInstance<TrafficConfig>();
+            t.Seed(TuningKey.TrafficAmbientPerMinute, config.AmbientPerMinute);
+            t.Seed(TuningKey.TrafficSpeedScale, config.SpeedScale);
+            if (traffic == null) Object.DestroyImmediate(config);
         }
     }
 }

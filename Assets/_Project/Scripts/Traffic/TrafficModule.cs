@@ -63,6 +63,7 @@ namespace UncannyValet.Traffic
             Vector2 scale = _config.SpeedScaleRange;
             _spawner = new AmbientSpawner(_config.Seed, _config.LookCount, _config.IntervalSpread, _config.EastShare, scale.x, scale.y);
             _ambientRate = _config.AmbientPerMinute;
+            _speedScale = _config.SpeedScale;
             RegisterTrips(road);
         }
 

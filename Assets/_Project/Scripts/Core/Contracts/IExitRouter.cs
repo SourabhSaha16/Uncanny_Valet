@@ -1,4 +1,4 @@
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>
     /// Starts a delivered car's exit: leave the curb along the curb exit route, yield at the merge point until the east

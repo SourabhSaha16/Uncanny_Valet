@@ -25,6 +25,8 @@ namespace UncannyValet.Traffic
         [SerializeField, Min(0.1f)] private float _turnSpeed = 2f;
         [Tooltip("Speed along a curb exit route.")]
         [SerializeField, Min(0.1f)] private float _routeSpeed = 2.5f;
+        [Tooltip("Starting multiplier on ambient car speed (the F2 panel can change it live).")]
+        [SerializeField, Min(0.05f)] private float _speedScale = 1f;
         [Tooltip("Lowest and highest multiplier on cruise speed for ambient cars.")]
         [SerializeField] private Vector2 _speedScaleRange = new Vector2(0.85f, 1.15f);
         [Tooltip("Speed gained per second.")]
@@ -65,6 +67,7 @@ namespace UncannyValet.Traffic
         public float CruiseSpeed => _cruiseSpeed;
         public float TurnSpeed => _turnSpeed;
         public float RouteSpeed => _routeSpeed;
+        public float SpeedScale => _speedScale;
         public Vector2 SpeedScaleRange => _speedScaleRange;
         public float Acceleration => _acceleration;
         public float Brake => _brake;

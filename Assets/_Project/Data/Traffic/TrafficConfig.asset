@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab0b1d8bb3fc53644a9650910b91beee, type: 3}
+  m_Name: TrafficConfig
+  m_EditorClassIdentifier: UncannyValet.Traffic::UncannyValet.Traffic.TrafficConfig
+  _sprites:
+  - {fileID: -2013017777156120661, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 8289961196949481236, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: -4414013936893201251, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 6093934300134034649, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 4927822911633095275, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 6694268620404189300, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 3867575573189056213, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: -1045355948100429817, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: -8678711057771107247, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: -8553070365970465765, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 231127305430554188, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: -8285055349865741530, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 7942811073291243708, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  - {fileID: 6799578558289645722, guid: 3a25d0750a5286c43b745c25b56bf841, type: 3}
+  _tints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.75, g: 0.85, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.75, a: 1}
+  - {r: 0.8, g: 1, b: 0.85, a: 1}
+  _carScale: 0.96655875
+  _sortingOrder: 8
+  _carLength: 2
+  _cruiseSpeed: 5
+  _turnSpeed: 2
+  _routeSpeed: 2.5
+  _speedScale: 1
+  _speedScaleRange: {x: 0.85, y: 1.15}
+  _acceleration: 3
+  _brake: 6
+  _minGap: 0.6
+  _headway: 0.8
+  _mergeGapAhead: 2.5
+  _mergeGapBehind: 2.5
+  _yieldDistance: 2
+  _arriveTolerance: 0.02
+  _ambientPerMinute: 8
+  _intervalSpread: 0.6
+  _eastShare: 0.5
+  _seed: 1234
+  _maxCars: 16

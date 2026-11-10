@@ -1,4 +1,4 @@
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>
     /// Starts a patron car's entry: wait off-screen left until the east lane has a gap, drive the lane, slow down,

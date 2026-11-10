@@ -111,5 +111,9 @@ namespace UncannyValet.Core.Events
 
         // Pedestrians (Pedestrians module owns). How many ambient people walk around; patrons are separate.
         PedestrianCount,
+
+        // Road traffic (Traffic module owns). Ambient cars per minute (0 = off) and a speed multiplier.
+        TrafficAmbientPerMinute,
+        TrafficSpeedScale,
     }
 }

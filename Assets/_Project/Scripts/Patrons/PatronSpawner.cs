@@ -84,7 +84,7 @@ namespace UncannyValet.Patrons
             var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _plan.MaxWaitingCars, blocked);
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
-            _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees);
+            _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees, slot);
             ticket = Registry.Create(car, request);
             _reservations.Reserve(ticket.TicketId, slot);
             Registry.AnnounceArrival(ticket);

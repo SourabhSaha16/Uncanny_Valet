@@ -1,4 +1,4 @@
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>Steps trips. The car's module calls this every physics step and moves the car to the returned pose.</summary>
     public interface ITripDriver
