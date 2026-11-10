@@ -1,4 +1,9 @@
 === Last 50 commits ===
+92de938  2026-11-09  lead: merge director-1
+8df6c48  2026-11-09  director-1: lot snapshot, F3 overlay, workload, form, arrival pacer
+21052f7  2026-11-09  lead: log queue and wash decisions
+b8a2fe4  2026-11-09  lead: save patron director spec
+a3a7257  2026-11-09  lead: merge pivot-crowd, fix seeded random, rebuild site
 77143b0  2026-11-09  lead: merge pivot-crowd
 49b4d0e  2026-11-09  pivot-crowd: short plates, pickup bell, walking patrons, face-down delivery, headlights
 18b210b  2026-11-09  lead: make design.md a living doc with the current chaos design
@@ -44,11 +49,6 @@ b60c5a2  2026-11-07  lead: merge worktree-agent-a4ee71813c0b93344
 b3f7170  2026-11-07  orders: add boss order module with visit history and strikes
 1ba7820  2026-11-07  integration: boss message panel and run-lost card
 313868f  2026-11-07  patrons: publish CarDelivered before TicketClosed on delivery
-be47574  2026-11-07  lead: add boss order contracts
-ddfcd48  2026-11-06  lead: rebuild site for round 6
-c0f7ac9  2026-11-06  lead: debt $500, round 6 docs
-730f6e0  2026-11-06  lead: merge worktree-agent-ab18f0de0cd1fddce
-3b5c541  2026-11-06  lead: merge worktree-agent-a2c5058bb112f5187
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -125,6 +125,24 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Cars/{CarFactory,CarDefinition,CarInteraction,CarMudMath,CarMudOverlay}.cs, new Assets/_Project/Scripts/Cars/{CarAutoDrive,CarAutoDriveMath,CarAutoDriveStyle}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/{CarLooksMathTests,CarAutoDriveMathTests}.cs (+ .meta)
 Why: design.md sections 8-10 (arrival, departure, dirty look). SpawnArriving starts the car EntryDistance behind the stop point and CarAutoDrive eases it in (sqrt braking profile, kinematic MovePosition in FixedUpdate); DriveAwayAndDespawn accelerates it out along its heading and despawns it, and is safe when repeated or for a missing id. While auto-driving, the collider, CarDriver and CarInteraction are disabled (no shoving, no trigger events, no Enter prompt); on arrival the body returns to Dynamic. Tunables are in CarDefinition.AutoDrive. Mud is dark brown (0.17,0.09,0.04,0.9) at constant opacity; washing shrinks the overlay's local X from the left edge (right edge fixed), a left-to-right wipe distinct from the bottom-up timer fill, with no allocation and no renderer.material. CarMudMath.Alpha is replaced by Width/CenterX.
 Tests: 7 new or changed EditMode tests (CarAutoDriveMath x5, mud wipe x2); full EditMode run 287/287 passed.
+
+=== docs/changelogs/director-1.md ===
+# Director-1 changelog
+
+Source: docs/redesign/patron_director_spec.md (binding), rollout steps 1 and 2.
+
+## director-1: lot snapshot, F3 overlay, workload, form, arrival pacer
+Date: 2026-11-09
+Files:
+- Core (additive): events CarArchetype, ScheduleReason, DirectorPhase, ReliefTrigger, DirectorEvents (PatronScheduled, DirectorPhaseChanged, ReliefStarted, ReliefEnded); contracts StationSlotState, CarLotState, CarSnapshot, StationSlot, LotSnapshot, ILotSnapshotSource, DecisionKind, DirectorDecision, IDirectorView; 41 TuningKey entries (Dir*) and their TuningCatalog rows in a new "Director" group. No station events were added: CarEnteredStation/CarLeftStation (wash slot and charging bays), CarCleaned, CarFullyCharged, CarArrived, CarParked, CarLeftSpot, PickupRequested, TicketTimerChanged, TicketClosed and ComplaintFiled already cover everything the tracker needs.
+- Director (new assembly UncannyValet.Director, references Core only): LotStateTracker (rule system, owns the snapshot), CarBook, CarRecord, SnapshotBuilder, SlotStateRule, WorkloadEstimator, WorkloadReading, FormTracker, FormMath, RecentTips, ArrivalPacer, ReliefGate, ReliefStage, PacerInput, PacerDecision, PacerAction, HoldReason, DirectorBrain, DirectorState, PatronDirector (MonoBehaviour shell), DirectorProfile, PhaseSpan, DirectorConfig, DirectorSettings, WorkloadSettings, PacingSettings, ReliefSettings, FormSettings, TuningRead, IDirectorRandom.
+- Patrons: PatronSpawner executes PatronScheduled when DirEnabled is on and keeps the old fixed timer when it is off; PatronRequestRoller.Roll(progress, archetype); new ArchetypeTraits.
+- UI: DirectorOverlay (F3, hidden while F2 is open) and DirectorOverlayText.
+- Bootstrap: GameBootstrap (director fields, StartDirector), DirectorBootstrap, ShiftRandom (one seeded RNG per shift for spawner and director), TuningSeeder (seeds the director), asmdef reference.
+- Editor: ProjectSetup (creates DirectorConfig and DinerDirectorProfile assets), BootstrapSceneBuilder (PatronDirector and DirectorOverlay objects, new GameBootstrap fields), asmdef reference.
+- Tests (EditMode, new folder Tests/EditMode/Director): LotStateTrackerTests, LotStateStationTests, WorkloadEstimatorTests, FormTrackerTests, ArrivalPacerTests, DirectorProfileTests, DirectorBrainTests, DirectorOverlayTextTests, helpers; Patrons/ArchetypeTraitsTests; Integration/TuningSeederTests updated for the director keys; Tests asmdef reference.
+Why: patron_director_spec.md section 7, steps 1 (snapshot and overlay, no behaviour change) and 2 (workload W and pressure P, form F, arrival pacing with idle spawn, under/on/over factors, relief, queue cap, 14 +/- 2 budget; archetype stays random). DirEnabled (default on, an F2 key) switches between the director and the old 15-25 s timer in the same build.
+Tests: NOT run: Unity could not be launched in this sandbox, so compilation and the suite are unverified. New .meta files are not committed; Unity creates them on first import. The Bootstrap scene must be rebuilt with Uncanny Valet/Setup/Build Everything; until then GameBootstrap logs an error and falls back to the old timer.
 
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
@@ -646,6 +664,24 @@ Tests: 442 of 442 EditMode; batch setup clean; browser shows plate DLZ 595 under
 Date: 2026-11-09
 Files: docs/design.md, docs/status.md, docs/decisions.md
 Why: Human asked to keep the game design updated with every change. Part A records the chaos redesign as built, in progress and planned, with a Design log.
+Tests: docs only.
+
+## lead: merge pivot-crowd, fix seeded random, update design doc, rebuild site
+Date: 2026-11-09
+Files: Patrons/SeededPatronRandom.cs, Assets scene and metas, docs/design.md, site/
+Why: Short plates, patron and ambient people flows, face-down delivery, bell on key board, audio mix, headlights. Regression found by PlateTests: xorshift gave near-zero first output for small seeds, so the seed is now scrambled.
+Tests: 482 of 482 EditMode; browser check: closer zoom, plate ZR 9, walkers in the lot, no new console errors.
+
+## lead: save Patron Director spec
+Date: 2026-11-09
+Files: docs/redesign/patron_director_spec.md, docs/decisions.md
+Why: Human supplied the spec; agents implement it in stages.
+Tests: docs only.
+
+## lead: log play-test notes decisions
+Date: 2026-11-09
+Files: docs/decisions.md
+Why: Human answered clarifying questions for the queue, wash and arrow notes; implementation is queued behind director-1.
 Tests: docs only.
 
 === docs/changelogs/lot.md ===

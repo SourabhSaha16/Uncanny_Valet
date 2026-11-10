@@ -110,7 +110,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (482 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (557 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -124,11 +124,31 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
+| Patron Director steps 1-2 (snapshot, pacing); steps 3-4 (dilemmas, returns), soak test | steps 1-2 done, rest planned |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
 co-op input. Known gaps: only 14 civilian car sprites exist in the pack (variety comes from tint and mirroring);
 the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor is a placeholder box.
+
+## A10. Patron Director
+
+Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces the fixed 15-25 s arrival timer when
+`DirEnabled` is on (F2 key; the old timer stays as the fallback so play-tests can compare).
+- Built (rollout steps 1 and 2): `LotStateTracker` keeps a read-only `LotSnapshot` (car states and needs, wash and
+  EV bay slot states Free/Working/Blocked/Squatted/Reserved, free spots, open tickets with patience);
+  `WorkloadEstimator` gives workload W and pressure P from a task-cost table; `FormTracker` gives form F (every
+  15 s, max 0.25 step, 0 for the first 30 s); `ArrivalPacer` turns W, P, the intensity curve T(t) (fraction of the
+  shift, `DirectorProfile`) and F into the next arrival or a hold, with idle spawn, relief (hold 10 s then 2 plain
+  cars, 20 s cooldown) and a 14 +/- 2 arrival budget. `PatronDirector` ticks every 0.5 s and publishes
+  `PatronScheduled`; `PatronSpawner` just executes it. One seeded `ShiftRandom` per shift (`DirSeed` 0 = fresh).
+- F3 overlay: station slot colours, car counts per state, free spots, phase, W/T/P/F, arrivals used/budget,
+  next arrival in, relief flag, last five decisions with reasons. All numbers are F2 keys under "Director".
+- Archetype is still random (the existing EV/dirty chances); relief cars are forced Plain.
+- Not built yet: archetype picker and dilemma rules (wash blocked, bays blocked, ...) with the dilemma budget,
+  return scheduler, the 200-shift soak test, measuring real task times.
+- Queued play-test changes the director must know about: arrival queue of 4, no park timer (only the pickup timer
+  drives the tip and anger), wash slot single occupancy.
 
 ## A9. Design log
 
@@ -139,6 +159,7 @@ the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor 
 | 2026-11-09 | Pixel UI kit, HUD, title and results screens (style guide `docs/redesign/ui_style_guide.md`) |
 | 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
 | 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
+| 2026-11-09 | Patron Director spec adopted; steps 1 and 2 built (snapshot, F3 overlay, workload, form, pacer, relief, budget) |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
 
 ---

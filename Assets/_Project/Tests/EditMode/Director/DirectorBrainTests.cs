@@ -27,6 +27,9 @@ namespace UncannyValet.Tests.Director
         [SetUp]
         public void SetUp()
         {
+            // NUnit reuses one fixture instance for every test, so the recorded events must be reset here.
+            _scheduled.Clear();
+            _phases.Clear();
             _bus = new EventBus();
             _tuning = new TuningStore(_bus);
             _config = ScriptableObject.CreateInstance<DirectorConfig>();

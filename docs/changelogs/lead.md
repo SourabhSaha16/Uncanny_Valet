@@ -429,3 +429,9 @@ Date: 2026-11-09
 Files: docs/decisions.md
 Why: Human answered clarifying questions for the queue, wash and arrow notes; implementation is queued behind director-1.
 Tests: docs only.
+
+## lead: merge director-1, fix two test bugs, add design A10, rebuild site
+Date: 2026-11-09
+Files: Assets scene and metas, Tests/EditMode/Director (FakeClock public, fixture lists cleared in SetUp), docs/design.md, site/
+Why: Patron Director steps 1-2. The merged tests had an accessibility compile error and shared event lists across tests (NUnit reuses the fixture).
+Tests: 557 of 557 EditMode; browser: F3 overlay shows Director ON, phase BuildUp, W/T/P/F, arrivals 1/14, next in 24.6 s, decision log.

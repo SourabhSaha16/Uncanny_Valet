@@ -6,7 +6,7 @@ using UncannyValet.Director;
 
 namespace UncannyValet.Tests.Director
 {
-    internal sealed class FakeClock : IGameClock
+    public sealed class FakeClock : IGameClock
     {
         public float SecondsRemaining { get; set; } = 240f;
         public float ShiftLengthSeconds { get; set; } = 240f;

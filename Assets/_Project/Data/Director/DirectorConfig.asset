@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c541c89f237f9f648b0b1ce7ab648129, type: 3}
+  m_Name: DirectorConfig
+  m_EditorClassIdentifier: UncannyValet.Director::UncannyValet.Director.DirectorConfig
+  _enabled: 1
+  _tickSeconds: 0.5
+  _seed: 0
+  _workload:
+    _horizonSeconds: 30
+    _parkCost: 8
+    _pickupCost: 10
+    _washTripCost: 6
+    _chargeTripCost: 6
+    _evictCost: 6
+    _pickupSoonCost: 5
+    _pickupSoonSeconds: 20
+  _pacing:
+    _band: 0.15
+    _formInfluence: 0.15
+    _idleWorkload: 0.3
+    _idleSeconds: 5
+    _underFactor: 0.6
+    _overFactor: 1.5
+    _factorSlewPerSecond: 0.5
+    _budgetBlend: 0.5
+    _minIntervalSeconds: 5
+    _maxIntervalSeconds: 40
+  _relief:
+    _workload: 1.4
+    _pressure: 0.85
+    _angryCount: 2
+    _angryWindowSeconds: 30
+    _holdSeconds: 10
+    _plainCars: 2
+    _cooldownSeconds: 20
+  _form:
+    _updateSeconds: 15
+    _maxStep: 0.25
+    _windowSeconds: 60
+    _warmupSeconds: 30
+    _tipWeight: 0.6
+    _angryWeight: 1
+    _comboWeight: 0.4
+    _angryForFullPenalty: 2
