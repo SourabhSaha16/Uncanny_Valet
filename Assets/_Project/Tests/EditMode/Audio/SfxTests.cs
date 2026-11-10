@@ -52,6 +52,38 @@ namespace UncannyValet.Tests.Audio
         }
 
         [Test]
+        public void PedestrianBumpPlaysOncePerEventAndIsRateLimitedWithAClock()
+        {
+            var bus = new EventBus();
+            var played = new System.Collections.Generic.List<SfxId>();
+            var now = 0f;
+            var router = new SfxEventRouter(bus, played.Add, () => now);
+            router.Subscribe();
+            bus.Publish(new PedestrianBumped(1f, 2f, 0.5f));
+            CollectionAssert.AreEqual(new[] { SfxId.PedestrianBump }, played);
+            now += SfxEventRouter.BumpMinInterval * 0.5f;
+            bus.Publish(new PedestrianBumped(1f, 2f, 0.5f));
+            Assert.AreEqual(1, played.Count);
+            now += SfxEventRouter.BumpMinInterval;
+            bus.Publish(new PedestrianBumped(1f, 2f, 0.5f));
+            Assert.AreEqual(2, played.Count);
+            router.Unsubscribe();
+            bus.Publish(new PedestrianBumped(1f, 2f, 0.5f));
+            Assert.AreEqual(2, played.Count);
+        }
+
+        [Test]
+        public void PedestrianBumpWithoutAClockPlaysEveryEvent()
+        {
+            var bus = new EventBus();
+            var played = new System.Collections.Generic.List<SfxId>();
+            new SfxEventRouter(bus, played.Add).Subscribe();
+            bus.Publish(new PedestrianBumped(0f, 0f, 1f));
+            bus.Publish(new PedestrianBumped(0f, 0f, 1f));
+            Assert.AreEqual(2, played.Count);
+        }
+
+        [Test]
         public void CarArrivesSoundPlaysOnCarArrivedNotOnTicketOpened()
         {
             var bus = new EventBus();

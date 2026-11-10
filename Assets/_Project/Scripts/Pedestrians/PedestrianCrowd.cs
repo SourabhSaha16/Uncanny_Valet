@@ -9,8 +9,8 @@ namespace UncannyValet.Pedestrians
 {
     /// <summary>
     /// Owns the pooled people. Ambient people walk in from the road side, cross at the crosswalks, vanish into the
-    /// diner, come out again and walk away; patrons (see <see cref="PatronWalkers"/>) follow their tickets. Nobody has
-    /// a collider. Created once by <see cref="Begin"/>; nothing is allocated per frame.
+    /// diner, come out again and walk away; patrons (see <see cref="PatronWalkers"/>) follow their tickets. Walking
+    /// people are solid (see <see cref="PedestrianWalker"/>). Created once by <see cref="Begin"/>; nothing is allocated per frame.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class PedestrianCrowd : MonoBehaviour, IPatronLocator
@@ -21,6 +21,7 @@ namespace UncannyValet.Pedestrians
         private WalkerRouter _router;
         private IPedestrianPaths _paths;
         private ITuning _tuning;
+        private IEventBus _bus;
         private PatronWalkers _patrons;
         private int _serial;
 
@@ -40,6 +41,7 @@ namespace UncannyValet.Pedestrians
                 return;
             }
             _tuning = Services.Get<ITuning>();
+            _bus = Services.Get<IEventBus>();
             _paths = Services.Get<IPedestrianPaths>();
             _router = new WalkerRouter(_paths, Services.Get<ICarFactory>());
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
@@ -103,6 +105,9 @@ namespace UncannyValet.Pedestrians
             _router.Apply(walker);
         }
 
+        private void OnBumped(PedestrianWalker walker, float strength)
+            => _bus.Publish(new PedestrianBumped(walker.Position.x, walker.Position.y, strength));
+
         private PedestrianWalker CreateAmbient(int index)
         {
             var walker = Create("Pedestrian " + index, index);
@@ -119,8 +124,9 @@ namespace UncannyValet.Pedestrians
             var walker = go.AddComponent<PedestrianWalker>();
             walker.Create(_config);
             walker.Dress(PedestrianPlan.Look(index, _config.Skins, _config.Hairs, _config.Outfits),
-                PedestrianPlan.Speed(index, _config.MinSpeed, _config.MaxSpeed));
+                PedestrianPlan.Speed(index, _config.MinSpeed, _config.MaxSpeed), PedestrianPlan.Hash01(index * 3 + 1));
             walker.RouteFinished += OnRouteFinished;
+            walker.Bumped += OnBumped;
             walker.SetVisible(false);
             return walker;
         }
