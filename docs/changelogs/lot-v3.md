@@ -23,3 +23,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{ZebraStripes,WalkwayLayout,LotWalkwayArt,WalkwayStyle}.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/ZebraStripesTests.cs
 Why: human play test (design.md A5): crosswalks read as grey boxes. Every crosswalk (side-door leg, north, aisle, corridor/south) is now white zebra bars across the walking direction, painted on the asphalt. WalkwayLayout.Crosswalks is the non-overlapping cut of the bands for painting (Bands is unchanged for the walking routes). The old band fill and edge lines are gone.
 Tests: ZebraStripesTests added (bar orientation, count, centring, gap, no overlapping crosswalks).
+
+## lot-v3: real diner building from MetroCity sprites
+Date: 2026-11-10
+Files: Scripts/Lot/{DinerSlices,LotDinerArt,LotArtConfig}.cs, Editor/Art/LotArtBuilder.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/DinerSlicesTests.cs
+Why: human play test (design.md A5): the green DINER rectangle is replaced by a building cut from the tall MetroCity sprite Environment/Stations/Building.png (found in the sheets; the tan green-roof house is not tall enough): a tiled red roof, a front face of windows along the bottom, a striped awning over each door, the two doors (still at the pedestrian door points) and a small DINER sign. Slice rectangles, band count and awning/sign values are LotArtConfig fields; the slices are cut at runtime with Sprite.Create (tiled draw mode, point filtered). The old wall/roof colour fields are removed.
+Tests: DinerSlicesTests added (texture rect flip, pixels per unit, whole facade bands). ProjectSetup.RunBatch ran clean; scene churn reverted.

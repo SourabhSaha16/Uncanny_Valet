@@ -38,14 +38,32 @@ MonoBehaviour:
   _tuftCount: 40
   _curbEdgeWidth: 0.15
   _curbPlateShare: {x: 0.7, y: 0.92}
-  _dinerWallColor: {r: 0.78, g: 0.62, b: 0.42, a: 1}
-  _dinerRoofColor: {r: 0.36, g: 0.52, b: 0.34, a: 1}
+  _dinerBuilding: {fileID: 21300000, guid: 56ec550e22011b44ca503077f87c93bd, type: 3}
+  _dinerRoofPixels:
+    x: 52
+    y: 8
+    width: 72
+    height: 48
+  _dinerFacadePixels:
+    x: 11
+    y: 132
+    width: 149
+    height: 96
+  _dinerFacadeBands: 1
   _doorColor: {r: 0.32, g: 0.2, b: 0.12, a: 1}
-  _dinerRoofInset: 0.6
+  _awningSize: {x: 1.1, y: 0.8}
+  _awningColorA: {r: 0.78, g: 0.06, b: 0.06, a: 1}
+  _awningColorB: {r: 0.96, g: 0.95, b: 0.9, a: 1}
+  _awningStripe: 0.4
+  _signSize: {x: 3, y: 1}
+  _signColor: {r: 0.12, g: 0.1, b: 0.14, a: 1}
   _busStopColor: {r: 0.25, g: 0.45, b: 0.7, a: 1}
   _busStopSize: {x: 1.2, y: 3}
   _busStopFromBottom: 2
   _walkway:
+    _zebraBar: 0.3
+    _zebraGap: 0.3
+    _zebraMargin: 0.05
     _arrowHeadDegrees: 35
     _curbArrowLength: 1.6
     _curbArrowSideShare: 0.3
@@ -53,6 +71,10 @@ MonoBehaviour:
     _markThickness: 0.16
     _markHeadLength: 0.45
     _markOutline: 0.05
+    _slotLine: 0.1
+    _slotDash: 0.4
+    _slotGap: 0.25
+    _slotInset: 0.12
     _markColor: {r: 1, g: 1, b: 0.96, a: 1}
     _markOutlineColor: {r: 0.1, g: 0.09, b: 0.15, a: 1}
     _waitInset: 0.9

@@ -11,7 +11,9 @@ namespace UncannyValet.EditorTools.Art
         private const string Tiles = "Environment/Tiles/Tiles.png";
         private const string Road = "Environment/Road/Road.png";
         private const string Trees = "Environment/Trees/Tree-Sheet.png";
+        private const string DinerBuilding = "Environment/Stations/Building.png";
         private const int TreeCount = 4;
+        private static readonly Vector2Int DinerPoint = new Vector2Int(88, 160); // inside the tall building sprite
 
         // Pixel positions (x, y from the top-left) found by inspecting the sheets; see docs/changelogs/pivot-visuals.md.
         private static readonly Vector2Int CleanCobble = new Vector2Int(264, 40);
@@ -29,6 +31,7 @@ namespace UncannyValet.EditorTools.Art
             var so = new SerializedObject(config);
             ArtAssetUtil.SetObject(so, "_sidewalkTile", ArtSprites.AtPoint(Tiles, CleanCobble.x, CleanCobble.y));
             ArtAssetUtil.SetObject(so, "_roadDashTile", ArtSprites.Named(Road, "Road_r6_c0"));
+            ArtAssetUtil.SetObject(so, "_dinerBuilding", ArtSprites.AtPoint(DinerBuilding, DinerPoint.x, DinerPoint.y));
             ArtAssetUtil.SetSprites(so, "_trees", TreeSprites());
             ArtAssetUtil.SetSprites(so, "_tufts", TuftSprites());
             ArtAssetUtil.SetColor(so, "_grassColor", ArtSprites.PixelColor(Tiles, GrassPatch.x, GrassPatch.y));
