@@ -39,6 +39,41 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
+        public void BoostedDecisionNamesTheRuleItsMultiplierAndTheReason()
+        {
+            var d = new DirectorDecision(DecisionKind.Scheduled, 65f, ScheduleReason.UnderTarget, ReliefTrigger.Workload,
+                CarArchetype.Dirty, true, 6, 0.6f, 0.8f, true, DilemmaKind.WashBlocked, 3f);
+            StringAssert.StartsWith("1:05 sent Dirty (WashBlocked x3, UnderTarget)", DirectorOverlayText.Decision(d));
+            var half = new DirectorDecision(DecisionKind.Scheduled, 65f, ScheduleReason.OnTarget, ReliefTrigger.Workload,
+                CarArchetype.Ev, true, 6, 0.6f, 0.8f, true, DilemmaKind.LastBay, 1.5f);
+            StringAssert.Contains("(LastBay x1.5, OnTarget)", DirectorOverlayText.Decision(half));
+        }
+
+        [Test]
+        public void DilemmaLinesShowTheOpenRuleTheCooldownAndTheCounters()
+        {
+            var state = new DirectorState();
+            Assert.AreEqual("Dilemma: none", DirectorOverlayText.Dilemma(state));
+            state.DilemmaCooldownLeft = 12.4f;
+            Assert.AreEqual("Dilemma: none, cooldown 12 s", DirectorOverlayText.Dilemma(state));
+            state.HasOpenDilemma = true;
+            state.OpenDilemma = DilemmaKind.BaysBlocked;
+            Assert.AreEqual("Dilemma: OPEN BaysBlocked", DirectorOverlayText.Dilemma(state));
+            state.CountMade();
+            state.CountMade();
+            state.CountResolved(10f);
+            Assert.AreEqual("Dilemmas made 2 / resolved 1   avg resolve 10.0 s", DirectorOverlayText.DilemmaCounters(state));
+        }
+
+        [Test]
+        public void ResolvedDilemmaEntryNamesTheRuleAndTheSeconds()
+        {
+            var d = new DirectorDecision(DecisionKind.DilemmaResolved, 95f, ScheduleReason.OnTarget, default,
+                CarArchetype.Plain, false, 7, 0f, 0f, true, DilemmaKind.WashBlocked, 1f, 24f);
+            Assert.AreEqual("1:35 dilemma resolved (WashBlocked, 24 s)", DirectorOverlayText.Decision(d));
+        }
+
+        [Test]
         public void SlotLineShowsKindStateAndCar()
         {
             var wash = new StationSlot(StationKind.Wash, StationSlotState.Blocked, new CarId(4));

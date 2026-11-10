@@ -26,6 +26,18 @@ namespace UncannyValet.UI
             => "Arrivals " + v.ArrivalsUsed + "/" + v.ArrivalBudget + " (cap " + v.ArrivalBudgetMax + ")   next in "
                + v.SecondsToNextArrival.ToString("0.0") + " s" + (v.InRelief ? "   RELIEF" : string.Empty);
 
+        /// <summary>The open dilemma and its rule, or the cooldown, plus the lot-tight return flag.</summary>
+        public static string Dilemma(IDirectorView v)
+        {
+            var state = v.HasOpenDilemma ? "OPEN " + v.OpenDilemma
+                : v.DilemmaCooldownLeft > 0f ? "none, cooldown " + v.DilemmaCooldownLeft.ToString("0") + " s" : "none";
+            return "Dilemma: " + state + (v.ReturnForwardWanted ? "   (return forward wanted)" : string.Empty);
+        }
+
+        public static string DilemmaCounters(IDirectorView v)
+            => "Dilemmas made " + v.DilemmasMade + " / resolved " + v.DilemmasResolved + "   avg resolve "
+               + v.AverageResolveSeconds.ToString("0.0") + " s";
+
         public static string Cars(in LotSnapshot s)
             => "Arriving " + s.CountCars(CarLotState.Arriving) + "  Waiting " + s.CountCars(CarLotState.WaitingToPark)
                + "  Driven " + s.CountCars(CarLotState.Driven) + "  Parked " + s.CountCars(CarLotState.Parked)
@@ -44,9 +56,13 @@ namespace UncannyValet.UI
             {
                 case DecisionKind.ReliefStarted: sb.Append("RELIEF started (").Append(d.Trigger).Append(')'); break;
                 case DecisionKind.ReliefEnded: sb.Append("relief ended"); break;
+                case DecisionKind.DilemmaResolved:
+                    sb.Append("dilemma resolved (").Append(d.Rule).Append(", ").Append(d.ResolveSeconds.ToString("0")).Append(" s)");
+                    break;
                 default:
-                    sb.Append("sent ").Append(d.ArchetypeChosen ? d.Archetype.ToString() : "any")
-                      .Append(" (").Append(d.Reason).Append("), ").Append(d.ArrivalsUsed).Append(" used, W ")
+                    sb.Append("sent ").Append(d.ArchetypeChosen ? d.Archetype.ToString() : "any").Append(" (");
+                    if (d.HasRule) sb.Append(d.Rule).Append(" x").Append(d.Boost.ToString("0.#")).Append(", ");
+                    sb.Append(d.Reason).Append("), ").Append(d.ArrivalsUsed).Append(" used, W ")
                       .Append(d.Workload.ToString("0.00")).Append(" T ").Append(d.Target.ToString("0.00"));
                     break;
             }

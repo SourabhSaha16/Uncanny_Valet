@@ -26,6 +26,12 @@ namespace UncannyValet.Director
         [SerializeField] private ReliefSettings _relief = new ReliefSettings();
         [Header("Form")]
         [SerializeField] private FormSettings _form = new FormSettings();
+        [Header("Dilemma rules")]
+        [SerializeField] private DilemmaRuleSettings _rules = new DilemmaRuleSettings();
+        [Header("Dilemma budget")]
+        [SerializeField] private GateSettings _gate = new GateSettings();
+        [Header("Archetype picker and assist hook")]
+        [SerializeField] private PickerSettings _picker = new PickerSettings();
 
         public bool Enabled => _enabled;
 
@@ -39,6 +45,9 @@ namespace UncannyValet.Director
             _pacing.Seed(tuning, profile.ArrivalBudget, profile.BudgetSlack);
             _relief.Seed(tuning);
             _form.Seed(tuning);
+            _rules.Seed(tuning);
+            _gate.Seed(tuning);
+            _picker.Seed(tuning);
         }
     }
 }

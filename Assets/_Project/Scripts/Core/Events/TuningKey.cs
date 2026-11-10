@@ -83,5 +83,30 @@ namespace UncannyValet.Core.Events
         DirFormAngryWeight,
         DirFormComboWeight,
         DirFormAngryFull,
+
+        // Director: dilemma rule multipliers and thresholds.
+        DirDilemmaWashBlocked,
+        DirDilemmaWashBusy,
+        DirDilemmaBaysBlocked,
+        DirDilemmaBaySquatted,
+        DirDilemmaLastBay,
+        DirDilemmaLotTight,
+        DirDilemmaChain,
+        DirLotTightSpots,
+        DirSolvablePickupSeconds,
+
+        // Director: dilemma budget.
+        DirDilemmaCooldown,
+        DirDilemmaBlackout,
+        DirHeadroomGap,
+
+        // Director: archetype picker.
+        DirLoadUnderHeavy,
+        DirLoadOverHeavy,
+        DirLoadOverPlain,
+        DirStreakLimit,
+        DirMixTolerance,
+        DirAssist,
+        DirAssistDilemmaScale,
     }
 }

@@ -28,6 +28,15 @@ namespace UncannyValet.Tests.Director
         public float Range(float min, float max) => (min + max) * 0.5f;
     }
 
+    /// <summary>A small seeded generator, so the same seed gives the same draws.</summary>
+    internal sealed class TestRandom : IDirectorRandom
+    {
+        private readonly System.Random _inner;
+        public TestRandom(int seed) { _inner = new System.Random(seed); }
+        public float Value() => (float)_inner.NextDouble();
+        public float Range(float min, float max) => min + (max - min) * Value();
+    }
+
     internal sealed class FakeLot : ILotSnapshotSource
     {
         private readonly FakeClock _clock;
@@ -52,6 +61,7 @@ namespace UncannyValet.Tests.Director
         public int FreeSpots = 5;
         public int TotalSpots = 10;
         public float NowSeconds;
+        public float NextPickup = float.PositiveInfinity;
         public readonly List<float> Angry = new List<float>();
 
         public CarId Car(CarLotState state, bool dirty = false, bool ev = false, bool washDone = false,
@@ -67,6 +77,6 @@ namespace UncannyValet.Tests.Director
             => _slots.Add(new StationSlot(kind, state, car));
 
         public LotSnapshot Build() => new LotSnapshot(_cars, _slots, FreeSpots, TotalSpots,
-            float.PositiveInfinity, NowSeconds, Angry);
+            NextPickup, NowSeconds, Angry);
     }
 }

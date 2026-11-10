@@ -20,6 +20,7 @@ namespace UncannyValet.Director
         private DirectorSettings _settings;
         private FormTracker _form;
         private DirectorBrain _brain;
+        private DilemmaDirector _dilemmas;
         private float _sinceTick;
 
         /// <summary>Hands over what only Bootstrap can supply. Must be called before this object is activated.</summary>
@@ -46,16 +47,21 @@ namespace UncannyValet.Director
             _settings.Refresh(tuning);
             _form = new FormTracker(bus, _settings.Form, _clock, score, _maxCombo);
             var pacer = new ArrivalPacer(_random, _settings.Pacing, new ReliefGate(_settings.Relief));
+            var rules = DilemmaRules.CreateAll(_settings.Rules);
+            var picker = new ArchetypePicker(_random, rules, _settings.Picker);
+            _dilemmas = new DilemmaDirector(bus, _clock, picker, new DilemmaGate(_settings.Gate), rules, _state);
             _brain = new DirectorBrain(bus, tuning, _clock, Services.Get<ILotSnapshotSource>(), _profile, _state,
-                _settings, _form, pacer);
+                _settings, _form, pacer, _dilemmas);
             _sinceTick = 0f;
         }
 
         private void OnDisable()
         {
             _brain?.Dispose();
+            _dilemmas?.Dispose();
             _form?.Dispose();
             _brain = null;
+            _dilemmas = null;
             _form = null;
         }
 

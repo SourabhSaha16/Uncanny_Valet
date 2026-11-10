@@ -9,8 +9,9 @@ namespace UncannyValet.Director
     /// so a longer or shorter shift keeps the same shape.
     /// </summary>
     [CreateAssetMenu(menuName = "Uncanny Valet/Director Profile", fileName = "DirectorProfile")]
-    public sealed class DirectorProfile : ScriptableObject
+    public sealed class DirectorProfile : ScriptableObject, IIntensityProfile
     {
+
         /// <summary>Cars a shift is meant to bring (the Diner's base count, spec section 5).</summary>
         public const int DefaultArrivalBudget = 14;
 
@@ -21,10 +22,12 @@ namespace UncannyValet.Director
 
         [SerializeField, Tooltip("Target workload T over the shift: x is the fraction of the shift (0..1), y is the workload the director aims for (1 = exactly busy).")]
         private AnimationCurve _intensity = DefaultCurve();
+        [SerializeField, Range(0.01f, 0.2f), Tooltip("The curve counts as rising when it is higher this far ahead (fraction of the shift). Dilemmas are allowed on a rising curve.")]
+        private float _risingLookahead = 0.03f;
         [SerializeField, Tooltip("Phase names by start fraction, in order: build-up, peak, breather, harder peak, breather, finale.")]
         private PhaseSpan[] _phases = DefaultPhases();
 
-        [Header("Base archetype weights (used by the archetype picker, later)")]
+        [Header("Base archetype weights (the archetype picker)")]
         [SerializeField, Min(0f)] private float _plainWeight = 50f;
         [SerializeField, Min(0f)] private float _dirtyWeight = 20f;
         [SerializeField, Min(0f)] private float _evWeight = 20f;
@@ -61,6 +64,13 @@ namespace UncannyValet.Director
             for (var i = 0; i < AreaSteps; i++) sum += Sample(from + (i + 0.5f) * step);
             return sum * step * shiftLengthSeconds;
         }
+
+        /// <summary>True when T a short way ahead is higher than T now.</summary>
+        public bool IsRising(float shiftFraction)
+            => Sample(shiftFraction + _risingLookahead) > Sample(shiftFraction);
+
+        /// <summary>The base weights of all archetypes.</summary>
+        public ArchetypeWeights Weights => new ArchetypeWeights(_plainWeight, _dirtyWeight, _evWeight, _dirtyEvWeight);
 
         /// <summary>Base weight of an archetype in the draw.</summary>
         public float WeightOf(CarArchetype archetype)

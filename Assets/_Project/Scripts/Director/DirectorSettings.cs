@@ -13,6 +13,9 @@ namespace UncannyValet.Director
         public PacingSettings Pacing { get; } = new PacingSettings();
         public ReliefSettings Relief { get; } = new ReliefSettings();
         public FormSettings Form { get; } = new FormSettings();
+        public DilemmaRuleSettings Rules { get; } = new DilemmaRuleSettings();
+        public GateSettings Gate { get; } = new GateSettings();
+        public PickerSettings Picker { get; } = new PickerSettings();
 
         /// <summary>False means the old fixed arrival timer runs and the director stays idle.</summary>
         public bool Enabled { get; private set; } = true;
@@ -31,6 +34,9 @@ namespace UncannyValet.Director
             Pacing.Read(t);
             Relief.Read(t);
             Form.Read(t);
+            Rules.Read(t);
+            Gate.Read(t);
+            Picker.Read(t);
         }
     }
 }

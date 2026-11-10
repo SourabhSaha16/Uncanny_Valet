@@ -14,6 +14,7 @@ namespace UncannyValet.Director
 
         private readonly DirectorDecision[] _log = new DirectorDecision[LogSize];
         private int _next;
+        private float _resolveSeconds;
 
         public bool Active { get; set; }
         public float Workload { get; set; }
@@ -26,6 +27,13 @@ namespace UncannyValet.Director
         public int ArrivalsUsed { get; set; }
         public int ArrivalBudget { get; set; }
         public int ArrivalBudgetMax { get; set; }
+        public bool HasOpenDilemma { get; set; }
+        public DilemmaKind OpenDilemma { get; set; }
+        public float DilemmaCooldownLeft { get; set; }
+        public int DilemmasMade { get; private set; }
+        public int DilemmasResolved { get; private set; }
+        public bool ReturnForwardWanted { get; set; }
+        public float AverageResolveSeconds => DilemmasResolved > 0 ? _resolveSeconds / DilemmasResolved : 0f;
         public int DecisionVersion { get; private set; }
         public int DecisionCount { get; private set; }
 
@@ -41,6 +49,16 @@ namespace UncannyValet.Director
             DecisionVersion++;
         }
 
+        /// <summary>Counts a dilemma that opened.</summary>
+        public void CountMade() => DilemmasMade++;
+
+        /// <summary>Counts a dilemma that resolved after this many seconds.</summary>
+        public void CountResolved(float seconds)
+        {
+            DilemmasResolved++;
+            _resolveSeconds += seconds;
+        }
+
         /// <summary>Clears the counters and the log for a new shift.</summary>
         public void Reset()
         {
@@ -51,6 +69,12 @@ namespace UncannyValet.Director
             InRelief = false;
             SecondsToNextArrival = 0f;
             ArrivalsUsed = 0;
+            HasOpenDilemma = false;
+            DilemmaCooldownLeft = 0f;
+            DilemmasMade = 0;
+            DilemmasResolved = 0;
+            _resolveSeconds = 0f;
+            ReturnForwardWanted = false;
         }
     }
 }

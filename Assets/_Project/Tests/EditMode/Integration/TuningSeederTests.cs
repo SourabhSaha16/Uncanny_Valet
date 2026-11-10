@@ -53,6 +53,10 @@ namespace UncannyValet.Tests.Integration
                 Assert.AreEqual(14f, tuning.Get(TuningKey.DirArrivalBudget));
                 Assert.AreEqual(2f, tuning.Get(TuningKey.DirBudgetSlack));
                 Assert.AreEqual(1.4f, tuning.Get(TuningKey.DirReliefWorkload), 0.0001f);
+                Assert.AreEqual(3f, tuning.Get(TuningKey.DirDilemmaWashBlocked), 0.0001f);
+                Assert.AreEqual(25f, tuning.Get(TuningKey.DirDilemmaCooldown), 0.0001f);
+                Assert.AreEqual(2f, tuning.Get(TuningKey.DirStreakLimit), 0.0001f);
+                Assert.AreEqual(0f, tuning.Get(TuningKey.DirAssist), 0.0001f);
             }
             finally
             {

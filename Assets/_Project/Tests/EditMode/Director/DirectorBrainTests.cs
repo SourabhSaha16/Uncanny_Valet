@@ -18,6 +18,7 @@ namespace UncannyValet.Tests.Director
         private FakeLot _lot;
         private DirectorState _state;
         private DirectorBrain _brain;
+        private DilemmaDirector _dilemmas;
         private FormTracker _form;
         private DirectorConfig _config;
         private DirectorProfile _profile;
@@ -42,7 +43,10 @@ namespace UncannyValet.Tests.Director
             settings.Refresh(_tuning);
             _form = new FormTracker(_bus, settings.Form, _clock, null, 4);
             var pacer = new ArrivalPacer(new MidRandom(), settings.Pacing, new ReliefGate(settings.Relief));
-            _brain = new DirectorBrain(_bus, _tuning, _clock, _lot, _profile, _state, settings, _form, pacer);
+            var rules = DilemmaRules.CreateAll(settings.Rules);
+            _dilemmas = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new MidRandom(), rules, settings.Picker),
+                new DilemmaGate(settings.Gate), rules, _state);
+            _brain = new DirectorBrain(_bus, _tuning, _clock, _lot, _profile, _state, settings, _form, pacer, _dilemmas);
             _bus.Subscribe<PatronScheduled>(e => _scheduled.Add(e));
             _bus.Subscribe<DirectorPhaseChanged>(e => _phases.Add(e.Phase));
         }
@@ -51,6 +55,7 @@ namespace UncannyValet.Tests.Director
         public void TearDown()
         {
             _brain.Dispose();
+            _dilemmas.Dispose();
             _form.Dispose();
             Object.DestroyImmediate(_config);
             Object.DestroyImmediate(_profile);
@@ -71,7 +76,8 @@ namespace UncannyValet.Tests.Director
             Run(7f);
             Assert.AreEqual(1, _scheduled.Count);
             Assert.AreEqual(ScheduleReason.Idle, _scheduled[0].Reason);
-            Assert.IsFalse(_scheduled[0].ArchetypeChosen, "step 2: the spawner still rolls the type");
+            Assert.IsTrue(_scheduled[0].ArchetypeChosen, "step 3: the director picks the type");
+            Assert.AreEqual(CarArchetype.Plain, _scheduled[0].Archetype, "an empty lot has no stations unlocked");
             Assert.AreEqual(1, _state.DecisionCount);
         }
 
@@ -133,6 +139,29 @@ namespace UncannyValet.Tests.Director
             _bus.Publish(new ShiftStarted());
             Assert.AreEqual(0, _state.ArrivalsUsed);
             Assert.AreEqual(0, _state.DecisionCount);
+        }
+
+        [Test]
+        public void ABlockedWashSendsABoostedDirtyCarAndOpensADilemma()
+        {
+            var b = new SnapshotBuilderForTests();
+            b.Slot(StationKind.Wash, StationSlotState.Blocked);
+            b.Slot(StationKind.Charging, StationSlotState.Free);
+            b.Slot(StationKind.Charging, StationSlotState.Free);
+            _lot.Next = b.Build();
+            var created = new List<DilemmaCreated>();
+            _bus.Subscribe<DilemmaCreated>(e => created.Add(e));
+            Run(7f);
+            Assert.AreEqual(1, _scheduled.Count);
+            Assert.AreEqual(CarArchetype.Dirty, _scheduled[0].Archetype, "the middle roll lands on the x3 Dirty weight");
+            var logged = _state.GetDecision(0);
+            Assert.IsTrue(logged.HasRule);
+            Assert.AreEqual(DilemmaKind.WashBlocked, logged.Rule);
+            Assert.AreEqual(3f, logged.Boost);
+            _bus.Publish(new CarSpawned(new CarId(1), new TicketId(1)));
+            Assert.AreEqual(1, created.Count);
+            Assert.AreEqual(new CarId(1), created[0].Car);
+            Assert.IsTrue(_state.HasOpenDilemma);
         }
 
         [Test]
