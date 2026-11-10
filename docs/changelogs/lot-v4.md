@@ -11,3 +11,9 @@ Date: 2026-11-10
 Files: Scripts/Traffic/{TrafficConfig,TrafficModule}.cs, Scripts/Bootstrap/TuningSeeder.cs, Data/Traffic/TrafficConfig.asset, Tests/EditMode/Integration/TuningSeederTests.cs
 Why: human tuned traffic in F2 (design.md A5): ambient 13 cars per minute, ambient speed scale 1.25, entry car speed 7.3, exit car speed 5 (units per second, as the panel shows). New TrafficConfig fields EntrySpeed and ExitSpeed hold the start values; TuningSeeder seeds the keys from them and TrafficModule applies them at build. CruiseSpeed and RouteSpeed stay the scale-1 references (and still drive ambient cars), so the panel value is the real speed in units per second.
 Tests: TuningSeederTests asserts the four defaults.
+
+## lot-v4: waiting patrons always face the pickup zone
+Date: 2026-11-10
+Files: Scripts/Pedestrians/{WalkAnimMath,WalkerRouter,PatronWalkers}.cs, Tests/EditMode/Pedestrians/WalkAnimMathTests.cs
+Why: human play test (design.md A5, image 6): some patrons at the curb faced down. Root cause: they turned toward the zone centre point and FacingToward lets the dominant axis win, so a patron standing well above or below the (tall) zone centre faced up or down along the curb instead of across to it. Now the look point is the centre x at the patron own height (WalkAnimMath.CurbLookPoint), so they face straight across, and the facing is set in WalkerRouter.Apply for the Waiting phase, so any re-apply of that phase restores it, not only the arrival moment.
+Tests: WalkAnimMathTests.CurbLookPoint_FacesAcrossToTheZoneHoweverFarUpOrDownItsCentreIs (regression; shows the old rule gave Up).

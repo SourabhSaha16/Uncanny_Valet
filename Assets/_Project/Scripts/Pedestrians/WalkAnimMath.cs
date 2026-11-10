@@ -19,6 +19,13 @@ namespace UncannyValet.Pedestrians
         public static WalkFacing FacingToward(Vector2 from, Vector2 target, WalkFacing current)
             => Facing(target - from, current);
 
+        /// <summary>
+        /// The point a patron standing at <paramref name="standing"/> looks at to face the curb zone: the zone centre's x at
+        /// the patron's own height, so they face straight across (left or right) however far up or down the zone centre is,
+        /// never up or down along the curb.
+        /// </summary>
+        public static Vector2 CurbLookPoint(Vector2 standing, Vector2 curbCenter) => new Vector2(curbCenter.x, standing.y);
+
         /// <summary>Run-cycle frame 0..frames-1 for the time spent walking. Returns 0 when frames is 0 or less.</summary>
         public static int Frame(float walkingSeconds, float framesPerSecond, int frames)
         {

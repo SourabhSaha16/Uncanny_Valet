@@ -28,10 +28,13 @@ namespace UncannyValet.Pedestrians
                 case PedestrianPhase.ToDoor: StartToDoor(w); break;
                 case PedestrianPhase.ToCurb: StartToCurb(w); break;
                 case PedestrianPhase.Leaving: StartLeaving(w); break;
-                case PedestrianPhase.Waiting: break;
+                case PedestrianPhase.Waiting: FaceCurb(w); break;
                 default: w.SetVisible(false); break;
             }
         }
+
+        // A patron waiting at the curb always faces the pickup zone; every re-apply of the Waiting phase restores it.
+        private void FaceCurb(PedestrianWalker w) => w.FaceToward(WalkAnimMath.CurbLookPoint(w.Position, _paths.CurbCenter));
 
         private void StartRoad(PedestrianWalker w, bool leaving)
         {

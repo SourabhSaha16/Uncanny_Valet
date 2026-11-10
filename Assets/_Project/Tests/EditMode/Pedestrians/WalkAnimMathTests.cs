@@ -32,6 +32,18 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
+        public void CurbLookPoint_FacesAcrossToTheZoneHoweverFarUpOrDownItsCentreIs()
+        {
+            var centre = new Vector2(12f, 6f);
+            var west = new Vector2(9f, -3f);
+            var east = new Vector2(15f, 14f);
+            Assert.AreEqual(WalkFacing.Right, WalkAnimMath.FacingToward(west, WalkAnimMath.CurbLookPoint(west, centre), WalkFacing.Down));
+            Assert.AreEqual(WalkFacing.Left, WalkAnimMath.FacingToward(east, WalkAnimMath.CurbLookPoint(east, centre), WalkFacing.Up));
+            // the old centre-point rule turned this patron to face up along the curb
+            Assert.AreEqual(WalkFacing.Up, WalkAnimMath.FacingToward(west, centre, WalkFacing.Down));
+        }
+
+        [Test]
         public void FrameCyclesThroughTheGroup()
         {
             Assert.AreEqual(0, WalkAnimMath.Frame(0f, 10f, 6));
