@@ -28,8 +28,15 @@ namespace UncannyValet.Lot
         private float _markHeadLength = 0.45f;
         [SerializeField, Min(0f), Tooltip("Dark outline added around every stroke of the big arrows so they read on any ground.")]
         private float _markOutline = 0.05f;
-        [SerializeField, Min(0.5f), Tooltip("Length of the up arrows painted at each arrival slot.")]
-        private float _arrivalArrowLength = 1.4f;
+        [Header("Arrival queue slots (dotted boxes)")]
+        [SerializeField, Min(0.02f), Tooltip("Line thickness of the dotted box around each arrival slot.")]
+        private float _slotLine = 0.1f;
+        [SerializeField, Min(0.05f), Tooltip("Length of one dash of the dotted slot box.")]
+        private float _slotDash = 0.4f;
+        [SerializeField, Min(0.02f), Tooltip("Gap between two dashes of the dotted slot box.")]
+        private float _slotGap = 0.25f;
+        [SerializeField, Min(0f), Tooltip("How far the dotted box sits inside the slot's car footprint, so neighbouring boxes do not touch.")]
+        private float _slotInset = 0.12f;
         [SerializeField] private Color _markColor = new Color(1f, 1f, 0.96f, 1f);
         [SerializeField] private Color _markOutlineColor = new Color(0.1f, 0.09f, 0.15f, 1f);
         [Header("Curb standing spots")]
@@ -49,7 +56,10 @@ namespace UncannyValet.Lot
         public float MarkThickness => _markThickness;
         public float MarkHeadLength => _markHeadLength;
         public float MarkOutline => _markOutline;
-        public float ArrivalArrowLength => _arrivalArrowLength;
+        public float SlotLine => _slotLine;
+        public float SlotDash => _slotDash;
+        public float SlotGap => _slotGap;
+        public float SlotInset => _slotInset;
         public Color MarkColor => _markColor;
         public Color MarkOutlineColor => _markOutlineColor;
         public float WaitInset => _waitInset;

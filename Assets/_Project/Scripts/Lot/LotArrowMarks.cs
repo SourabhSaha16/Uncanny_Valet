@@ -3,8 +3,8 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Big painted direction marks with a dark outline: down arrows on the curb zone (point the nose at the road) and
-    /// up arrows at the arrival slots (cars drive in from the road). Drawn above the cobbles and the CURB plate.
+    /// Big painted direction marks with a dark outline: down arrows on the curb zone (point the nose at the road) and the route
+    /// arrows of cars leaving. Drawn above the cobbles and the CURB plate.
     /// </summary>
     public static class LotArrowMarks
     {
@@ -25,14 +25,6 @@ namespace UncannyValet.Lot
             var apex = arrow.Tip + direction * reach;
             Paint(parent, rects, name, arrow, apex, style, style.MarkOutline, style.MarkOutlineColor, OutlineOrder);
             Paint(parent, rects, name, arrow, apex, style, 0f, style.MarkColor, FillOrder);
-        }
-
-        /// <summary>An up arrow (along the cars' heading) in every arrival slot, where cars drive in from the road.</summary>
-        public static void Arrivals(Transform parent, RectFactory rects, Vector2[] slots, float rotationDegrees, WalkwayStyle style)
-        {
-            Vector2 heading = Quaternion.Euler(0f, 0f, rotationDegrees) * Vector2.up;
-            for (var i = 0; i < slots.Length; i++)
-                Build(parent, rects, "Arrival Arrow " + i, slots[i], heading, style.ArrivalArrowLength, style);
         }
 
         // Shaft, head strokes and the chevron at the apex, each grown by <grow> on every side (the outline pass).
