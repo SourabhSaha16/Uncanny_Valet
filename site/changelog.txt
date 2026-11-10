@@ -1,4 +1,7 @@
 === Last 50 commits ===
+f616bb4  2026-11-09  lead: merge director-2
+11109c8  2026-11-09  director-2: archetype picker, dilemma rules and gate, soak test
+d4cc97a  2026-11-09  lead: merge pivot-stations, rebuild site
 095d12a  2026-11-09  lead: merge pivot-stations
 b60e270  2026-11-09  pivot-stations: stations into the spot grid, smaller HUD trackers, wash icon
 7968f91  2026-11-09  lead: shrink arrows and plug icons, rebuild site
@@ -46,9 +49,6 @@ a1f9a14  2026-11-07  lead: merge worktree-agent-a8045495535519c56
 a487025  2026-11-07  lead: merge worktree-agent-a69166817be7fa9e1
 1292ace  2026-11-07  lead: merge worktree-agent-a9436e6604dcfb3ee
 57ce32b  2026-11-07  economy-night: final strike ends the night with RunLost
-18f6548  2026-11-07  integration: wire Orders module, run lost via summary card
-bf515cd  2026-11-07  orders: use ILotLayout.IsChargingSpot, drop IChargingSpotQuery
-e3fd0cb  2026-11-07  lot: implement ILotLayout.IsChargingSpot
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -143,6 +143,23 @@ Files:
 - Tests (EditMode, new folder Tests/EditMode/Director): LotStateTrackerTests, LotStateStationTests, WorkloadEstimatorTests, FormTrackerTests, ArrivalPacerTests, DirectorProfileTests, DirectorBrainTests, DirectorOverlayTextTests, helpers; Patrons/ArchetypeTraitsTests; Integration/TuningSeederTests updated for the director keys; Tests asmdef reference.
 Why: patron_director_spec.md section 7, steps 1 (snapshot and overlay, no behaviour change) and 2 (workload W and pressure P, form F, arrival pacing with idle spawn, under/on/over factors, relief, queue cap, 14 +/- 2 budget; archetype stays random). DirEnabled (default on, an F2 key) switches between the director and the old 15-25 s timer in the same build.
 Tests: NOT run: Unity could not be launched in this sandbox, so compilation and the suite are unverified. New .meta files are not committed; Unity creates them on first import. The Bootstrap scene must be rebuilt with Uncanny Valet/Setup/Build Everything; until then GameBootstrap logs an error and falls back to the old timer.
+
+=== docs/changelogs/director-2.md ===
+# Director-2 changelog
+
+Source: docs/redesign/patron_director_spec.md (binding), rollout step 3 (dilemmas) plus the soak test. The ReturnScheduler (step 4) is not built.
+
+## director-2: archetype picker, dilemma rules and gate, soak test
+Date: 2026-11-09
+Files:
+- Core (additive): DilemmaKind (enum); events DilemmaCreated, DilemmaResolved, ReturnForwardWanted (DirectorEvents); DecisionKind.DilemmaResolved; DirectorDecision (optional HasRule, Rule, Boost, ResolveSeconds); IDirectorView (HasOpenDilemma, OpenDilemma, DilemmaCooldownLeft, DilemmasMade, DilemmasResolved, AverageResolveSeconds, ReturnForwardWanted); 19 TuningKey entries (DirDilemma*, DirLotTightSpots, DirSolvablePickupSeconds, DirHeadroomGap, DirLoad*, DirStreakLimit, DirMixTolerance, DirAssist, DirAssistDilemmaScale) and their TuningCatalog rows under "Director".
+- Director (new): IDilemmaRule, DilemmaBoost, WashBlockedRule, WashBusyRule, BaysBlockedRule, BaySquattedRule, LastBayRule, LotTightRule, ChainRule, DilemmaRules (rule list), DilemmaSolvable; DilemmaGate, DilemmaDirector, DilemmaContext; ArchetypePicker, PickRequest, PickResult, ArchetypeWeights, ArchetypeKinds, ArchetypeHistory, MixLimit; DilemmaRuleSettings, GateSettings, PickerSettings; IIntensityProfile.
+- Director (changed): DirectorBrain (picks the archetype through DilemmaDirector, takes IIntensityProfile and a DilemmaDirector, assist clamps form F at 0), PatronDirector (builds the picker, gate and rules), DirectorState (dilemma counters), DirectorSettings and DirectorConfig (three new sections), DirectorProfile (Weights, IsRising, rising lookahead field; implements IIntensityProfile), PacerInput (Gap), ArrivalPacer (uses Gap).
+- UI: DirectorOverlay and DirectorOverlayText (open dilemma and rule, cooldown, counters, decision lines with the boost reason, resolved entries).
+- Patrons: no change needed. PatronSpawner already honours PatronScheduled.ArchetypeChosen through PatronRequestRoller.Roll(progress, archetype) and ArchetypeTraits; the old plan chances run only when the director is off.
+- Tests (EditMode): new DilemmaRuleTests, DilemmaGateTests, DilemmaDirectorTests, ArchetypePickerTests, ArchetypeBoostTests, DirectorSoakTests with helpers PickerTestKit, SoakProfile, SoakCar, SoakSim, SoakSimPlacement, SoakLotView, SoakShift; updated DirectorBrainTests (chosen archetype, boosted dilemma), DirectorFakes (TestRandom, NextPickup), DirectorOverlayTextTests, DirectorProfileTests, Integration/TuningSeederTests.
+Why: patron_director_spec.md sections 4 and 5 and rollout step 3: weighted archetype draw over the unlocked stations, load scaling by the pacing band, seven dilemma rules behind IDilemmaRule, the dilemma budget (one open, 25 s cooldown, headroom, never in relief, solvable, 20 s blackout after an angry patron), streak limit, bounded mix, assist hook, one seeded RNG, and the 200-shift soak test.
+Tests: compile-checked outside Unity (all of Scripts and Tests compiled together against the Unity 6000.2.5f1 reference assemblies, no errors). The new pure fixtures (DilemmaRuleTests, DilemmaGateTests, DilemmaDirectorTests, ArchetypePickerTests, ArchetypeBoostTests, DirectorSoakTests, DirectorOverlayTextTests) were also run with a scratch NUnit-style runner: 50 passed, 0 failed, the 200-shift soak in about 0.7 s. Not run: fixtures that need the native Unity engine (DirectorBrainTests, DirectorProfileTests, TuningSeederTests, which create ScriptableObjects). New .meta files are not committed; Unity creates them on first import.
 
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
@@ -701,6 +718,12 @@ Date: 2026-11-09
 Files: Lot/WalkwayStyle.cs defaults, Data/Lot/LotArtConfig.asset, Lot/SpotBuilder.cs (PlugPixel 0.16 to 0.07), site/
 Why: Human found the arrows and plug icons far too large. Curb arrow 3.4 to 1.6, stroke 0.4 to 0.16, head 1.1 to 0.45, arrival arrow 3 to 1.4, plug pixel 0.07.
 Tests: 565 of 565 EditMode; browser shows small arrows and plugs.
+
+## lead: merge pivot-stations, update design doc, rebuild site
+Date: 2026-11-09
+Files: scene and metas, docs/design.md, site/
+Why: EV bays and the wash slot moved into the spot grid (bays numbered 10 and 11), wash icon, smaller score and combo HUD.
+Tests: 577 of 577 EditMode; browser shows the new layout.
 
 === docs/changelogs/lot.md ===
 # Lot changelog

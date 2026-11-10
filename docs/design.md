@@ -117,7 +117,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (577 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (625 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -131,7 +131,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
-| Patron Director steps 1-2 (snapshot, pacing); steps 3-4 (dilemmas, returns), soak test | steps 1-2 done, rest planned |
+| Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
 | Faults, mechanic bay, fire spread, more venues, ParkCorp showdowns, world map | planned |
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
@@ -151,9 +151,22 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
   `PatronScheduled`; `PatronSpawner` just executes it. One seeded `ShiftRandom` per shift (`DirSeed` 0 = fresh).
 - F3 overlay: station slot colours, car counts per state, free spots, phase, W/T/P/F, arrivals used/budget,
   next arrival in, relief flag, last five decisions with reasons. All numbers are F2 keys under "Director".
-- Archetype is still random (the existing EV/dirty chances); relief cars are forced Plain.
-- Not built yet: archetype picker and dilemma rules (wash blocked, bays blocked, ...) with the dilemma budget,
-  return scheduler, the 200-shift soak test, measuring real task times.
+- Built (rollout step 3 and the soak test): `ArchetypePicker` draws Plain, Dirty, EV or Dirty EV by weight (50, 20,
+  20, 10 in the Diner profile), only for archetypes whose station the lot has, scaled by the pacing gap, Plain only
+  in relief, at most two Dirty or two EV in a row, and each archetype's share kept within +/-10 points of its base
+  share of the 14-car budget. Seven `IDilemmaRule` classes (WashBlocked x3, WashBusy x1.5, BaysBlocked x3,
+  BaySquatted x2.5, LastBay x1.5, LotTight Plain x1.5, Chain Dirty EV x2; `DilemmaKind` enum ids) boost the draw
+  when their trigger holds and is solvable. `DilemmaGate`: one open at a time, 25 s cooldown, only with headroom
+  (gap <= 0.15 or the curve rising), never in relief, solvable (a free regular spot or a pickup due within 10 s),
+  20 s blackout after an angry patron. Events `DilemmaCreated`, `DilemmaResolved`, `ReturnForwardWanted`. Assist
+  mode (config bool) clamps form F at 0 and halves the dilemma boosts toward 1. `PatronScheduled` now always
+  carries the chosen archetype; the old EV/dirty chances run only when the director is off.
+- F3 overlay also shows the open dilemma, cooldown, made/resolved counters with average resolve time, and each
+  decision with its boost reasons.
+- Soak test: a scripted bot plays 200 seeded shifts (about 0.7 s): 12 to 14 arrivals, about 1.3 dilemmas made and
+  1.2 resolved per shift (the spec hopes for 2 to 3; the bot is not a real player), longest quiet stretch 15.5 s.
+- Not built yet: `ReturnScheduler` (the Lot tight rule only raises `ReturnForwardWanted`, nothing acts on it),
+  measuring real task times.
 - Queue changes now in: cap 4 (PlanMaxWaitingCars), no park timer so snapshot patience and pressure P use pickup
   tickets only; waiting cars still add park work to W.
 
@@ -167,6 +180,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
 | 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
 | 2026-11-09 | Patron Director spec adopted; steps 1 and 2 built (snapshot, F3 overlay, workload, form, pacer, relief, budget) |
+| 2026-11-09 | Patron Director step 3: archetype picker, seven dilemma rules, dilemma gate, soak test |
 | 2026-11-09 | Stations moved into the spot grid (EV bays 10 and 11 in column 1, wash in column 2, 9 regular spots), wash icon, much smaller score and combo HUD |
 | 2026-11-09 | Queue of 4 with any car takeable, park timer removed (pickup timer only), wash slot single occupancy with OCCUPIED hint, plug icons under EV bays, delivery accepts any down-facing car (80 degrees), big curb and arrival arrows |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |

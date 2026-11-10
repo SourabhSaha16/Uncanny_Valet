@@ -453,3 +453,9 @@ Date: 2026-11-09
 Files: scene and metas, docs/design.md, site/
 Why: EV bays and the wash slot moved into the spot grid (bays numbered 10 and 11), wash icon, smaller score and combo HUD.
 Tests: 577 of 577 EditMode; browser shows the new layout.
+
+## lead: merge director-2 (picker, dilemma rules, gate, soak test), update design A10, rebuild site
+Date: 2026-11-09
+Files: scene and metas, docs/design.md, site/
+Why: Patron Director step 3 per docs/redesign/patron_director_spec.md.
+Tests: 625 of 625 EditMode (including the 200-shift soak); browser F3 overlay shows dilemma section and the director choosing the archetype, no console errors.
