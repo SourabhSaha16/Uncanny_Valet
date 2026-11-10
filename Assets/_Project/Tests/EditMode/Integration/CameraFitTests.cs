@@ -21,7 +21,7 @@ namespace UncannyValet.Tests.Integration
         public void TighteningZoomsInButNeverCropsThePlayArea()
         {
             var loose = CameraFit.Size(View, Lot, Aspect, 1f, 1f, 1f, 50f);
-            var tight = CameraFit.Size(View, Lot, Aspect, 1f, 0.87f, 1f, 50f);
+            var tight = CameraFit.Size(View, Lot, Aspect, 1f, 0.78f, 1f, 50f);
             Assert.Less(tight, loose);
             Assert.GreaterOrEqual(tight * Aspect, Lot.width * 0.5f - 1e-4f);
             Assert.GreaterOrEqual(tight, Lot.height * 0.5f);

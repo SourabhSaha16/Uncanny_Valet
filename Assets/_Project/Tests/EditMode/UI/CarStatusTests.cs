@@ -31,6 +31,7 @@ namespace UncannyValet.Tests.UI
             row.Station = StationKind.Wash;
             Assert.AreEqual(CarStatus.Washing, Resolver.Resolve(row));
             row.Washed = true;
+            row.ShowWashed = true;
             Assert.AreEqual(CarStatus.Washed, Resolver.Resolve(row));
         }
 
@@ -44,6 +45,7 @@ namespace UncannyValet.Tests.UI
             row.Charge01 = 0.4f;
             Assert.AreEqual(CarStatus.Charging, Resolver.Resolve(row));
             row.Charge01 = 1f;
+            row.ShowCharged = true;
             Assert.AreEqual(CarStatus.Charged, Resolver.Resolve(row));
         }
 
@@ -53,6 +55,7 @@ namespace UncannyValet.Tests.UI
             var row = Parked();
             row.IsEv = true;
             row.Charge01 = 1f;
+            row.ShowCharged = true;
             Assert.AreEqual(CarStatus.Charged, Resolver.Resolve(row));
         }
 
@@ -72,6 +75,8 @@ namespace UncannyValet.Tests.UI
             row.Charge01 = 1f;
             row.IsDirty = true;
             row.Washed = true;
+            row.ShowWashed = true;
+            row.ShowCharged = true;
             Assert.AreEqual(CarStatus.PickUp, Resolver.Resolve(row));
             row.Expired = true;
             Assert.AreEqual(CarStatus.CustAngry, Resolver.Resolve(row));
@@ -84,6 +89,7 @@ namespace UncannyValet.Tests.UI
             row.IsEv = true;
             row.IsDirty = true;
             row.Washed = true;
+            row.ShowWashed = true;
             row.Charge01 = 0.2f;
             row.HasStation = true;
             row.Station = StationKind.Charging;
