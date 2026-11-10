@@ -1,3 +1,5 @@
+using UncannyValet.Core.Contracts;
+
 namespace UncannyValet.Traffic
 {
     /// <summary>

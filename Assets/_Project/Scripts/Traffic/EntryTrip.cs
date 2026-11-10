@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Traffic

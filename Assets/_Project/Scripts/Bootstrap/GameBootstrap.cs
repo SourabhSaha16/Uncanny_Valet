@@ -10,6 +10,7 @@ using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
+using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
 using UnityEngine;
@@ -46,6 +47,10 @@ namespace UncannyValet.Bootstrap
         private DirectorProfile _directorProfile;
         [SerializeField, Tooltip("F3 debug overlay for the director.")]
         private DirectorOverlay _directorOverlay;
+        [SerializeField, Tooltip("Road traffic: ambient cars and the patron entry and exit trips. Starts after the lot registers the road.")]
+        private TrafficModule _traffic;
+        [SerializeField, Tooltip("Seeds the traffic keys of the F2 panel.")]
+        private TrafficConfig _trafficConfig;
 
         private const int DefaultSpotSeed = 6;
 
@@ -53,6 +58,7 @@ namespace UncannyValet.Bootstrap
         private ShiftFlow _flow;
         private ShiftRandom _random;
         private DirectorBootstrap _directorBoot;
+        private TrafficTuningLink _trafficLink;
 
         private void Awake()
         {
@@ -84,6 +90,7 @@ namespace UncannyValet.Bootstrap
             _lot.gameObject.SetActive(true);
             Services.Register<IRoadLayout>(_lot.Road);
             SeedTuning(tuning, _lot.RegularSpotCount);
+            StartTraffic(bus);
             FrameLot();
             StartPedestrians();
             _clock.gameObject.SetActive(true);
@@ -109,7 +116,19 @@ namespace UncannyValet.Bootstrap
         {
             TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
-                _pedestrians != null ? _pedestrians.StartCount : 0);
+                _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig);
+        }
+
+        // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
+        private void StartTraffic(IEventBus bus)
+        {
+            if (_traffic == null)
+            {
+                Debug.LogError("GameBootstrap has no TrafficModule: rebuild with Uncanny Valet/Setup/Build Everything. Cars drive in and out without a road.", this);
+                return;
+            }
+            _trafficLink = new TrafficTuningLink(bus, _traffic.SetAmbientRate, _traffic.SetSpeedScale);
+            _traffic.gameObject.SetActive(true);
         }
 
         private void StartDirector(IEventBus bus, ITuning tuning)
@@ -167,6 +186,7 @@ namespace UncannyValet.Bootstrap
             if (_ui != null) _ui.TitleDismissed -= OnTitleDismissed;
             _flow?.Dispose();
             _directorBoot?.Dispose();
+            _trafficLink?.Dispose();
             _random?.Dispose();
             _score?.Dispose();
             Services.Reset();

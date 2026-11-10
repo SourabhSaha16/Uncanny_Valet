@@ -1,4 +1,4 @@
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>Trip ids.</summary>
     public static class TripId

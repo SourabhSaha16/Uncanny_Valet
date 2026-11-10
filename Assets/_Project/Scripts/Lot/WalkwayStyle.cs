@@ -17,7 +17,7 @@ namespace UncannyValet.Lot
         [Header("Curb direction marking")]
         [SerializeField, Min(0.5f), Tooltip("Length of the down arrows painted on the curb zone.")]
         private float _curbArrowLength = 1.6f;
-        [SerializeField, Range(0.1f, 0.45f), Tooltip("Distance of each curb arrow from the zone centre, as a share of the zone width.")]
+        [SerializeField, Range(0.1f, 0.45f), Tooltip("Distance of the curb arrows beyond the zone's aisle-side edge, as a share of the zone width.")]
         private float _curbArrowSideShare = 0.3f;
         [SerializeField, Min(0f), Tooltip("Gap between a curb arrow tip and the chevron under it.")]
         private float _curbChevronGap = 0.15f;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
@@ -41,14 +42,25 @@ namespace UncannyValet.Cars
             return car;
         }
 
-        public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees)
+        public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees, int arrivalSlot)
         {
             var definition = _defaultDefinition != null ? _defaultDefinition : ScriptableObject.CreateInstance<CarDefinition>();
             Vector2 heading = Quaternion.Euler(0f, 0f, rotationDegrees) * Vector2.up;
             Vector2 start = stopPosition - heading * definition.AutoDrive.EntryDistance;
             var car = (CarDriver)Spawn(definition, id, start, rotationDegrees, default, false);
-            car.GetComponent<CarAutoDrive>().BeginArriving(definition, stopPosition);
+            var drive = car.GetComponent<CarAutoDrive>();
+            if (TryStartEntryTrip(drive, definition, stopPosition, rotationDegrees, arrivalSlot)) return car;
+            drive.BeginArriving(definition, stopPosition);
             return car;
+        }
+
+        private static bool TryStartEntryTrip(CarAutoDrive drive, CarDefinition definition, Vector2 stop, float rotation, int slot)
+        {
+            if (!Services.TryGet<IEntryRouter>(out var entry) || !Services.TryGet<ITripDriver>(out var trips)) return false;
+            int trip = entry.BeginEntry(slot);
+            if (trip == TripId.None) return false;
+            drive.BeginArrivingTrip(definition, trips, trip, stop, rotation);
+            return true;
         }
 
         public void DriveAwayAndDespawn(CarId id)
@@ -56,6 +68,8 @@ namespace UncannyValet.Cars
             if (!_cars.TryGetValue(id, out var car) || car == null) { Despawn(id); return; }
             var drive = car.GetComponent<CarAutoDrive>();
             if (drive.IsDeparting) return;
+            if (Services.TryGet<IExitRouter>(out var exits) && Services.TryGet<ITripDriver>(out var trips)
+                && drive.TryBeginDepartingTrip(car.Definition, exits, trips, () => Despawn(id))) return;
             drive.BeginDeparting(car.Definition, () => Despawn(id));
         }
 

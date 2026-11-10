@@ -31,6 +31,12 @@ namespace UncannyValet.Cars
             return Mathf.MoveTowards(speed, top, acceleration * dt);
         }
 
+        /// <summary>Turns <paramref name="current"/> toward <paramref name="target"/> (degrees) by at most <paramref name="rate"/> degrees per second.</summary>
+        public static float TurnToward(float current, float target, float rate, float dt)
+        {
+            return Mathf.MoveTowardsAngle(current, target, Mathf.Max(0f, rate) * dt);
+        }
+
         /// <summary>True once the car has driven far enough to be out of view.</summary>
         public static bool HasLeft(float travelled, float exitDistance) => travelled >= exitDistance;
     }

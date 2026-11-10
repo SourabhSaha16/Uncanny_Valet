@@ -477,3 +477,9 @@ Date: 2026-11-10
 Files: merges of worktree-agent-aed01734270b59177 and worktree-agent-ad7a2343048ede8aa, docs/design.md
 Why: Lot v2 layout and the Traffic module per docs/redesign/lot_v2_layout.md.
 Tests: 672 of 672 EditMode.
+
+## lead: merge traffic-wire, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a23a9621f7d814729, scene and configs, site/
+Why: road traffic wired into patron arrival and departure (docs/redesign/lot_v2_layout.md).
+Tests: 680 of 680 EditMode.

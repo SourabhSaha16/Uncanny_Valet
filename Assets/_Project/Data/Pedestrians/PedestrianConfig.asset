@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PedestrianConfig
   m_EditorClassIdentifier: UncannyValet.Pedestrians::UncannyValet.Pedestrians.PedestrianConfig
   _count: 8
+  _startActive: 3
   _minSpeed: 0.9
   _maxSpeed: 1.5
   _scale: 1.3

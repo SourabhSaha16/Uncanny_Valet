@@ -9,6 +9,7 @@ using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
+using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
 using UnityEditor;
@@ -21,6 +22,7 @@ namespace UncannyValet.EditorTools
     public static class BootstrapSceneBuilder
     {
         public const string ScenePath = "Assets/_Project/Scenes/Bootstrap.unity";
+        private const string DefaultCarPath = "Assets/_Project/Data/Cars/Sedan.asset";
         private const string CarFlashConfigPath = "Assets/_Project/Data/Cars/CarFlashConfig.asset";
         private const float ValetScale = 1.4f;
         private const float ValetColliderRadius = 0.3f; // times the scale: about the old 0.4 world radius
@@ -49,9 +51,12 @@ namespace UncannyValet.EditorTools
             var decor = BuildDecor(root, lotArt);
             var crowd = Child<PedestrianCrowd>(root, "Pedestrians");
             Set(crowd, "_config", PedestrianArtBuilder.Build());
+            var traffic = Child<TrafficModule>(root, "Traffic");
+            var trafficConfig = TrafficArtBuilder.Build(carArt, Load<CarDefinition>(DefaultCarPath));
+            Set(traffic, "_config", trafficConfig);
             var camera = BuildCamera();
 
-            Set(factory, "_defaultDefinition", Load<CarDefinition>("Assets/_Project/Data/Cars/Sedan.asset"));
+            Set(factory, "_defaultDefinition", Load<CarDefinition>(DefaultCarPath));
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
             Set(lot, "_art", lotArt);
             Set(factory, "_art", carArt);
@@ -79,6 +84,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_directorConfig").objectReferenceValue = RequireAsset<DirectorConfig>(ProjectSetup.DirectorConfigPath);
             so.FindProperty("_directorProfile").objectReferenceValue = RequireAsset<DirectorProfile>(ProjectSetup.DinerDirectorProfilePath);
             so.FindProperty("_directorOverlay").objectReferenceValue = directorOverlay;
+            so.FindProperty("_traffic").objectReferenceValue = traffic;
+            so.FindProperty("_trafficConfig").objectReferenceValue = trafficConfig;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UncannyValet.Traffic
+namespace UncannyValet.Core.Contracts
 {
     /// <summary>The pose a trip wants its car to have this step. The car's own module applies it.</summary>
     public readonly struct TripPose

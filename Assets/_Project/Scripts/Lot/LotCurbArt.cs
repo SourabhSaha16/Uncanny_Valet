@@ -7,6 +7,7 @@ namespace UncannyValet.Lot
     {
         private const int TileOrder = -7;
         private const int PaintOrder = -6;
+        private const float ArrowRowShare = 0.25f; // of the curb height, above and below its middle
 
         public static void Build(RectFactory rects, Transform parent, LotConfig config, LotArtConfig art)
         {
@@ -18,13 +19,15 @@ namespace UncannyValet.Lot
             Direction(rects, parent, area, art.Walkway);
         }
 
-        // Two big outlined down arrows with a chevron under each tip beside the CURB text: the nose must point this way.
+        // Two big outlined down arrows with a chevron under each tip on the aisle side, just outside the curb zone's
+        // east edge: the nose must point this way. They sit above and below the middle so the CURB text stays clear.
         private static void Direction(RectFactory rects, Transform parent, Rect area, WalkwayStyle style)
         {
+            var x = area.xMax + area.width * style.CurbArrowSideShare;
             for (var side = -1; side <= 1; side += 2)
             {
-                var x = area.center.x + side * area.width * style.CurbArrowSideShare;
-                LotArrowMarks.Build(parent, rects, "Curb Arrow " + side, new Vector2(x, area.center.y), Vector2.down,
+                var y = area.center.y + side * area.height * ArrowRowShare;
+                LotArrowMarks.Build(parent, rects, "Curb Arrow " + side, new Vector2(x, y), Vector2.down,
                     style.CurbArrowLength, style);
             }
         }
