@@ -134,7 +134,11 @@ namespace UncannyValet.Cars
                 _body.MoveRotation(CarAutoDriveMath.TurnToward(_body.rotation, pose.HeadingDegrees, _style.TripTurnRate, dt));
                 return;
             }
-            if (_mode == Mode.TripArriving) ArriveAtTarget();
+            if (_mode == Mode.TripArriving)
+            {
+                _target = pose.Position;
+                ArriveAtTarget();
+            }
             else
             {
                 _mode = Mode.Idle;

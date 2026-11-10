@@ -24,5 +24,9 @@ namespace UncannyValet.Patrons
             PickupWindowMinutes = pickupWindowMinutes;
             IsEv = isEv; IsDirty = isDirty;
         }
+
+        /// <summary>The same visit with another stay.</summary>
+        public PatronRequest WithStay(float stayMinutes)
+            => new PatronRequest(stayMinutes, BaseTip, Impatient, PickupWindowMinutes, IsEv, IsDirty);
     }
 }

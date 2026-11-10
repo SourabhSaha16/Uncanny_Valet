@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
@@ -34,7 +35,6 @@ namespace UncannyValet.Tests.Patrons
             public void Despawn(CarId id) => Despawns++;
         }
 
-        private static readonly bool[] Clear = { false, false, false };
         private EventBus _bus;
         private TicketRegistry _registry;
         private ArrivalReservations _reservations;
@@ -47,22 +47,43 @@ namespace UncannyValet.Tests.Patrons
             _reservations = new ArrivalReservations();
         }
 
-        [Test]
-        public void ArrivingCar_KeepsItsSlotBlockedEvenWhenScanSeesNothing()
+        private static List<bool> Flags(int n)
         {
-            var t = _registry.Open(new CarId(1), new PatronRequest(30f, 20, false));
-            _reservations.Reserve(t.TicketId, 0);
-            var blocked = _reservations.Merge(Clear, _registry);
-            Assert.AreEqual(1, ArrivalGate.FirstFreeSlot(_registry.AwaitingParkCount, 3, blocked));
+            var flags = new List<bool>();
+            for (var i = 0; i < n; i++) flags.Add(false);
+            return flags;
         }
 
         [Test]
-        public void ParkedCar_ReleasesItsSlot()
+        public void ReservedSlot_IsFlaggedForCarsBehindOnly()
         {
-            var t = _registry.Open(new CarId(1), new PatronRequest(30f, 20, false));
-            _reservations.Reserve(t.TicketId, 0);
-            _bus.Publish(new CarParked(t.CarId, 1));
-            Assert.IsFalse(_reservations.Merge(Clear, _registry)[0]);
+            _reservations.Reserve(new CarId(1), 0);
+            _reservations.Reserve(new CarId(2), 1);
+            var flags = Flags(3);
+            _reservations.MarkAhead(flags, new CarId(2));
+            Assert.AreEqual(new[] { true, false, false }, flags.ToArray());
+        }
+
+        [Test]
+        public void Release_FreesTheSlot()
+        {
+            _reservations.Reserve(new CarId(1), 0);
+            Assert.IsTrue(_reservations.Release(new CarId(1)));
+            Assert.IsFalse(_reservations.IsReserved(0));
+        }
+
+        [Test]
+        public void Prune_DropsReservationsOfTicketsThatAreGoneOrParked()
+        {
+            var parked = _registry.Open(new CarId(1), new PatronRequest(30f, 20, false));
+            var waiting = _registry.Open(new CarId(2), new PatronRequest(30f, 20, false));
+            _reservations.Reserve(parked.CarId, 0);
+            _reservations.Reserve(waiting.CarId, 1);
+            _reservations.Reserve(new CarId(3), 2);
+            _bus.Publish(new CarParked(parked.CarId, 1));
+            _reservations.Prune(_registry);
+            Assert.AreEqual(1, _reservations.Count);
+            Assert.IsTrue(_reservations.IsReserved(1));
         }
 
         [Test]

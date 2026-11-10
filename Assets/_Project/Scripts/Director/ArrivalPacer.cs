@@ -21,6 +21,7 @@ namespace UncannyValet.Director
         private float _factor = 1f;
         private float _idleTimer;
         private bool _awaitingSpawn;
+        private float _awaitingSeconds;
 
         public ArrivalPacer(IDirectorRandom random, PacingSettings settings, ReliefGate relief)
         {
@@ -38,6 +39,7 @@ namespace UncannyValet.Director
             _factor = 1f;
             _idleTimer = 0f;
             _awaitingSpawn = false;
+            _awaitingSeconds = 0f;
             _relief.Reset();
         }
 
@@ -57,7 +59,7 @@ namespace UncannyValet.Director
             var started = _relief.TryStart(input.Workload, input.Pressure, input.AngryRecent, out var trigger);
             if (_relief.Stage == ReliefStage.Holding) return Make(PacerAction.Hold, HoldReason.Relief, 0f, started, trigger, ended);
             if (input.ArrivalsUsed >= _settings.MaxArrivals) return Make(PacerAction.Hold, HoldReason.BudgetSpent, 0f, started, trigger, ended);
-            if (_awaitingSpawn) return Make(PacerAction.Wait, HoldReason.None, 0f, started, trigger, ended);
+            if (_awaitingSpawn && StillAwaiting(dt)) return Make(PacerAction.Wait, HoldReason.None, 0f, started, trigger, ended);
 
             UpdateIdle(input, dt);
             var idle = _idleTimer >= _settings.IdleSeconds && BehindSchedule(input);
@@ -69,9 +71,20 @@ namespace UncannyValet.Director
             if (input.Queue >= input.QueueCap) return Make(PacerAction.Hold, HoldReason.QueueFull, 0f, started, trigger, ended);
 
             _awaitingSpawn = true;
+            _awaitingSeconds = 0f;
             var plain = _relief.Stage == ReliefStage.Plain;
             var reason = plain ? ScheduleReason.ReliefCar : band;
             return new PacerDecision(PacerAction.Spawn, reason, HoldReason.None, plain, 0f, started, trigger, ended);
+        }
+
+        // A send the spawner never executed (no clear slot, request lost) must not wedge the pacer: after the
+        // acknowledgement timeout the send counts as lost and the due car is sent again.
+        private bool StillAwaiting(float dt)
+        {
+            _awaitingSeconds += dt;
+            if (_awaitingSeconds < _settings.SpawnAckSeconds) return true;
+            _awaitingSpawn = false;
+            return false;
         }
 
         private void UpdateIdle(in PacerInput input, float dt)

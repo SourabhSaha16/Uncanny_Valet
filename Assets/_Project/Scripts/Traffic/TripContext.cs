@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UnityEngine;
 
@@ -30,6 +31,17 @@ namespace UncannyValet.Traffic
             Merge = merge;
             Tuning = tuning;
             Speeds = speeds ?? new TripSpeeds(1f, 1f);
+        }
+
+        /// <summary>Who decides the queue slot of an arriving car; null until Patrons registers it (see <see cref="TryGetSlots"/>).</summary>
+        public IQueueSlotSource Slots { get; set; }
+
+        /// <summary>Finds the slot source, looking in Services until it is there.</summary>
+        public bool TryGetSlots(out IQueueSlotSource slots)
+        {
+            if (Slots == null && Services.TryGet<IQueueSlotSource>(out var found)) Slots = found;
+            slots = Slots;
+            return slots != null;
         }
 
         /// <summary>True when a car centred at <paramref name="distance"/> on the east lane has room to join it now.</summary>

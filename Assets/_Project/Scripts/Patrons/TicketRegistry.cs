@@ -72,6 +72,9 @@ namespace UncannyValet.Patrons
 
         public bool TryGet(TicketId id, out Ticket ticket) => _book.TryGet(id, out ticket);
 
+        /// <summary>Finds the open ticket of a car.</summary>
+        public bool TryGetByCar(CarId car, out Ticket ticket) => _book.TryGetByCar(car, out ticket);
+
         /// <summary>Opens a ticket for a car and gives it a tag colour.</summary>
         public Ticket Open(CarId car, PatronRequest request)
         {

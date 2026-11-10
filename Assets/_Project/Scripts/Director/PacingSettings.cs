@@ -29,6 +29,8 @@ namespace UncannyValet.Director
         private float _minIntervalSeconds = 5f;
         [SerializeField, Min(1f), Tooltip("The longest countdown between two arrivals, in seconds.")]
         private float _maxIntervalSeconds = 40f;
+        [SerializeField, Min(1f), Tooltip("Seconds the pacer waits for a sent car to really arrive before it counts the send as lost and sends again.")]
+        private float _spawnAckSeconds = 8f;
 
         // Not serialized: the lot's DirectorProfile owns the budget and seeds it (see Seed).
         private int _arrivalBudget = DirectorProfile.DefaultArrivalBudget;
@@ -44,6 +46,7 @@ namespace UncannyValet.Director
         public float BudgetBlend => _budgetBlend;
         public float MinIntervalSeconds => _minIntervalSeconds;
         public float MaxIntervalSeconds => _maxIntervalSeconds;
+        public float SpawnAckSeconds => _spawnAckSeconds;
         public int ArrivalBudget => _arrivalBudget;
         public int BudgetSlack => _budgetSlack;
 

@@ -24,6 +24,16 @@ namespace UncannyValet.Traffic
             Speed = 0f;
         }
 
+        /// <summary>
+        /// Swaps in a new route that shares the start of the current one and ends further along; the distance
+        /// already driven is kept, so the car carries on without a jump.
+        /// </summary>
+        public void Retarget(IReadOnlyList<Vector2> points)
+        {
+            _path.Rebuild(points);
+            _distance = Mathf.Min(_distance, _path.Length);
+        }
+
         /// <summary>Moves along the route. With <paramref name="stopAtEnd"/> the speed is capped so the car comes to rest exactly at the end.</summary>
         public void Step(float cruiseSpeed, bool stopAtEnd, float acceleration, float brake, float dt)
         {

@@ -14,8 +14,16 @@ namespace UncannyValet.Traffic
         /// <summary>A route counts as finished this close to its end.</summary>
         public readonly float ArriveTolerance;
 
-        public TripTuning(float carLength, float turnSpeed, float routeSpeed, float yieldDistance, float arriveTolerance)
+        /// <summary>How often an arriving car re-checks which queue slot it should take, in seconds.</summary>
+        public readonly float RetargetSeconds;
+
+        /// <summary>Default for <see cref="RetargetSeconds"/>.</summary>
+        public const float DefaultRetargetSeconds = 0.2f;
+
+        public TripTuning(float carLength, float turnSpeed, float routeSpeed, float yieldDistance, float arriveTolerance,
+            float retargetSeconds = DefaultRetargetSeconds)
         {
+            RetargetSeconds = retargetSeconds;
             CarLength = carLength;
             TurnSpeed = turnSpeed;
             RouteSpeed = routeSpeed;

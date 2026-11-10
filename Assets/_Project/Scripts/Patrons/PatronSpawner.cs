@@ -17,8 +17,8 @@ namespace UncannyValet.Patrons
         private IEventBus _bus;
         private ICarFactory _cars;
         private ILotLayout _lot;
-        private ArrivalSlotScanner _scanner;
-        private readonly ArrivalReservations _reservations = new ArrivalReservations();
+        private QueueSlotAllocator _slots;
+        private PatronTuning _tuning;
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
         private int _nextCarId = 1;
@@ -42,15 +42,16 @@ namespace UncannyValet.Patrons
             _bus = Services.Get<IEventBus>();
             _cars = Services.Get<ICarFactory>();
             _lot = Services.Get<ILotLayout>();
-            _scanner = new ArrivalSlotScanner(_arrivalClearSize);
             _plan = new PatronPlan(_config.MaxWaitingCars);
             _liveTuning = Services.Get<ITuning>();
-            var tuning = new PatronTuning(_liveTuning, _config);
+            var tuning = _tuning = new PatronTuning(_liveTuning, _config);
             _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
             _clock = Services.Get<IGameClock>();
             Services.TryGet<IShiftScoreView>(out var score);
             Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
+            _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);
+            Services.Register<IQueueSlotSource>(_slots);
             _departure = new PatronDeparture(_bus, _cars, _clock, _config.BoardingTimeoutMinutes);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -68,6 +69,7 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<ShiftPlanChanged>(OnShiftPlanChanged);
             _bus.Unsubscribe<PatronScheduled>(OnPatronScheduled);
             Registry.Dispose();
+            _slots.Dispose();
             _departure.Dispose();
         }
 
@@ -79,16 +81,22 @@ namespace UncannyValet.Patrons
         {
             ticket = null;
             if (!_shiftOpen) return false;
-            var scanned = _scanner.Scan(_lot.ArrivalSlots, _lot.ArrivalRotationDegrees, _plan.MaxWaitingCars);
-            var blocked = _reservations.Merge(scanned, Registry);
-            var slot = ArrivalGate.FirstFreeSlot(Registry.AwaitingParkCount, _plan.MaxWaitingCars, blocked);
+            var slot = _slots.ChooseForSpawn();
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
             _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees, slot);
-            ticket = Registry.Create(car, request);
-            _reservations.Reserve(ticket.TicketId, slot);
+            ticket = Registry.Create(car, FitStay(request));
+            _slots.Reserve(car, slot);
             Registry.AnnounceArrival(ticket);
             return true;
+        }
+
+        // A late arrival's stay is cut so its patron is back asking for the car before the shift ends.
+        private PatronRequest FitStay(PatronRequest request)
+        {
+            var remaining = _clock.SecondsRemaining * _tuning.MinutesPerSecond;
+            var stay = StayFit.Clamp(request.StayMinutes, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
+            return stay < request.StayMinutes ? request.WithStay(stay) : request;
         }
 
         private void OnShiftStarted(ShiftStarted e)
