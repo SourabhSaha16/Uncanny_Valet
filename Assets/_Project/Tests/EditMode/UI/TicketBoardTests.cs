@@ -3,6 +3,8 @@ using NUnit.Framework;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
 using UncannyValet.UI;
+using UncannyValet.UI.Mood;
+using UncannyValet.UI.Status;
 
 namespace UncannyValet.Tests.UI
 {
@@ -243,6 +245,70 @@ namespace UncannyValet.Tests.UI
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
             Assert.IsTrue(Only().ShowsPlate);
+        }
+
+        private static readonly CarStatusResolver Status = CarStatusResolver.CreateDefault(new EmotionRule(0.6f, 0.85f));
+
+        private void OpenCar(bool ev, bool dirty)
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            _bus.Publish(new TicketTraitsAssigned(T, C, ev, dirty));
+        }
+
+        [Test]
+        public void WashThenPark_StatusReturnsToParked()
+        {
+            OpenCar(false, true);
+            _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
+            _bus.Publish(new CarCleanChanged(C, 0.5f));
+            Assert.AreEqual(CarStatus.Washing, Status.Resolve(Only()));
+            _bus.Publish(new CarCleaned(C));
+            Assert.AreEqual(CarStatus.Washed, Status.Resolve(Only()));
+            _bus.Publish(new CarLeftStation(C, StationKind.Wash));
+            Assert.AreEqual(CarStatus.Washed, Status.Resolve(Only()), "still washed while being driven");
+            _bus.Publish(new CarParked(C, 3));
+            Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
+        }
+
+        [Test]
+        public void ChargeThenPark_StatusReturnsToParked()
+        {
+            OpenCar(true, false);
+            _bus.Publish(new CarParked(C, 7));
+            _bus.Publish(new CarEnteredStation(C, StationKind.Charging));
+            _bus.Publish(new CarChargeChanged(C, 0.4f));
+            Assert.AreEqual(CarStatus.Charging, Status.Resolve(Only()));
+            _bus.Publish(new CarChargeChanged(C, 1f));
+            _bus.Publish(new CarFullyCharged(C));
+            Assert.AreEqual(CarStatus.Charged, Status.Resolve(Only()));
+            _bus.Publish(new CarLeftSpot(C, 7));
+            _bus.Publish(new CarLeftStation(C, StationKind.Charging));
+            _bus.Publish(new CarParked(C, 2));
+            Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
+        }
+
+        [Test]
+        public void DrivenOutMidWash_IsNotWashed_AndParksAsParked()
+        {
+            OpenCar(false, true);
+            _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
+            _bus.Publish(new CarCleanChanged(C, 0.3f));
+            _bus.Publish(new CarLeftStation(C, StationKind.Wash));
+            Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
+            _bus.Publish(new CarParked(C, 3));
+            Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
+        }
+
+        [Test]
+        public void PickupStillBeatsWashed_ThenParkingDoesNotHideIt()
+        {
+            OpenCar(false, true);
+            _bus.Publish(new CarCleaned(C));
+            _bus.Publish(new PickupRequested(T, C));
+            Assert.AreEqual(CarStatus.PickUp, Status.Resolve(Only()));
+            _bus.Publish(new CarParked(C, 3));
+            Assert.AreEqual(CarStatus.PickUp, Status.Resolve(Only()));
         }
     }
 }

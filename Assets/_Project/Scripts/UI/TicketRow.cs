@@ -42,6 +42,10 @@ namespace UncannyValet.UI
         public float Clean01;
         /// <summary>True once a dirty car has been washed.</summary>
         public bool Washed;
+        /// <summary>Set by CarCleaned, cleared by the next CarParked: the status shows Washed only until the car is parked again.</summary>
+        public bool ShowWashed;
+        /// <summary>Set by CarFullyCharged, cleared by the next CarParked: the status shows Charged only until the car is parked again.</summary>
+        public bool ShowCharged;
 
         /// <summary>Charge at or above this counts as full.</summary>
         public const float FullCharge = 0.999f;

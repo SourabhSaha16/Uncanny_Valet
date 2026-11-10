@@ -17,6 +17,8 @@ namespace UncannyValet.UI
             _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Subscribe<CarChargeChanged>(OnCharge);
             _bus.Subscribe<CarCleaned>(OnCleaned);
+            _bus.Subscribe<CarFullyCharged>(OnFullyCharged);
+            _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
         }
 
@@ -25,6 +27,8 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Unsubscribe<CarChargeChanged>(OnCharge);
             _bus.Unsubscribe<CarCleaned>(OnCleaned);
+            _bus.Unsubscribe<CarFullyCharged>(OnFullyCharged);
+            _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
         }
 
@@ -46,6 +50,17 @@ namespace UncannyValet.UI
 
         private void OnCharge(CarChargeChanged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Charge01 = e.Charge01; }
 
-        private void OnCleaned(CarCleaned e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Washed = true; }
+        private void OnCleaned(CarCleaned e) { var row = FindByCar(_rows, e.Car.Value); if (row == null) return; row.Washed = true; row.ShowWashed = true; }
+
+        private void OnFullyCharged(CarFullyCharged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.ShowCharged = true; }
+
+        /// <summary>Parking ends the short "Washed" / "Charged" moments: the car is simply Parked again.</summary>
+        private void OnParked(CarParked e)
+        {
+            var row = FindByCar(_rows, e.Car.Value);
+            if (row == null) return;
+            row.ShowWashed = false;
+            row.ShowCharged = false;
+        }
     }
 }

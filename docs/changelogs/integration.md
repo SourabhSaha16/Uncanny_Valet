@@ -61,3 +61,9 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Bootstrap/ (GameBootstrap, TuningSeeder, asmdef), Assets/_Project/Editor/ (BootstrapSceneBuilder, ProjectSetup, asmdef), Assets/_Project/Scripts/UI/SummaryCardFormatter.cs, Assets/_Project/Scripts/UI/RunLostCard.cs (deleted), Assets/_Project/Tests/EditMode/UI/SummaryCardFormatterTests.cs, Assets/_Project/Tests/EditMode/Integration/TuningSeederTests.cs
 Why: design.md section 6. BossOrderDirector is a scene child with OrdersConfig, activated in GameBootstrap.Awake (before the one-frame-late night 1, so it hears NightStarted). TuningSeeder calls OrdersConfig.SeedInto, so all TuningCatalog keys are seeded. RunLostCard and its timeScale freeze are removed: a lost run ends through NightSummaryCard (title 'The boss is finished with you', headline cites strikes and never 'paid off', button 'New run'). ProjectSetup creates OrdersConfig if missing. Scene must be regenerated with ProjectSetup.RunBatch.
 Tests: added 3 RunLost formatter tests and 2 TuningSeederTests. Not run: the parallel Orders/Lot changes (IChargingSpotQuery removal, IsChargingSpot) are not merged, so the Orders director and fixture do not compile against Core on this branch.
+
+## integration: status Washed/Charged clear on park; closer camera
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketNeedsTracker.cs, Status/WashedStatusRule.cs, Status/ChargedStatusRule.cs, Assets/_Project/Scripts/Bootstrap/CameraFollow.cs, Assets/_Project/Scenes/Bootstrap.unity, Tests/EditMode/UI/CarStatusTests.cs, Tests/EditMode/UI/TicketBoardTests.cs, Tests/EditMode/Integration/CameraFitTests.cs
+Why: A washed or charged car kept Washed/Charged after being parked (design Part A, CAR SLOTS). They are now flags set by CarCleaned/CarFullyCharged and cleared by CarParked. Camera fit tightness 0.87 -> 0.78; play-area floor unchanged.
+Tests: wash and charge event replays, mid-wash drive-out, pickup priority; EditMode suite run.

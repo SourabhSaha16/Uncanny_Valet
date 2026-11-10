@@ -507,7 +507,7 @@ MonoBehaviour:
   _orthographicSize: 8.5
   _maxOrthographicSize: 15
   _boundsMargin: 1
-  _fitTightness: 0.87
+  _fitTightness: 0.78
   _smoothing: 8
   _focusOffset: {x: 0, y: 0}
 --- !u!81 &624326045

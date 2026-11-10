@@ -1,10 +1,10 @@
 namespace UncannyValet.UI.Status
 {
-    /// <summary>The EV is fully charged and waits for its patron.</summary>
+    /// <summary>The EV just finished charging; holds until the car is parked again.</summary>
     public sealed class ChargedStatusRule : ICarStatusRule
     {
         public CarStatus Status => CarStatus.Charged;
 
-        public bool Applies(TicketRow row) => row.IsEv && !row.NeedsCharge;
+        public bool Applies(TicketRow row) => row.ShowCharged;
     }
 }

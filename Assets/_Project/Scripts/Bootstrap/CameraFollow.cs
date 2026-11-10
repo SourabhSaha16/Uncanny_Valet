@@ -20,8 +20,8 @@ namespace UncannyValet.Bootstrap
         private float _maxOrthographicSize = 15f;
         [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
         private float _boundsMargin = 1f;
-        [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.87 = about 15% closer). The play area is never cropped.")]
-        private float _fitTightness = 0.87f;
+        [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.78 = about 22% closer). The play area is never cropped.")]
+        private float _fitTightness = 0.78f;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
         [SerializeField, Tooltip("Shifts the view from the target when no bounds are set.")]
         private Vector2 _focusOffset = Vector2.zero;
