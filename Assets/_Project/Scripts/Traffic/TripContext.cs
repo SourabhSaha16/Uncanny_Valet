@@ -1,0 +1,48 @@
+using System.Collections.Generic;
+using UncannyValet.Core.Contracts;
+using UnityEngine;
+
+namespace UncannyValet.Traffic
+{
+    /// <summary>What every patron trip shares: the road, the east lane path, the occupancy registry and the rules.</summary>
+    public sealed class TripContext
+    {
+        private const int ScratchCapacity = 16;
+
+        public readonly IRoadLayout Road;
+        public readonly LanePath EastPath;
+        public readonly LaneOccupancy Occupancy;
+        public readonly FollowSettings Follow;
+        public readonly MergeGapRule Merge;
+        public readonly TripTuning Tuning;
+        /// <summary>Reusable buffer for fetching routes from the road layout.</summary>
+        public readonly List<Vector2> Scratch = new List<Vector2>(ScratchCapacity);
+
+        public TripContext(IRoadLayout road, LanePath eastPath, LaneOccupancy occupancy,
+            FollowSettings follow, MergeGapRule merge, TripTuning tuning)
+        {
+            Road = road;
+            EastPath = eastPath;
+            Occupancy = occupancy;
+            Follow = follow;
+            Merge = merge;
+            Tuning = tuning;
+        }
+
+        /// <summary>True when a car centred at <paramref name="distance"/> on the east lane has room to join it now.</summary>
+        public bool CanJoinEast(float distance)
+        {
+            float length = Tuning.CarLength;
+            float ahead = Occupancy.GapAhead(TrafficLane.East, distance, length, 0, out _);
+            float behind = Occupancy.GapBehind(TrafficLane.East, distance, length, 0, out float followerSpeed);
+            return Merge.CanMerge(ahead, behind, followerSpeed);
+        }
+
+        /// <summary>Registers a car on the east lane and returns its lane state.</summary>
+        public LaneState JoinEast(float distance, float speed)
+        {
+            int id = Occupancy.Add(TrafficLane.East, distance, speed, Tuning.CarLength);
+            return new LaneState { Id = id, Lane = TrafficLane.East, Distance = distance, Speed = speed };
+        }
+    }
+}
