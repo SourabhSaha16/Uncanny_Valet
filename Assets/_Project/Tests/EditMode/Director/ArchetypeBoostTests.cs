@@ -80,7 +80,7 @@ namespace UncannyValet.Tests.Director
         {
             var lot = Stations(true, true, StationSlotState.Blocked);
             lot.FreeSpots = 0;
-            lot.TotalSpots = 9;
+            lot.TotalSpots = 6;
             for (var seed = 1; seed <= 30; seed++)
                 Assert.IsFalse(Picker(seed).Pick(Request(lot, dilemmas: true)).HasRule);
         }
@@ -89,8 +89,8 @@ namespace UncannyValet.Tests.Director
         public void LotTightAsksForAnEarlyReturnWhateverWins()
         {
             var lot = Stations(true, true);
-            lot.FreeSpots = 2;
-            lot.TotalSpots = 9;
+            lot.FreeSpots = 1;
+            lot.TotalSpots = 6;
             Assert.IsTrue(Picker(1).Pick(Request(lot, dilemmas: true)).WantsEarlyReturn);
             Assert.IsFalse(Picker(1).Pick(Request(lot, dilemmas: false)).WantsEarlyReturn);
         }

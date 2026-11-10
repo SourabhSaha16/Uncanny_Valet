@@ -557,7 +557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Bootstrap::UncannyValet.Bootstrap.CameraFollow
   _target: {fileID: 0}
   _orthographicSize: 8.5
-  _maxOrthographicSize: 12.5
+  _maxOrthographicSize: 15
   _boundsMargin: 1
   _fitTightness: 0.87
   _smoothing: 8

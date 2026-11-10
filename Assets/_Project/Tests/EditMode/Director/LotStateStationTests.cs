@@ -29,7 +29,6 @@ namespace UncannyValet.Tests.Director
             Bus.Publish(new CarArrived(Car));
             Bus.Publish(new CarEnteredStation(Car, StationKind.Charging));
             Assert.AreEqual(StationSlotState.Squatted, Slot(StationKind.Charging, 0).State);
-            Assert.AreEqual(StationSlotState.Free, Slot(StationKind.Charging, 1).State);
         }
 
         [Test]

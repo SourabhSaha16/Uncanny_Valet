@@ -146,7 +146,7 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void ALotTightPickPublishesTheEarlyReturnWish()
         {
-            _lot = new SnapshotBuilderForTests { FreeSpots = 1, TotalSpots = 9 };
+            _lot = new SnapshotBuilderForTests { FreeSpots = 1, TotalSpots = 6 };
             _director.Choose(_lot.Build(), Context());
             Assert.AreEqual(1, _earlyReturns);
             Assert.IsTrue(_state.ReturnForwardWanted);

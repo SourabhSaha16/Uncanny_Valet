@@ -11,14 +11,12 @@ namespace UncannyValet.EditorTools.Art
         private const string Tiles = "Environment/Tiles/Tiles.png";
         private const string Road = "Environment/Road/Road.png";
         private const string Trees = "Environment/Trees/Tree-Sheet.png";
-        private const string Buildings = "Environment/Buildings/Building.png";
         private const int TreeCount = 4;
 
         // Pixel positions (x, y from the top-left) found by inspecting the sheets; see docs/changelogs/pivot-visuals.md.
         private static readonly Vector2Int CleanCobble = new Vector2Int(264, 40);
         private static readonly Vector2Int GrassPatch = new Vector2Int(40, 92);
         private static readonly Vector2Int PlainAsphalt = new Vector2Int(16, 80);
-        private static readonly Vector2Int TanGreenRoofHouse = new Vector2Int(1147, 645);
         private static readonly Vector2Int[] TuftPoints =
         {
             new Vector2Int(8, 118), new Vector2Int(6, 152), new Vector2Int(26, 153),
@@ -31,7 +29,6 @@ namespace UncannyValet.EditorTools.Art
             var so = new SerializedObject(config);
             ArtAssetUtil.SetObject(so, "_sidewalkTile", ArtSprites.AtPoint(Tiles, CleanCobble.x, CleanCobble.y));
             ArtAssetUtil.SetObject(so, "_roadDashTile", ArtSprites.Named(Road, "Road_r6_c0"));
-            ArtAssetUtil.SetObject(so, "_building", ArtSprites.AtPoint(Buildings, TanGreenRoofHouse.x, TanGreenRoofHouse.y));
             ArtAssetUtil.SetSprites(so, "_trees", TreeSprites());
             ArtAssetUtil.SetSprites(so, "_tufts", TuftSprites());
             ArtAssetUtil.SetColor(so, "_grassColor", ArtSprites.PixelColor(Tiles, GrassPatch.x, GrassPatch.y));

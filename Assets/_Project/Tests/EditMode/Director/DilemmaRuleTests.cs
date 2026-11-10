@@ -109,17 +109,34 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void LotTightFiresAtTwoFreeSpotsAndAsksForAnEarlyReturn()
+        public void LastBayWithASingleBayNeedsTheWashWorking()
+        {
+            var b = new SnapshotBuilderForTests();
+            b.Slot(StationKind.Wash, StationSlotState.Working);
+            b.Slot(StationKind.Charging, StationSlotState.Free);
+            CollectionAssert.AreEquivalent(new[] { DilemmaKind.LastBay, DilemmaKind.WashBusy }, Fired(b));
+            var idleWash = new SnapshotBuilderForTests();
+            idleWash.Slot(StationKind.Wash, StationSlotState.Free);
+            idleWash.Slot(StationKind.Charging, StationSlotState.Free);
+            Assert.IsEmpty(Fired(idleWash));
+            var busyBay = new SnapshotBuilderForTests();
+            busyBay.Slot(StationKind.Wash, StationSlotState.Working);
+            busyBay.Slot(StationKind.Charging, StationSlotState.Working);
+            CollectionAssert.AreEqual(new[] { DilemmaKind.WashBusy }, Fired(busyBay));
+        }
+
+        [Test]
+        public void LotTightFiresAtOneFreeSpotAndAsksForAnEarlyReturn()
         {
             var b = Lot(StationSlotState.Free, StationSlotState.Free, StationSlotState.Free);
-            b.FreeSpots = 2;
-            b.TotalSpots = 9;
+            b.FreeSpots = 1;
+            b.TotalSpots = 6;
             CollectionAssert.AreEqual(new[] { DilemmaKind.LotTight }, Fired(b));
             var boost = Boost(DilemmaKind.LotTight, b);
             Assert.AreEqual(CarArchetype.Plain, boost.Archetype);
             Assert.AreEqual(1.5f, boost.Multiplier);
             Assert.IsTrue(boost.BringReturnForward);
-            b.FreeSpots = 3;
+            b.FreeSpots = 2;
             Assert.IsEmpty(Fired(b));
         }
 

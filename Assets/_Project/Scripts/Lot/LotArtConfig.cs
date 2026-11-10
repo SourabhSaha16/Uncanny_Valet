@@ -9,7 +9,6 @@ namespace UncannyValet.Lot
         [Header("Sprites")]
         [SerializeField] private Sprite _sidewalkTile;
         [SerializeField, Tooltip("Road tile with the dashed centre line near its top edge.")] private Sprite _roadDashTile;
-        [SerializeField] private Sprite _building;
         [SerializeField] private Sprite[] _trees = new Sprite[0];
         [SerializeField] private Sprite[] _tufts = new Sprite[0];
         [Header("Colours")]
@@ -21,29 +20,28 @@ namespace UncannyValet.Lot
         [SerializeField] private Color _curbPlateColor = new Color(0f, 0f, 0f, 0.45f);
         [Header("Layout")]
         [SerializeField, Min(0.5f)] private float _sidewalkDepth = 1.5f;
-        [SerializeField, Min(1f)] private float _roadHeight = 3f;
-        [SerializeField, Min(0f), Tooltip("How far the road and sidewalks reach past the largest lot frame.")] private float _sideReach = 8f;
         [SerializeField, Min(1f)] private float _grassReach = 40f;
-        [SerializeField, Tooltip("Distance of the crosswalk east of the curb centre.")] private float _crosswalkOffset = 5f;
-        [SerializeField, Min(1)] private int _crosswalkBars = 5;
-        [SerializeField, Min(0.1f)] private float _crosswalkBarWidth = 0.45f;
-        [SerializeField, Min(0f)] private float _crosswalkBarGap = 0.45f;
         [SerializeField, Tooltip("Height of the dash tile centre below the road middle (the dash sits near the tile top).")]
         private float _dashTileShift = 0.27f;
         [SerializeField, Min(0)] private int _tuftCount = 40;
         [SerializeField, Min(0.01f)] private float _curbEdgeWidth = 0.15f;
         [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.5f, 0.8f);
-        [Header("Camera view")]
-        [SerializeField, Range(0f, 1f), Tooltip("Share of the diner's height kept in view above the lot (the rest is cropped).")]
-        private float _viewBuildingShare = 0.2f;
-        [SerializeField, Min(0f), Tooltip("Road and sidewalk kept in view below the lot, as a share of their depth.")]
-        private float _viewRoadShare = 0.6f;
+        [Header("Diner and bus stop")]
+        [SerializeField] private Color _dinerWallColor = new Color(0.78f, 0.62f, 0.42f);
+        [SerializeField] private Color _dinerRoofColor = new Color(0.36f, 0.52f, 0.34f);
+        [SerializeField] private Color _doorColor = new Color(0.32f, 0.2f, 0.12f);
+        [SerializeField, Min(0f), Tooltip("Width of the wall-coloured rim around the green roof.")]
+        private float _dinerRoofInset = 0.6f;
+        [SerializeField] private Color _busStopColor = new Color(0.25f, 0.45f, 0.7f);
+        [SerializeField, Tooltip("Size of the bus stop shelter on the right strip.")]
+        private Vector2 _busStopSize = new Vector2(1.2f, 3f);
+        [SerializeField, Min(0f), Tooltip("Distance of the bus stop from the bottom of the strip.")]
+        private float _busStopFromBottom = 2f;
         [Header("Walkways")]
         [SerializeField] private WalkwayStyle _walkway = new WalkwayStyle();
 
         public Sprite SidewalkTile => _sidewalkTile;
         public Sprite RoadDashTile => _roadDashTile;
-        public Sprite Building => _building;
         public Sprite[] Trees => _trees;
         public Sprite[] Tufts => _tufts;
         public Color GrassColor => _grassColor;
@@ -52,20 +50,19 @@ namespace UncannyValet.Lot
         public Color CrosswalkColor => _crosswalkColor;
         public Color CurbEdgeColor => _curbEdgeColor;
         public Color CurbPlateColor => _curbPlateColor;
+        public Color DinerWallColor => _dinerWallColor;
+        public Color DinerRoofColor => _dinerRoofColor;
+        public Color DoorColor => _doorColor;
+        public float DinerRoofInset => _dinerRoofInset;
+        public Color BusStopColor => _busStopColor;
+        public Vector2 BusStopSize => _busStopSize;
+        public float BusStopFromBottom => _busStopFromBottom;
         public float SidewalkDepth => _sidewalkDepth;
-        public float RoadHeight => _roadHeight;
-        public float SideReach => _sideReach;
         public float GrassReach => _grassReach;
-        public float CrosswalkOffset => _crosswalkOffset;
-        public int CrosswalkBars => _crosswalkBars;
-        public float CrosswalkBarWidth => _crosswalkBarWidth;
-        public float CrosswalkBarGap => _crosswalkBarGap;
         public float DashTileShift => _dashTileShift;
         public int TuftCount => _tuftCount;
         public float CurbEdgeWidth => _curbEdgeWidth;
         public Vector2 CurbPlateShare => _curbPlateShare;
-        public float ViewBuildingShare => _viewBuildingShare;
-        public float ViewRoadShare => _viewRoadShare;
         public WalkwayStyle Walkway => _walkway;
     }
 }

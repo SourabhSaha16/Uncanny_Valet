@@ -9,8 +9,8 @@ namespace UncannyValet.Tests.Director
     /// <summary>Shared setup and helpers for the tracker fixtures.</summary>
     public abstract class TrackerTestBase
     {
-        protected const int RegularSpots = 9;
-        protected const int Bays = 2;
+        protected const int RegularSpots = 6;
+        protected const int Bays = 1;
 
         protected EventBus Bus;
         protected FakeClock Clock;

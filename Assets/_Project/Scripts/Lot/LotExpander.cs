@@ -6,32 +6,25 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Makes the lot match the night plan: only open spots exist (the others are switched off), and the
-    /// ground and walls move to fit what is open. Reacts to every ShiftPlanChanged and to cars leaving a
-    /// spot (a spot kept open by its car closes once it is empty). Never allocates after setup.
+    /// Makes the lot match the night plan: only open spots exist (the others are switched off; the walls stay
+    /// where they are). Reacts to every ShiftPlanChanged and to cars leaving a spot (a spot kept open by its car
+    /// closes once it is empty). Never allocates after setup.
     /// </summary>
     public sealed class LotExpander : MonoBehaviour
     {
         private readonly List<int> _openIds = new List<int>();
         private SpotOccupancy _occupancy;
-        private LotGeometry _geometry;
         private ParkingSpot[] _spots = new ParkingSpot[0];
-        private LotFrame _frame;
         private IEventBus _bus;
 
         /// <summary>Ids of the spots that are open now (regular and charging), ascending.</summary>
         public IReadOnlyList<int> OpenIds => _openIds;
 
-        /// <summary>The current frame inside the walls, in lot-local coordinates.</summary>
-        public Rect Frame { get; private set; }
-
         /// <param name="spots">Every spot; spots[i] has id i + 1 (regular first, then charging).</param>
-        public void Init(SpotOccupancy occupancy, LotGeometry geometry, ParkingSpot[] spots, LotFrame frame)
+        public void Init(SpotOccupancy occupancy, ParkingSpot[] spots)
         {
             _occupancy = occupancy;
-            _geometry = geometry;
             _spots = spots;
-            _frame = frame;
             Refresh();
         }
 
@@ -80,8 +73,6 @@ namespace UncannyValet.Lot
                 if (!open) _spots[i].ReleaseAll();
                 _spots[i].gameObject.SetActive(open);
             }
-            Frame = LotFrameRule.Frame(_geometry, _occupancy);
-            _frame.Apply(Frame);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace UncannyValet.Tests.Director
     /// </summary>
     internal sealed partial class SoakSim
     {
-        public const int RegularSpots = 9;
-        public const int Bays = 2;
-        public const int QueueCap = 4;
+        public const int RegularSpots = 6;
+        public const int Bays = 1;
+        public const int QueueCap = 3;
         public const float WashSeconds = 15f;
         public const float ChargeSeconds = 20f;
         public const float PickupWindowSeconds = 60f;

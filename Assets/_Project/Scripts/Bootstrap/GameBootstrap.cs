@@ -47,7 +47,7 @@ namespace UncannyValet.Bootstrap
         [SerializeField, Tooltip("F3 debug overlay for the director.")]
         private DirectorOverlay _directorOverlay;
 
-        private const int DefaultSpotSeed = 9;
+        private const int DefaultSpotSeed = 6;
 
         private ShiftScore _score;
         private ShiftFlow _flow;
@@ -82,6 +82,7 @@ namespace UncannyValet.Bootstrap
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
+            Services.Register<IRoadLayout>(_lot.Road);
             SeedTuning(tuning, _lot.RegularSpotCount);
             FrameLot();
             StartPedestrians();

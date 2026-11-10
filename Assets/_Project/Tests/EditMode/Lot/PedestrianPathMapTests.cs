@@ -10,8 +10,8 @@ namespace UncannyValet.Tests.Lot
         private static readonly Vector2 Origin = new Vector2(100f, 50f);
 
         private LotConfig _config;
+        private LotGeometry _geo;
         private WalkwayStyle _style;
-        private DecorLayout _decor;
         private PedestrianPathMap _map;
         private readonly List<Vector2> _route = new List<Vector2>();
 
@@ -19,26 +19,43 @@ namespace UncannyValet.Tests.Lot
         public void SetUp()
         {
             _config = ScriptableObject.CreateInstance<LotConfig>();
+            _geo = new LotGeometry(_config);
             _style = new WalkwayStyle();
-            _decor = new DecorLayout(new LotGeometry(_config).Bounds, _config.WallThickness, 1.5f, 3f, 8f, 40f);
-            _map = new PedestrianPathMap(_config, _decor, _style, 5f, Origin);
+            _map = new PedestrianPathMap(_geo, _config.Site, _style, Origin);
         }
 
         [TearDown]
         public void TearDown() => Object.DestroyImmediate(_config);
 
         [Test]
-        public void EveryRoadRouteEndsAtTheDoorAndStartsOffTheLotSidewalk()
+        public void EveryRoadRouteStartsOnTheRightStripAndEndsAtTheSideDoor()
         {
             Assert.Greater(_map.RoadRouteCount, 0);
             for (var i = 0; i < _map.RoadRouteCount; i++)
             {
                 _map.RoadRoute(i, false, _route);
-                Assert.AreEqual(_map.DinerDoor.x, _route[_route.Count - 1].x, 1e-4f);
-                Assert.AreEqual(_map.DinerDoor.y, _route[_route.Count - 1].y, 1e-4f);
-                var startX = _route[0].x - Origin.x;
-                Assert.IsTrue(startX < _decor.SouthSidewalk.xMin || startX > _decor.SouthSidewalk.xMax, "route " + i);
+                Assert.IsTrue(_geo.Strip.Contains(_route[0] - Origin), "route " + i + " starts on the strip");
+                Assert.AreEqual(_map.SideDoor.x, _route[_route.Count - 1].x, 1e-4f);
+                Assert.AreEqual(_map.SideDoor.y, _route[_route.Count - 1].y, 1e-4f);
             }
+        }
+
+        [Test]
+        public void AmbientRoutesNeverUseTheMainDoor()
+        {
+            _map.RoadRoute(0, false, _route);
+            Assert.AreNotEqual(_map.DinerDoor.y, _route[_route.Count - 1].y);
+            Assert.Greater(_map.SideDoor.y, _map.DinerDoor.y, "the side door is the upper door");
+        }
+
+        [Test]
+        public void RoadRoutesGoAlongTheAisleCrossingThenUpTheNorthCrosswalk()
+        {
+            _map.RoadRoute(0, false, _route);
+            var crossX = _geo.CrossingX + Origin.x;
+            var aisleY = _geo.AisleY + Origin.y;
+            Assert.IsTrue(_route.Exists(p => Mathf.Approximately(p.x, crossX) && Mathf.Approximately(p.y, aisleY)));
+            Assert.IsTrue(_route.Exists(p => Mathf.Approximately(p.x, crossX) && Mathf.Approximately(p.y, _map.SideDoor.y)));
         }
 
         [Test]
@@ -52,43 +69,48 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void FarSideRoutesCrossTheRoadAtTheCrosswalk()
+        public void PatronRouteFromAQueueSlotUsesTheCorridorCrosswalkAndEndsAtTheMainDoor()
         {
-            _map.RoadRoute(0, false, _route);
-            var crossX = _config.CurbPosition.x + 5f + Origin.x;
-            var onCrosswalk = 0;
-            foreach (var p in _route) if (Mathf.Approximately(p.x, crossX)) onCrosswalk++;
-            Assert.GreaterOrEqual(onCrosswalk, 2);
-        }
-
-        [Test]
-        public void RouteFromACarGoesViaTheStripToTheDoor()
-        {
-            var from = new Vector2(_config.CurbPosition.x, -8f) + Origin;
+            var from = _geo.QueueSlots[1] + Origin;
             _map.RouteToDoor(from, _route);
-            Assert.AreEqual(from.x, _route[0].x, 1e-3f);
-            Assert.AreEqual(from.y, _route[0].y, 1e-3f);
-            Assert.AreEqual(_map.DinerDoor.x, _route[_route.Count - 1].x, 1e-4f);
-            Assert.AreEqual(WalkwayLayout.StripX(_config) + Origin.x, _route[1].x, 1e-4f);
+            Assert.AreEqual(from, _route[0]);
+            Assert.AreEqual(_map.DinerDoor, _route[_route.Count - 1]);
+            Assert.AreEqual(_geo.CrossingX + Origin.x, _route[1].x, 1e-4f);
         }
 
         [Test]
-        public void CurbRouteStartsAtTheDoorAndEndsAtTheSlot()
+        public void PatronRouteFromABayLeavesOntoTheAisleFirst()
+        {
+            var from = _geo.Spots[2].center + Origin;
+            _map.RouteToDoor(from, _route);
+            Assert.AreEqual(from.x, _route[1].x, 1e-4f);
+            Assert.AreEqual(_geo.AisleY + Origin.y, _route[1].y, 1e-4f);
+            Assert.AreEqual(_map.DinerDoor, _route[_route.Count - 1]);
+        }
+
+        [Test]
+        public void TheMainDoorIsBesideTheCurb()
+        {
+            Assert.AreEqual(_geo.Curb.center.y + Origin.y, _map.DinerDoor.y, 1e-4f);
+            Assert.Less(_map.DinerDoor.x, _geo.Curb.xMin + Origin.x);
+        }
+
+        [Test]
+        public void CurbRouteStartsAtTheMainDoorAndEndsAtTheSlot()
         {
             for (var slot = 0; slot < _map.CurbSlotCount; slot++)
             {
                 _map.RouteToCurb(slot, _route);
-                Assert.AreEqual(_map.DinerDoor.x, _route[0].x, 1e-4f);
-                Assert.AreEqual(_map.CurbSlot(slot).x, _route[_route.Count - 1].x, 1e-3f);
-                Assert.AreEqual(_map.CurbSlot(slot).y, _route[_route.Count - 1].y, 1e-3f);
+                Assert.AreEqual(_map.DinerDoor, _route[0]);
+                Assert.AreEqual(_map.CurbSlot(slot), _route[_route.Count - 1]);
             }
         }
 
         [Test]
-        public void CurbSlotsAreSpreadAlongTheCurbBesideTheZone()
+        public void CurbSlotsAreSpreadAlongTheCurbOnTheAisleSide()
         {
             Assert.AreEqual(_style.WaitSlots, _map.CurbSlotCount);
-            var edge = _config.CurbPosition.x + _config.CurbSize.x * 0.5f + Origin.x;
+            var edge = _geo.Curb.xMax + Origin.x;
             Assert.Greater(_map.CurbSlot(0).x, edge);
             Assert.AreNotEqual(_map.CurbSlot(0).y, _map.CurbSlot(1).y);
             Assert.AreEqual(_map.CurbSlot(_map.CurbSlotCount - 1), _map.CurbSlot(99));

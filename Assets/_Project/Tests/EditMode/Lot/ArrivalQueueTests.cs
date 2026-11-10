@@ -11,8 +11,8 @@ namespace UncannyValet.Tests.Lot
         private static Vector2[] DefaultSlots()
         {
             var config = ScriptableObject.CreateInstance<LotConfig>();
-            var pitch = ArrivalQueue.Pitch(config.QueueCarSize.x, config.QueueSlotGap);
-            return ArrivalQueue.Slots(new Vector2(-12f, -6f), config.QueueSlotCount, config.QueueDirection, pitch);
+            var pitch = ArrivalQueue.Pitch(config.QueueCarSize.y, config.QueueSlotGap);
+            return ArrivalQueue.Slots(new Vector2(-10f, -6f), config.QueueSlotCount, config.QueueDirection, pitch);
         }
 
         [Test]
@@ -24,7 +24,7 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void Slots_SitSideBySide_AtOnePitch()
+        public void Slots_SitInALine_AtOnePitch()
         {
             var slots = ArrivalQueue.Slots(Vector2.zero, 3, Vector2.left, 2.8f);
             Assert.AreEqual(-2.8f, slots[1].x, 0.0001f);
@@ -33,9 +33,9 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void Pitch_IsCarWidthPlusGap()
+        public void Pitch_IsTheExtentAlongTheLinePlusGap()
         {
-            Assert.AreEqual(2.8f, ArrivalQueue.Pitch(2.2f, 0.6f), 0.0001f);
+            Assert.AreEqual(5.1f, ArrivalQueue.Pitch(4.5f, 0.6f), 0.0001f);
         }
 
         [Test]
@@ -48,15 +48,13 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void AllSlotsLieWithinTheCameraHalfExtent()
+        public void TheDefaultQueueIsAColumnOfThreeThatGrowsDownTheScreen()
         {
-            // Camera centred on the valet start (x = -9), orthographic size 8.5, 4:3 width 22.6.
-            var view = new Rect(-9f - 11.3f, -8.5f, 22.6f, 17f);
-            var bounds = ArrivalQueue.Bounds(DefaultSlots(), CarSize, 0f);
-            Assert.GreaterOrEqual(bounds.xMin, view.xMin);
-            Assert.LessOrEqual(bounds.xMax, view.xMax);
-            Assert.GreaterOrEqual(bounds.yMin, view.yMin);
-            Assert.LessOrEqual(bounds.yMax, view.yMax);
+            var slots = DefaultSlots();
+            Assert.AreEqual(3, slots.Length);
+            Assert.AreEqual(slots[0].x, slots[2].x, 0.0001f);
+            Assert.Less(slots[1].y, slots[0].y);
+            Assert.Less(slots[2].y, slots[1].y);
         }
 
         [Test]
@@ -68,10 +66,10 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void Count_IsAtLeastOne_AndZeroDirectionFallsBack()
+        public void Count_IsAtLeastOne_AndZeroDirectionFallsBackToDown()
         {
             Assert.AreEqual(1, ArrivalQueue.Slots(Vector2.zero, 0, Vector2.zero, 5f).Length);
-            Assert.Less(ArrivalQueue.Slots(Vector2.zero, 2, Vector2.zero, 5f)[1].x, 0f);
+            Assert.Less(ArrivalQueue.Slots(Vector2.zero, 2, Vector2.zero, 5f)[1].y, 0f);
         }
     }
 }

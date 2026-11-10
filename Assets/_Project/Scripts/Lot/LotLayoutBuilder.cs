@@ -5,9 +5,10 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Builds ground, walls, curb, spots and charging spots from a <see cref="LotConfig"/> at Awake, using
-    /// generated coloured rectangles. Only open spots are shown; <see cref="LotExpander"/> grows and
-    /// shrinks the lot with the night plan. Centred on its own transform. 0 degrees = car facing +Y (up).
+    /// Builds ground, walls (with the road opening in the south wall), the diner's solid block, curb, spots and
+    /// charging spots from a <see cref="LotConfig"/> at Awake, using generated coloured rectangles. Only open spots
+    /// are shown; <see cref="LotExpander"/> opens and closes them with the night plan. Local origin is the lot's own
+    /// transform. 0 degrees = car facing +Y (up).
     /// </summary>
     public class LotLayoutBuilder : MonoBehaviour, ILotLayout
     {
@@ -22,6 +23,7 @@ namespace UncannyValet.Lot
 
         private LotExpander _expander;
         private SpotOccupancy _occupancy;
+        private IRoadLayout _road;
         private Vector2[] _arrivalSlots = { Vector2.zero };
 
         public Vector2 ArrivalPoint => _arrivalSlots[0];
@@ -34,15 +36,8 @@ namespace UncannyValet.Lot
         /// <summary>Ids of the open spots: the regular spots the plan opens plus the charging spots while charging is open.</summary>
         public IReadOnlyList<int> SpotIds => _expander != null ? _expander.OpenIds : (IReadOnlyList<int>)System.Array.Empty<int>();
 
-        /// <summary>The area inside the walls right now, in world coordinates (grows and shrinks with the plan).</summary>
-        public Rect WorldFrame
-        {
-            get
-            {
-                var f = _expander.Frame;
-                return new Rect((Vector2)transform.position + f.position, f.size);
-            }
-        }
+        /// <summary>The road below the lot (lanes and the queue and curb routes); null until the lot has built itself.</summary>
+        public IRoadLayout Road => _road;
 
         public bool IsSpotFree(int spotId) => _occupancy != null && _occupancy.IsFree(spotId);
 
@@ -58,8 +53,10 @@ namespace UncannyValet.Lot
             _arrivalSlots = g.QueueSlots;
             RegularSpotCount = g.Spots.Length;
             ChargingSpotCount = g.ChargingSpots.Length;
-            var frame = new LotFrame(rects, transform, c.WallThickness,
-                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall);
+            _road = new RoadLayout(g, c.Site, transform.position);
+            new LotFrame(rects, transform, c.WallThickness,
+                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap);
+            BuildDiner(g);
             BuildCurb(rects);
             LotArrowMarks.Arrivals(transform, rects, g.QueueSlots, c.QueueRotationDegrees,
                 _art != null ? _art.Walkway : new WalkwayStyle());
@@ -78,8 +75,17 @@ namespace UncannyValet.Lot
                     _art != null ? _art.AsphaltColor : (Color?)null);
             }
             _expander = gameObject.AddComponent<LotExpander>();
-            _expander.Init(_occupancy, g, spots, frame);
+            _expander.Init(_occupancy, spots);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
+        }
+
+        // The diner is a solid block: cars and the valet cannot drive into the building.
+        private void BuildDiner(LotGeometry g)
+        {
+            var block = new GameObject("Diner Block");
+            block.transform.SetParent(transform, false);
+            block.transform.localPosition = g.Diner.center;
+            block.AddComponent<BoxCollider2D>().size = g.Diner.size;
         }
 
         private void BuildCurb(RectFactory rects)

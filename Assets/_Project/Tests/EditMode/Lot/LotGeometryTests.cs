@@ -22,45 +22,52 @@ namespace UncannyValet.Tests.Lot
 
         private Dictionary<string, Rect> AllRects()
         {
-            var all = new Dictionary<string, Rect> { ["curb"] = _geo.Curb };
+            var all = new Dictionary<string, Rect> { ["curb"] = _geo.Curb, ["wash"] = _geo.Wash, ["diner"] = _geo.Diner, ["strip"] = _geo.Strip };
             for (var i = 0; i < _geo.Spots.Length; i++) all["spot" + i] = _geo.Spots[i];
             for (var i = 0; i < _geo.QueueCars.Length; i++) all["queue" + i] = _geo.QueueCars[i];
             for (var i = 0; i < _geo.ChargingSpots.Length; i++) all["charging" + i] = _geo.ChargingSpots[i];
-            all["wash"] = _geo.Wash;
             return all;
         }
 
         [Test]
-        public void TheGridHasNineRegularSpotsTwoChargingBaysAndTheWash()
+        public void TheGridHasSixRegularSpotsOneChargingBayAndTheWash()
         {
-            Assert.AreEqual(9, _geo.Spots.Length);
-            Assert.AreEqual(2, _geo.ChargingSpots.Length);
-            Assert.AreEqual(_config.Rows * _config.SpotsPerRow, _geo.Spots.Length + _geo.ChargingSpots.Length + 1);
+            Assert.AreEqual(6, _geo.Spots.Length);
+            Assert.AreEqual(1, _geo.ChargingSpots.Length);
+            Assert.AreEqual(7, _geo.FirstChargingId, "the EV bay is id 7");
+            Assert.AreEqual(BayPlan.Columns * BayPlan.Rows, _geo.Spots.Length + _geo.ChargingSpots.Length + 1);
         }
 
         [Test]
-        public void StationsFillTheFirstGridCells_ChargingBaysInTheCurbColumn_WashTopOfTheNext()
+        public void TopRowIsFourRegularSpotsInReadingOrder()
         {
-            Assert.AreEqual(_geo.ChargingSpots[0].x, _geo.ChargingSpots[1].x, 0.001f, "both bays share the column nearest the curb");
-            Assert.Greater(_geo.ChargingSpots[0].y, _geo.ChargingSpots[1].y, "top then bottom");
-            Assert.Greater(_geo.Wash.x, _geo.ChargingSpots[0].x, "the wash is in the second column");
-            Assert.AreEqual(_geo.ChargingSpots[0].y, _geo.Wash.y, 0.001f, "the top row");
-            foreach (var spot in _geo.ChargingSpots) Assert.AreEqual(_config.SpotSize, spot.size);
+            for (var i = 1; i < 4; i++)
+            {
+                Assert.AreEqual(_geo.Spots[0].y, _geo.Spots[i].y, 0.001f, "spots 1..4 share the top row");
+                Assert.Greater(_geo.Spots[i].x, _geo.Spots[i - 1].x);
+            }
+        }
+
+        [Test]
+        public void BottomRowIsEvRegularWashRegular()
+        {
+            var row = _geo.ChargingSpots[0].y;
+            Assert.Less(row, _geo.Spots[0].y, "the bottom row is below the top row");
+            Assert.AreEqual(row, _geo.Spots[4].y, 0.001f);
+            Assert.AreEqual(row, _geo.Wash.y, 0.001f);
+            Assert.AreEqual(row, _geo.Spots[5].y, 0.001f);
+            Assert.Less(_geo.ChargingSpots[0].x, _geo.Spots[4].x);
+            Assert.Less(_geo.Spots[4].x, _geo.Wash.x);
+            Assert.Less(_geo.Wash.x, _geo.Spots[5].x);
+            Assert.AreEqual(_geo.Spots[0].x, _geo.ChargingSpots[0].x, 0.001f, "the EV bay is under the first top bay");
+        }
+
+        [Test]
+        public void EveryBayHasTheConfiguredSize()
+        {
+            foreach (var spot in _geo.Spots) Assert.AreEqual(_config.SpotSize, spot.size);
+            Assert.AreEqual(_config.SpotSize, _geo.ChargingSpots[0].size);
             Assert.AreEqual(_config.SpotSize, _geo.Wash.size);
-        }
-
-        [Test]
-        public void RegularSpotIds_RunColumnByColumnFromTheCurb_AfterTheStations()
-        {
-            var rows = _config.Rows;
-            Assert.Greater(_geo.Spots[0].x, _geo.ChargingSpots[0].x, "spot 1 is not in the station column");
-            Assert.AreEqual(_geo.Wash.x, _geo.Spots[0].x, 0.001f, "spot 1 is the free cell under the wash");
-            Assert.Less(_geo.Spots[0].y, _geo.Wash.y);
-            for (var i = 1; i < _geo.Spots.Length; i++)
-                Assert.GreaterOrEqual(_geo.Spots[i].x, _geo.Spots[i - 1].x - 0.001f, "x never decreases from one id to the next");
-            Assert.AreEqual(_geo.Spots[1].x, _geo.Spots[2].x, 0.001f);
-            Assert.AreNotEqual(_geo.Spots[1].x, _geo.Spots[0].x);
-            Assert.AreEqual(rows, 2, "this test assumes the default two rows");
         }
 
         [Test]
@@ -78,92 +85,74 @@ namespace UncannyValet.Tests.Lot
         {
             foreach (var pair in AllRects())
             {
-                Assert.GreaterOrEqual(pair.Value.xMin, _geo.Bounds.xMin, pair.Key);
-                Assert.LessOrEqual(pair.Value.xMax, _geo.Bounds.xMax, pair.Key);
-                Assert.GreaterOrEqual(pair.Value.yMin, _geo.Bounds.yMin, pair.Key);
-                Assert.LessOrEqual(pair.Value.yMax, _geo.Bounds.yMax, pair.Key);
+                Assert.GreaterOrEqual(pair.Value.xMin, _geo.Bounds.xMin - 1e-4f, pair.Key);
+                Assert.LessOrEqual(pair.Value.xMax, _geo.Bounds.xMax + 1e-4f, pair.Key);
+                Assert.GreaterOrEqual(pair.Value.yMin, _geo.Bounds.yMin - 1e-4f, pair.Key);
+                Assert.LessOrEqual(pair.Value.yMax, _geo.Bounds.yMax + 1e-4f, pair.Key);
             }
         }
 
         [Test]
-        public void ChargingSpots_FollowTheRegularSpotIds()
+        public void CurbSitsRightOfTheMainDoorAndTheSideDoorIsAboveIt()
         {
-            Assert.AreEqual(_config.ChargingBays, _geo.ChargingSpots.Length);
-            Assert.AreEqual(_geo.Spots.Length + 1, _geo.FirstChargingId);
-            Assert.AreEqual(10, _geo.FirstChargingId);
+            Assert.AreEqual(_geo.Diner.xMax, _geo.Curb.xMin, 1e-4f, "the curb touches the diner");
+            Assert.AreEqual(_geo.Curb.center.y, _geo.MainDoor.center.y, 1e-4f);
+            Assert.Greater(_geo.SideDoor.yMin, _geo.Curb.yMax, "the side door is above the curb");
+            Assert.Greater(_geo.SideDoor.center.y, _geo.MainDoor.center.y);
+            Assert.AreEqual(_geo.MainDoor.xMax, _geo.Diner.xMax, 1e-4f, "both doors sit on the diner's right face");
         }
 
         [Test]
-        public void Stations_LeaveTheWalkwayBesideTheCurbClear()
+        public void QueueIsAColumnOfThreeUnderTheCurb()
         {
-            foreach (var spot in _geo.ChargingSpots)
-                Assert.GreaterOrEqual(spot.xMin - _geo.Curb.xMax, 2f);
-            Assert.GreaterOrEqual(_geo.Wash.xMin - _geo.Curb.xMax, 2f);
+            Assert.AreEqual(3, _geo.QueueSlots.Length);
+            for (var i = 1; i < 3; i++)
+            {
+                Assert.AreEqual(_geo.QueueSlots[0].x, _geo.QueueSlots[i].x, 0.001f);
+                Assert.Less(_geo.QueueSlots[i].y, _geo.QueueSlots[i - 1].y, "later slots are lower");
+            }
+            Assert.AreEqual(_geo.Curb.center.x, _geo.QueueSlots[0].x, 0.001f);
+            Assert.Less(_geo.QueueCars[0].yMax, _geo.Curb.yMin, "slot 0 is just below the curb");
         }
 
         [Test]
-        public void ColumnsFor_CountsTheStationCellsFirst_RoundsUpAndClamps()
+        public void TheCorridorBesideTheQueueAndCurbIsClearOfBays()
         {
-            Assert.AreEqual(2, _geo.ColumnsFor(0), "the stations alone fill the first two columns");
-            Assert.AreEqual(2, _geo.ColumnsFor(1));
-            Assert.AreEqual(3, _geo.ColumnsFor(2));
-            Assert.AreEqual(3, _geo.ColumnsFor(3));
-            Assert.AreEqual(4, _geo.ColumnsFor(4));
-            Assert.AreEqual(_config.SpotsPerRow, _geo.ColumnsFor(_geo.Spots.Length));
-            Assert.AreEqual(_config.SpotsPerRow, _geo.ColumnsFor(int.MaxValue / 2));
+            foreach (var spot in _geo.Spots) Assert.GreaterOrEqual(spot.xMin, _geo.Corridor.xMax - 1e-4f);
+            Assert.GreaterOrEqual(_geo.Wash.xMin, _geo.Corridor.xMax - 1e-4f);
+            Assert.Greater(_geo.CrossingX, _geo.Curb.xMax);
+            Assert.Greater(_geo.ExitX, _geo.CrossingX);
+            Assert.Less(_geo.ExitX, _geo.Corridor.xMax);
         }
 
         [Test]
-        public void Frame_GrowsToTheRightOnlyWithMoreColumns()
+        public void TheSouthWallOpeningCoversTheQueueColumnAndTheExit()
         {
-            var one = _geo.FrameFor(1);
-            var four = _geo.FrameFor(4);
-            Assert.AreEqual(one.xMin, four.xMin, 0.001f);
-            Assert.AreEqual(one.yMin, four.yMin, 0.001f);
-            Assert.AreEqual(one.yMax, four.yMax, 0.001f);
-            Assert.AreEqual(3 * (_config.SpotSize.x + _config.SpotGap), four.xMax - one.xMax, 0.001f);
+            Assert.LessOrEqual(_geo.EntryGap.x, _geo.QueueCars[0].xMin);
+            Assert.GreaterOrEqual(_geo.EntryGap.y, _geo.ExitX + _config.QueueCarSize.x * 0.5f);
         }
 
         [Test]
-        public void Frame_ContainsEveryRegularSpotItShows_AndTheMaxFrameIsTheBounds()
+        public void AisleIsBetweenTheTwoBayRows()
         {
-            Assert.AreEqual(_geo.Bounds, _geo.FrameFor(_config.SpotsPerRow));
-            var frame = _geo.FrameFor(_geo.ColumnsFor(3));
-            Assert.IsTrue(Contains(frame, _geo.Spots[2]));
-            foreach (var spot in _geo.ChargingSpots) Assert.IsTrue(Contains(frame, spot));
-            Assert.IsTrue(Contains(frame, _geo.Wash));
+            Assert.Less(_geo.AisleY, _geo.Spots[0].yMin);
+            Assert.Greater(_geo.AisleY, _geo.ChargingSpots[0].yMax);
         }
 
         [Test]
-        public void StationsNoLongerStretchTheFrameUpward()
+        public void StripIsRightOfEveryBayAndTouchesTheRightWall()
         {
-            var spotsHalf = (_config.Rows * _config.SpotSize.y + (_config.Rows - 1) * _config.AisleWidth) * 0.5f;
-            Assert.AreEqual(spotsHalf + _config.Margin, _geo.Bounds.yMax, 0.001f, "the top edge is the top spot row plus the margin");
+            foreach (var spot in _geo.Spots) Assert.GreaterOrEqual(_geo.Strip.xMin, spot.xMax);
+            Assert.AreEqual(_geo.Bounds.xMax, _geo.Strip.xMax, 1e-4f);
         }
 
         [Test]
-        public void NineSpotsFrame_StaysInsideTheWiderLot()
+        public void TheRoadLiesBelowTheLotWithTheEastLaneNextToIt()
         {
-            var frame = _geo.FrameFor(_geo.ColumnsFor(9));
-            Assert.LessOrEqual(frame.width, _geo.Bounds.width);
-        }
-
-        private static bool Contains(Rect outer, Rect inner) =>
-            inner.xMin >= outer.xMin && inner.xMax <= outer.xMax && inner.yMin >= outer.yMin && inner.yMax <= outer.yMax;
-
-        [Test]
-        public void QueueHasFourSideBySideSlotsOnOneLine()
-        {
-            Assert.AreEqual(4, _geo.QueueSlots.Length);
-            for (var i = 1; i < _geo.QueueSlots.Length; i++)
-                Assert.AreEqual(_geo.QueueSlots[0].y, _geo.QueueSlots[i].y, 0.001f);
-        }
-
-        [Test]
-        public void SlotZero_IsTheFirstQueueCar_BelowTheCurb()
-        {
-            Assert.AreEqual(_geo.QueueSlots[0], _geo.QueueCars[0].center);
-            Assert.Less(_geo.QueueCars[0].yMax, _geo.Curb.yMin);
+            Assert.Less(_geo.EastLaneY + _geo.LaneWidth * 0.5f, _geo.Bounds.yMin - _config.WallThickness + 1e-4f);
+            Assert.AreEqual(_geo.LaneWidth, _geo.EastLaneY - _geo.WestLaneY, 1e-4f);
+            Assert.Less(_geo.RoadSpan.x, _geo.Bounds.xMin);
+            Assert.Greater(_geo.RoadSpan.y, _geo.Bounds.xMax);
         }
     }
 }

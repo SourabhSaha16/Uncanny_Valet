@@ -17,7 +17,7 @@ namespace UncannyValet.Bootstrap
         [SerializeField, Min(1f), Tooltip("Smallest zoom (half the visible height). Also the zoom used when no bounds are set.")]
         private float _orthographicSize = DefaultOrthographicSize;
         [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot. Beyond this the camera follows instead of showing everything.")]
-        private float _maxOrthographicSize = 12.5f;
+        private float _maxOrthographicSize = 15f;
         [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
         private float _boundsMargin = 1f;
         [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.87 = about 15% closer). The play area is never cropped.")]

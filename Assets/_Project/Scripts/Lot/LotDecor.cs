@@ -4,63 +4,54 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Builds the Grandma's Diner scenery once at Awake from sprites: grass, a sidewalk, a road with markings and
-    /// a crosswalk, the diner and trees. Lives next to the lot (not under it) and sits at the same origin.
-    /// Purely visual: it has no colliders and never touches the lot rules.
+    /// Builds the lot v2 scenery once at Awake: grass, the two-lane road below the lot with markings and a far sidewalk,
+    /// the right strip with the bus stop, the diner with its doors, the walkway bands and the trees. Lives next to the lot
+    /// (not under it) and sits at the same origin. Purely visual: it has no colliders and never touches the lot rules.
     /// </summary>
     public sealed class LotDecor : MonoBehaviour
     {
         private const int GrassOrder = -30;
         private const int GroundOrder = -25;
         private const int MarkingOrder = -24;
+        private const int StripOrder = -9;
         private const int PropOrder = 1;
+        private const float EdgeLineWidth = 0.12f;
 
         [SerializeField] private LotConfig _config;
         [SerializeField] private LotArtConfig _art;
 
+        private LotGeometry _geometry;
         private DecorLayout _layout;
-        private bool _hasLayout;
-        private WalkwayLayout _walkway;
         private PedestrianPathMap _paths;
 
-        private WalkwayLayout Walkway
-            => _walkway ?? (_walkway = new WalkwayLayout(_config, Layout, _art.Walkway, _art.CrosswalkOffset));
+        private LotGeometry Geometry => _geometry ?? (_geometry = new LotGeometry(_config));
 
         private DecorLayout Layout
         {
             get
             {
-                if (_hasLayout) return _layout;
-                var lot = new LotGeometry(_config).Bounds;
-                _layout = new DecorLayout(lot, _config.WallThickness, _art.SidewalkDepth, _art.RoadHeight,
-                    _art.SideReach, _art.GrassReach);
-                _hasLayout = true;
+                if (_layout.Grass.width > 0f) return _layout;
+                _layout = new DecorLayout(Geometry, _config.WallThickness, _art.SidewalkDepth, _art.GrassReach,
+                    _art.BusStopSize, _art.BusStopFromBottom);
                 return _layout;
             }
         }
 
-        /// <summary>
-        /// Stretches <paramref name="rect"/> up and down just enough for the south sidewalk, part of the road and the
-        /// foot of the diner to be in view. The rest of the scenery is cropped, so cars and people read bigger.
-        /// </summary>
+        /// <summary>Stretches <paramref name="rect"/> down just enough for the whole road and the far sidewalk to be in view.</summary>
         public Rect ExtendView(Rect rect)
         {
             if (_config == null || _art == null) return rect;
-            var layout = Layout;
-            var origin = transform.position.y;
-            var bottom = layout.SouthSidewalk.yMin - _art.RoadHeight * _art.ViewRoadShare + origin;
-            var top = layout.BuildingBase.y + BuildingHeight() * _art.ViewBuildingShare + origin;
-            return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, bottom), rect.xMax, Mathf.Max(rect.yMax, top));
+            var bottom = Layout.FarSidewalk.yMin + transform.position.y;
+            return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, bottom), rect.xMax, rect.yMax);
         }
 
-        /// <summary>The walking routes, door and curb standing spots in world coordinates; null until the decor has its configs.</summary>
+        /// <summary>The walking routes, doors and curb standing spots in world coordinates; null until the decor has its configs.</summary>
         public IPedestrianPaths Paths
         {
             get
             {
                 if (_config == null || _art == null) return null;
-                return _paths ?? (_paths = new PedestrianPathMap(_config, Layout, _art.Walkway, _art.CrosswalkOffset,
-                    transform.position));
+                return _paths ?? (_paths = new PedestrianPathMap(Geometry, _config.Site, _art.Walkway, transform.position));
             }
         }
 
@@ -74,35 +65,32 @@ namespace UncannyValet.Lot
             var rects = new RectFactory();
             var l = Layout;
             rects.Make(transform, "Grass", l.Grass.center, l.Grass.size, _art.GrassColor, GrassOrder);
-            rects.Make(transform, "Road", l.Road.center, l.Road.size, _art.AsphaltColor, GroundOrder);
             BuildRoad(rects, l);
+            BuildStrip(rects, l);
+            LotWalkwayArt.Build(transform, rects, new WalkwayLayout(Geometry, _config.Site.WalkwayWidth), _art.Walkway, _art.CrosswalkColor);
+            LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config);
             BuildProps(l);
         }
 
         private void BuildRoad(RectFactory rects, DecorLayout l)
         {
-            var dash = new Rect(l.Road.xMin, l.Road.center.y - _art.DashTileShift - 0.5f, l.Road.width, 1f);
+            rects.Make(transform, "Road", l.Road.center, l.Road.size, _art.AsphaltColor, GroundOrder);
+            var dash = new Rect(l.Road.xMin, l.EastLane.yMin - _art.DashTileShift - 0.5f, l.Road.width, 1f);
             SpriteTiler.Fill(transform, "Road Dashes", _art.RoadDashTile, dash, MarkingOrder);
-            SpriteTiler.Fill(transform, "South Sidewalk", _art.SidewalkTile, l.SouthSidewalk, GroundOrder);
             SpriteTiler.Fill(transform, "Far Sidewalk", _art.SidewalkTile, l.FarSidewalk, GroundOrder);
-            SpriteTiler.Fill(transform, "North Sidewalk", _art.SidewalkTile, l.NorthSidewalk, GroundOrder);
-            BuildCrosswalk(rects, l);
+            var line = new Vector2(l.Road.width, EdgeLineWidth);
+            rects.Make(transform, "Road Edge N", new Vector2(l.Road.center.x, l.Road.yMax - EdgeLineWidth * 0.5f), line, _art.CrosswalkColor, MarkingOrder);
+            rects.Make(transform, "Road Edge S", new Vector2(l.Road.center.x, l.Road.yMin + EdgeLineWidth * 0.5f), line, _art.CrosswalkColor, MarkingOrder);
         }
 
-        private void BuildCrosswalk(RectFactory rects, DecorLayout l)
+        private void BuildStrip(RectFactory rects, DecorLayout l)
         {
-            var curb = new LotGeometry(_config).Curb;
-            var pitch = _art.CrosswalkBarWidth + _art.CrosswalkBarGap;
-            var width = pitch * (_art.CrosswalkBars - 1) + _art.CrosswalkBarWidth;
-            var zone = new Rect(curb.center.x + _art.CrosswalkOffset - width * 0.5f, l.Road.yMin, width, l.Road.height);
-            LotWalkwayArt.Crossing(transform, rects, "Road Crossing", zone, _art.CrosswalkBars, _art.CrosswalkBarWidth,
-                _art.CrosswalkBarGap, _art.CrosswalkColor, MarkingOrder);
-            LotWalkwayArt.Build(transform, rects, Walkway, _art.Walkway, _art.CrosswalkColor);
+            SpriteTiler.Fill(transform, "Right Strip", _art.SidewalkTile, Geometry.Strip, StripOrder);
+            LotDinerArt.BuildBusStop(transform, rects, l, _art, _config);
         }
 
         private void BuildProps(DecorLayout l)
         {
-            SpriteTiler.Single(transform, "Diner", _art.Building, l.BuildingBase, PropOrder);
             var trees = _art.Trees;
             var treeBases = l.TreeBases();
             for (var i = 0; trees.Length > 0 && i < treeBases.Length; i++)
@@ -115,12 +103,6 @@ namespace UncannyValet.Lot
             var spots = l.TuftSpots(tufts.Length > 0 ? _art.TuftCount : 0);
             for (var i = 0; i < spots.Length; i++)
                 SpriteTiler.Single(transform, "Tuft " + i, tufts[i % tufts.Length], spots[i], GroundOrder);
-        }
-
-        private float BuildingHeight()
-        {
-            var b = _art.Building;
-            return b == null ? 0f : b.rect.height / b.pixelsPerUnit;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace UncannyValet.Director
     {
         private const float DefaultGapMin = 15f;
         private const float DefaultGapMax = 25f;
-        private const int DefaultQueueCap = 4;
+        private const int DefaultQueueCap = 3;
 
         private readonly IEventBus _bus;
         private readonly ITuning _tuning;

@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa685c721e37850429761b3c04784a1e, type: 3}
   m_Name: LotConfig
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotConfig
-  _rows: 2
-  _spotsPerRow: 6
   _spotSize: {x: 2.6, y: 4.4}
-  _spotGap: 0.2
-  _aisleWidth: 5
-  _curbPosition: {x: -12, y: 0}
-  _curbSize: {x: 3, y: 6}
-  _curbToSpotsGap: 3
+  _spotGap: 0.6
+  _aisleWidth: 4.6
+  _curbPosition: {x: -10, y: 0}
+  _curbSize: {x: 3, y: 5}
+  _curbToSpotsGap: 6
   _settleSeconds: 0.5
   _stoppedSpeed: 0.2
   _margin: 1.5

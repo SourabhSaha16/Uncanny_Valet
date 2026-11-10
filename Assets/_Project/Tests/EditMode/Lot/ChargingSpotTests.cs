@@ -5,7 +5,7 @@ namespace UncannyValet.Tests.Lot
 {
     public class ChargingSpotTests
     {
-        private static SpotOccupancy Make() => new SpotOccupancy(new[] { 1, 2, 3, 4, 5 }, 4);
+        private static SpotOccupancy Make() => new SpotOccupancy(new[] { 1, 2, 3, 4, 5, 6, 7 }, 7);
 
         [Test]
         public void RegularIds_AreNotCharging()
@@ -19,8 +19,8 @@ namespace UncannyValet.Tests.Lot
         public void ChargingIds_AreCharging()
         {
             var occ = Make();
-            Assert.IsTrue(occ.IsCharging(4));
-            Assert.IsTrue(occ.IsCharging(5));
+            Assert.IsTrue(occ.IsCharging(7));
+            Assert.IsFalse(occ.IsCharging(6));
         }
 
         [Test]

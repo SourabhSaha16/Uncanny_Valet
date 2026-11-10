@@ -16,7 +16,7 @@ namespace UncannyValet.Patrons
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
         [Tooltip("Cars waiting at the arrival slots at once. Parked cars do not count.")]
-        [SerializeField, Range(1, 4)] private int _maxWaitingCars = 4;
+        [SerializeField, Range(1, 3)] private int _maxWaitingCars = 3;
 
         [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;

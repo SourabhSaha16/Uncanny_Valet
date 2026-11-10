@@ -17,14 +17,14 @@ namespace UncannyValet.Director
         private float _baysBlocked = 3f;
         [SerializeField, Min(1f), Tooltip("A plain car squats in an EV bay: EV weight multiplier.")]
         private float _baySquatted = 2.5f;
-        [SerializeField, Min(1f), Tooltip("One bay free and the other charging: EV weight multiplier.")]
+        [SerializeField, Min(1f), Tooltip("The last EV bay is free while the others (or, with a single bay, the wash) are busy: EV weight multiplier.")]
         private float _lastBay = 1.5f;
         [SerializeField, Min(1f), Tooltip("Lot tight: Plain weight multiplier.")]
         private float _lotTight = 1.5f;
-        [SerializeField, Min(1f), Tooltip("Both stations hold finished cars: Dirty EV weight multiplier.")]
+        [SerializeField, Min(1f), Tooltip("The wash slot and every EV bay hold finished cars: Dirty EV weight multiplier.")]
         private float _chain = 2f;
         [SerializeField, Min(0), Tooltip("The lot counts as tight with this many free regular spots or fewer.")]
-        private int _lotTightSpots = 2;
+        private int _lotTightSpots = 1;
         [SerializeField, Min(0f), Tooltip("A dilemma with no free spot is still solvable when a pickup is due within this many seconds.")]
         private float _solvablePickupSeconds = 10f;
 

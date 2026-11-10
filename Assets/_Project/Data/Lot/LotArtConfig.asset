@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotArtConfig
   _sidewalkTile: {fileID: -4748896761462124804, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
   _roadDashTile: {fileID: -2288154472176348966, guid: 9ac52e6aa1293d9499f42d2038fbbcd9, type: 3}
-  _building: {fileID: -4412302423581473963, guid: 5862f98fc14b7ae479b1abee3e4a4524, type: 3}
   _trees:
   - {fileID: -5840967280191564666, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
   - {fileID: 7735485415467158797, guid: aa3b42d5d106e0642aef568afc949c14, type: 3}
@@ -34,32 +33,22 @@ MonoBehaviour:
   _curbEdgeColor: {r: 0.95, g: 0.78, b: 0.15, a: 1}
   _curbPlateColor: {r: 0, g: 0, b: 0, a: 0.45}
   _sidewalkDepth: 1.5
-  _roadHeight: 3
-  _sideReach: 8
   _grassReach: 40
-  _crosswalkOffset: 5
-  _crosswalkBars: 5
-  _crosswalkBarWidth: 0.45
-  _crosswalkBarGap: 0.45
   _dashTileShift: 0.27
   _tuftCount: 40
   _curbEdgeWidth: 0.15
   _curbPlateShare: {x: 0.5, y: 0.8}
-  _viewBuildingShare: 0.2
-  _viewRoadShare: 0.6
+  _dinerWallColor: {r: 0.78, g: 0.62, b: 0.42, a: 1}
+  _dinerRoofColor: {r: 0.36, g: 0.52, b: 0.34, a: 1}
+  _doorColor: {r: 0.32, g: 0.2, b: 0.12, a: 1}
+  _dinerRoofInset: 0.6
+  _busStopColor: {r: 0.25, g: 0.45, b: 0.7, a: 1}
+  _busStopSize: {x: 1.2, y: 3}
+  _busStopFromBottom: 2
   _walkway:
-    _crossingBars: 3
-    _barWidth: 0.45
-    _barGap: 0.45
-    _bayEntry: 1.5
-    _gapEntry: 0
-    _roadReach: 7
-    _northMargin: 2
-    _arrowLength: 1.5
-    _arrowThickness: 0.2
-    _arrowHeadLength: 0.6
+    _bandEdge: 0.12
+    _bandFillAlpha: 0.22
     _arrowHeadDegrees: 35
-    _laneInset: 1.25
     _curbArrowLength: 1.6
     _curbArrowSideShare: 0.3
     _curbChevronGap: 0.15
@@ -72,6 +61,3 @@ MonoBehaviour:
     _waitInset: 0.9
     _waitSpacing: 1.6
     _waitSlots: 3
-    _doorDepth: 0.9
-    _offscreenReach: 3
-    _arrowColor: {r: 0.97, g: 0.97, b: 0.94, a: 0.9}

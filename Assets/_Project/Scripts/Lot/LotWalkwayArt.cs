@@ -2,40 +2,32 @@ using UnityEngine;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Paints zebra crossings and aisle arrows from plain rectangles. Purely visual.</summary>
+    /// <summary>Paints the walkway bands (a faint fill with solid edge lines) from plain rectangles. Purely visual.</summary>
     public static class LotWalkwayArt
     {
-        private const int MarkingOrder = -8;
+        private const int FillOrder = -9;
+        private const int EdgeOrder = -8;
 
-        /// <summary>Stripes running along the walking direction (up and down), spaced across <paramref name="zone"/>.</summary>
-        public static void Crossing(Transform parent, RectFactory rects, string name, Rect zone, int bars,
-            float barWidth, float barGap, Color color, int order)
+        /// <summary>Builds every band of <paramref name="layout"/> under <paramref name="parent"/>.</summary>
+        public static void Build(Transform parent, RectFactory rects, WalkwayLayout layout, WalkwayStyle style, Color color)
         {
-            var pitch = barWidth + barGap;
-            var first = zone.center.x - pitch * (bars - 1) * 0.5f;
-            var size = new Vector2(barWidth, Mathf.Max(0.1f, zone.height - barGap));
-            for (var i = 0; i < bars; i++)
-                rects.Make(parent, name + " Bar " + i, new Vector2(first + i * pitch, zone.center.y), size, color, order);
+            for (var i = 0; i < layout.Bands.Length; i++) Band(parent, rects, "Walkway " + i, layout.Bands[i], style, color);
         }
 
-        /// <summary>Builds the crossings and arrows of <paramref name="layout"/> under <paramref name="parent"/>.</summary>
-        public static void Build(Transform parent, RectFactory rects, WalkwayLayout layout, WalkwayStyle style, Color crossingColor)
+        /// <summary>One band: the fill, and an edge line along each long side.</summary>
+        public static void Band(Transform parent, RectFactory rects, string name, Rect area, WalkwayStyle style, Color color)
         {
-            for (var i = 0; i < layout.Crossings.Length; i++)
-                Crossing(parent, rects, "Aisle Crossing " + i, layout.Crossings[i], style.CrossingBars, style.BarWidth,
-                    style.BarGap, crossingColor, MarkingOrder);
-            for (var i = 0; i < layout.Arrows.Length; i++) Arrow(parent, rects, "Aisle Arrow " + i, layout.Arrows[i], style);
+            var fill = new Color(color.r, color.g, color.b, color.a * style.BandFillAlpha);
+            rects.Make(parent, name + " Fill", area.center, area.size, fill, FillOrder);
+            var t = style.BandEdge;
+            if (area.width >= area.height) Edges(parent, rects, name, area, new Vector2(area.width, t), Vector2.up * (area.height - t) * 0.5f, color);
+            else Edges(parent, rects, name, area, new Vector2(t, area.height), Vector2.right * (area.width - t) * 0.5f, color);
         }
 
-        /// <summary>A shaft with two head strokes at the tip.</summary>
-        public static void Arrow(Transform parent, RectFactory rects, string name, PaintedArrow arrow, WalkwayStyle style)
+        private static void Edges(Transform parent, RectFactory rects, string name, Rect area, Vector2 size, Vector2 offset, Color color)
         {
-            var t = style.ArrowThickness;
-            rects.Segment(parent, name + " Shaft", arrow.Tail, arrow.Tip, t, style.ArrowColor, MarkingOrder);
-            rects.Segment(parent, name + " Head A", arrow.Tip,
-                arrow.HeadEnd(style.ArrowHeadLength, style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
-            rects.Segment(parent, name + " Head B", arrow.Tip,
-                arrow.HeadEnd(style.ArrowHeadLength, -style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
+            rects.Make(parent, name + " Edge A", area.center + offset, size, color, EdgeOrder);
+            rects.Make(parent, name + " Edge B", area.center - offset, size, color, EdgeOrder);
         }
     }
 }

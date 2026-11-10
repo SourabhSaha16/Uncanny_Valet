@@ -17,11 +17,7 @@ namespace UncannyValet.Tests.Director
         {
             var b = new SnapshotBuilderForTests();
             if (wash) b.Slot(StationKind.Wash, washState);
-            if (bays)
-            {
-                b.Slot(StationKind.Charging, StationSlotState.Free);
-                b.Slot(StationKind.Charging, StationSlotState.Free);
-            }
+            if (bays) b.Slot(StationKind.Charging, StationSlotState.Free);
             return b;
         }
 

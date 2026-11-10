@@ -31,11 +31,11 @@ namespace UncannyValet.Core.Config
         private int _maxComboMultiplier = 4;
 
         [Header("Pacing plan")]
-        [SerializeField, Range(1, 4), Tooltip("Most cars waiting at the arrival slots at once (the lot has 4 side-by-side slots).")]
-        private int _maxWaitingCars = 4;
+        [SerializeField, Range(1, 3), Tooltip("Most cars waiting at the arrival slots at once (the lot has a column of 3 slots under the curb).")]
+        private int _maxWaitingCars = 3;
         [SerializeField, Min(0.1f), Tooltip("Multiplies the gap between arrivals; below 1 is busier.")]
         private float _arrivalGapScale = 1f;
-        [SerializeField, Min(0), Tooltip("Regular parking spots open, counted in grid order from the curb (the lot has 9; the EV bays and the wash slot are extra). 0 = all regular spots.")]
+        [SerializeField, Min(0), Tooltip("Regular parking spots open, counted in grid order from the curb (the lot has 6; the EV bay and the wash slot are extra). 0 = all regular spots.")]
         private int _activeSpots;
         [SerializeField, Range(0f, 1f)] private float _evChance = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _dirtyChance = 0.3f;

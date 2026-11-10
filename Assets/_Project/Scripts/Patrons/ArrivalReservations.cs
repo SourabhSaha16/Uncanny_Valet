@@ -17,7 +17,8 @@ namespace UncannyValet.Patrons
         public void Reserve(TicketId ticket, int slot) => _slots[ticket] = slot;
 
         /// <summary>
-        /// Returns <paramref name="scanned"/> with every reserved slot also marked blocked. Reservations whose
+        /// Returns <paramref name="scanned"/> with every reserved slot also marked blocked, and every slot a blocked
+        /// slot cuts off from the road (<see cref="ArrivalReach"/>). Reservations whose
         /// ticket has been parked, closed or lost are dropped. The result is valid until the next call.
         /// </summary>
         public IReadOnlyList<bool> Merge(IReadOnlyList<bool> scanned, TicketRegistry registry)
@@ -32,6 +33,7 @@ namespace UncannyValet.Patrons
                 else if (pair.Value < _blocked.Count) _blocked[pair.Value] = true;
             }
             foreach (var id in _scratch) _slots.Remove(id);
+            ArrivalReach.BlockBehind(_blocked);
             return _blocked;
         }
     }

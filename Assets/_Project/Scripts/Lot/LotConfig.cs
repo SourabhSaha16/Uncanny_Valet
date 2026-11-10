@@ -7,17 +7,19 @@ namespace UncannyValet.Lot
     public class LotConfig : ScriptableObject
     {
         [Header("Spots")]
-        [SerializeField] private int _rows = 2;
-        [Min(1), Tooltip("Grid columns. The grid holds rows x columns cells; the stations take the first cells, the rest are the regular spots.")]
-        [SerializeField] private int _spotsPerRow = 6;
-        [SerializeField] private Vector2 _spotSize = new Vector2(2.6f, 4.4f);
-        [SerializeField] private float _spotGap = 0.2f;
-        [SerializeField] private float _aisleWidth = 5f;
+        [SerializeField, Tooltip("Size of one tall bay (width, length). The bay grid itself is fixed by BayPlan: two rows of four.")]
+        private Vector2 _spotSize = new Vector2(2.6f, 4.4f);
+        [SerializeField, Tooltip("Gap between neighbouring bays in a row.")]
+        private float _spotGap = 0.6f;
+        [SerializeField, Tooltip("Height of the drive aisle between the two bay rows.")]
+        private float _aisleWidth = 4.6f;
 
         [Header("Curb")]
-        [SerializeField] private Vector2 _curbPosition = new Vector2(-12f, 0f);
-        [SerializeField] private Vector2 _curbSize = new Vector2(3f, 6f);
-        [SerializeField] private float _curbToSpotsGap = 3f;
+        [SerializeField, Tooltip("Centre of the curb zone; it sits right of the diner's main door. The top bay row is aligned with the curb's top edge.")]
+        private Vector2 _curbPosition = new Vector2(-10f, 0f);
+        [SerializeField] private Vector2 _curbSize = new Vector2(3f, 5f);
+        [SerializeField, Tooltip("Width of the open corridor between the curb and the first bay column (queue exit, crosswalk, car exit).")]
+        private float _curbToSpotsGap = 6f;
 
         [Header("Parked rule")]
         [SerializeField] private float _settleSeconds = 0.5f;
@@ -31,18 +33,21 @@ namespace UncannyValet.Lot
         [SerializeField] private float _margin = 1.5f;
         [SerializeField] private float _wallThickness = 0.6f;
 
+        [Header("Site")]
+        [SerializeField] private SiteLayout _site = new SiteLayout();
+
         [Header("Start points")]
         [SerializeField] private float _valetStartOffset = 1.5f;
 
         [Header("Arrival queue")]
-        [Range(1, 8), Tooltip("Number of side-by-side waiting slots; slot 0 is the arrival point. The queue cap is 4.")]
-        [SerializeField] private int _queueSlotCount = 4;
+        [Range(1, 8), Tooltip("Number of waiting slots stacked in a column under the curb; slot 0 is the arrival point, nearest the curb. The queue cap is 3.")]
+        [SerializeField] private int _queueSlotCount = 3;
         [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
         [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
         [Min(0f), Tooltip("Gap between the sides of neighbouring waiting cars.")]
         [SerializeField] private float _queueSlotGap = 0.15f;
-        [Tooltip("Direction the row grows from slot 0. Keep it along the cars' width and away from the spots.")]
-        [SerializeField] private Vector2 _queueDirection = Vector2.left;
+        [Tooltip("Direction the column grows from slot 0, away from the curb (down the screen).")]
+        [SerializeField] private Vector2 _queueDirection = Vector2.down;
         [Min(0f), Tooltip("Gap between the curb's lower edge and the nose of the car in slot 0.")]
         [SerializeField] private float _queueStartGap = 0.8f;
         [Min(0f), Tooltip("Space kept between the waiting cars and the lot walls.")]
@@ -51,8 +56,6 @@ namespace UncannyValet.Lot
         [SerializeField] private float _queueRotationDegrees;
 
         [Header("Stations")]
-        [Min(0), Tooltip("Charging bays. They take the first cells of the spot grid (column by column from the curb), followed by the single wash slot; their ids continue after the regular spots. Every station is one grid cell big.")]
-        [SerializeField] private int _chargingBays = 2;
         [Min(0.1f), Tooltip("Largest size of the CHARGE / WASH text; it shrinks to fit the station width.")]
         [SerializeField] private float _stationLabelSize = 0.45f;
         [Min(0.1f), Tooltip("Estimated width of one label character per unit of label size (generous).")]
@@ -75,7 +78,7 @@ namespace UncannyValet.Lot
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
-        public int ChargingBays => Mathf.Max(0, _chargingBays);
+        public SiteLayout Site => _site;
         public float StationLabelSize => _stationLabelSize;
         public float LabelCharWidth => _labelCharWidth;
         public float StationLabelFill => _stationLabelFill;
@@ -87,8 +90,6 @@ namespace UncannyValet.Lot
         public float QueueRotationDegrees => _queueRotationDegrees;
         public float ValetStartOffset => _valetStartOffset;
 
-        public int Rows => Mathf.Max(1, _rows);
-        public int SpotsPerRow => Mathf.Max(1, _spotsPerRow);
         public Vector2 SpotSize => _spotSize;
         public float SpotGap => _spotGap;
         public float AisleWidth => _aisleWidth;

@@ -3,17 +3,17 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Pure maths for the arrival queue: car-sized slots side by side along a direction perpendicular to the
-    /// cars' length (like adjacent bays). Slot 0 is the first point; each next slot is one pitch further along.
+    /// Pure maths for the arrival queue: car-sized slots in a line along a direction (lot v2: a column, nose up, going
+    /// down the screen from the curb). Slot 0 is the first point; each next slot is one pitch further along.
     /// </summary>
     public static class ArrivalQueue
     {
-        /// <summary>Centre-to-centre distance for cars of the given width with a gap between their sides.</summary>
-        public static float Pitch(float carWidth, float gap) => carWidth + Mathf.Max(0f, gap);
+        /// <summary>Centre-to-centre distance for cars with the given extent along the line and a gap between them.</summary>
+        public static float Pitch(float extentAlong, float gap) => extentAlong + Mathf.Max(0f, gap);
 
         public static Vector2[] Slots(Vector2 first, int count, Vector2 direction, float pitch)
         {
-            var dir = direction.sqrMagnitude < 0.0001f ? Vector2.left : direction.normalized;
+            var dir = direction.sqrMagnitude < 0.0001f ? Vector2.down : direction.normalized;
             var slots = new Vector2[Mathf.Max(1, count)];
             for (var i = 0; i < slots.Length; i++) slots[i] = first + dir * (pitch * i);
             return slots;
