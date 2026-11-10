@@ -9,6 +9,7 @@ namespace UncannyValet.UI
     public sealed class TicketBoard : IDisposable
     {
         private readonly IEventBus _bus;
+        private readonly TicketNeedsTracker _needs;
         private readonly SortedDictionary<int, TicketRow> _rows = new SortedDictionary<int, TicketRow>();
         private readonly Dictionary<int, int> _tags = new Dictionary<int, int>();
         private readonly Dictionary<int, string> _plates = new Dictionary<int, string>();
@@ -20,6 +21,7 @@ namespace UncannyValet.UI
         public TicketBoard(IEventBus bus)
         {
             _bus = bus;
+            _needs = new TicketNeedsTracker(bus, _rows);
             _bus.Subscribe<TicketOpened>(OnOpened);
             _bus.Subscribe<CarTagAssigned>(OnTag);
             _bus.Subscribe<CarPlateAssigned>(OnPlate);
@@ -32,16 +34,13 @@ namespace UncannyValet.UI
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<TicketTimerStopped>(OnTimerStopped);
             _bus.Subscribe<TicketClosed>(OnClosed);
-            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
-            _bus.Subscribe<CarChargeChanged>(OnCharge);
-            _bus.Subscribe<CarCleaned>(OnCleaned);
-            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
             _bus.Subscribe<CarArrived>(OnArrived);
             _bus.Subscribe<CarDeparted>(OnDeparted);
         }
 
         public void Dispose()
         {
+            _needs.Dispose();
             _bus.Unsubscribe<TicketOpened>(OnOpened);
             _bus.Unsubscribe<CarTagAssigned>(OnTag);
             _bus.Unsubscribe<CarPlateAssigned>(OnPlate);
@@ -54,10 +53,6 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<TicketTimerStopped>(OnTimerStopped);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
-            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
-            _bus.Unsubscribe<CarChargeChanged>(OnCharge);
-            _bus.Unsubscribe<CarCleaned>(OnCleaned);
-            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
             _bus.Unsubscribe<CarArrived>(OnArrived);
             _bus.Unsubscribe<CarDeparted>(OnDeparted);
         }
@@ -104,19 +99,6 @@ namespace UncannyValet.UI
             var row = FindByCar(e.Car.Value);
             if (row != null) row.Arrived = false;
         }
-
-        private void OnCleanChanged(CarCleanChanged e) { var row = FindByCar(e.Car.Value); if (row != null) row.Clean01 = e.Clean01; }
-
-        private void OnTraits(TicketTraitsAssigned e)
-        {
-            if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
-            row.IsEv = e.IsEv;
-            row.IsDirty = e.IsDirty;
-        }
-
-        private void OnCharge(CarChargeChanged e) { var row = FindByCar(e.Car.Value); if (row != null) row.Charge01 = e.Charge01; }
-
-        private void OnCleaned(CarCleaned e) { var row = FindByCar(e.Car.Value); if (row != null) row.Washed = true; }
 
         private void OnTag(CarTagAssigned e)
         {
@@ -207,10 +189,6 @@ namespace UncannyValet.UI
             _placed.Remove(row.Car);
         }
 
-        private TicketRow FindByCar(int car)
-        {
-            foreach (var row in _rows.Values) if (row.Car == car) return row;
-            return null;
-        }
+        private TicketRow FindByCar(int car) => TicketNeedsTracker.FindByCar(_rows, car);
     }
 }

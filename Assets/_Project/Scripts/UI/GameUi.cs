@@ -28,25 +28,14 @@ namespace UncannyValet.UI
         [SerializeField, Tooltip("Emotion thresholds, flash speeds and colours of the pickup mark. Set by Setup/Build Everything.")]
         private HudEmotionConfig _emotions;
 
-        private readonly List<TicketRow> _rows = new List<TicketRow>(8);
-        private readonly List<TicketRow> _keyRows = new List<TicketRow>(8);
         private Func<string> _prompt = NoPrompt;
         private UiPhase _phase = UiPhase.Title;
         private float _phaseStartedAt;
         private IEventBus _bus;
-        private TicketBoard _board;
         private ShiftStats _stats;
+        private PlayingHud _playing;
         private PixelKit _kit;
         private PixelCanvas _canvas;
-        private HudPainter _hud;
-        private KeyBoardPainter _keyBoard;
-        private NoticePainter _notices;
-        private WorldTicketPainter _world;
-        private PatronMoodPainter _mood;
-        private CurbHintTracker _curbHints;
-        private CurbHintPainter _hintPainter;
-        private OccupiedHintTracker _occupiedHints;
-        private OccupiedHintPainter _occupiedPainter;
         private ResultsPainter _resultsPainter;
         private TitlePainter _titlePainter;
         private ResultsContent _results;
@@ -66,25 +55,15 @@ namespace UncannyValet.UI
 
         private static string NoPrompt() => string.Empty;
 
-        private static float UnscaledTime() => Time.unscaledTime;
-
         private void OnEnable()
         {
             _bus = Services.Get<IEventBus>();
-            _board = new TicketBoard(_bus);
             _stats = new ShiftStats(_bus);
             _kit = new PixelKit();
             _canvas = new PixelCanvas(_kit);
-            _hud = new HudPainter(_canvas, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>());
             var style = new EmotionStyle(EmotionConfig());
-            _keyBoard = new KeyBoardPainter(_canvas, style);
-            _notices = new NoticePainter(_canvas);
-            _world = new WorldTicketPainter(_canvas, Services.Get<ICarFactory>(), style);
-            _mood = new PatronMoodPainter(_canvas, style);
-            _curbHints = new CurbHintTracker(_bus);
-            _hintPainter = new CurbHintPainter(_canvas, Services.Get<ICarFactory>(), _curbHints);
-            _occupiedHints = new OccupiedHintTracker(_bus, UnscaledTime);
-            _occupiedPainter = new OccupiedHintPainter(_canvas, _occupiedHints);
+            _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>(),
+                Services.Get<ICarFactory>(), style);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
@@ -107,10 +86,8 @@ namespace UncannyValet.UI
                 _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
                 _bus.Unsubscribe<ShiftResultReady>(OnResult);
             }
-            _board?.Dispose();
+            _playing?.Dispose();
             _stats?.Dispose();
-            _curbHints?.Dispose();
-            _occupiedHints?.Dispose();
             _kit?.Dispose();
         }
 
@@ -194,15 +171,7 @@ namespace UncannyValet.UI
         {
             var time = Time.unscaledTime;
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
-            _board.CollectRows(_rows);
-            _world.Draw(_rows, ResolveCamera(), time);
-            _mood.Draw(_rows, ResolveCamera());
-            _hintPainter.Draw(ResolveCamera());
-            _occupiedPainter.Draw(ResolveCamera());
-            _hud.Draw(time);
-            _board.CollectKeyBoardRows(_keyRows);
-            _keyBoard.Draw(_keyRows, time);
-            _notices.Draw(_prompt());
+            _playing.Draw(ResolveCamera(), time, _prompt());
             if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);
         }
 
