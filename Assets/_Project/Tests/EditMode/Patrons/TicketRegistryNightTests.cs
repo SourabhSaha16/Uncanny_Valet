@@ -78,11 +78,12 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ShiftEnded_StopsRunningTimers()
+        public void ShiftEnded_WithAnUnparkedCar_HasNoTimerToStop()
         {
+            // There is no park timer any more: an unparked car runs no timer, so nothing needs stopping.
             Open(1);
             _bus.Publish(new ShiftEnded());
-            Assert.AreEqual(1, Count<TicketTimerStopped>());
+            Assert.AreEqual(0, Count<TicketTimerStopped>());
         }
 
         [Test]

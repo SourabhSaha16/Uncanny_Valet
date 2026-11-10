@@ -435,3 +435,9 @@ Date: 2026-11-09
 Files: Assets scene and metas, Tests/EditMode/Director (FakeClock public, fixture lists cleared in SetUp), docs/design.md, site/
 Why: Patron Director steps 1-2. The merged tests had an accessibility compile error and shared event lists across tests (NUnit reuses the fixture).
 Tests: 557 of 557 EditMode; browser: F3 overlay shows Director ON, phase BuildUp, W/T/P/F, arrivals 1/14, next in 24.6 s, decision log.
+
+## lead: merge pivot-queue, narrow queue gap and fix tests, update design, rebuild site
+Date: 2026-11-09
+Files: Lot/LotConfig.cs (queue slot gap 0.6 to 0.15), Tests/EditMode/Patrons/TicketRegistryNightTests.cs, docs/design.md, scene and metas, site/
+Why: Queue of 4 widened the lot past the camera and geometry limits (two Lot tests); one Patrons test still expected the removed park timer.
+Tests: 565 of 565 EditMode; browser shows 4 arrival slots with up arrows, curb down arrows, plug icons under 13 and 14, key board without a bar before pickup.

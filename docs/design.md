@@ -35,20 +35,24 @@ debt, strikes or boss orders (all removed).
 
 1. Title screen: "UNCANNY VALET", blinking PRESS ANY KEY. The clock does not start until a key press (also
    unlocks browser audio).
-2. A car drives in to an arrival slot and stops (CarArrived); only then does its info box appear.
+2. A car drives in to one of 4 side-by-side arrival slots and stops (CarArrived); only then does its info box
+   appear. Any waiting car can be taken. When all 4 slots are full no new car arrives. Waiting cars have no timer
+   and never leave on their own.
 3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (EV charging bays 13 and
-   14, wash slot), parks it, and the park window timer runs while it waits.
+   14, wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
+   hint shows.
 4. The patron returns, the pickup is requested, the valet drives the car to the curb, tip is paid.
 5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
 
-Timers are in game minutes; 1 game minute is 1 real second. Arrivals every 15 to 25 s, up to 3 waiting.
+Only the pickup timer exists (game minutes; 1 game minute is 1 real second); it drives the tip and the angry
+patron penalty. Arrivals come from the Patron Director (A10).
 
 ## A3. Scoring
 
 - Tip = base + speed bonus + patience bonus (up to $10) + charge bonus + clean bonus, then damage stages
   (25% off per 25% damage, $0 at 100%; no damage source yet), then times the combo.
 - Combo 1x to 4x (cap in `ShiftConfig`): each happy delivery raises it; a $0 tip or an angry patron resets it.
-- Angry patron: either ticket timer (park or pickup) running out costs $15 from the score. The score never
+- Angry patron: the pickup timer running out costs $15 from the score (there is no park timer). The score never
   goes below $0.
 - Stars at $150, $300, $450 (placeholders, `ShiftConfig`).
 
@@ -88,8 +92,8 @@ separate pickup banner is gone.
   the road sides, walk to the diner door, vanish inside and come out again. Walkers have no colliders, so routes
   may cut through hedges and bays until tuned.
 - Delivery rule: the patron accepts the car only when it faces down the screen toward the road within a
-  tolerance (35 degrees, `LotConfig`); otherwise an amber hint over the patron reads PLEASE PARK / IT PROPERLY.
-  The curb zone has two painted down arrows with chevrons (not clearly visible in the first check). On
+  tolerance (80 degrees from straight down, `LotConfig`); otherwise an amber hint over the patron reads PLEASE PARK / IT PROPERLY.
+  The curb zone has two big painted down arrows with chevrons, and the arrival slots have matching up arrows. On
   delivery the patron walks to the car and boards, then the car drives away (boarding timeout 6 game minutes).
 
 ## A6. Audio
@@ -110,7 +114,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (557 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (565 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -147,8 +151,8 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 - Archetype is still random (the existing EV/dirty chances); relief cars are forced Plain.
 - Not built yet: archetype picker and dilemma rules (wash blocked, bays blocked, ...) with the dilemma budget,
   return scheduler, the 200-shift soak test, measuring real task times.
-- Queued play-test changes the director must know about: arrival queue of 4, no park timer (only the pickup timer
-  drives the tip and anger), wash slot single occupancy.
+- Queue changes now in: cap 4 (PlanMaxWaitingCars), no park timer so snapshot patience and pressure P use pickup
+  tickets only; waiting cars still add park work to W.
 
 ## A9. Design log
 
@@ -160,6 +164,7 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-09 | Letters on cars replaced by ticket colour tags; pickup flash; info box after arrival; zoom in; crosswalks and pedestrians |
 | 2026-11-09 | Licence plates; legacy car meters and roof band removed; body tint; police sprites added |
 | 2026-11-09 | Patron Director spec adopted; steps 1 and 2 built (snapshot, F3 overlay, workload, form, pacer, relief, budget) |
+| 2026-11-09 | Queue of 4 with any car takeable, park timer removed (pickup timer only), wash slot single occupancy with OCCUPIED hint, plug icons under EV bays, delivery accepts any down-facing car (80 degrees), big curb and arrival arrows |
 | 2026-11-09 | Play-test notes built: plate 2+1, more zoom, patron and ambient people flows, bell on key board instead of banner, audio mix, face-down delivery with hint, curb arrows, headlights |
 
 ---

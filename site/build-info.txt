@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  92de938
-Subject: lead: merge director-1
-Date:    2026-11-09 15:51:44 -0800
+Commit:  ec0eedf
+Subject: lead: merge pivot-queue
+Date:    2026-11-09 19:07:52 -0800

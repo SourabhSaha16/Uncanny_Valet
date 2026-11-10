@@ -39,7 +39,7 @@ namespace UncannyValet.Lot
         [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
         [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
         [Min(0f), Tooltip("Gap between the sides of neighbouring waiting cars.")]
-        [SerializeField] private float _queueSlotGap = 0.6f;
+        [SerializeField] private float _queueSlotGap = 0.15f;
         [Tooltip("Direction the row grows from slot 0. Keep it along the cars' width and away from the spots.")]
         [SerializeField] private Vector2 _queueDirection = Vector2.left;
         [Min(0f), Tooltip("Gap between the curb's lower edge and the nose of the car in slot 0.")]
