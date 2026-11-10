@@ -20,11 +20,15 @@ namespace UncannyValet.Pedestrians
         private readonly List<PedestrianWalker> _ambient = new List<PedestrianWalker>(10);
         private WalkerRouter _router;
         private IPedestrianPaths _paths;
+        private ITuning _tuning;
         private PatronWalkers _patrons;
         private int _serial;
 
         /// <summary>How many ambient pedestrians exist.</summary>
         public int Count => _ambient.Count;
+
+        /// <summary>How many ambient pedestrians start active; seeds the F2 slider.</summary>
+        public int StartCount => _config != null ? _config.StartActive : 0;
 
         /// <summary>Creates the people. Needs IEventBus, ICarFactory and IPedestrianPaths registered. Does nothing if already begun.</summary>
         public void Begin()
@@ -35,6 +39,7 @@ namespace UncannyValet.Pedestrians
                 Debug.LogError("PedestrianCrowd on " + name + " has no complete PedestrianConfig; rebuild with Setup/Build Everything.", this);
                 return;
             }
+            _tuning = Services.Get<ITuning>();
             _paths = Services.Get<IPedestrianPaths>();
             _router = new WalkerRouter(_paths, Services.Get<ICarFactory>());
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
@@ -58,14 +63,26 @@ namespace UncannyValet.Pedestrians
         {
             if (_patrons == null) return;
             var delta = Time.deltaTime;
-            for (var i = 0; i < _ambient.Count; i++) StepAmbient(_ambient[i], delta);
+            var active = ActiveAmbient();
+            for (var i = 0; i < _ambient.Count; i++) StepAmbient(_ambient[i], delta, i < active);
             _patrons.Sync();
         }
 
-        private void StepAmbient(PedestrianWalker walker, float delta)
+        // The F2 slider: people above the count finish the walk they are on, then stay out of sight.
+        private int ActiveAmbient() => ActiveAmbient(_ambient.Count);
+
+        private int ActiveAmbient(int poolSize)
+            => _tuning != null && _tuning.TryGet(TuningKey.PedestrianCount, out var value)
+                ? Mathf.Clamp(Mathf.RoundToInt(value), 0, poolSize)
+                : poolSize;
+
+        private void StepAmbient(PedestrianWalker walker, float delta, bool allowed)
         {
             walker.Brain.Tick(delta);
-            if (walker.Brain.SpawnDue) BeginAmbientWalk(walker, 0f);
+            if (walker.Brain.SpawnDue)
+            {
+                if (allowed) BeginAmbientWalk(walker, 0f);
+            }
             else if (walker.Brain.Phase != walker.Applied) _router.Apply(walker);
         }
 
@@ -89,7 +106,9 @@ namespace UncannyValet.Pedestrians
         private PedestrianWalker CreateAmbient(int index)
         {
             var walker = Create("Pedestrian " + index, index);
-            BeginAmbientWalk(walker, PedestrianPlan.Hash01(index + _config.Count) * _config.OpeningProgressMax);
+            if (index < ActiveAmbient(_config.Count))
+                BeginAmbientWalk(walker, PedestrianPlan.Hash01(index + _config.Count) * _config.OpeningProgressMax);
+            else walker.Brain.WaitToSpawn(0f);
             return walker;
         }
 

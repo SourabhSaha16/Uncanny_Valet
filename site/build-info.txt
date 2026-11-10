@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  f616bb4
-Subject: lead: merge director-2
-Date:    2026-11-09 20:29:02 -0800
+Commit:  b45677a
+Subject: lead: merge director-2, rebuild site
+Date:    2026-11-09 20:37:25 -0800

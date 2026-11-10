@@ -29,6 +29,7 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.ChargeBonus, "Tips", "Charge bonus", 0, 200, 1),
             new TuningInfo(TuningKey.CleanBonus, "Tips", "Clean bonus", 0, 200, 1),
             new TuningInfo(TuningKey.SpeedWindowMinutes, "Tips", "Speed bonus window (game min)", 1, 60, 1),
+            new TuningInfo(TuningKey.PedestrianCount, "Pedestrians", "Ambient pedestrians (walking in/out)", 0, 10, 1),
             new TuningInfo(TuningKey.DirEnabled, "Director", "Director on (0 = old fixed timer)", 0, 1, 1),
             new TuningInfo(TuningKey.DirTickSeconds, "Director", "Tick every (s)", 0.1f, 2f, 0.1f),
             new TuningInfo(TuningKey.DirSeed, "Director", "Seed (0 = random each shift)", 0, 9999, 1),

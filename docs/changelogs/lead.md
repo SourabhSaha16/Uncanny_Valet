@@ -459,3 +459,9 @@ Date: 2026-11-09
 Files: scene and metas, docs/design.md, site/
 Why: Patron Director step 3 per docs/redesign/patron_director_spec.md.
 Tests: 625 of 625 EditMode (including the 200-shift soak); browser F3 overlay shows dilemma section and the director choosing the archetype, no console errors.
+
+## lead: add pedestrian count to the F2 tuning panel, start at 3
+Date: 2026-11-10
+Files: TuningKey.cs, TuningCatalog.cs, TuningSeeder.cs, GameBootstrap.cs, PedestrianConfig.cs, PedestrianCrowd.cs, docs/design.md, site/
+Why: the human wants fewer pedestrians at the start and control over the number (design.md A4).
+Tests: 625 of 625 EditMode.

@@ -107,7 +107,8 @@ namespace UncannyValet.Bootstrap
         private void SeedTuning(ITuning tuning, int spotCount)
         {
             TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
-                spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile);
+                spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
+                _pedestrians != null ? _pedestrians.StartCount : 0);
         }
 
         private void StartDirector(IEventBus bus, ITuning tuning)

@@ -75,7 +75,7 @@ Car presentation (all per ticket):
 
 HUD (480x270 virtual canvas, integer-scaled, pixel font): shift clock top centre (amber at 30 s, blinking
 orange-red at 10 s); a small coin score with three stars top left; a small combo badge top right; key board bottom left
-listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel.
+listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel. The panel's "Pedestrians" slider (0 to 10, starts at 3) sets how many ambient people walk; people above the count finish their walk, then stay out of sight.
 Pickup is shown on the key board row with a bell and cyan highlight, flashing with the urgency maths; the
 separate pickup banner is gone.
 

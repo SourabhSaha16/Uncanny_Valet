@@ -13,6 +13,8 @@ namespace UncannyValet.Pedestrians
         [Header("Crowd")]
         [SerializeField, Range(6, 10), Tooltip("Pedestrians created once at the start of the night.")]
         private int _count = 8;
+        [SerializeField, Range(0, 10), Tooltip("Ambient pedestrians active when the game starts (the F2 panel changes it live). Capped at Count.")]
+        private int _startActive = 3;
         [SerializeField, Min(0.1f), Tooltip("Slowest walking speed, world units per second.")]
         private float _minSpeed = 0.9f;
         [SerializeField, Min(0.1f), Tooltip("Fastest walking speed, world units per second.")]
@@ -53,6 +55,7 @@ namespace UncannyValet.Pedestrians
         [SerializeField] private Sprite[] _hair = new Sprite[0];
 
         public int Count => _count;
+        public int StartActive => Mathf.Min(_startActive, _count);
         public float MinSpeed => _minSpeed;
         public float MaxSpeed => Mathf.Max(_minSpeed, _maxSpeed);
         public float Scale => _scale;

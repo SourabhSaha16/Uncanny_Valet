@@ -13,9 +13,11 @@ namespace UncannyValet.Bootstrap
         /// <param name="spotCount">Spots in the lot; used when the plan says 0 ("all spots open").</param>
         /// <param name="director">The Patron Director's numbers; null skips them (its keys then stay unseeded).</param>
         /// <param name="profile">The lot's director profile, which supplies the arrival budget.</param>
+        /// <param name="pedestrians">How many ambient pedestrians start active (the F2 panel can change it).</param>
         public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
-            DirectorConfig director = null, DirectorProfile profile = null)
+            DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0)
         {
+            t.Seed(TuningKey.PedestrianCount, pedestrians);
             if (director != null && profile != null) director.SeedInto(t, profile);
 
             t.Seed(TuningKey.GameMinutesPerSecond, shift.GameMinutesPerSecond);

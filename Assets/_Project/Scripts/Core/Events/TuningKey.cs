@@ -108,5 +108,8 @@ namespace UncannyValet.Core.Events
         DirMixTolerance,
         DirAssist,
         DirAssistDilemmaScale,
+
+        // Pedestrians (Pedestrians module owns). How many ambient people walk around; patrons are separate.
+        PedestrianCount,
     }
 }
