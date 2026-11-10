@@ -6,7 +6,7 @@ namespace UncannyValet.UI.Hud
     public static class ComboWobble
     {
         public const float DurationSeconds = 0.5f;
-        public const float AmplitudePixels = 3f;
+        public const float AmplitudePixels = 2f;
         public const float HertzCycles = 4f;
 
         /// <summary>Vertical offset in pixels, <paramref name="secondsSinceRise"/> after the multiplier went up.</summary>

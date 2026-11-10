@@ -17,10 +17,7 @@ namespace UncannyValet.Bootstrap
         public static DirectorBootstrap Start(IEventBus bus, ITuning tuning, IGameClock clock, ILotLayout lot,
             PatronDirector director, DirectorProfile profile, IDirectorRandom random, int maxCombo)
         {
-            var bays = 0;
-            for (var i = 0; i < lot.SpotIds.Count; i++)
-                if (lot.IsChargingSpot(lot.SpotIds[i])) bays++;
-            var tracker = new LotStateTracker(bus, clock, tuning, lot.SpotIds.Count - bays, bays);
+            var tracker = new LotStateTracker(bus, clock, tuning, lot.RegularSpotCount, lot.ChargingSpotCount);
             var state = new DirectorState();
             Services.Register<ILotSnapshotSource>(tracker);
             Services.Register<IDirectorView>(state);

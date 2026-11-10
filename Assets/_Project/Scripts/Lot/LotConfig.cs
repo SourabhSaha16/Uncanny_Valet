@@ -8,6 +8,7 @@ namespace UncannyValet.Lot
     {
         [Header("Spots")]
         [SerializeField] private int _rows = 2;
+        [Min(1), Tooltip("Grid columns. The grid holds rows x columns cells; the stations take the first cells, the rest are the regular spots.")]
         [SerializeField] private int _spotsPerRow = 6;
         [SerializeField] private Vector2 _spotSize = new Vector2(2.6f, 4.4f);
         [SerializeField] private float _spotGap = 0.2f;
@@ -44,20 +45,14 @@ namespace UncannyValet.Lot
         [SerializeField] private Vector2 _queueDirection = Vector2.left;
         [Min(0f), Tooltip("Gap between the curb's lower edge and the nose of the car in slot 0.")]
         [SerializeField] private float _queueStartGap = 0.8f;
-        [Min(0f), Tooltip("Space kept between the waiting cars or stations and the lot walls.")]
+        [Min(0f), Tooltip("Space kept between the waiting cars and the lot walls.")]
         [SerializeField] private float _queuePadding = 0.5f;
         [Tooltip("Heading of waiting cars; 0 = facing +Y, towards the curb.")]
         [SerializeField] private float _queueRotationDegrees;
 
         [Header("Stations")]
-        [Min(0), Tooltip("Charging spots (ids continue after the regular spots). They sit in a row left to right, followed by the single wash slot.")]
+        [Min(0), Tooltip("Charging bays. They take the first cells of the spot grid (column by column from the curb), followed by the single wash slot; their ids continue after the regular spots. Every station is one grid cell big.")]
         [SerializeField] private int _chargingBays = 2;
-        [Tooltip("Footprint of each station (width, length).")]
-        [SerializeField] private Vector2 _stationSize = new Vector2(2.6f, 4.4f);
-        [Min(0f), Tooltip("Gap between neighbouring stations.")]
-        [SerializeField] private float _stationGap = 0.4f;
-        [Tooltip("Centre of the first charging spot. Default: above the curb, clear of the curb zone and the spots.")]
-        [SerializeField] private Vector2 _stationsFirstCenter = new Vector2(-17.5f, 6f);
         [Min(0.1f), Tooltip("Largest size of the CHARGE / WASH text; it shrinks to fit the station width.")]
         [SerializeField] private float _stationLabelSize = 0.45f;
         [Min(0.1f), Tooltip("Estimated width of one label character per unit of label size (generous).")]
@@ -81,9 +76,6 @@ namespace UncannyValet.Lot
         public float CurbLabelSize => _curbLabelSize;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
         public int ChargingBays => Mathf.Max(0, _chargingBays);
-        public Vector2 StationSize => _stationSize;
-        public float StationGap => _stationGap;
-        public Vector2 StationsFirstCenter => _stationsFirstCenter;
         public float StationLabelSize => _stationLabelSize;
         public float LabelCharWidth => _labelCharWidth;
         public float StationLabelFill => _stationLabelFill;

@@ -52,11 +52,7 @@ namespace UncannyValet.UI.Kit
             "kwwwwwwwwwk", ".kkgkkkgkk.", "..kgk.kgk..",
         };
 
-        private static readonly string[] Wash =
-        {
-            "....k....", "...kck...", "..kcwck..", "..kcwcck.", ".kcwcccok",
-            ".kccccook", ".kcccccok", "..kcccok.", "...kkk...",
-        };
+        private static readonly string[] Wash = UncannyValet.Core.Contracts.WashIconArt.Rows;
 
         private static readonly string[] Tyre =
         {

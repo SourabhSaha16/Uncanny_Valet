@@ -11,19 +11,10 @@ namespace UncannyValet.UI.Hud
     /// </summary>
     public sealed class HudPainter
     {
-        private const int Margin = 4;
+        private const int Margin = HudLayout.Margin;
         private const int ClockWidth = 58;
         private const int ClockHeight = 22;
-        private const int ScoreWidth = 112;
-        private const int ScoreHeight = 40;
-        private const int BarX = 8;
-        private const int BarY = 27;
-        private const int BarWidth = 96;
-        private const int BarHeight = 5;
         private const int BigScale = 2;
-        private const int StarOverhang = 4;
-        private const int ComboWidth = 40;
-        private const int ComboHeight = 24;
         private const int MinComboShown = 2;
         private const float BlinkPeriod = 0.5f;
         private const float NeverRisen = -100f;
@@ -73,25 +64,27 @@ namespace UncannyValet.UI.Hud
         private void DrawScore()
         {
             _tips.Set(_score.Score);
-            _canvas.Panel(Margin, Margin - 1, ScoreWidth, ScoreHeight, PixelPalette.PanelDark);
-            _canvas.Icon(PixelIcon.Coin, Margin + 6, Margin + 4, BigScale, Color.white);
-            _canvas.Text(_tips.Text, Margin + 28, Margin + 5, PixelPalette.Gold, BigScale);
-            DrawStarBar();
+            var x = Margin;
+            var y = Margin - 1;
+            _canvas.Panel(x, y, HudLayout.ScoreWidth, HudLayout.ScoreHeight, PixelPalette.PanelDark);
+            _canvas.Icon(PixelIcon.Coin, x + HudLayout.CoinX, y + HudLayout.CoinY, 1, Color.white);
+            _canvas.Text(_tips.Text, x + HudLayout.TipsX, y + HudLayout.TipsY, PixelPalette.Gold, HudLayout.TextScale);
+            DrawStarBar(x, y);
         }
 
-        private void DrawStarBar()
+        private void DrawStarBar(int panelX, int panelY)
         {
-            var left = Margin + BarX;
-            var top = Margin + BarY;
+            var left = panelX + HudLayout.BarX;
+            var top = panelY + HudLayout.BarY;
             var layout = new StarBarLayout(_score.Score, _score.OneStarScore, _score.TwoStarScore,
-                _score.ThreeStarScore, BarWidth);
-            _canvas.Fill(left - 1, top - 1, BarWidth + 2, BarHeight + 2, PixelPalette.Track);
-            _canvas.Fill(left, top, layout.Fill, BarHeight, PixelPalette.Gold);
+                _score.ThreeStarScore, HudLayout.BarWidth);
+            _canvas.Fill(left - 1, top - 1, HudLayout.BarWidth + 2, HudLayout.BarHeight + 2, PixelPalette.Track);
+            _canvas.Fill(left, top, layout.Fill, HudLayout.BarHeight, PixelPalette.Gold);
             for (var star = 0; star < StarBarLayout.Stars; star++)
             {
                 var icon = layout.IsLit(star) ? PixelIcon.StarLit : PixelIcon.StarUnlit;
-                var x = left + layout.MarkerX(star) - StarOverhang;
-                _canvas.Icon(icon, x, top + BarHeight / 2 - _canvas.IconHeight(icon) / 2, 1, Color.white);
+                var x = panelX + HudLayout.StarX(layout, star);
+                _canvas.Icon(icon, x, top + HudLayout.BarHeight / 2 - _canvas.IconHeight(icon) / 2, 1, Color.white);
             }
         }
 
@@ -102,11 +95,12 @@ namespace UncannyValet.UI.Hud
             _lastCombo = multiplier;
             if (multiplier < MinComboShown) return;
             _combo.Set(multiplier);
-            var x = PixelGrid.Width - Margin - ComboWidth;
+            var x = PixelGrid.Width - Margin - HudLayout.ComboWidth;
             var y = Margin - 1 + ComboWobble.OffsetY(time - _comboRisenAt);
-            _canvas.Panel(x, y, ComboWidth, ComboHeight, PixelPalette.PanelCombo);
-            var width = PixelTextLayout.Width(_combo.Text.Length, BigScale);
-            _canvas.Text(_combo.Text, PixelTextLayout.Centered(x, ComboWidth, width), y + 5, PixelPalette.Cream, BigScale);
+            _canvas.Panel(x, y, HudLayout.ComboWidth, HudLayout.ComboHeight, PixelPalette.PanelCombo);
+            var width = PixelTextLayout.Width(_combo.Text.Length, HudLayout.TextScale);
+            _canvas.Text(_combo.Text, PixelTextLayout.Centered(x, HudLayout.ComboWidth, width), y + HudLayout.ComboTextY,
+                PixelPalette.Cream, HudLayout.TextScale);
         }
     }
 }

@@ -28,6 +28,8 @@ namespace UncannyValet.Lot
         public IReadOnlyList<Vector2> ArrivalSlots => _arrivalSlots;
         public float ArrivalRotationDegrees => _config.QueueRotationDegrees;
         public Vector2 ValetStartPoint { get; private set; }
+        public int RegularSpotCount { get; private set; }
+        public int ChargingSpotCount { get; private set; }
 
         /// <summary>Ids of the open spots: the regular spots the plan opens plus the charging spots while charging is open.</summary>
         public IReadOnlyList<int> SpotIds => _expander != null ? _expander.OpenIds : (IReadOnlyList<int>)System.Array.Empty<int>();
@@ -54,6 +56,8 @@ namespace UncannyValet.Lot
             var c = _config;
             var g = new LotGeometry(c);
             _arrivalSlots = g.QueueSlots;
+            RegularSpotCount = g.Spots.Length;
+            ChargingSpotCount = g.ChargingSpots.Length;
             var frame = new LotFrame(rects, transform, c.WallThickness,
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall);
             BuildCurb(rects);

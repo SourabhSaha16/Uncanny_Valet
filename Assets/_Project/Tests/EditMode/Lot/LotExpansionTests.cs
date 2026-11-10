@@ -46,32 +46,43 @@ namespace UncannyValet.Tests.Lot
         [Test]
         public void ActiveSpots_DoNotCountChargingSpots()
         {
-            _occ.SetActiveSpots(8);
+            _occ.SetActiveSpots(7);
             _occ.SetChargingOpen(true);
-            Assert.IsTrue(_occ.IsOpen(8));
-            Assert.IsFalse(_occ.IsOpen(9));
+            Assert.IsTrue(_occ.IsOpen(7));
+            Assert.IsFalse(_occ.IsOpen(8));
             Assert.IsTrue(_occ.IsOpen(_geo.FirstChargingId + 1));
         }
 
         [Test]
         public void OccupiedSpotBeyondTheLimit_KeepsItsColumnInTheFrame()
         {
-            _occ.Park(12, new CarId(1));
+            var last = _geo.Spots.Length;
+            _occ.Park(last, new CarId(1));
             _occ.SetActiveSpots(4);
-            Assert.AreEqual(_geo.FrameFor(6, false, false), LotFrameRule.Frame(_geo, _occ, false));
-            _occ.Leave(12, new CarId(1));
-            Assert.AreEqual(_geo.FrameFor(2, false, false), LotFrameRule.Frame(_geo, _occ, false));
+            Assert.AreEqual(_geo.FrameFor(6), LotFrameRule.Frame(_geo, _occ));
+            _occ.Leave(last, new CarId(1));
+            Assert.AreEqual(_geo.FrameFor(4), LotFrameRule.Frame(_geo, _occ));
         }
 
         [Test]
-        public void Frame_FollowsOpenSpotsChargingAndWash()
+        public void Frame_FollowsOpenRegularSpots_TheStationsSitInsideIt()
         {
-            _occ.SetActiveSpots(8);
-            Assert.AreEqual(_geo.FrameFor(4, false, false), LotFrameRule.Frame(_geo, _occ, false));
+            _occ.SetActiveSpots(7);
+            Assert.AreEqual(_geo.FrameFor(5), LotFrameRule.Frame(_geo, _occ));
             _occ.SetChargingOpen(true);
-            Assert.AreEqual(_geo.FrameFor(4, true, true), LotFrameRule.Frame(_geo, _occ, true));
-            _occ.SetActiveSpots(12);
-            Assert.Greater(LotFrameRule.Frame(_geo, _occ, false).xMax, _geo.FrameFor(4, false, false).xMax);
+            Assert.AreEqual(_geo.FrameFor(5), LotFrameRule.Frame(_geo, _occ), "opening the stations does not move the walls");
+            _occ.SetActiveSpots(0);
+            Assert.AreEqual(_geo.Bounds, LotFrameRule.Frame(_geo, _occ));
+        }
+
+        [Test]
+        public void FewRegularSpotsOpen_StillFrameTheTwoStationColumns()
+        {
+            _occ.SetActiveSpots(1);
+            var frame = _geo.FrameFor(2);
+            Assert.AreEqual(frame, LotFrameRule.Frame(_geo, _occ));
+            Assert.IsTrue(frame.Contains(_geo.Wash.center));
+            Assert.IsTrue(frame.Contains(_geo.ChargingSpots[1].center));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace UncannyValet.Core.Config
         private int _maxWaitingCars = 4;
         [SerializeField, Min(0.1f), Tooltip("Multiplies the gap between arrivals; below 1 is busier.")]
         private float _arrivalGapScale = 1f;
-        [SerializeField, Min(0), Tooltip("Parking spots open, counted from the curb. 0 = all spots.")]
+        [SerializeField, Min(0), Tooltip("Regular parking spots open, counted in grid order from the curb (the lot has 9; the EV bays and the wash slot are extra). 0 = all regular spots.")]
         private int _activeSpots;
         [SerializeField, Range(0f, 1f)] private float _evChance = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _dirtyChance = 0.3f;

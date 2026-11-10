@@ -16,7 +16,7 @@ namespace UncannyValet.Lot
         public void Init(StationKind kind, LotConfig config)
         {
             Kind = kind;
-            Setup(config, config.StationSize);
+            Setup(config, config.SpotSize);
         }
 
         /// <summary>Makes the station single-occupancy: while a car holds it, other cars are kept out.</summary>
