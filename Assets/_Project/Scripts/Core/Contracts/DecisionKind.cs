@@ -5,6 +5,7 @@ namespace UncannyValet.Core.Contracts
     {
         Scheduled,
         ReliefStarted,
-        ReliefEnded
+        ReliefEnded,
+        DilemmaResolved
     }
 }

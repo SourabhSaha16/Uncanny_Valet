@@ -89,7 +89,7 @@ namespace UncannyValet.Director
         private ScheduleReason Classify(in PacerInput input, bool idle)
         {
             if (idle) return ScheduleReason.Idle;
-            var gap = input.Workload - (input.Target + _settings.FormInfluence * input.Form);
+            var gap = input.Gap(_settings.FormInfluence);
             if (gap < -_settings.Band) return ScheduleReason.UnderTarget;
             return gap > _settings.Band ? ScheduleReason.OverTarget : ScheduleReason.OnTarget;
         }

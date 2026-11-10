@@ -1,12 +1,14 @@
 using System;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UnityEngine;
 
 namespace UncannyValet.Director
 {
     /// <summary>
-    /// The director's per-tick logic as a plain class: reads the lot snapshot, estimates workload, asks the pacer, and
-    /// publishes PatronScheduled, DirectorPhaseChanged and the relief events. The MonoBehaviour shell only feeds it time.
+    /// The director's per-tick logic as a plain class: reads the lot snapshot, estimates workload, asks the pacer when
+    /// a car is due and the dilemma director which car, and publishes PatronScheduled, DirectorPhaseChanged and the
+    /// relief events. The MonoBehaviour shell only feeds it time.
     /// </summary>
     public sealed class DirectorBrain : IDisposable
     {
@@ -18,19 +20,21 @@ namespace UncannyValet.Director
         private readonly ITuning _tuning;
         private readonly IGameClock _clock;
         private readonly ILotSnapshotSource _lot;
-        private readonly DirectorProfile _profile;
+        private readonly IIntensityProfile _profile;
         private readonly DirectorState _state;
         private readonly FormTracker _form;
         private readonly ArrivalPacer _pacer;
+        private readonly DilemmaDirector _dilemmas;
         private readonly DirectorSettings _settings;
         private bool _phaseKnown;
         private DirectorPhase _phase;
 
         public DirectorBrain(IEventBus bus, ITuning tuning, IGameClock clock, ILotSnapshotSource lot,
-            DirectorProfile profile, DirectorState state, DirectorSettings settings, FormTracker form, ArrivalPacer pacer)
+            IIntensityProfile profile, DirectorState state, DirectorSettings settings, FormTracker form,
+            ArrivalPacer pacer, DilemmaDirector dilemmas)
         {
             _bus = bus; _tuning = tuning; _clock = clock; _lot = lot; _profile = profile; _state = state;
-            _settings = settings; _form = form; _pacer = pacer;
+            _settings = settings; _form = form; _pacer = pacer; _dilemmas = dilemmas;
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<CarSpawned>(OnCarSpawned);
         }
@@ -54,9 +58,14 @@ namespace UncannyValet.Director
             var target = _profile.Sample(fraction);
             _form.Tick(lot);
             PublishPhase(_profile.PhaseAt(fraction));
-            var decision = _pacer.Tick(BuildInput(lot, load, target, fraction, length), dt);
-            Publish(decision, load, target, lot.NowSeconds);
+            var input = BuildInput(lot, load, target, fraction, length);
+            var decision = _pacer.Tick(input, dt);
+            _dilemmas.Tick(lot);
+            Publish(decision, load, target, lot, input, fraction);
         }
+
+        // Assist mode clamps form F at 0: a cruising player is not pushed harder.
+        private float EffectiveForm => _settings.Picker.Assist ? Mathf.Min(_form.Value, 0f) : _form.Value;
 
         private PacerInput BuildInput(in LotSnapshot lot, WorkloadReading load, float target, float fraction, float length)
         {
@@ -66,34 +75,45 @@ namespace UncannyValet.Director
             var perSecond = Read(TuningKey.GameMinutesPerSecond, 1f);
             var toSeconds = gapScale / (perSecond > 0f ? perSecond : 1f);
             var cap = (int)Read(TuningKey.PlanMaxWaitingCars, DefaultQueueCap);
-            return new PacerInput(load.W, load.P, target, _form.Value, lot.CountAngry(_settings.Relief.AngryWindowSeconds),
+            return new PacerInput(load.W, load.P, target, EffectiveForm, lot.CountAngry(_settings.Relief.AngryWindowSeconds),
                 queue, cap, _state.ArrivalsUsed, _profile.AreaFrom(fraction, length), _profile.AreaFrom(0f, length),
                 Read(TuningKey.ArrivalGapMinMinutes, DefaultGapMin) * toSeconds,
                 Read(TuningKey.ArrivalGapMaxMinutes, DefaultGapMax) * toSeconds);
         }
 
-        private void Publish(in PacerDecision d, WorkloadReading load, float target, float now)
+        private void Publish(in PacerDecision d, WorkloadReading load, float target, in LotSnapshot lot,
+            in PacerInput input, float fraction)
         {
-            _state.Workload = load.W; _state.Pressure = load.P; _state.Target = target; _state.Form = _form.Value;
+            var now = lot.NowSeconds;
+            _state.Workload = load.W; _state.Pressure = load.P; _state.Target = target; _state.Form = EffectiveForm;
             _state.SecondsToNextArrival = d.SecondsToNext;
             _state.ArrivalBudget = _settings.Pacing.ArrivalBudget;
             _state.ArrivalBudgetMax = _settings.Pacing.MaxArrivals;
             if (d.ReliefStarted)
             {
                 _bus.Publish(new ReliefStarted(d.Trigger));
-                Log(DecisionKind.ReliefStarted, now, d.Reason, d.Trigger, false);
+                Log(DecisionKind.ReliefStarted, now, d.Reason, d.Trigger);
             }
             if (d.ReliefEnded) EndRelief(now);
             _state.InRelief = _pacer.InRelief;
-            if (!d.IsSpawn) return;
-            _bus.Publish(new PatronScheduled(CarArchetype.Plain, d.ForcePlain, d.Reason));
-            Log(DecisionKind.Scheduled, now, d.Reason, default, d.ForcePlain);
+            if (d.IsSpawn) Schedule(d, lot, input, fraction);
+        }
+
+        private void Schedule(in PacerDecision d, in LotSnapshot lot, in PacerInput input, float fraction)
+        {
+            var gap = input.Gap(_settings.Pacing.FormInfluence);
+            var context = new DilemmaContext(_profile.Weights, d.Reason, d.ForcePlain || _pacer.InRelief, gap,
+                _profile.IsRising(fraction), _settings.Pacing.ArrivalBudget);
+            var pick = _dilemmas.Choose(lot, context);
+            _bus.Publish(new PatronScheduled(pick.Archetype, true, d.Reason));
+            _state.Log(new DirectorDecision(DecisionKind.Scheduled, lot.NowSeconds, d.Reason, default, pick.Archetype, true,
+                _state.ArrivalsUsed, _state.Workload, _state.Target, pick.HasRule, pick.Rule, pick.Multiplier));
         }
 
         private void EndRelief(float now)
         {
             _bus.Publish(new ReliefEnded());
-            Log(DecisionKind.ReliefEnded, now, ScheduleReason.OnTarget, default, false);
+            Log(DecisionKind.ReliefEnded, now, ScheduleReason.OnTarget, default);
         }
 
         private void PublishPhase(DirectorPhase phase)
@@ -105,8 +125,8 @@ namespace UncannyValet.Director
             _bus.Publish(new DirectorPhaseChanged(phase));
         }
 
-        private void Log(DecisionKind kind, float now, ScheduleReason reason, ReliefTrigger trigger, bool plain)
-            => _state.Log(new DirectorDecision(kind, now, reason, trigger, CarArchetype.Plain, plain,
+        private void Log(DecisionKind kind, float now, ScheduleReason reason, ReliefTrigger trigger)
+            => _state.Log(new DirectorDecision(kind, now, reason, trigger, CarArchetype.Plain, false,
                 _state.ArrivalsUsed, _state.Workload, _state.Target));
 
         private float Read(TuningKey key, float fallback) => TuningRead.Float(_tuning, key, fallback);

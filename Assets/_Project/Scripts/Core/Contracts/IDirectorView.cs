@@ -18,6 +18,27 @@ namespace UncannyValet.Core.Contracts
         int ArrivalBudget { get; }
         int ArrivalBudgetMax { get; }
 
+        /// <summary>A director-made dilemma is open (its car has not been parked and its trigger still holds).</summary>
+        bool HasOpenDilemma { get; }
+
+        /// <summary>The open dilemma's rule (meaningful when <see cref="HasOpenDilemma"/>).</summary>
+        DilemmaKind OpenDilemma { get; }
+
+        /// <summary>Seconds until another dilemma may be made (0 when none is blocked by the cooldown).</summary>
+        float DilemmaCooldownLeft { get; }
+
+        /// <summary>Dilemmas made this shift.</summary>
+        int DilemmasMade { get; }
+
+        /// <summary>Dilemmas resolved this shift.</summary>
+        int DilemmasResolved { get; }
+
+        /// <summary>Mean seconds a resolved dilemma stayed open; 0 before the first.</summary>
+        float AverageResolveSeconds { get; }
+
+        /// <summary>The last pick asked for a parked patron's return to come forward (lot tight).</summary>
+        bool ReturnForwardWanted { get; }
+
         /// <summary>Increases whenever a decision is logged; lets a view cache its text.</summary>
         int DecisionVersion { get; }
 

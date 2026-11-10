@@ -36,6 +36,8 @@ namespace UncannyValet.UI
         private string _header = string.Empty;
         private string _arrivals = string.Empty;
         private string _cars = string.Empty;
+        private string _dilemma = string.Empty;
+        private string _dilemmaCounters = string.Empty;
         private GUIStyle _label;
         private GUIStyle _title;
         private GUIStyle _box;
@@ -60,6 +62,8 @@ namespace UncannyValet.UI
             _header = DirectorOverlayText.Header(_view);
             _arrivals = DirectorOverlayText.Arrivals(_view);
             _cars = DirectorOverlayText.Cars(snapshot);
+            _dilemma = DirectorOverlayText.Dilemma(_view);
+            _dilemmaCounters = DirectorOverlayText.DilemmaCounters(_view);
             CopySlots(snapshot);
             CopyDecisions();
         }
@@ -90,7 +94,7 @@ namespace UncannyValet.UI
             if (_tuningPanel != null && _tuningPanel.IsOpen) return;
             EnsureStyles();
             var line = _fontSize + 6f;
-            var rows = 5 + _slots.Count + _decisions.Count;
+            var rows = 7 + _slots.Count + _decisions.Count;
             var panel = new Rect(_margin, _margin, _width, line * rows + 16f);
             GUI.Box(panel, GUIContent.none, _box);
             var y = panel.y + 6f;
@@ -98,6 +102,8 @@ namespace UncannyValet.UI
             y += line;
             y = Line(panel, y, line, _header);
             y = Line(panel, y, line, _arrivals);
+            y = Line(panel, y, line, _dilemma);
+            y = Line(panel, y, line, _dilemmaCounters);
             y = DrawSlots(panel, y, line);
             y = Line(panel, y, line * 2f, _cars);
             for (var i = 0; i < _decisions.Count; i++) y = Line(panel, y, line, _decisions[i]);

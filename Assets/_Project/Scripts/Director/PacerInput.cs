@@ -28,6 +28,9 @@ namespace UncannyValet.Director
         /// <summary>Longest base interval, seconds.</summary>
         public readonly float BaseIntervalMax;
 
+        /// <summary>The pacing gap: workload minus the target nudged by form (spec section 3).</summary>
+        public float Gap(float formInfluence) => Workload - (Target + formInfluence * Form);
+
         public PacerInput(float workload, float pressure, float target, float form, int angryRecent, int queue,
             int queueCap, int arrivalsUsed, float targetAreaLeft, float targetAreaTotal, float baseIntervalMin,
             float baseIntervalMax)

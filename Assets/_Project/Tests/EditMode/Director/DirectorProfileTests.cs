@@ -77,6 +77,24 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
+        public void RisingMeansTheCurveIsHigherJustAhead()
+        {
+            Assert.IsTrue(_profile.IsRising(0.05f), "build-up climbs");
+            Assert.IsFalse(_profile.IsRising(0.34f), "falling into the breather");
+            Assert.IsFalse(_profile.IsRising(1f), "nothing is ahead of the end");
+        }
+
+        [Test]
+        public void WeightsCarryTheFourBaseWeightsInArchetypeOrder()
+        {
+            var w = _profile.Weights;
+            Assert.AreEqual(50f, w.Of(CarArchetype.Plain));
+            Assert.AreEqual(20f, w.Of(CarArchetype.Dirty));
+            Assert.AreEqual(20f, w.Of(CarArchetype.Ev));
+            Assert.AreEqual(10f, w.Of(CarArchetype.DirtyEv));
+        }
+
+        [Test]
         public void DinerDefaultsAreFourteenCarsPlusTwoSlackAndTheSpecWeights()
         {
             Assert.AreEqual(14, _profile.ArrivalBudget);
