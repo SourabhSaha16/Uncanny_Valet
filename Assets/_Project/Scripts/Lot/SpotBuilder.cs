@@ -2,18 +2,17 @@ using UnityEngine;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Builds one parking spot object (lines, pad, number, trigger); charging spots get a tint and a bolt.</summary>
+    /// <summary>Builds one parking spot object (lines, pad, number, trigger); charging spots get a tint and a plug icon under the number.</summary>
     public static class SpotBuilder
     {
         private static readonly Color Line = new Color(0.92f, 0.92f, 0.85f);
         private static readonly Color Pad = new Color(0.30f, 0.32f, 0.37f);
         private static readonly Color ChargeLine = new Color(0.30f, 0.60f, 1f);
         private static readonly Color ChargePad = new Color(0.14f, 0.24f, 0.46f);
-        private static readonly Color Bolt = new Color(1f, 0.88f, 0.2f);
         private const float LineWidth = 0.1f;
-        private const float BoltHeight = 1.3f;
-        private const float BoltThickness = 0.22f;
-        private const float BoltYOffsetShare = 0.3f;
+        private const float PlugPixel = 0.16f;
+        private const float PlugYOffsetShare = -0.33f;
+        private const int PlugOrder = -4;
 
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
         /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
@@ -27,24 +26,12 @@ namespace UncannyValet.Lot
             rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
                 charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
-            if (charging) AddBolt(rects, root.transform, c.SpotSize.y * BoltYOffsetShare);
+            if (charging) PlugDecal.Build(rects, root.transform, new Vector2(0f, c.SpotSize.y * PlugYOffsetShare), PlugPixel, PlugOrder);
             root.AddComponent<BoxCollider2D>();
             var spot = root.AddComponent<ParkingSpot>();
             spot.Init(id, c, occupancy, charging);
             root.SetActive(false);
             return spot;
-        }
-
-        private static void AddBolt(RectFactory rects, Transform parent, float y)
-        {
-            var h = BoltHeight;
-            var top = new Vector2(0.25f * h, y + 0.5f * h);
-            var left = new Vector2(-0.15f * h, y);
-            var right = new Vector2(0.15f * h, y);
-            var bottom = new Vector2(-0.25f * h, y - 0.5f * h);
-            rects.Segment(parent, "Bolt 1", top, left, BoltThickness, Bolt, -4);
-            rects.Segment(parent, "Bolt 2", left, right, BoltThickness, Bolt, -4);
-            rects.Segment(parent, "Bolt 3", right, bottom, BoltThickness, Bolt, -4);
         }
     }
 }

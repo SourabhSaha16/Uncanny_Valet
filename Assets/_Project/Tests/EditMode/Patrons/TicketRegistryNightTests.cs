@@ -47,7 +47,7 @@ namespace UncannyValet.Tests.Patrons
         private Ticket Open(int car)
         {
             _cars.Spawn(new CarId(car), UnityEngine.Vector2.zero, 0f);
-            return _registry.Open(new CarId(car), new PatronRequest(20f, 20, false, 45f, 60f));
+            return _registry.Open(new CarId(car), new PatronRequest(20f, 20, false, 60f));
         }
 
         private int Count<T>() where T : IGameEvent

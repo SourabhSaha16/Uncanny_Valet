@@ -22,8 +22,20 @@ namespace UncannyValet.Lot
             root.AddComponent<BoxCollider2D>();
             var zone = root.AddComponent<StationZone>();
             zone.Init(StationKind.Wash, c);
+            zone.UseBlocker(BuildBlocker(root.transform, c));
             root.SetActive(false);
             return zone;
+        }
+
+        // A solid box (off until a car holds the slot) that keeps a second car out of the single wash slot.
+        private static StationBlocker BuildBlocker(Transform parent, LotConfig c)
+        {
+            var go = new GameObject("Wash Blocker");
+            go.transform.SetParent(parent, false);
+            go.AddComponent<BoxCollider2D>();
+            var blocker = go.AddComponent<StationBlocker>();
+            blocker.Init(StationKind.Wash, c.StationSize, c.RefusalRepeatSeconds);
+            return blocker;
         }
     }
 }

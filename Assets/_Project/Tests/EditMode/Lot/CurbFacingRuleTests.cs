@@ -5,28 +5,30 @@ namespace UncannyValet.Tests.Lot
 {
     public class CurbFacingRuleTests
     {
-        private readonly CurbFacingRule _rule = new CurbFacingRule(35f);
+        private readonly CurbFacingRule _rule = new CurbFacingRule(80f);
 
         [TestCase(180f)]
         [TestCase(150f)]
         [TestCase(215f)]
         [TestCase(-180f)]
         [TestCase(540f)]
+        [TestCase(100f)]
+        [TestCase(260f)]
         public void FacingDownWithinToleranceIsAccepted(float degrees) => Assert.IsTrue(_rule.IsAcceptable(degrees));
 
         [TestCase(0f)]
         [TestCase(90f)]
         [TestCase(270f)]
         [TestCase(-90f)]
-        [TestCase(144f)]
-        [TestCase(216f)]
+        [TestCase(99f)]
+        [TestCase(261f)]
         public void NotFacingDownIsRejected(float degrees) => Assert.IsFalse(_rule.IsAcceptable(degrees));
 
         [Test]
         public void ToleranceEdgeIsInclusive()
         {
-            Assert.IsTrue(_rule.IsAcceptable(145f));
-            Assert.IsTrue(_rule.IsAcceptable(215f));
+            Assert.IsTrue(_rule.IsAcceptable(100f));
+            Assert.IsTrue(_rule.IsAcceptable(260f));
         }
 
         [TestCase(180f, 0f)]

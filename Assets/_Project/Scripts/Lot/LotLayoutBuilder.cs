@@ -57,6 +57,8 @@ namespace UncannyValet.Lot
             var frame = new LotFrame(rects, transform, c.WallThickness,
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall);
             BuildCurb(rects);
+            LotArrowMarks.Arrivals(transform, rects, g.QueueSlots, c.QueueRotationDegrees,
+                _art != null ? _art.Walkway : new WalkwayStyle());
             var wash = StationBuilder.BuildWash(rects, transform, c, g.Wash);
             gameObject.AddComponent<StationSwitch>().Init(wash);
 

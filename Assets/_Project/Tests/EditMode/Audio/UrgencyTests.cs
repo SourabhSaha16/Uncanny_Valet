@@ -69,7 +69,7 @@ namespace UncannyValet.Tests.Audio
             Assert.AreEqual(2, tracker.Count);
             bus.Publish(new TicketClosed(Ticket(1), Car(1), 5f, 10));
             Assert.AreEqual(1, tracker.Count);
-            bus.Publish(new TicketTimerExpired(Ticket(2), Car(2), TimerKind.Park));
+            bus.Publish(new ShiftEnded());
             Assert.AreEqual(0, tracker.Count);
         }
 

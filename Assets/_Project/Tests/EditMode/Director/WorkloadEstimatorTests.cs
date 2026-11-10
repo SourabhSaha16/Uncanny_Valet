@@ -109,12 +109,21 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void PressureIsOneMinusTheLeastPatienceAmongWaitingAndPickupCars()
+        public void PressureIsOneMinusTheLeastPatienceAmongPickupCarsOnly()
         {
-            _b.Car(CarLotState.WaitingToPark, awaitingPark: true, patience: 0.6f);
+            _b.Car(CarLotState.WaitingToPark, awaitingPark: true, patience: 0.1f);
             _b.Car(CarLotState.PickupRequested, patience: 0.2f);
             _b.Car(CarLotState.Parked, patience: 0.05f);
             Assert.AreEqual(0.8f, Estimate().P, 0.001f);
+        }
+
+        [Test]
+        public void WaitingCarsAloneAddWorkButNoPressure()
+        {
+            _b.Car(CarLotState.WaitingToPark, awaitingPark: true, patience: 0.1f);
+            var r = Estimate();
+            Assert.AreEqual(8f, r.Seconds, 0.001f);
+            Assert.AreEqual(0f, r.P);
         }
 
         [Test]

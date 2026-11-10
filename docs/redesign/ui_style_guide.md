@@ -83,3 +83,13 @@ Overrides earlier text where it conflicts.
 - **Curb markings.** The curb zone carries two painted down arrows, each with a chevron under its tip, in the aisle-arrow style, so the player knows which way to face.
 - **Headlights.** Every car shows two small bright yellow-white dots near its front with a soft warm glow behind them, drawn above the body and rotating with the car. They are symmetric, so a mirrored body sprite never moves them to the back.
 - **Audio.** Sound effects are about 2 dB quieter (0.5 to 0.4) and the music/ambient layer about 2.5 dB louder (0.15 to 0.2).
+
+## Revision 4 (2026-11-09, human play-test notes)
+
+Overrides earlier text where it conflicts.
+
+- **No bar before pickup.** The key board shows no patience bar (not even an empty track) for a car whose pickup has not been requested. Cars have no park window, so waiting or parked cars never show a timer. The bar appears with the bell when the pickup is requested and then follows the pickup patience.
+- **OCCUPIED hint.** When a driven car bumps into the wash slot while it holds another car, an amber pixel panel reading OCCUPIED floats over the wash slot (same panel style and world-space projection as the info box and the PLEASE PARK hint). It shows while the car keeps touching the slot and hides 1 s after the last bump.
+- **Plug icon under EV bay numbers.** Each charging bay (13, 14) shows the same plug icon as the info box (one shared bitmap) directly under its number, painted as crisp square pixels in the lot decor. The old lightning-bolt decal is gone.
+- **Arrows.** The curb zone carries two big outlined down arrows, each with a chevron beyond its tip, drawn above the cobbles and the CURB plate so they read next to the lettering. Each arrival slot carries a matching big up arrow with a chevron (cars drive in from the road), mirroring the curb ones.
+- **Delivery facing.** The patron takes the car whenever its nose points towards the road (within 80 degrees of straight down); the PLEASE PARK IT PROPERLY hint shows only beyond that.

@@ -31,8 +31,8 @@ namespace UncannyValet.Core.Config
         private int _maxComboMultiplier = 4;
 
         [Header("Pacing plan")]
-        [SerializeField, Min(1), Tooltip("Most cars waiting to be parked at once.")]
-        private int _maxWaitingCars = 3;
+        [SerializeField, Range(1, 4), Tooltip("Most cars waiting at the arrival slots at once (the lot has 4 side-by-side slots).")]
+        private int _maxWaitingCars = 4;
         [SerializeField, Min(0.1f), Tooltip("Multiplies the gap between arrivals; below 1 is busier.")]
         private float _arrivalGapScale = 1f;
         [SerializeField, Min(0), Tooltip("Parking spots open, counted from the curb. 0 = all spots.")]

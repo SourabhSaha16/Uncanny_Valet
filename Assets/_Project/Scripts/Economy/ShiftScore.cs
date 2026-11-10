@@ -77,7 +77,7 @@ namespace UncannyValet.Economy
             Publish();
         }
 
-        // Both timers mean an angry patron: out of time to park (they take the car) or to pick up (the tip is $0).
+        // The pickup timer running out means an angry patron: the tip is $0 and the score pays the complaint penalty.
         private void OnTimerExpired(TicketTimerExpired e)
         {
             if (!_open) return;

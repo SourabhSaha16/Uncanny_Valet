@@ -6,7 +6,7 @@ namespace UncannyValet.Patrons
 {
     /// <summary>
     /// Applies a changed tuning value to open tickets. Charge and wash minutes reach tickets created afterwards;
-    /// park and pickup windows also reach timers already running (progress so far is kept).
+    /// the pickup window also reaches timers already running (progress so far is kept).
     /// </summary>
     public sealed class LiveTicketTuning
     {
@@ -30,10 +30,6 @@ namespace UncannyValet.Patrons
                 case TuningKey.ChargeMinutes:
                 case TuningKey.WashMinutes:
                     _book.Tuning = _tuning.Service;
-                    break;
-                case TuningKey.ParkWindowMinutes:
-                    _book.CopyTo(_scratch);
-                    foreach (var t in _scratch) t.ParkTimer.SetLength(e.Value);
                     break;
                 case TuningKey.PickupWindowMinutes:
                     _book.CopyTo(_scratch);

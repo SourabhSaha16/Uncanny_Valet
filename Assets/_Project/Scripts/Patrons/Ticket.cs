@@ -18,7 +18,6 @@ namespace UncannyValet.Patrons
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
         public float ParkedMinute { get; private set; }
         public float PickupRequestMinute { get; private set; }
-        public TicketTimer ParkTimer { get; }
         public TicketTimer PickupTimer { get; }
 
         /// <summary>True while the car sits at the curb (it arrived there before pickup was requested).</summary>
@@ -42,7 +41,7 @@ namespace UncannyValet.Patrons
 
         /// <summary>A valet is driving the car.</summary>
         public bool Driven { get; set; }
-        /// <summary>An EV is parked in a charging spot. Charging spots are ordinary parking, so this never pauses the park timer.</summary>
+        /// <summary>An EV is parked in a charging spot.</summary>
         public bool InChargingBay { get; set; }
         public bool InWashBay { get; set; }
         public bool ChargedEv => IsEv && Charge.IsFull;
@@ -52,17 +51,9 @@ namespace UncannyValet.Patrons
         public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate, ServiceTuning tuning)
         {
             TicketId = ticketId; CarId = carId; Request = request; Tag = tag; Plate = plate;
-            ParkTimer = new TicketTimer(request.ParkWindowMinutes);
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
             Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);
             Wash = new WashRule(tuning.WashMinutes);
-        }
-
-        /// <summary>The park timer runs only while nobody drives the car and it is not in the wash bay.</summary>
-        public void SyncParkTimer(float minute)
-        {
-            if (Driven || InWashBay) ParkTimer.Pause(minute);
-            else ParkTimer.Resume(minute);
         }
 
         public bool StayEnded(float minute) => State == TicketState.Parked && minute >= ParkedMinute + StayMinutes;
@@ -99,12 +90,6 @@ namespace UncannyValet.Patrons
             if (State == TicketState.Closed) return false;
             State = TicketState.Closed;
             return true;
-        }
-
-        /// <summary>The patron gave up waiting for a spot and took the car.</summary>
-        public void MarkAbandoned()
-        {
-            if (State == TicketState.AwaitingPark) State = TicketState.Closed;
         }
     }
 }

@@ -20,6 +20,18 @@ namespace UncannyValet.Core.Events
         public CarLeftStation(CarId car, StationKind station) { Car = car; Station = station; }
     }
 
+    /// <summary>
+    /// A car driven by the valet bumped into a single-occupancy station that is already taken (published by Lot, repeated
+    /// while the car keeps touching it). WorldX / WorldY locate the station for the "OCCUPIED" hint.
+    /// </summary>
+    public readonly struct StationEntryRefused : IGameEvent
+    {
+        public readonly StationKind Station;
+        public readonly float WorldX;
+        public readonly float WorldY;
+        public StationEntryRefused(StationKind station, float worldX, float worldY) { Station = station; WorldX = worldX; WorldY = worldY; }
+    }
+
     /// <summary>An EV's charge changed (published by Patrons). Charge01: 0 empty, 1 full.</summary>
     public readonly struct CarChargeChanged : IGameEvent
     {

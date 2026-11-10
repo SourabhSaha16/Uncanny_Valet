@@ -78,8 +78,7 @@ namespace UncannyValet.Tests.Director
         {
             Spawn();
             Bus.Publish(new CarArrived(Car));
-            Bus.Publish(new TicketTimerChanged(Ticket, Car, TimerKind.Park, 0.25f));
-            Assert.AreEqual(0.75f, Only().Patience01, 0.001f);
+            Assert.AreEqual(1f, Only().Patience01, 0.001f);
             Bus.Publish(new CarParked(Car, 1));
             Assert.AreEqual(1f, Only().Patience01, 0.001f);
             Bus.Publish(new PickupRequested(Ticket, Car));

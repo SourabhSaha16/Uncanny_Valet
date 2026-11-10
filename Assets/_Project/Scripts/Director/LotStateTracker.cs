@@ -110,7 +110,7 @@ namespace UncannyValet.Director
         private void OnCleaned(CarCleaned e) => _book.Cleaned(e.Car);
         private void OnCharged(CarFullyCharged e) => _book.FullyCharged(e.Car);
         private void OnPickup(PickupRequested e) => _book.PickupRequested(e.Car);
-        private void OnTimer(TicketTimerChanged e) => _book.TimerChanged(e.Car, e.Kind, e.Elapsed01);
+        private void OnTimer(TicketTimerChanged e) => _book.TimerChanged(e.Car, e.Elapsed01);
         private void OnClosed(TicketClosed e) => _book.Closed(e.Car);
 
         private void OnComplaint(ComplaintFiled e)

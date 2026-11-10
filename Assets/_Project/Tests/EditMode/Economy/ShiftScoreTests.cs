@@ -52,7 +52,6 @@ namespace UncannyValet.Tests.Economy
             Assert.AreEqual(0, _score.Complaints);
         }
 
-        [TestCase(TimerKind.Park)]
         [TestCase(TimerKind.Pickup)]
         public void AngryPatron_CostsTheComplaintPenalty_AndResetsTheCombo(TimerKind kind)
         {
@@ -69,7 +68,7 @@ namespace UncannyValet.Tests.Economy
         {
             ComplaintFiled seen = default;
             _bus.Subscribe<ComplaintFiled>(e => seen = e);
-            Angry(TimerKind.Park);
+            Angry(TimerKind.Pickup);
             Assert.AreEqual(15, seen.Penalty);
             Assert.AreEqual(new TicketId(1), seen.Ticket);
         }
@@ -77,7 +76,7 @@ namespace UncannyValet.Tests.Economy
         [Test]
         public void Score_NeverDropsBelowZero()
         {
-            Angry(TimerKind.Park);
+            Angry(TimerKind.Pickup);
             Angry(TimerKind.Pickup);
             Assert.AreEqual(0, _score.Score);
             Assert.AreEqual(2, _score.Complaints);
@@ -120,11 +119,11 @@ namespace UncannyValet.Tests.Economy
             var results = new List<ShiftResult>();
             _bus.Subscribe<ShiftResultReady>(e => results.Add(e.Result));
             Tip(320);
-            Angry(TimerKind.Park);
+            Angry(TimerKind.Pickup);
             _bus.Publish(new ShiftEnded());
             _bus.Publish(new ShiftEnded());
             Tip(500);
-            Angry(TimerKind.Park);
+            Angry(TimerKind.Pickup);
 
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(305, results[0].Score);
@@ -138,7 +137,7 @@ namespace UncannyValet.Tests.Economy
         public void NewShift_ResetsEverything()
         {
             Tip(100);
-            Angry(TimerKind.Park);
+            Angry(TimerKind.Pickup);
             _bus.Publish(new ShiftEnded());
             _bus.Publish(new ShiftStarted());
             Assert.AreEqual(0, _score.Score);
@@ -154,7 +153,7 @@ namespace UncannyValet.Tests.Economy
             var bus = new EventBus();
             var score = new ShiftScore(bus, _config);
             bus.Publish(new TipEarned(new TicketId(1), 50));
-            bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Park));
+            bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Pickup));
             Assert.AreEqual(0, score.Score);
             Assert.AreEqual(0, score.Complaints);
             score.Dispose();

@@ -39,6 +39,8 @@ namespace UncannyValet.UI
         private WorldTicketPainter _world;
         private CurbHintTracker _curbHints;
         private CurbHintPainter _hintPainter;
+        private OccupiedHintTracker _occupiedHints;
+        private OccupiedHintPainter _occupiedPainter;
         private ResultsPainter _resultsPainter;
         private TitlePainter _titlePainter;
         private ResultsContent _results;
@@ -58,6 +60,8 @@ namespace UncannyValet.UI
 
         private static string NoPrompt() => string.Empty;
 
+        private static float UnscaledTime() => Time.unscaledTime;
+
         private void OnEnable()
         {
             _bus = Services.Get<IEventBus>();
@@ -71,6 +75,8 @@ namespace UncannyValet.UI
             _world = new WorldTicketPainter(_canvas, Services.Get<ICarFactory>());
             _curbHints = new CurbHintTracker(_bus);
             _hintPainter = new CurbHintPainter(_canvas, Services.Get<ICarFactory>(), _curbHints);
+            _occupiedHints = new OccupiedHintTracker(_bus, UnscaledTime);
+            _occupiedPainter = new OccupiedHintPainter(_canvas, _occupiedHints);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
@@ -88,6 +94,7 @@ namespace UncannyValet.UI
             _board?.Dispose();
             _stats?.Dispose();
             _curbHints?.Dispose();
+            _occupiedHints?.Dispose();
             _kit?.Dispose();
         }
 
@@ -174,6 +181,7 @@ namespace UncannyValet.UI
             _board.CollectRows(_rows);
             _world.Draw(_rows, ResolveCamera(), time);
             _hintPainter.Draw(ResolveCamera());
+            _occupiedPainter.Draw(ResolveCamera());
             _hud.Draw(time);
             _keyBoard.Draw(_rows, time);
             _notices.Draw(_prompt());

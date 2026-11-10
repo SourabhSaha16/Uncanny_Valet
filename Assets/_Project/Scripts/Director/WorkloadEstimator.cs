@@ -19,7 +19,7 @@ namespace UncannyValet.Director
                 var c = lot.Cars[i];
                 seconds += TaskSeconds(c, s);
                 seconds += ServiceSeconds(lot, c, s, ref washDemand, ref chargeDemand);
-                if (!c.AwaitingPark && c.State != CarLotState.PickupRequested) continue;
+                if (c.State != CarLotState.PickupRequested) continue;
                 anyTimer = true;
                 if (c.Patience01 < leastPatience) leastPatience = c.Patience01;
             }

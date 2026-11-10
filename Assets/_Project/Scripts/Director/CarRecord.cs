@@ -22,7 +22,6 @@ namespace UncannyValet.Director
         public bool WashDone;
         public bool ChargeDone;
         public float Clean01;
-        public float ParkElapsed01;
         public float PickupElapsed01;
         public float StayMinutes;
         public float ParkedAtMinute = float.NaN;
@@ -44,14 +43,7 @@ namespace UncannyValet.Director
         public bool NeedsWash => IsDirty && !WashDone;
         public bool NeedsCharge => IsEv && !ChargeDone;
 
-        /// <summary>Patience left on the timer that matters now: pickup, else park; 1 when none runs.</summary>
-        public float Patience01
-        {
-            get
-            {
-                if (PickupRequested) return 1f - PickupElapsed01;
-                return AwaitingPark ? 1f - ParkElapsed01 : 1f;
-            }
-        }
+        /// <summary>Patience left on the pickup timer; 1 until a pickup is requested (no park window).</summary>
+        public float Patience01 => PickupRequested ? 1f - PickupElapsed01 : 1f;
     }
 }

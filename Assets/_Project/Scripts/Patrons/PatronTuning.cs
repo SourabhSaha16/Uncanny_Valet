@@ -11,7 +11,6 @@ namespace UncannyValet.Patrons
 
         public PatronTuning(ITuning tuning, PatronConfig config) { _tuning = tuning; _config = config; }
 
-        public float ParkWindow => Read(TuningKey.ParkWindowMinutes, _config.ParkWindowMinutes);
         public float PickupWindow => Read(TuningKey.PickupWindowMinutes, _config.PickupWindowMinutes);
         public float StayMin => Read(TuningKey.StayMinMinutes, _config.StayRange.x);
         public float StayMax => Read(TuningKey.StayMaxMinutes, _config.StayRange.y);

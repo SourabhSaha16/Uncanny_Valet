@@ -37,14 +37,5 @@ namespace UncannyValet.Lot
             rects.Segment(parent, name + " Head B", arrow.Tip,
                 arrow.HeadEnd(style.ArrowHeadLength, -style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
         }
-
-        /// <summary>A "V" direction marking pointing down from <paramref name="apex"/>: two strokes meeting at the apex.</summary>
-        public static void ChevronDown(Transform parent, RectFactory rects, string name, Vector2 apex, WalkwayStyle style)
-        {
-            var arrow = new PaintedArrow(apex + Vector2.up, apex);
-            var t = style.ArrowThickness;
-            rects.Segment(parent, name + " A", apex, arrow.HeadEnd(style.ArrowHeadLength, style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
-            rects.Segment(parent, name + " B", apex, arrow.HeadEnd(style.ArrowHeadLength, -style.ArrowHeadDegrees), t, style.ArrowColor, MarkingOrder);
-        }
     }
 }

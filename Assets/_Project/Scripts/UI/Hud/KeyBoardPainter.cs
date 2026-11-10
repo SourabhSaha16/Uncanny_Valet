@@ -85,14 +85,15 @@ namespace UncannyValet.UI.Hud
             _canvas.Text(SmallNumbers.Get(spot), x + PixelTextLayout.Advance, y, PixelPalette.Cream);
         }
 
+        // The patience bar belongs to the pickup timer, so there is no bar until a pickup is requested.
         private void DrawBar(TicketRow row, int x, int y)
         {
+            if (row.State != TicketRowState.PickupRequested) return;
             _canvas.Fill(x - 1, y - 1, BarWidth + 2, BarHeight + 2, PixelPalette.Track);
-            var pickup = row.State == TicketRowState.PickupRequested;
-            var calm = pickup ? PixelPalette.Cyan : PixelPalette.Green;
+            var calm = PixelPalette.Cyan;
             if (!row.HasTimer && !row.Expired)
             {
-                if (row.State != TicketRowState.AwaitingPark) _canvas.Fill(x, y, BarWidth, BarHeight, calm);
+                _canvas.Fill(x, y, BarWidth, BarHeight, calm);
                 return;
             }
             var elapsed = row.Expired ? 1f : row.Elapsed01;

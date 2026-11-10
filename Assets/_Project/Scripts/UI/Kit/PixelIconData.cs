@@ -64,11 +64,7 @@ namespace UncannyValet.UI.Kit
             "kggkkkggk", "kgggggggk", ".kgggggk.", "..kkkkk..",
         };
 
-        private static readonly string[] Plug =
-        {
-            "..k...k..", "..y...y..", "..y...y..", ".kkkkkkk.", ".knnnnnk.",
-            ".knnnnnk.", "..knnnk..", "...knk...", "...kkk...",
-        };
+        private static readonly string[] Plug = UncannyValet.Core.Contracts.PlugIconArt.Rows;
 
         /// <summary>The bitmap rows of an icon, top row first.</summary>
         public static string[] Rows(PixelIcon icon)

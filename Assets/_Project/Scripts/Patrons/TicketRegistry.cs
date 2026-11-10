@@ -44,7 +44,7 @@ namespace UncannyValet.Patrons
             _timers = new TicketTimerPublisher(bus);
             _book = new TicketBook(tuning, plates);
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score);
-            _stations = new StationService(bus, clock, _book);
+            _stations = new StationService(bus, _book);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -72,7 +72,7 @@ namespace UncannyValet.Patrons
 
         public bool TryGet(TicketId id, out Ticket ticket) => _book.TryGet(id, out ticket);
 
-        /// <summary>Opens a ticket for a car, gives it a tag colour and starts its park timer.</summary>
+        /// <summary>Opens a ticket for a car and gives it a tag colour.</summary>
         public Ticket Open(CarId car, PatronRequest request)
         {
             var ticket = Create(car, request);
@@ -83,9 +83,7 @@ namespace UncannyValet.Patrons
         /// <summary>Like <see cref="Open"/> but announces nothing; follow with <see cref="AnnounceArrival"/>.</summary>
         public Ticket Create(CarId car, PatronRequest request)
         {
-            var ticket = _book.Add(car, request);
-            ticket.ParkTimer.Start(_clock.ElapsedMinutes);
-            return ticket;
+            return _book.Add(car, request);
         }
 
         /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
@@ -104,7 +102,6 @@ namespace UncannyValet.Patrons
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
             if (t.State != TicketState.AwaitingPark) return;
-            _timers.Stop(t, TimerKind.Park);
             t.MarkParked(_clock.ElapsedMinutes);
         }
 
@@ -113,14 +110,12 @@ namespace UncannyValet.Patrons
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
             t.Driven = true;
-            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
         private void OnCarExited(CarExited e)
         {
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.Driven = false;
-            t.SyncParkTimer(_clock.ElapsedMinutes);
         }
 
         private void OnCarAtCurb(CarAtCurb e)
@@ -138,11 +133,7 @@ namespace UncannyValet.Patrons
 
         private void Advance(Ticket t, float minute)
         {
-            if (t.State == TicketState.AwaitingPark)
-            {
-                if (_timers.Tick(t, TimerKind.Park, minute)) Abandon(t);
-            }
-            else if (t.StayEnded(minute))
+            if (t.StayEnded(minute))
             {
                 if (_call.ShouldRequest(t, minute)) RequestPickup(t, minute);
             }
@@ -167,13 +158,6 @@ namespace UncannyValet.Patrons
 
         private void Close(Ticket t) => _settler.Pay(t);
 
-        /// <summary>The park window ran out: the patron takes the car. No tip, no penalty.</summary>
-        private void Abandon(Ticket t)
-        {
-            t.MarkAbandoned();
-            _settler.Void(t);
-        }
-
         private void OnShiftEnded(ShiftEnded e) => CloseAllUnpaid();
 
         // A new shift starts clean: nothing should be left, but make sure of it and restart the tag colours.
@@ -190,7 +174,6 @@ namespace UncannyValet.Patrons
             foreach (var t in _scratch)
             {
                 if (!t.MarkForceClosed()) continue;
-                _timers.Stop(t, TimerKind.Park);
                 _timers.Stop(t, TimerKind.Pickup);
                 _settler.Void(t);
             }
