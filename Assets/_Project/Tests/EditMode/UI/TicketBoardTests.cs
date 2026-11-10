@@ -223,5 +223,26 @@ namespace UncannyValet.Tests.UI
             _board.CollectRows(_rows);
             Assert.AreEqual(new[] { 3, 2, 1 }, new[] { _rows[0].Car, _rows[1].Car, _rows[2].Car });
         }
+
+        [Test]
+        public void PlateShowsOnlyOnceTheCarIsParked()
+        {
+            _bus.Publish(new CarPlateAssigned(C, "KT 4"));
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            Assert.IsFalse(Only().ShowsPlate, "queued or driving in");
+            _bus.Publish(new CarArrived(C));
+            Assert.IsFalse(Only().ShowsPlate, "arrived but not parked");
+            _bus.Publish(new CarParked(C, 3));
+            Assert.IsTrue(Only().ShowsPlate);
+        }
+
+        [Test]
+        public void PlateShowsOnceTheCarEntersAStation()
+        {
+            _bus.Publish(new CarPlateAssigned(C, "KT 4"));
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
+            Assert.IsTrue(Only().ShowsPlate);
+        }
     }
 }

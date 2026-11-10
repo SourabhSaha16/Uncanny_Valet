@@ -46,6 +46,9 @@ namespace UncannyValet.UI
         /// <summary>Charge at or above this counts as full.</summary>
         public const float FullCharge = 0.999f;
 
+        /// <summary>The licence plate under the car is drawn only once the plate is known and the car is parked in a spot or station (the CAR SLOTS rule).</summary>
+        public bool ShowsPlate => HasPlate && Placed;
+
         /// <summary>True while the car is in the given kind of station.</summary>
         public bool InStation(StationKind kind) => HasStation && Station == kind;
 

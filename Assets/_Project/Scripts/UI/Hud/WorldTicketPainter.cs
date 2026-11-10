@@ -32,7 +32,7 @@ namespace UncannyValet.UI.Hud
         {
             if (camera == null) return;
             for (var i = rows.Count - 1; i >= 0; i--) // least urgent first, so urgent plates and boxes draw on top
-                if (rows[i].HasPlate && TryProject(rows[i], camera, -PlateDropWorldUnits, out var px, out var py))
+                if (rows[i].ShowsPlate && TryProject(rows[i], camera, -PlateDropWorldUnits, out var px, out var py))
                     DrawPlate(rows[i], px, py, CarWidthPixels(rows[i], camera), time);
             for (var i = rows.Count - 1; i >= 0; i--)
                 if (rows[i].ShowsInfoBox && TryProject(rows[i], camera, LiftWorldUnits, out var bx, out var by))
