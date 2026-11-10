@@ -44,8 +44,10 @@ namespace UncannyValet.Tests.Lot
             var road = new RoadLayout(geometry, config.Site, Vector2.zero);
             var route = new List<Vector2>();
             road.CurbExitRoute(route);
-            var marks = RouteMarks.Along(route, 2.4f, 2.4f);
-            Assert.Greater(marks.Count, 4);
+            var style = new WalkwayStyle();
+            var marks = RouteMarks.Along(route, style.RouteArrowStart, style.RouteArrowSpacing);
+            Assert.GreaterOrEqual(marks.Count, 3, "a few arrows: after the curb, in the corridor, at the turn or the road");
+            Assert.LessOrEqual(marks.Count, 6, "sparse: about one per 5 to 6 units");
             Assert.IsTrue(marks.Exists(m => m.Direction.y < -0.99f && Mathf.Approximately(m.Position.x, geometry.ExitX)), "down the corridor");
             Assert.IsTrue(marks.Exists(m => m.Direction.x > 0.2f), "the turn east is marked");
             Object.DestroyImmediate(config);

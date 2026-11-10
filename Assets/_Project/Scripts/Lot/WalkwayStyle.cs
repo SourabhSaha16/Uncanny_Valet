@@ -24,7 +24,7 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0.05f), Tooltip("Length of the two head strokes of a route arrow.")]
         private float _routeArrowHead = 0.3f;
         [SerializeField, Min(0.5f), Tooltip("Distance along the route between two arrows.")]
-        private float _routeArrowSpacing = 2.4f;
+        private float _routeArrowSpacing = 5.5f;
         [SerializeField, Min(0f), Tooltip("Distance along the route from the curb zone to the first arrow.")]
         private float _routeArrowStart = 2.4f;
         [SerializeField, Min(0f), Tooltip("Dark outline added around every stroke of a route arrow so it reads on any ground.")]

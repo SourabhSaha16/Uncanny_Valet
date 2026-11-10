@@ -55,7 +55,7 @@ MonoBehaviour:
     _routeArrowLength: 0.9
     _routeArrowThickness: 0.1
     _routeArrowHead: 0.3
-    _routeArrowSpacing: 2.4
+    _routeArrowSpacing: 5.5
     _routeArrowStart: 2.4
     _markOutline: 0.05
     _slotLine: 0.1

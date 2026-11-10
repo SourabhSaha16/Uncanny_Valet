@@ -29,3 +29,9 @@ Date: 2026-11-10
 Files: Scripts/UI/Hud/KeyBoardPainter.cs
 Why: human request (design.md A5): the bottom-left panel title KEY BOARD becomes CAR SLOTS. Type and file names are unchanged. The style guide mention is for the lead.
 Tests: none (a title string); full EditMode run at the end of the series.
+
+## lot-v4: fewer exit route arrows
+Date: 2026-11-10
+Files: Scripts/Lot/WalkwayStyle.cs, Data/Lot/LotArtConfig.asset, Tests/EditMode/Lot/RouteMarksTests.cs
+Why: human request (design.md A5): the painted exit arrows were too many. Spacing is now 5.5 units (WalkwayStyle field, set in LotArtConfig), a few arrows from just after the curb down the corridor to the turn east and the road.
+Tests: RouteMarksTests uses the style defaults and expects 3 to 6 arrows on the real exit route.
