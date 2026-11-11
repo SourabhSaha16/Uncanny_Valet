@@ -8,13 +8,13 @@ using UncannyValet.UI.Kit;
 using UncannyValet.UI.Mood;
 using UncannyValet.UI.Screens;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace UncannyValet.UI
 {
     /// <summary>
-    /// The whole game UI on one 480x270 pixel canvas (IMGUI, generated art only): title screen, HUD with floating
-    /// car tickets, and the results screen. The title waits for any key before <see cref="TitleDismissed"/> fires;
+    /// The whole game UI on one 480x270 pixel canvas (IMGUI, generated art only): title screen, how-to-play screen
+    /// (first start only), HUD with floating car tickets, and the results screen. The title (then how-to-play) waits
+    /// for any key before <see cref="TitleDismissed"/> fires;
     /// the shift clock must not start until then. Retry publishes RetryShiftRequested.
     /// </summary>
     [DisallowMultipleComponent]
@@ -39,14 +39,17 @@ namespace UncannyValet.UI
         private PixelCanvas _canvas;
         private ResultsPainter _resultsPainter;
         private TitlePainter _titlePainter;
+        private HowToPlayPainter _howToPlayPainter;
+        private readonly HowToPlayGate _howToPlayGate = new HowToPlayGate();
+        private int _phaseFrame = -1;
         private ResultsContent _results;
         private Camera _camera;
 
-        /// <summary>Raised once, when the player dismisses the title screen. Bootstrap starts the first shift then.</summary>
+        /// <summary>Raised once, when the player leaves the title and (first time only) how-to-play screens. Bootstrap starts the first shift then.</summary>
         public event Action TitleDismissed;
 
-        /// <summary>True until the title screen is dismissed; the valet must not be controllable meanwhile.</summary>
-        public bool IsTitleShowing => _phase == UiPhase.Title;
+        /// <summary>True until the title and how-to-play screens are dismissed; the valet must not be controllable meanwhile.</summary>
+        public bool IsTitleShowing => _phase == UiPhase.Title || _phase == UiPhase.HowToPlay;
 
         /// <summary>Sets where the interact prompt text comes from.</summary>
         public void Configure(Func<string> prompt)
@@ -71,6 +74,7 @@ namespace UncannyValet.UI
                 Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerMeter);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
+            _howToPlayPainter = new HowToPlayPainter(_canvas);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftResultReady>(OnResult);
             SetPhase(UiPhase.Title);
@@ -101,6 +105,7 @@ namespace UncannyValet.UI
         {
             _phase = phase;
             _phaseStartedAt = Time.unscaledTime;
+            _phaseFrame = Time.frameCount;
         }
 
         private void OnShiftStarted(ShiftStarted e)
@@ -118,26 +123,20 @@ namespace UncannyValet.UI
         private void Update()
         {
             var waited = Time.unscaledTime - _phaseStartedAt;
-            if (_phase == UiPhase.Title && waited >= _titleKeyDelaySeconds && AnyInputPressed()) DismissTitle();
-            else if (_phase == UiPhase.Results && waited >= _resultsKeyDelaySeconds && RetryKeyPressed()) Retry();
-        }
-
-        private static bool AnyInputPressed()
-        {
-            var keyboard = Keyboard.current;
-            var mouse = Mouse.current;
-            return keyboard != null && keyboard.anyKey.wasPressedThisFrame
-                || mouse != null && mouse.leftButton.wasPressedThisFrame;
-        }
-
-        private static bool RetryKeyPressed()
-        {
-            var keyboard = Keyboard.current;
-            return keyboard != null && (keyboard.enterKey.wasPressedThisFrame
-                || keyboard.numpadEnterKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame);
+            // A press that changed the phase this frame is consumed: the next screen needs a fresh press.
+            if (_phaseFrame == Time.frameCount) return;
+            if (_phase == UiPhase.Title && waited >= _titleKeyDelaySeconds && UiInput.AnyPressed()) DismissTitle();
+            else if (_phase == UiPhase.HowToPlay && waited >= _titleKeyDelaySeconds && UiInput.AnyPressed()) StartPlaying();
+            else if (_phase == UiPhase.Results && waited >= _resultsKeyDelaySeconds && UiInput.RetryPressed()) Retry();
         }
 
         private void DismissTitle()
+        {
+            if (_howToPlayGate.TryShow()) SetPhase(UiPhase.HowToPlay);
+            else StartPlaying();
+        }
+
+        private void StartPlaying()
         {
             SetPhase(UiPhase.Playing);
             TitleDismissed?.Invoke();
@@ -177,6 +176,7 @@ namespace UncannyValet.UI
         {
             var time = Time.unscaledTime;
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
+            if (_phase == UiPhase.HowToPlay) { _howToPlayPainter.Draw(time); return; }
             _playing.Draw(ResolveCamera(), time, _prompt());
             if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);
         }
