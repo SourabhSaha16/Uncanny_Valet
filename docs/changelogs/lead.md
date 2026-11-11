@@ -621,3 +621,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a4901f8ee332749de (Lot judges and runner, Core ParkEvents and PerfectRows, tuning keys), conflict resolution in TuningKey, TuningCatalog, TuningSeeder (kept both agents' keys; Seed call in GameBootstrap now passes perfect by name), docs/changelogs/lead.md
 Why: valet powers issue 36 and the judging part of issue 16 (design A11, car handling spec section 4). Still open: the +$2 tip bonus (Patrons/Economy), the PERFECT! pop, ding and camera kick, the results stat, and the PowerMeterController PerfectPark listener.
 Tests: 1055 of 1055 EditMode after merging HUD, Powers and Lot (lot agent reported 16 of 16 PlayMode before the merge).
+
+## lead: merge powers follow-up, Perfect Park tip bonus and powers wiring (#16, #38, #60)
+Date: 2026-11-11
+Files: merges of worktree-agent-a1617d9ae486b4055 (PerfectPark listener), worktree-agent-ae6387393fc8291b2 (PerfectBonusLedger, tip bonus), worktree-agent-a7dac40ca1c52e782 (Powers scene wiring, PowerMeterConfig asset, builder split, results stat, PERFECT! pop, camera kick, ding), docs/design.md
+Why: valet powers phase 1 (design A11) and car handling step 4 (+$2 Perfect Park). Bootstrap.unity re-run by RunBatch showed only fileID churn (637 of 637 lines) and was reverted.
+Tests: 1072 of 1072 EditMode, 16 of 16 PlayMode after the merges. Not played in a browser.
