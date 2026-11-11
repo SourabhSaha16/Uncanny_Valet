@@ -609,3 +609,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-ad38424284dae36c8 (UI/Hud power meter files, HudEmotionConfig, PowerMeterTests), docs/changelogs/lead.md
 Why: valet powers issue 39 (design A11). The HUD listens only to PowerMeterChanged, PowerActivated and PowerEnded; nothing publishes them yet, so it is invisible until the Powers module merges. Notch positions and ring durations in PowerMeterSettings are placeholders to match PowerMeterConfig.
 Tests: 1004 of 1004 EditMode (12 new).
+
+## lead: merge agent/powers meter, activation and stacking (#37, #40, #44, #38 part)
+Date: 2026-11-11
+Files: merge of worktree-agent-a1617d9ae486b4055 (Scripts/Powers/, PowerRows, TuningKey, TuningSeeder, asmdefs, tests), UI/Hud/PowerMeterSettings.cs, docs/changelogs/lead.md
+Why: valet powers issues 37, 40, 44 and the listener part of 38 (design A11). HUD notch defaults changed to 0.25 and 0.55 to match the 25/55/100 level thresholds. PerfectPark listener is a seam until issue 16 lands; the Powers objects are not yet in the scene (wiring pending).
+Tests: 1027 of 1027 EditMode (including the HUD merge).

@@ -193,5 +193,29 @@ namespace UncannyValet.Core.Events
         // Patrons (appended so earlier key numbers stay put).
         /// <summary>Multiplier on the pickup window of impatient patrons (0.3..1; 1 = they wait as long as anyone).</summary>
         ImpatientWindowScale,
+
+        // Valet powers (Powers module; appended so earlier key numbers stay put).
+        /// <summary>Power meter fill for one Perfect Park (meter 0..100).</summary>
+        PowerFillPerfectPark,
+        /// <summary>Power meter fill for one perfect drop-off.</summary>
+        PowerFillPerfectDropOff,
+        /// <summary>Power meter fill per second of sliding.</summary>
+        PowerFillDriftPerSecond,
+        /// <summary>Most meter one slide can add.</summary>
+        PowerFillDriftCap,
+        /// <summary>Meter value that unlocks level 1 (speed boost).</summary>
+        PowerLevel1Threshold,
+        /// <summary>Meter value that unlocks level 2 (freeze time).</summary>
+        PowerLevel2Threshold,
+        /// <summary>Meter value that unlocks level 3 (Park Smash); also the full bar.</summary>
+        PowerLevel3Threshold,
+        /// <summary>Seconds the speed boost lasts.</summary>
+        PowerSpeedBoostSeconds,
+        /// <summary>Walk speed multiplier while the speed boost runs.</summary>
+        PowerWalkMultiplier,
+        /// <summary>Seconds freeze time lasts.</summary>
+        PowerFreezeSeconds,
+        /// <summary>World time scale during freeze time: 0 = stopped, 0.3 = slow.</summary>
+        PowerFreezeTimeScale,
     }
 }

@@ -12,9 +12,9 @@ namespace UncannyValet.UI.Hud
         [SerializeField, Range(0.1f, 2f), Tooltip("Seconds the bar pulses after it fills or a level is reached.")]
         private float _pulseSeconds = 0.45f;
         [SerializeField, Range(0f, 1f), Tooltip("Bar fill at which level 1 is reached; the notch is drawn here.")]
-        private float _level1Notch = 0.34f;
+        private float _level1Notch = 0.25f;
         [SerializeField, Range(0f, 1f), Tooltip("Bar fill at which level 2 is reached.")]
-        private float _level2Notch = 0.67f;
+        private float _level2Notch = 0.55f;
         [SerializeField, Min(0.1f), Tooltip("Countdown ring length of Speed Boost, seconds (match the powers config).")]
         private float _speedBoostSeconds = 4f;
         [SerializeField, Min(0.1f), Tooltip("Countdown ring length of Freeze Time, seconds (match the powers config).")]
