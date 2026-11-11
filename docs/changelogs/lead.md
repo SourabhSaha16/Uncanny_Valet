@@ -693,3 +693,10 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last beta build: issues 70 (a car always within 2 s when the queue is empty), 71 (pickup arrows green only when the patron will accept) and 72 (how-to-play screen after the first title press). Beta site only; main stays on the earlier build.
 Tests: 1121 of 1121 EditMode, 16 of 16 PlayMode; browser smoke test at 1280x800: title, how-to-play screen (renders, text fits, gold highlights), shift starts on the second key at 3:56, no console errors. The arrows, idle guard and earlier items were not seen in play.
+
+
+## lead: merge agent/traffic two-way busier ambient roads (#75) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-ac64f4e85aaac1f29 (AmbientDensity, AmbientTraffic, YieldZone, SpawnGate, ViewWindow, TrafficModule, LotRoadArt, DecorLayout, RoadLayout, IRoadLayout, TrafficConfig and LotArtConfig assets, traffic tuning keys, tests), docs/changelogs/lead.md
+Why: issue 75. Both roads carry ambient traffic both ways (an extra right-to-left lane per road), 3 to 4 cars kept on screen, ambient cars brake through a YieldZone so an exiting delivered car can merge. Camera framing untouched, so mostly the entry road shows. TrafficAmbientPerMinute removed.
+Tests: 1159 of 1159 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).

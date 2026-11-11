@@ -5,8 +5,9 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// The two one-way roads as lane polylines and turn routes, in world coordinates (lot origin + local geometry).
-    /// Both lanes run left to right: the entry lane below the lot and the exit lane above its top wall. Patron cars turn
+    /// The two roads as lane polylines and turn routes, in world coordinates (lot origin + local geometry).
+    /// The lot-side lanes run left to right: the entry lane below the lot and the exit lane above its top wall; each road also has
+    /// an opposite lane (right to left) for ambient traffic only. Patron cars turn
     /// up into the queue column at <see cref="QueueTurnDistance"/>; delivered cars leave the curb straight up through the
     /// top wall gap, turn right and merge into the exit lane at <see cref="CurbMergeDistance"/>. Pure maths: no Unity objects.
     /// </summary>
@@ -20,6 +21,8 @@ namespace UncannyValet.Lot
         private readonly float _radius;
         private readonly Vector2[] _east;
         private readonly Vector2[] _top;
+        private readonly Vector2[] _eastBack;
+        private readonly Vector2[] _topBack;
 
         public RoadLayout(LotGeometry geometry, SiteLayout site, Vector2 origin)
         {
@@ -28,11 +31,17 @@ namespace UncannyValet.Lot
             _radius = site.TurnRadius;
             _east = new[] { World(geometry.RoadSpan.x, geometry.EastLaneY), World(geometry.RoadSpan.y, geometry.EastLaneY) };
             _top = new[] { World(geometry.RoadSpan.x, geometry.TopLaneY), World(geometry.RoadSpan.y, geometry.TopLaneY) };
+            _eastBack = new[] { World(geometry.RoadSpan.y, geometry.EastBackLaneY), World(geometry.RoadSpan.x, geometry.EastBackLaneY) };
+            _topBack = new[] { World(geometry.RoadSpan.y, geometry.TopBackLaneY), World(geometry.RoadSpan.x, geometry.TopBackLaneY) };
         }
 
         public IReadOnlyList<Vector2> EastLane => _east;
 
         public IReadOnlyList<Vector2> TopLane => _top;
+
+        public IReadOnlyList<Vector2> EastBackLane => _eastBack;
+
+        public IReadOnlyList<Vector2> TopBackLane => _topBack;
 
         public float QueueTurnDistance => _geometry.QueueSlots[0].x - _radius - _geometry.RoadSpan.x;
 

@@ -35,6 +35,16 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void EachRoadHasAnOppositeLaneRightToLeftNextToItAwayFromTheLot()
+        {
+            Assert.Greater(_road.EastBackLane[0].x, _road.EastBackLane[1].x);
+            Assert.Greater(_road.TopBackLane[0].x, _road.TopBackLane[1].x);
+            Assert.AreEqual(_road.EastLane[0].y - _geo.LaneWidth, _road.EastBackLane[0].y, 1e-4f);
+            Assert.AreEqual(_road.TopLane[0].y + _geo.LaneWidth, _road.TopBackLane[0].y, 1e-4f);
+            Assert.AreEqual(_road.EastLane[0].x, _road.EastBackLane[1].x, 1e-4f, "same span as the patron lane");
+        }
+
+        [Test]
         public void TheEntryLaneIsBelowTheLotAndTheTopLaneAboveIt()
         {
             Assert.Less(_road.EastLane[0].y, _geo.Bounds.yMin + Origin.y);

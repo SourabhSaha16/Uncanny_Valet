@@ -36,10 +36,17 @@ namespace UncannyValet.Traffic
         /// <summary>Default for <see cref="LaneClearance"/>.</summary>
         public const float DefaultLaneClearance = 1.6f;
 
+        /// <summary>Distance before the merge point at which a leaving car asks ambient traffic on the exit lane to yield.</summary>
+        public readonly float YieldLead;
+
+        /// <summary>Default for <see cref="YieldLead"/>.</summary>
+        public const float DefaultYieldLead = 10f;
+
         public TripTuning(float carLength, float turnSpeed, float routeSpeed, float yieldDistance, float arriveTolerance,
             float retargetSeconds = DefaultRetargetSeconds, float blockedTimeout = DefaultBlockedTimeout, float creepSpeed = DefaultCreepSpeed,
-            float laneClearance = DefaultLaneClearance)
+            float laneClearance = DefaultLaneClearance, float yieldLead = DefaultYieldLead)
         {
+            YieldLead = yieldLead;
             LaneClearance = laneClearance;
             BlockedTimeout = blockedTimeout;
             CreepSpeed = creepSpeed;

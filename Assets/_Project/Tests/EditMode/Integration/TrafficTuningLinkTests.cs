@@ -20,11 +20,11 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void ForwardsTheAmbientRateAndTheSpeedScale()
+        public void ForwardsTheMinimumOnScreenAndTheSpeedScale()
         {
             using (new TrafficTuningLink(_bus, r => _rate = r, s => _scale = s))
             {
-                _bus.Publish(new TuningChanged(TuningKey.TrafficAmbientPerMinute, 12f));
+                _bus.Publish(new TuningChanged(TuningKey.TrafficMinOnScreen, 12f));
                 _bus.Publish(new TuningChanged(TuningKey.TrafficSpeedScale, 1.5f));
             }
             Assert.AreEqual(12f, _rate);
@@ -63,7 +63,7 @@ namespace UncannyValet.Tests.Integration
             var link = new TrafficTuningLink(_bus, r => _rate = r, s => _scale = s);
             _bus.Publish(new TuningChanged(TuningKey.BaseTip, 5f));
             link.Dispose();
-            _bus.Publish(new TuningChanged(TuningKey.TrafficAmbientPerMinute, 3f));
+            _bus.Publish(new TuningChanged(TuningKey.TrafficMinOnScreen, 3f));
             Assert.AreEqual(-1f, _rate);
             Assert.AreEqual(-1f, _scale);
         }
