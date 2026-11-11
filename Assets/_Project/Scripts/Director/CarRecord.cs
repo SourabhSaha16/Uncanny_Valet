@@ -24,7 +24,7 @@ namespace UncannyValet.Director
         public float Clean01;
         public float PickupElapsed01;
         public float StayMinutes;
-        public float ParkedAtMinute = float.NaN;
+        public float ArrivedAtMinute = float.NaN;
 
         /// <summary>The single state the car is in; earlier rules win (a requested pickup beats everything).</summary>
         public CarLotState State

@@ -75,21 +75,21 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void UnparkedCar_HasNoTimer_AndPublishesNoProgress()
+        public void UnparkedCar_HasNoTimerBeforeItsStayEnds()
         {
             OpenTicket(_car);
-            for (var m = 1; m <= 200; m++) Tick(m);
+            for (var m = 1; m < 20; m++) Tick(m);
             Assert.AreEqual(0, Count<TicketTimerChanged>());
             Assert.AreEqual(0, Count<TicketTimerExpired>());
         }
 
         [Test]
-        public void UnparkedCar_WaitsForever_NeverLeavesOnItsOwn()
+        public void UnparkedCar_IsStillOwed_AndNeverLeavesOnItsOwn()
         {
             var ticket = OpenTicket(_car);
             for (var m = 1; m <= 200; m++) Tick(m);
 
-            Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
+            Assert.AreEqual(TicketState.PickupRequested, ticket.State);
             Assert.AreEqual(1, _registry.OpenCount);
             Assert.AreEqual(0, Count<TicketClosed>());
             Assert.AreEqual(0, Count<CarDeparted>());

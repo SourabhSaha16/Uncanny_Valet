@@ -131,14 +131,13 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void UnparkedCarInWashBay_NeverExpiresAnything()
+        public void CarInWashBay_StillGetsItsPickupRequest_WhenTheStayEnds()
         {
-            Arrive(false, false);
-            Tick(10f);
+            var t = Arrive(false, false);
+            Tick(5f);
             _bus.Publish(new CarEnteredStation(_car, StationKind.Wash));
-            Tick(60f);
-            _bus.Publish(new CarLeftStation(_car, StationKind.Wash));
-            Tick(200f);
+            Tick(10f);
+            Assert.AreEqual(TicketState.PickupRequested, t.State);
             Assert.AreEqual(0, Count<TicketTimerExpired>());
         }
 

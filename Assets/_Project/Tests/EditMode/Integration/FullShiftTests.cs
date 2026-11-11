@@ -21,7 +21,7 @@ namespace UncannyValet.Tests.Integration
             Assert.IsTrue(_h.Park(ticket, 3));
             Assert.AreEqual(TicketState.Parked, ticket.State);
 
-            _h.Minutes(30);
+            _h.Minutes(25);
             Assert.AreEqual(TicketState.PickupRequested, ticket.State);
             Assert.AreEqual(1, _h.Log.Count<PickupRequested>());
 
@@ -126,7 +126,7 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void UnparkedCarWaiting_FilesNoComplaint_AndKeepsTheCombo()
+        public void UnparkedCarThatWasAskedFor_FilesNoComplaint_AndKeepsTheCombo()
         {
             _h.StartShift();
             Deliver();
@@ -135,7 +135,7 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(22 + 44, _h.Score.Score);
 
             _h.Spawn(new PatronRequest(10f, 20, false));
-            _h.Minutes(200);
+            _h.Minutes(12);
 
             Assert.AreEqual(0, _h.Log.Count<ComplaintFiled>());
             Assert.AreEqual(0, _h.Score.Complaints);

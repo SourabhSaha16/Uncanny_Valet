@@ -49,6 +49,7 @@ namespace UncannyValet.Patrons
             _stations = new StationService(bus, _book);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
+            _bus.Subscribe<CarArrived>(OnCarArrived);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Subscribe<PatronReachedCurb>(OnPatronReachedCurb);
@@ -64,6 +65,7 @@ namespace UncannyValet.Patrons
             _perfect.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
+            _bus.Unsubscribe<CarArrived>(OnCarArrived);
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Unsubscribe<PatronReachedCurb>(OnPatronReachedCurb);
@@ -89,7 +91,9 @@ namespace UncannyValet.Patrons
         /// <summary>Like <see cref="Open"/> but announces nothing; follow with <see cref="AnnounceArrival"/>.</summary>
         public Ticket Create(CarId car, PatronRequest request)
         {
-            return _book.Add(car, request);
+            var ticket = _book.Add(car, request);
+            ticket.StartStay(_clock.ElapsedMinutes);
+            return ticket;
         }
 
         /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
@@ -107,8 +111,12 @@ namespace UncannyValet.Patrons
         {
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
-            if (t.State != TicketState.AwaitingPark) return;
-            t.MarkParked(_clock.ElapsedMinutes);
+            t.MarkParked();
+        }
+
+        private void OnCarArrived(CarArrived e)
+        {
+            if (_book.TryGetByCar(e.Car, out var t)) t.MarkDroppedOff(_clock.ElapsedMinutes);
         }
 
         private void OnCarEntered(CarEntered e)
