@@ -11,8 +11,8 @@ namespace UncannyValet.Lot
         private Vector2 _spotSize = new Vector2(2.6f, 4.4f);
         [SerializeField, Tooltip("Gap between neighbouring bays in a row.")]
         private float _spotGap = 0.6f;
-        [SerializeField, Tooltip("Height of the drive aisle between the two bay rows.")]
-        private float _aisleWidth = 4.6f;
+        [SerializeField, Range(3f, 9f), Tooltip("Height of the drive aisle between the two bay rows (also copied into CarHandlingConfig at setup).")]
+        private float _aisleWidth = 6f;
 
         [Header("Curb")]
         [SerializeField, Tooltip("Centre of the curb zone; it sits right of the diner's main door with an open gap between (SiteLayout.CurbGap). The top bay row is aligned with the curb's top edge.")]

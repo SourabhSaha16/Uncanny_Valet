@@ -79,3 +79,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbArrowStyle,LotCurbArrows,CurbFacingRule,CurbZone,LotConfig,LotLayoutBuilder}.cs; Tests/EditMode/Lot/CurbArrowTests.cs
 Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
 Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.
+
+## lot: widen drive aisle to 6.0 and add east asphalt
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs
+Why: human asked for more room to manoeuvre (design.md A5 Lot v2). Aisle 4.6 -> 6.0 (now Range 3..9), StripGap 1.0 -> 3.5; everything else derives from these.
+Tests: EditMode 950/950 (2 new geometry tests; shipped-defaults test now compares the shipped assets), PlayMode 14/14 (gap assertion 4.6 -> 6).

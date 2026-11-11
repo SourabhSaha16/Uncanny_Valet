@@ -24,8 +24,8 @@ namespace UncannyValet.Lot
         [Header("Right strip")]
         [SerializeField, Min(1f), Tooltip("Width of the outside road and bus stop strip along the right wall, where ambient people appear.")]
         private float _stripWidth = 3.5f;
-        [SerializeField, Min(0f), Tooltip("Gap between the last bay column and the strip.")]
-        private float _stripGap = 1f;
+        [SerializeField, Min(0f), Tooltip("Open asphalt between the last bay column and the strip, room to swing out of the end bays.")]
+        private float _stripGap = 3.5f;
 
         [Header("Walkways")]
         [SerializeField, Range(0.1f, 0.9f), Tooltip("Where the north-south crosswalk sits in the corridor between curb and bays (0 = curb, 1 = bays).")]

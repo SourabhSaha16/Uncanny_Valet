@@ -1,3 +1,4 @@
+using UnityEditor;
 using NUnit.Framework;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
@@ -16,12 +17,13 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void ShippedDefaults_AgreeWithEachOther()
+        public void ShippedAssets_AgreeWithEachOther()
         {
-            var lot = ScriptableObject.CreateInstance<LotConfig>();
-            var handling = ScriptableObject.CreateInstance<CarHandlingConfig>();
-            try { Assert.IsFalse(HandlingAisleCheck.Differs(lot.AisleWidth, handling.MeasuredAisleWidth)); }
-            finally { Object.DestroyImmediate(lot); Object.DestroyImmediate(handling); }
+            var lot = AssetDatabase.LoadAssetAtPath<LotConfig>("Assets/_Project/Data/Lot/LotConfig.asset");
+            var handling = AssetDatabase.LoadAssetAtPath<CarHandlingConfig>("Assets/_Project/Data/Cars/CarHandlingConfig.asset");
+            Assert.IsNotNull(lot);
+            Assert.IsNotNull(handling);
+            Assert.IsFalse(HandlingAisleCheck.Differs(lot.AisleWidth, handling.MeasuredAisleWidth));
         }
     }
 }

@@ -69,7 +69,7 @@ namespace UncannyValet.Tests.PlayMode
         {
             var topRowBottom = _geometry.Spots[0].yMin;
             var bottomRowTop = _geometry.ChargingSpots[0].yMax;
-            Assert.AreEqual(4.6f, topRowBottom - bottomRowTop, 1e-3f, "clear gap between the bay rows");
+            Assert.AreEqual(6f, topRowBottom - bottomRowTop, 1e-3f, "clear gap between the bay rows");
             Assert.AreEqual(new Vector2(2.6f, 4.4f), _geometry.Spots[0].size);
             Assert.AreEqual(3.2f, _geometry.Spots[1].x - _geometry.Spots[0].x, 1e-3f, "bay pitch");
             Assert.IsTrue(_lot.GetComponent<LotLayoutBuilder>().IsChargingSpot(BayCount), "the EV bay is id 7");
