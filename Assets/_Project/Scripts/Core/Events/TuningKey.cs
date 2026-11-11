@@ -257,5 +257,10 @@ namespace UncannyValet.Core.Events
         TrafficMinOnScreen,
         /// <summary>Ambient cars on screen that spawning aims for (0 = no ambient traffic).</summary>
         TrafficTargetOnScreen,
+        // Speed boost feel (Powers seeds, Valet and Pedestrians read). Issue 41.
+        /// <summary>Seconds a pedestrian stumbles when the boosted valet runs through them.</summary>
+        PowerStumbleSeconds,
+        /// <summary>Sparkles per second in the boosted valet's trail.</summary>
+        PowerTrailPerSecond,
     }
 }

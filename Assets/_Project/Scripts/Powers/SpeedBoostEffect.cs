@@ -1,9 +1,10 @@
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 
 namespace UncannyValet.Powers
 {
-    /// <summary>Level 1: the valet walks faster for a few seconds. Holds the state; the Valet module adopts it later.</summary>
-    public sealed class SpeedBoostEffect : IPowerEffect
+    /// <summary>Level 1: the valet walks faster for a few seconds. Holds the state; the Valet module reads it through IPowerBoost.</summary>
+    public sealed class SpeedBoostEffect : IPowerEffect, IPowerBoost
     {
         private readonly PowerSettings _settings;
         private readonly PowerTimer _timer = new PowerTimer();
@@ -12,6 +13,7 @@ namespace UncannyValet.Powers
 
         public PowerKind Kind => PowerKind.SpeedBoost;
         public bool IsActive => _timer.IsRunning;
+        public bool IsBoosted => IsActive;
 
         /// <summary>Seconds of boost left.</summary>
         public float Remaining => _timer.Remaining;

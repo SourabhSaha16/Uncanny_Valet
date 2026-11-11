@@ -742,3 +742,9 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last beta build: issues 75 (two-way busier ambient roads), 76 (F2 Copy all values), 77 (stay clock from drop-off, patron asks wherever the car is, unwashed dirty car tips, queued asked-for car on the key board), 73/12/13/15 (return scheduler, late-shift pickups, no new cars in the last 45 s) and the start-up crash fix (shifted TuningKey numbers). Beta site only; main stays on the earlier build.
 Tests: 1215 of 1215 EditMode, 17 of 17 PlayMode (incl. the new Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:53), no console errors. The earlier broken build (KeyNotFoundException DirTargetScale) was never deployed. The new features were not seen in play.
+
+## lead: merge agent/valet Power 1 speed boost (#41) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a2657675453e36f8b (IPowerBoost, ValetBoost, ValetBoostFx, BargeScanner/BargeRule, TrailEmitter, SparklePool, OnFootMover, Pedestrians stumble (PedestrianStumbleRule, WalkerStumbler), PedestrianId, Audio SfxPowers, PowerRows keys, ValetSceneBuilder, Bootstrap.unity, PedestrianConfig asset, tests), docs/changelogs/lead.md
+Why: issue 41 (valet powers level 1). While boosted the valet walks 40% faster, ignores pedestrian blocking (pedestrians stumble 0.4 s), shows a rainbow outline and sparkle trail, and a fanfare plays. Test it by lowering F2 'Meter per Perfect Park' and 'Speed boost unlocks at'. Scene file kept whole (real new components plus fileID churn).
+Tests: 1231 of 1231 EditMode, 21 of 21 PlayMode after the merge (incl. Bootstrap scene smoke test).

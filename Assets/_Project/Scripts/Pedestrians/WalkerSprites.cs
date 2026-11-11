@@ -18,6 +18,15 @@ namespace UncannyValet.Pedestrians
             _hair = Layer(parent, "Hair", config.SortingOrder + 2);
         }
 
+        /// <summary>Rotates every layer to <paramref name="degrees"/> around the person (0 = upright).</summary>
+        public void Spin(float degrees)
+        {
+            var rotation = Quaternion.Euler(0f, 0f, degrees);
+            _model.transform.localRotation = rotation;
+            _outfit.transform.localRotation = rotation;
+            _hair.transform.localRotation = rotation;
+        }
+
         /// <summary>Shows sheet <paramref name="column"/> of this look on every layer.</summary>
         public void Show(PedestrianLook look, int column, bool flip)
         {

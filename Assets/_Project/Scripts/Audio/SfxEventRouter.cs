@@ -57,6 +57,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<CarHardBraked>(OnHardBraked);
             _bus.Subscribe<PerfectPark>(OnPerfectPark);
             _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
+            _bus.Subscribe<PowerActivated>(OnPowerActivated);
         }
 
         public void Unsubscribe()
@@ -81,6 +82,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<CarHardBraked>(OnHardBraked);
             _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
             _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
+            _bus.Unsubscribe<PowerActivated>(OnPowerActivated);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -98,6 +100,11 @@ namespace UncannyValet.Audio
 
         private void OnPerfectPark(PerfectPark e) => _play(SfxId.PerfectDing);
         private void OnPerfectDropOff(PerfectDropOff e) => _play(SfxId.PerfectDing);
+
+        private void OnPowerActivated(PowerActivated e)
+        {
+            if (e.Power == PowerKind.SpeedBoost) _play(SfxId.SpeedBoost);
+        }
 
         private void OnSlideStarted(CarSlideStarted e)
         {

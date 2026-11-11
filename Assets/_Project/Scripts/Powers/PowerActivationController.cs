@@ -34,6 +34,7 @@ namespace UncannyValet.Powers
             var freeze = new FreezeTimeEffect(_meter.Settings);
             _stack = new PowerStack(_bus, new IPowerEffect[] { SpeedBoost, freeze, new ParkSmashEffect() });
             Services.Register<IWorldTime>(freeze);
+            Services.Register<IPowerBoost>(SpeedBoost);
             _started = true;
             Subscribe();
         }

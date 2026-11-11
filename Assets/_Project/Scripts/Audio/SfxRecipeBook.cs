@@ -28,6 +28,7 @@ namespace UncannyValet.Audio
                 case SfxId.PedestrianBump: return SfxAlerts.PedestrianBump(sampleRate);
                 case SfxId.CarBump: return SfxAlerts.CarBump(sampleRate);
                 case SfxId.PerfectDing: return SfxAlerts.PerfectDing(sampleRate);
+                case SfxId.SpeedBoost: return SfxPowers.SpeedBoostFanfare(sampleRate);
                 case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate, tyreSharpness);
                 case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate, tyreSharpness);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");

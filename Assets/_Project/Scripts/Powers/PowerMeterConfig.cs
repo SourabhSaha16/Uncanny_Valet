@@ -38,6 +38,12 @@ namespace UncannyValet.Powers
         [SerializeField, Range(1f, 3f), Tooltip("Walk speed multiplier during the boost.")]
         private float _walkMultiplier = 1.4f;
 
+        [SerializeField, Range(0.1f, 2f), Tooltip("Seconds a pedestrian stumbles when the boosted valet runs through them.")]
+        private float _stumbleSeconds = 0.4f;
+
+        [SerializeField, Range(0f, 60f), Tooltip("Sparkles per second in the boosted valet's trail.")]
+        private float _trailPerSecond = 24f;
+
         [Header("Freeze time")]
         [SerializeField, Min(0.5f), Tooltip("Seconds freeze time lasts.")]
         private float _freezeSeconds = 6f;
@@ -54,6 +60,8 @@ namespace UncannyValet.Powers
         public float Level3Threshold => _level3Threshold;
         public float SpeedBoostSeconds => _speedBoostSeconds;
         public float WalkMultiplier => _walkMultiplier;
+        public float StumbleSeconds => _stumbleSeconds;
+        public float TrailPerSecond => _trailPerSecond;
         public float FreezeSeconds => _freezeSeconds;
         public float FreezeTimeScale => _freezeTimeScale;
 
@@ -69,6 +77,8 @@ namespace UncannyValet.Powers
             t.Seed(TuningKey.PowerLevel3Threshold, _level3Threshold);
             t.Seed(TuningKey.PowerSpeedBoostSeconds, _speedBoostSeconds);
             t.Seed(TuningKey.PowerWalkMultiplier, _walkMultiplier);
+            t.Seed(TuningKey.PowerStumbleSeconds, _stumbleSeconds);
+            t.Seed(TuningKey.PowerTrailPerSecond, _trailPerSecond);
             t.Seed(TuningKey.PowerFreezeSeconds, _freezeSeconds);
             t.Seed(TuningKey.PowerFreezeTimeScale, _freezeTimeScale);
         }

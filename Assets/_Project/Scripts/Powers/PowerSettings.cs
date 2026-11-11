@@ -17,6 +17,8 @@ namespace UncannyValet.Powers
             Level3Threshold = config.Level3Threshold;
             SpeedBoostSeconds = config.SpeedBoostSeconds;
             WalkMultiplier = config.WalkMultiplier;
+            StumbleSeconds = config.StumbleSeconds;
+            TrailPerSecond = config.TrailPerSecond;
             FreezeSeconds = config.FreezeSeconds;
             FreezeTimeScale = config.FreezeTimeScale;
         }
@@ -32,6 +34,8 @@ namespace UncannyValet.Powers
         public float Level3Threshold { get; private set; }
         public float SpeedBoostSeconds { get; private set; }
         public float WalkMultiplier { get; private set; }
+        public float StumbleSeconds { get; private set; }
+        public float TrailPerSecond { get; private set; }
         public float FreezeSeconds { get; private set; }
         public float FreezeTimeScale { get; private set; }
 
@@ -56,6 +60,8 @@ namespace UncannyValet.Powers
                 case TuningKey.PowerLevel3Threshold: Level3Threshold = value; return true;
                 case TuningKey.PowerSpeedBoostSeconds: SpeedBoostSeconds = value; return true;
                 case TuningKey.PowerWalkMultiplier: WalkMultiplier = value; return true;
+                case TuningKey.PowerStumbleSeconds: StumbleSeconds = value; return true;
+                case TuningKey.PowerTrailPerSecond: TrailPerSecond = value; return true;
                 case TuningKey.PowerFreezeSeconds: FreezeSeconds = value; return true;
                 case TuningKey.PowerFreezeTimeScale: FreezeTimeScale = value; return true;
                 default: return false;
