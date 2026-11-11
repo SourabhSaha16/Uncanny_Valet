@@ -211,6 +211,7 @@ Other gimmicks to pull from: a car ferry deck that tilts and departs, a multi-st
 ParkCorp showdowns: a split lot. ParkCorp's robots work one half at a steady pace and their running tip total is shown live. Beat it to win the venue contract. The last showdown is the old final chase reborn: the robots go rogue and you outrun them in that night's worst car.
 6. Single-player design
 Solo is the primary mode (it is a web game). Co-op for 2–4 players on one keyboard or gamepads is a later module, and every level must work for both.
+SUPERSEDED 2026-11-11: Kev, the task board and the swap button were dropped; the game has one valet. The text below is kept for history only.
 Decision: two valets, swap button, and the one you're not controlling is Kev, a rookie AI. Overcooked's idle chef just stands there. Kev doesn't: left alone for 2 seconds, he picks a task off the task board, more or less at random, and does it. He is useful and unreliable in roughly equal parts, which is both the help and the joke.
 • Rudimentary on purpose. Kev chooses by weighted random, not by what matters most. He might wash a car nobody asked to wash while a patron fumes at the curb.
 • He drives like a rookie: 70% top speed, wide turns, and he suffers every fault the car has. Kev in a reverse-only car is a set piece.

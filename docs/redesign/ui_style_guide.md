@@ -23,7 +23,6 @@ The scene images themselves are not produced yet.
 ## Cast (keep identical everywhere)
 
 - The valet (player): red valet jacket, black trousers, small cap.
-- Kev (rookie AI valet): same uniform in teal, cap on backwards, slightly too big.
 - Mrs. Okafor (boss): bright patterned dress, glasses, clipboard (results screen, title, diner).
 - ParkCorp robots: small grey boxy robots with one cyan eye light.
 - Every patron car carries a small coloured key tag icon matching its spot.
@@ -44,7 +43,7 @@ Pixel results screen over a dimmed view of the lot. Big panel with a stamp-style
 
 ## Scene 13: Title screen
 
-Title UNCANNY VALET in big chunky pixel letters with a key-tag shape dotting the i, over a top-down view of the diner lot in mid-chaos. The red valet holds up a key ring; Kev stands behind him holding the wrong keys. Blinking PRESS ANY KEY prompt at the bottom.
+Title UNCANNY VALET in big chunky pixel letters with a key-tag shape dotting the i, over a top-down view of the diner lot in mid-chaos. The red valet holds up a key ring. Blinking PRESS ANY KEY prompt at the bottom.
 
 ## Tone and rules
 

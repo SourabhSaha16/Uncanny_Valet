@@ -591,3 +591,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-ae877026573b0fc40, docs/design.md, docs/pending_tasks.md, CLAUDE.md, regenerated PatronConfig asset, site/
 Why: the human's notes (patience 25, tip pop over the patron) and the request to track pending work as GitHub issues and a Project. 65 issues created from docs/pending_tasks.md, added to Project 4 with Status and Priority; labels and milestones created; CLAUDE.md gained 'Tracking work'.
 Tests: 992 of 992 EditMode, 16 of 16 PlayMode; browser smoke test with the F2 panel open, no console errors. Tip pop not seen in play.
+
+## lead: remove Kev from the docs, update the issue title rule
+Date: 2026-11-11
+Files: CLAUDE.md, docs/design.md, docs/redesign/chaos_redesign.md, docs/redesign/ui_style_guide.md, docs/changelogs/lead.md
+Why: the human dropped Kev, the task board and the swap button, and asked for plain issue titles with a two-line description and one acceptance line. GitHub issues were retitled, rewritten and given priority:1 to priority:4 labels; Kev issues closed as not planned.
+Tests: docs only, none run.

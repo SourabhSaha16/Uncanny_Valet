@@ -154,7 +154,6 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Valet powers: a vertical power meter filled by events (Perfect Park high, perfect drop-off medium, drifts very slight) with three powers at levels 1 to 3 (speed boost, freeze time, Park Smash), each with its own art; meter resets on use; powers stack | planned (draft with open questions Q1 to Q7: `docs/redesign/valet_powers.md`) |
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
-| Kev the rookie AI valet, task board, swap button | planned (P2) |
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
 | Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
 | Lot v3 polish: patrons face the pickup, VALET PICKUP label, dotted queue boxes, zebra crosswalks, real building, asphalt surround, exit-route arrows, F2 entry and exit speed | done, first browser check only |
@@ -165,7 +164,9 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 
 Open questions (from the redesign): keep or rename the title; single-valet hard mode; cliff car rule; local
 co-op input. Known gaps: only 14 civilian car sprites exist in the pack (variety comes from tint and mirroring);
-the title screen lacks the valet, Kev and the key-tag dot on the i; Mrs. Okafor is a placeholder box.
+the title screen lacks the valet and the key-tag dot on the i; Mrs. Okafor is a placeholder box.
+Decided 2026-11-11: Kev, the task board and the swap-valet button are removed from the game (the human does not
+want them). The old text in `docs/redesign/chaos_redesign.md` section 6 is superseded.
 
 ## A10. Patron Director
 
