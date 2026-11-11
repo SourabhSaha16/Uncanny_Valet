@@ -116,7 +116,7 @@ namespace UncannyValet.UI
 
         private void OnResult(ShiftResultReady e)
         {
-            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.BestCombo, _stats.PerfectParks);
+            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.BestCombo, _stats.PerfectParks, _stats.SmashTips);
             SetPhase(UiPhase.Results);
         }
 

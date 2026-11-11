@@ -10,6 +10,9 @@ namespace UncannyValet.Patrons
         public float Charge01 => _progress.Value;
         public bool IsFull => _progress.IsFull;
 
+        /// <summary>Charges the car to full at once (Park Smash). Returns true if the charge changed.</summary>
+        public bool Complete() => _progress.Complete();
+
         /// <summary>One game minute. Returns true if the charge changed.</summary>
         public bool Advance(bool inChargingBay) => inChargingBay && _progress.Step();
     }

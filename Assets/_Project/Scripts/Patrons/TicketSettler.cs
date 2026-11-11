@@ -27,20 +27,33 @@ namespace UncannyValet.Patrons
         /// <summary>The car was handed back: announce the delivery, explain and pay the tip, then close.</summary>
         public void Pay(Ticket t)
         {
+            var combo = _score != null ? _score.ComboMultiplier : NoCombo;
+            Settle(t, combo, false, true);
+        }
+
+        /// <summary>
+        /// Park Smash: pay the full tip as if the car came back instantly (speed bonus maxed) at a combo multiplier fixed
+        /// by the caller, and close the ticket without a delivery (no CarDelivered, so the patron vanishes and the car leaves at once).
+        /// Returns the tip paid.
+        /// </summary>
+        public int PaySmash(Ticket t, int comboMultiplier) => Settle(t, comboMultiplier, true, false);
+
+        private int Settle(Ticket t, int combo, bool maxSpeed, bool delivered)
+        {
             var wait = _clock.ElapsedMinutes - t.PickupRequestMinute;
             var patience = t.PickupExpired ? 0f : 1f - t.PickupTimer.Elapsed01;
-            var combo = _score != null ? _score.ComboMultiplier : NoCombo;
             var input = new TipInput(t.Request.BaseTip, wait, t.Request.Impatient, t.PickupExpired,
                 t.ChargedEv, t.CleanedDirty, t.UncleanedDirty, patienceRemaining01: patience, comboMultiplier: combo,
-                perfectParks: _perfect?.Take(t.TicketId) ?? 0);
+                perfectParks: _perfect?.Take(t.TicketId) ?? 0, maxSpeedBonus: maxSpeed);
             var breakdown = _tips.Explain(input);
             t.MarkClosed();
             _timers.Stop(t, TimerKind.Pickup);
             _book.Remove(t);
             _bus.Publish(new TipExplained(t.TicketId, t.CarId, breakdown));
-            _bus.Publish(new CarDelivered(t.TicketId, t.CarId));
+            if (delivered) _bus.Publish(new CarDelivered(t.TicketId, t.CarId));
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, wait, breakdown.Total));
             _bus.Publish(new TipEarned(t.TicketId, breakdown.Total));
+            return breakdown.Total;
         }
 
         /// <summary>The ticket ends without a delivery (patron left, shift over): tip 0, not a penalty.</summary>

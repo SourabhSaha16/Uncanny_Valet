@@ -62,7 +62,8 @@ namespace UncannyValet.Lot
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
             BuildDiner(g);
             var judge = gameObject.AddComponent<PerfectRunner>();
-            judge.Init(c, BuildCurb(rects));
+            var curb = BuildCurb(rects);
+            judge.Init(c, curb);
             gameObject.AddComponent<QueueClearRunner>().Init(c, c.QueueClear);
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
             LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
@@ -82,6 +83,7 @@ namespace UncannyValet.Lot
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
+            gameObject.AddComponent<SmashRunner>().Init(c, _occupancy, spots, curb, g.AisleY);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 
