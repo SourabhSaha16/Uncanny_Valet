@@ -5,6 +5,9 @@ namespace UncannyValet.UI.Hud
     /// <summary>Pure text, look and motion curves of a tip pop. The text is decided once when the pop starts.</summary>
     public static class TipPopText
     {
+        /// <summary>The label of a Perfect Park or perfect drop-off pop.</summary>
+        public const string PerfectLabel = "PERFECT!";
+
         /// <summary>The label: "+$N" for a tip, "$0" for none.</summary>
         public static string Format(int tip) => tip > 0 ? "+$" + tip : "$0";
 

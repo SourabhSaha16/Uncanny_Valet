@@ -34,6 +34,11 @@ namespace UncannyValet.Audio
         private const float KnockFilterHz = 400f;
         private const float BumpSoftenHz = 1100f;
         private const float BumpAttack = 0.012f;
+        private const float DingMidi = 96f;
+        private const float DingPartialRatio = 3f;
+        private const float DingSeconds = 0.35f;
+        private const float DingGain = 0.5f;
+        private const float DingPartialGain = 0.18f;
         private static readonly int[] JingleMidi = { 72, 76, 79, 84 };
 
         public static float[] PickupRequested(int rate)
@@ -46,6 +51,17 @@ namespace UncannyValet.Audio
                 b.AddVoice(i * BellRepeat, VoiceSpec.Tone(Waveform.Sine, hz, BellSeconds, 0.6f).WithEnvelope(env));
                 b.AddVoice(i * BellRepeat, VoiceSpec.Tone(Waveform.Sine, hz * BellPartialRatio, BellSeconds, 0.2f).WithEnvelope(env));
             }
+            return SfxActions.Finish(b);
+        }
+
+        /// <summary>A short bright ding for a Perfect Park or perfect drop-off: a high sine with a bell-like partial.</summary>
+        public static float[] PerfectDing(int rate)
+        {
+            var b = new MixBuffer(rate * 45 / 100, rate, false);
+            var env = new Adsr(0.002f, DingSeconds, 0f, 0.1f);
+            var hz = Pitch.MidiToHz(DingMidi);
+            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Sine, hz, DingSeconds, DingGain).WithEnvelope(env));
+            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Sine, hz * DingPartialRatio, DingSeconds, DingPartialGain).WithEnvelope(env));
             return SfxActions.Finish(b);
         }
 

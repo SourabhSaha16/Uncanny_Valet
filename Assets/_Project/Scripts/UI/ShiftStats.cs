@@ -15,11 +15,15 @@ namespace UncannyValet.UI
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<CarParked>(OnParked);
+            _bus.Subscribe<PerfectPark>(OnPerfectPark);
             _bus.Subscribe<ScoreChanged>(OnScore);
         }
 
         /// <summary>Different cars that were parked at least once.</summary>
         public int CarsParked => _parked.Count;
+
+        /// <summary>Perfect Parks earned this shift.</summary>
+        public int PerfectParks { get; private set; }
 
         /// <summary>Highest combo multiplier reached.</summary>
         public int BestCombo { get; private set; } = 1;
@@ -28,16 +32,20 @@ namespace UncannyValet.UI
         {
             _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
             _bus.Unsubscribe<CarParked>(OnParked);
+            _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
             _bus.Unsubscribe<ScoreChanged>(OnScore);
         }
 
         private void OnShiftStarted(ShiftStarted e)
         {
             _parked.Clear();
+            PerfectParks = 0;
             BestCombo = 1;
         }
 
         private void OnParked(CarParked e) => _parked.Add(e.Car.Value);
+
+        private void OnPerfectPark(PerfectPark e) => PerfectParks++;
 
         private void OnScore(ScoreChanged e)
         {

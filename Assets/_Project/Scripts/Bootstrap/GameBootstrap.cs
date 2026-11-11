@@ -10,6 +10,7 @@ using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
+using UncannyValet.Powers;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -51,6 +52,10 @@ namespace UncannyValet.Bootstrap
         private TrafficModule _traffic;
         [SerializeField, Tooltip("Seeds the traffic keys of the F2 panel.")]
         private TrafficConfig _trafficConfig;
+        [SerializeField, Tooltip("Valet powers: the meter, the activation and the Perfect feedback. Starts once the bus is registered.")]
+        private PerfectFeedback _powers;
+        [SerializeField, Tooltip("Seeds the power keys of the F2 panel.")]
+        private PowerMeterConfig _powerConfig;
 
         private const int DefaultSpotSeed = 6;
 
@@ -93,7 +98,8 @@ namespace UncannyValet.Bootstrap
             SeedTuning(tuning, _lot.RegularSpotCount);
             StartTraffic(bus);
             FrameLot();
-            StartPedestrians();
+            PedestrianBootstrap.Start(_pedestrians, _decor);
+            _powers.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
             SpawnValet();
@@ -119,7 +125,7 @@ namespace UncannyValet.Bootstrap
             _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
-                _audio != null ? _audio.Config : null, perfect: _lot.Perfect);
+                _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect);
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
@@ -153,15 +159,6 @@ namespace UncannyValet.Bootstrap
             if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
                 _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect, rect);
             else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
-        }
-
-        private void StartPedestrians()
-        {
-            if (_pedestrians == null || _decor == null || _decor.Paths == null) return;
-            Services.Register<IPedestrianPaths>(_decor.Paths);
-            Services.Register<IPatronLocator>(_pedestrians);
-            _pedestrians.gameObject.SetActive(true);
-            _pedestrians.Begin();
         }
 
         private void SpawnValet()
