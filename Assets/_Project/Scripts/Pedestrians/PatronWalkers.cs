@@ -125,6 +125,7 @@ namespace UncannyValet.Pedestrians
             walker.Slot = -1;
             var look = PedestrianPlan.Look(car.Value * LookStride + LookOffset, _config.Skins, _config.Hairs, _config.Outfits);
             walker.Dress(look, _config.PatronSpeed);
+            if (_cars.TryGet(car, out var own) && own.Transform != null) walker.BindCar(own.Transform);
             _byCar[car] = walker;
             _active.Add(walker);
             return walker;
@@ -135,6 +136,7 @@ namespace UncannyValet.Pedestrians
             if (walker.Delivered) _bus.Publish(new PatronBoarded(walker.Car)); // the delivered car may drive off now
             if (walker.Slot >= 0) _slotTaken[walker.Slot] = false;
             walker.Slot = -1;
+            walker.ReleaseCar();
             walker.SetVisible(false);
             _byCar.Remove(walker.Car);
             _active.RemoveAt(activeIndex);

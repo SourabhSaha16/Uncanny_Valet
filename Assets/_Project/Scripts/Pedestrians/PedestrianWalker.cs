@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.Core;
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UnityEngine;
 
@@ -22,9 +23,7 @@ namespace UncannyValet.Pedestrians
         private PedestrianLook _look;
         private readonly PedestrianBounceRule _bounce = new PedestrianBounceRule();
         private WalkerBody _body;
-        private SpriteRenderer _model;
-        private SpriteRenderer _outfit;
-        private SpriteRenderer _hair;
+        private WalkerSprites _sprites;
         private WalkFacing _facing = WalkFacing.Down;
         private Vector2 _lookAt;
         private bool _hasLookAt;
@@ -71,9 +70,7 @@ namespace UncannyValet.Pedestrians
             transform.localScale = new Vector3(config.Scale, config.Scale, 1f);
             _body = new WalkerBody(gameObject, config);
             _bounce.Configure(config.BounceDistance, config.BounceSeconds, config.BounceCooldown);
-            _model = Layer("Model", config.SortingOrder);
-            _outfit = Layer("Outfit", config.SortingOrder + 1);
-            _hair = Layer("Hair", config.SortingOrder + 2);
+            _sprites = new WalkerSprites(transform, config);
         }
 
         /// <summary>Gives the person a new look and walking speed; <paramref name="patience01"/> (0..1) sets how long they wait when blocked.</summary>
@@ -87,6 +84,13 @@ namespace UncannyValet.Pedestrians
 
         /// <summary>Shows or hides the person (a hidden person does not update).</summary>
         public void SetVisible(bool visible) => gameObject.SetActive(visible);
+
+        /// <summary>Passes through the patron's own car: no collision, push, wait or bump (until <see cref="ReleaseCar"/>).</summary>
+        public void BindCar(Transform car) => _body.IgnoreCar(car);
+
+        /// <summary>Stops exempting the own car (the patron despawned).</summary>
+        public void ReleaseCar() => _body.ReleaseCar();
+        private void OnEnable() => _body?.ReapplyIgnore();
 
         /// <summary>Places the person without walking.</summary>
         public void PlaceAt(Vector2 position)
@@ -126,19 +130,12 @@ namespace UncannyValet.Pedestrians
         {
             var other = hit.rigidbody;
             if (other == null || other.bodyType != RigidbodyType2D.Dynamic) return;
+            var car = hit.collider.GetComponentInParent<IDrivable>();
+            if (car != null && OwnCarRule.IsOwn(Car, car.Id)) return;
             var strength = PedestrianBounceRule.Strength(hit.relativeVelocity.magnitude, _config.BounceMinSpeed, _config.BounceFullSpeed);
             if (!_bounce.TryStart((Vector2)transform.position - other.position, strength)) return;
             _moving = false;
             Bumped?.Invoke(this, strength);
-        }
-
-        private SpriteRenderer Layer(string layerName, int order)
-        {
-            var go = new GameObject(layerName);
-            go.transform.SetParent(transform, false);
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sortingOrder = order;
-            return renderer;
         }
 
         private void Update()
@@ -160,7 +157,7 @@ namespace UncannyValet.Pedestrians
             _bounce.Step(dt);
             if (!_path.Walking) return;
             var step = _speed * dt;
-            var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlocked(_path.Heading, step + _config.LookAhead);
+            var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlocked(_path.Heading, step + _config.LookAhead, Car);
             var state = _block.Evaluate(dt, blocked);
             _body.SetSolid(state != PedestrianBlockState.Passing);
             _moving = state != PedestrianBlockState.Waiting;
@@ -185,12 +182,7 @@ namespace UncannyValet.Pedestrians
             if (column == _shownColumn && flip == _shownFlip) return;
             _shownColumn = column;
             _shownFlip = flip;
-            _model.sprite = _config.Model(_look, column);
-            _outfit.sprite = _config.Outfit(_look, column);
-            _hair.sprite = _config.Hair(_look, column);
-            _model.flipX = flip;
-            _outfit.flipX = flip;
-            _hair.flipX = flip;
+            _sprites.Show(_look, column, flip);
         }
     }
 }

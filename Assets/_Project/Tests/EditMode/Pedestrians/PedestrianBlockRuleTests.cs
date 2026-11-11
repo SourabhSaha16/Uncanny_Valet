@@ -76,6 +76,19 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
+        public void PatronNeverTreatsItsOwnCarAsAnObstacleOrBumper()
+        {
+            Assert.IsTrue(OwnCarRule.IsOwn(new UncannyValet.Core.Ids.CarId(4), new UncannyValet.Core.Ids.CarId(4)));
+            Assert.IsFalse(OwnCarRule.IsOwn(new UncannyValet.Core.Ids.CarId(4), new UncannyValet.Core.Ids.CarId(5)));
+        }
+
+        [Test]
+        public void AmbientPeopleHaveNoOwnCar()
+        {
+            Assert.IsFalse(OwnCarRule.IsOwn(UncannyValet.Core.Ids.CarId.None, UncannyValet.Core.Ids.CarId.None));
+        }
+
+        [Test]
         public void BounceStrengthIgnoresNudgesAndCapsAtOne()
         {
             Assert.AreEqual(0f, PedestrianBounceRule.Strength(0.2f, 0.4f, 5f));
