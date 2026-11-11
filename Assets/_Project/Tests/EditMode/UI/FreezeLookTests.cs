@@ -86,7 +86,7 @@ namespace UncannyValet.Tests.UI
             var played = new List<SfxId>();
             var router = new SfxEventRouter(bus, played.Add);
             router.Subscribe();
-            bus.Publish(new PowerActivated(PowerKind.ParkSmash));
+            bus.Publish(new PowerEnded(PowerKind.ParkSmash));
             bus.Publish(new PowerEnded(PowerKind.SpeedBoost));
             bus.Publish(new PowerActivated(PowerKind.FreezeTime));
             bus.Publish(new PowerEnded(PowerKind.FreezeTime));

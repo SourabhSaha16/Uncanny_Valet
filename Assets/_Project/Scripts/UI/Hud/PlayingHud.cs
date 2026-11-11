@@ -32,6 +32,8 @@ namespace UncannyValet.UI.Hud
         private readonly PowerMeterPainter _power;
         private readonly FreezeTracker _freezeTracker;
         private readonly FreezeVeilPainter _freezeVeil;
+        private readonly SmashFxTracker _smashTracker;
+        private readonly SmashFxPainter _smashPainter;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftScoreView score, ICarFactory cars, EmotionStyle style,
             TipPopSettings tipPop, PowerMeterSettings powerMeter)
@@ -40,6 +42,8 @@ namespace UncannyValet.UI.Hud
             _power = new PowerMeterPainter(canvas, _powerTracker, powerMeter);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
+            _smashTracker = new SmashFxTracker(bus, cars, new SmashFx(), UnscaledTime);
+            _smashPainter = new SmashFxPainter(canvas, _smashTracker.Fx);
             _board = new TicketBoard(bus);
             _hud = new HudPainter(canvas, clock, score);
             _keyBoard = new KeyBoardPainter(canvas, style);
@@ -65,6 +69,7 @@ namespace UncannyValet.UI.Hud
             _world.Draw(_rows, camera, time);
             _mood.Draw(_rows, camera);
             _tipPops.Draw(camera, Time.unscaledTime);
+            _smashPainter.DrawWorld(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
             _hud.Draw(time);
@@ -72,6 +77,7 @@ namespace UncannyValet.UI.Hud
             _board.CollectKeyBoardRows(_keyRows);
             _keyBoard.Draw(_keyRows, time);
             _notices.Draw(prompt);
+            _smashPainter.DrawOverlay(Time.unscaledTime);
         }
 
         public void Dispose()
@@ -80,6 +86,7 @@ namespace UncannyValet.UI.Hud
             _tipPopTracker.Dispose();
             _powerTracker.Dispose();
             _freezeTracker.Dispose();
+            _smashTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
         }

@@ -760,3 +760,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a5b2d81be881146ca (WorldTimeReader, IPlayerFocus/TransformPlayerFocus, DirectorTicker, ShiftClock, PatronDirector, TrafficModule, PedestrianCrowd/Walker, CarAutoDrive scaling, FreezeFade/Tracker/Look/VeilPainter, SfxFreeze TimeStop/TimeResume, tests), docs/changelogs/lead.md
 Why: issue 42 (valet powers level 2). For the freeze duration (6 s, F2) the shift clock, Director (no arrivals), traffic, trip cars, pedestrians and all clock-driven timers stop; the valet and the player's car keep moving; a cold blue wash with a clear bubble around the valet or driven car, frost edges and a whoosh show it. Skipped: ice outlines on frozen things, music filter. Files near the 200-line limit: PedestrianWalker 199, CarAutoDrive 199, GameBootstrap 199.
 Tests: 1260 of 1260 EditMode, 23 of 23 PlayMode after the merge.
+
+## lead: merge agent/powers Power 3 Park Smash (#43) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-af13c3c140575434b (Lot SmashRunner and ParkingSpot.Place, Patrons SmashSettler/SmashTally and TicketSettler.PaySmash, TipInput.MaxSpeedBonus, SmashEvents, UI/Hud Smash flash/ring/coins/pop, ShiftStats SmashTips, Audio SfxSmash, tests), docs/changelogs/lead.md
+Why: issue 43 (valet powers level 3). Instantly parks every waiting arrived car in a free bay (EVs charged, dirty cars washed), pays every waiting pickup patron a full tip (speed bonus maxed, one combo multiplier, combo not reset), with flash, ring, coins, boom, chimes and an SMASH! +$N pop. Cars with no free bay stay queued; expired patrons still pay $0; parking is a teleport; patrons vanish and the car drives straight off.
+Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode after the merge (incl. Bootstrap scene smoke test).

@@ -31,6 +31,11 @@ namespace UncannyValet.Audio
                 case SfxId.SpeedBoost: return SfxPowers.SpeedBoostFanfare(sampleRate);
                 case SfxId.TimeStop: return SfxFreeze.TimeStop(sampleRate);
                 case SfxId.TimeResume: return SfxFreeze.TimeResume(sampleRate);
+                case SfxId.SmashBoom: return SfxSmash.Boom(sampleRate);
+                case SfxId.SmashChime0: return SfxSmash.Chime(sampleRate, 0);
+                case SfxId.SmashChime1: return SfxSmash.Chime(sampleRate, 1);
+                case SfxId.SmashChime2: return SfxSmash.Chime(sampleRate, 2);
+                case SfxId.SmashChime3: return SfxSmash.Chime(sampleRate, 3);
                 case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate, tyreSharpness);
                 case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate, tyreSharpness);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");

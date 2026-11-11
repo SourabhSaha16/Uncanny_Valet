@@ -22,6 +22,11 @@ namespace UncannyValet.Audio
         PerfectDing,
         SpeedBoost,
         TimeStop,
-        TimeResume
+        TimeResume,
+        SmashBoom,
+        SmashChime0,
+        SmashChime1,
+        SmashChime2,
+        SmashChime3
     }
 }
