@@ -585,3 +585,9 @@ Date: 2026-11-11
 Files: .github/workflows/ci-cd.yml, tools/check-changelog.sh, tools/changelog-exempt.txt, CLAUDE.md, docs/design.md
 Why: the human wants a beta site to test new features, with the main site link given to playtesters. The workflow now deploys main's site/ at the root and pivot/chaos's site/ under /beta/. The changelog check skips commits listed in tools/changelog-exempt.txt (38e3723, pushed without an entry; history is not rewritten) so the first push of main can pass. Current pivot/chaos promoted to main as the first stable build.
 Tests: tools/check-changelog.sh run locally over origin/main..HEAD: passed (97 commits). No game change.
+
+## lead: merge tip-pop (patience 25, tip pop), move pending work to GitHub issues, rebuild site
+Date: 2026-11-11
+Files: merge of worktree-agent-ae877026573b0fc40, docs/design.md, docs/pending_tasks.md, CLAUDE.md, regenerated PatronConfig asset, site/
+Why: the human's notes (patience 25, tip pop over the patron) and the request to track pending work as GitHub issues and a Project. 65 issues created from docs/pending_tasks.md, added to Project 4 with Status and Priority; labels and milestones created; CLAUDE.md gained 'Tracking work'.
+Tests: 992 of 992 EditMode, 16 of 16 PlayMode; browser smoke test with the F2 panel open, no console errors. Tip pop not seen in play.

@@ -1,4 +1,8 @@
 === Last 50 commits ===
+edadc81  2026-11-10  lead: merge agent/tip-pop (patience 25, tip pop)
+c976667  2026-11-10  integration: patience 25 min and tip pop over boarding patron
+c01ac70  2026-11-10  lead: stable and beta Pages sites, changelog exemption list
+f6cff8f  2026-11-10  lead: merge patience-tuning, update docs, rebuild site
 fe1dccf  2026-11-10  lead: merge agent/patience-tuning
 7e2ee6b  2026-11-10  patrons: lower pickup patience, impatient patrons wait less
 b69bb93  2026-11-10  lead: adopt faster release routine in CLAUDE.md
@@ -45,10 +49,6 @@ af9a732  2026-11-10  pedestrians: collision, wait-and-resume, rubber bounce and 
 c5bbacd  2026-11-10  lot: light up wash and charging slots, drop the big ticket box
 18d1805  2026-11-10  lead: merge agent/status-camera
 b879d90  2026-11-10  integration: Washed/Charged status clears on park; closer camera
-58f53dc  2026-11-10  lead: merge agent/arrival-sfx
-00d1e74  2026-11-10  audio: play car-arrives sound on CarArrived, not at spawn
-edcb101  2026-11-10  lead: merge queue-director-fix, update docs, rebuild site
-dcc59fa  2026-11-10  lead: merge agent/queue-director-fix
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -314,6 +314,12 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketNeedsTracker.cs, Status/WashedStatusRule.cs, Status/ChargedStatusRule.cs, Assets/_Project/Scripts/Bootstrap/CameraFollow.cs, Assets/_Project/Scenes/Bootstrap.unity, Tests/EditMode/UI/CarStatusTests.cs, Tests/EditMode/UI/TicketBoardTests.cs, Tests/EditMode/Integration/CameraFitTests.cs
 Why: A washed or charged car kept Washed/Charged after being parked (design Part A, CAR SLOTS). They are now flags set by CarCleaned/CarFullyCharged and cleared by CarParked. Camera fit tightness 0.87 -> 0.78; play-area floor unchanged.
 Tests: wash and charge event replays, mid-wash drive-out, pickup priority; EditMode suite run.
+
+## integration: patience 25 min and tip pop over a boarding patron
+Date: 2026-11-10
+Files: Scripts/Patrons/PatronRequest.cs, Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/LiveTuningTests.cs, Scripts/UI/Hud/{TipPopSettings,PendingTipPops,TipPopKind,TipPopText,TipPops,TipPopTracker,TipPopPainter,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/TipPopTests.cs
+Why: Play-test notes: pickup patience default 45 -> 25 game minutes (impatient 15; patrons module one-off edit), and a floating "+$N" over the car when the patron boards (design.md A4 tips and pickup).
+Tests: 14 new EditMode (PendingTipPops pairing, text/look/curves, pool); LiveTuningTests updated to 25/15. EditMode 992 pass, 0 fail.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -891,6 +897,18 @@ Date: 2026-11-11
 Files: CLAUDE.md
 Why: the human approved the proposals in docs/redesign/test_review.md: EditMode every merge; RunBatch, PlayMode and the web build only when needed; batch deploys. The one-Unity-launch idea is untried and not part of the routine. No runtime change.
 Tests: none (docs only).
+
+## lead: merge patience-tuning, update docs, rebuild site
+Date: 2026-11-11
+Files: merge of worktree-agent-a8c773291166eb506, docs/design.md, regenerated Bootstrap.unity, site/
+Why: the human's note: pickup patrons should lose patience sooner and the timers should be tunable (docs/changelogs/patrons.md).
+Tests: 978 of 978 EditMode, 16 of 16 PlayMode; browser smoke test shows the two new rows (45 and 0.6), no console errors. Not played.
+
+## lead: stable and beta Pages sites, changelog exemption list
+Date: 2026-11-11
+Files: .github/workflows/ci-cd.yml, tools/check-changelog.sh, tools/changelog-exempt.txt, CLAUDE.md, docs/design.md
+Why: the human wants a beta site to test new features, with the main site link given to playtesters. The workflow now deploys main's site/ at the root and pivot/chaos's site/ under /beta/. The changelog check skips commits listed in tools/changelog-exempt.txt (38e3723, pushed without an entry; history is not rewritten) so the first push of main can pass. Current pivot/chaos promoted to main as the first stable build.
+Tests: tools/check-changelog.sh run locally over origin/main..HEAD: passed (97 commits). No game change.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog

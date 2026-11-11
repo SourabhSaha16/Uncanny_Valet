@@ -1,135 +1,76 @@
-# Pending tasks (atomic)
+# Pending tasks
 
-Last updated 2026-11-10. Each task is one small, separately shippable change. Owner = the agent that does it; the lead merges.
-Source of truth for design is `docs/design.md`; this file is only the to-do list. Tick or delete a line when it ships.
+Pending work is tracked as **GitHub issues** on the **Uncanny Valet** GitHub Project:
+https://github.com/users/SourabhSaha16/projects/4 (columns Backlog, Ready, In progress, In review, Done; Priority P0 to P2).
+Issues: https://github.com/SourabhSaha16/Uncanny_Valet/issues. The rules are in `CLAUDE.md`, section 'Tracking work'.
+This file is no longer edited; it only maps the old task IDs (migrated 2026-11-11) to their issues.
 
-## A. Play-test verification (human, then report back)
+| Old ID | Issue |
+| --- | --- |
+| B1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/1 |
+| B2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/3 |
+| B3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/4 |
+| B4a | https://github.com/SourabhSaha16/Uncanny_Valet/issues/5 |
+| B4b | https://github.com/SourabhSaha16/Uncanny_Valet/issues/6 |
+| B5 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/7 |
+| B6 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/8 |
+| B7 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/9 |
+| B8 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/10 |
+| B9 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/11 |
+| C1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/12 |
+| C2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/13 |
+| C3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/14 |
+| C4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/15 |
+| D3a | https://github.com/SourabhSaha16/Uncanny_Valet/issues/16 |
+| D3b | https://github.com/SourabhSaha16/Uncanny_Valet/issues/17 |
+| D3c | https://github.com/SourabhSaha16/Uncanny_Valet/issues/18 |
+| D4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/19 |
+| D5 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/20 |
+| D6 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/21 |
+| D7 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/22 |
+| D8 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/23 |
+| D9 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/24 |
+| D10 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/25 |
+| D11 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/26 |
+| D12 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/27 |
+| D13 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/28 |
+| D14 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/29 |
+| D15 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/30 |
+| D16 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/31 |
+| D17 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/32 |
+| D18 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/33 |
+| H0 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/34 |
+| H1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/35 |
+| H2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/36 |
+| H3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/37 |
+| H4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/38 |
+| H5 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/39 |
+| H6 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/40 |
+| H7 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/41 |
+| H8 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/42 |
+| H9 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/43 |
+| H10 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/44 |
+| H11 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/45 |
+| E1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/46 |
+| E2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/47 |
+| E3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/48 |
+| E4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/49 |
+| F1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/50 |
+| F2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/51 |
+| F3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/52 |
+| F4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/53 |
+| G3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/54 |
+| G4 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/55 |
+| G5 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/56 |
+| G6 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/57 |
+| G9 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/58 |
+| G10 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/59 |
+| G12 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/60 |
+| G15 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/61 |
+| G21 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/62 |
+| G1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/63 |
+| PT1 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/64 |
+| PT2 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/65 |
+| PT3 | https://github.com/SourabhSaha16/Uncanny_Valet/issues/66 |
 
-Nothing below has been played end to end; only browser smoke tests were done.
-
-- [ ] A1. Hard-refresh the live site and confirm the latest deploy (`1e5ac34`) is what loads.
-- [ ] A2. Patrons face the VALET PICKUP spot while waiting at the curb (every patron, every spawn side).
-- [ ] A3. CAR SLOTS status words switch at the right moments (Parked, Washing, Washed, Charging, Charged, Pick Up, Cust. Angry).
-- [ ] A4. Plate shows only once the car is parked in a spot or station.
-- [ ] A5. Patron mood bubble is legible and sits well over the patron (green, yellow, red).
-- [ ] A6. Plate flash speeds read as slow, faster, very fast (1.5, 3, 7 Hz).
-- [ ] A7. Exit car clears the crosswalk and the waiting patrons.
-- [ ] A8. Patron car entering the queue column and leaving by the curb route looks right at default traffic numbers.
-- [ ] A9. Pedestrian count (F2) starts at a comfortable level.
-- [ ] A10. Report anything that feels wrong in a play-test (design checkpoint 2).
-
-## B. Known bugs and gaps from the last rounds
-
-- [ ] B1. Cars can drive into the gap west of the pickup zone. Owner: lot. Add a blocker or fence; regression test.
-- [ ] B2. Patron car is invisible to ambient traffic after it turns into the queue route. Owner: traffic.
-- [ ] B3. A ticket closing mid-entry falls back to a straight drive-out. Owner: traffic. Make it finish or abort the trip cleanly.
-- [ ] B4. Car body tint pulse still uses the old cyan, amber and orange-red, not the new green, yellow, red. Decision first (B4a), then build (B4b).
-  - [ ] B4a. Human decides: match the new emotion colours, or turn the pulse off.
-  - [ ] B4b. Owner: cars (plus a Core emotion rule or mirrored config so cars need not reference UI).
-- [ ] B5. Angry state starts at 85% patience. Human decides: keep, or start only at expiry. Owner: ui-status if changed.
-- [ ] B6. Camera crops the road and the key board panel covers it. Decide camera zoom versus showing the road. Owner: integration.
-- [ ] B7. Hedge-green walls versus the asphalt surround: decide the colour. Owner: lot.
-- [ ] B8. Diner reads as a flat red roof plus a front strip; refine the building art. Owner: lot.
-- [ ] B9. "Cust. Angry" does not fit the status column and shows as "Angry"; widen the column or shorten the label. Owner: integration (UI).
-
-## C. Patron Director
-
-- [ ] C1. Step 4: `ReturnScheduler` pure rule with EditMode tests (spec: `docs/redesign/patron_director_spec.md`).
-- [ ] C2. Step 4: wire the scheduler into the Director shell and add its F2 keys to `TuningKey` and `TuningCatalog`.
-- [ ] C3. Add the return-scheduler rows to the F3 overlay.
-- [ ] C4. Extend the soak test to cover returns.
-
-## D. Redesign backlog (planned in `docs/design.md` A8)
-
-Car controller (spec: `docs/redesign/car_handling_spec.md`, build order in its section 8; one step at a time per file set):
-- [x] D1. Step 1 (cars): measure the aisle width and car collider size, set R_min and MaxTurnRate, add the PlayMode test assembly and the bay-entry PlayMode test.
-- [x] D2. Step 2 (cars + Core input): `DriftModel`, `SteeringModel`, `IDriveModifier` seam, Drift input (Shift, right shoulder), `CarHandlingConfig` and its F2 keys.
-- [x] D3. Step 3 (cars/fx + audio): minimal `DecalPool`, skid marks, tyre chirp and squeal.
-- [ ] D3a. Step 4 (lot): `ParkJudge`, `ParkJudgeRunner`, `PerfectPark` event, pop, ding, camera kick, +$2 on the ticket, results stat.
-- [ ] D3b. Step 5 (valet): dash on foot, `BoostRules`, `ValetBoost`, barge-through, boost feedback, results stat.
-- [ ] D3c. Step 6 (cars): EV stat overrides in `CarDefinition`.
-- [x] D3d. Aisle 4.6 passes the pull-out rule; no widening needed.
-- [ ] D3e. Human decision: keep the real 1 x 2 car (spec assumed about 1.8 x 4; bay slack 0.8 per side), or resize cars, sprites and the queue?
-- [x] D3f. Step 2 must keep `CarHandlingConfig.MeasuredAisleWidth` in sync with `LotConfig.AisleWidth` (cars cannot reference Lot) and enable the 7 ignored PlayMode bay cases.
-
-Damage:
-- [ ] D4. Impact damage rule (pure class, tests).
-- [ ] D5. Screen shake on impact.
-- [ ] D6. Smoke and debris effects.
-
-Pedestrians:
-- [ ] D7. Honk input and pedestrian reaction.
-- [ ] D8. Tumble on contact.
-- [ ] D9. Courtesy tips for careful driving near pedestrians.
-
-Kev, the rookie AI valet:
-- [ ] D10. Task board data and rules.
-- [ ] D11. Kev movement and task execution.
-- [ ] D12. Swap-valet button.
-
-Later content:
-- [ ] D13. Faults (overheating, on fire) as new `CarStatus` rules.
-- [ ] D14. Mechanic bay.
-- [ ] D15. Fire spread.
-- [ ] D16. More venues.
-- [ ] D17. ParkCorp showdowns.
-- [ ] D18. World map.
-
-## D2. Valet powers (draft: `docs/redesign/valet_powers.md`; blocked on the human's answers to Q1 to Q7)
-
-- [ ] H0. Human answers Q1 to Q7 (perfect drop-off definition, freeze vs slow, fire key, Golden Valet overlap, Park Smash pay, Director reaction, carry-over).
-- [ ] H1. Core: `PerfectDropOff`, `PowerMeterChanged`, `PowerActivated`, `PowerEnded` events and a time-scale contract for freeze.
-- [ ] H2. Lot or Patrons: judge and publish `PerfectDropOff`.
-- [ ] H3. Pure `PowerMeter` rule (add, levels, reset) and `PowerMeterConfig` with F2 keys, with EditMode tests.
-- [ ] H4. Meter listens to `PerfectPark`, `PerfectDropOff` and drift events (needs car handling step 4 for `PerfectPark`).
-- [ ] H5. Vertical meter HUD in the pixel style (three notches, three colours, pulses).
-- [ ] H6. Activate key and level choice; `IPowerEffect` seam.
-- [ ] H7. Power 1: speed boost (shares the Golden Valet barge-through; after Q4).
-- [ ] H8. Power 2: freeze time (clock, timers, wash and charge progress, Director, ambient traffic and pedestrians) with its art and sound.
-- [ ] H9. Power 3: Park Smash (Lot parks and washes and charges, Patrons completes pickups and pays tips) with its art and sound.
-- [ ] H10. Stacking rules and tests (refresh, overlap, reset on use).
-- [ ] H11. Results screen stats for powers used.
-
-## E. Content and polish
-
-- [ ] E1. Title screen: add the valet, Kev and the key-tag dot on the i.
-- [ ] E2. Replace the Mrs. Okafor placeholder box with art.
-- [ ] E3. More car variety (only 14 civilian sprites exist; tint and mirroring cover it today).
-- [ ] E4. Curb arrows and headlights are hard to see; tune visibility.
-
-## F. Open design questions (human decides)
-
-- [ ] F1. Keep or rename the title.
-- [ ] F2. Single-valet hard mode: yes or no.
-- [ ] F3. Cliff car rule.
-- [ ] F4. Local co-op input.
-
-## G. Housekeeping
-
-- [ ] G17. Play-test round 3: tight turn (2.2) with Shift drift, softer sounds ('Tyre sound sharpness'), solid incoming and outgoing cars (stops, creep after 6 s, spawn overlap at the entrance, slot scan seeing trip cars), the wider lot and camera framing.
-- [ ] G18. Slot scan now counts trip cars' colliders as occupants (conservative); check no arrival is wrongly blocked.
-- [x] G19. Test review done (`docs/redesign/test_review.md`): no test needed deleting; fixed two slow tests (PlayMode 72 s to 32 s wall).
-- [ ] G20. Decide the release routine (proposals in `docs/redesign/test_review.md`): skip the 497 s web build unless something player-visible changed and batch merges per deploy; one Unity launch for setup plus tests; PlayMode only before deploy; skip RunBatch unless Editor/Data/Scenes changed.
-- [ ] G21. RunBatch rewrites Bootstrap.unity with about 1,200 changed lines on every run (fileID reshuffle); make the scene builder deterministic. Owner: integration.
-
-- [ ] G16. Rate limit hit during the play-test round of 2026-11-10: three agents (sharper turning and tunables and softer tyre sound; incoming cars solid; wider lot) stopped before finishing. Resume them with SendMessage after 10:50pm PT; their worktrees keep the partial work.
-
-- [ ] G14. Play-test skid marks (0.07 wide, visible at zoom 0.78? chord angularity?) and the tyre chirp, squeal loop (clicks in WebGL?) and screech balance. Tune through F2 > Advanced > Car handling. If marks are too faint, raise `_markThickness` in `SkidConfig`.
-- [ ] G15. `CarFactory` registers `ISlipSource` in Services (small deviation from 'only Bootstrap registers'); move it to Bootstrap if wanted.
-
-- [ ] G11. Play-test drift (Shift) and car bounce: slip angles at 6 u/s, bounce size, thud loudness, two moving cars colliding, gentle-touch ignore. Tune through F2 > Advanced > Car handling.
-- [ ] G12. `BootstrapSceneBuilder.cs` is 203 lines (limit 200); split. Owner: integration.
-- [ ] G13. Play-test the pickup arrow pair (clears the VALET PICKUP letters? readable at zoom 0.78? green when facing right).
-
-- [ ] G8. Play-test the nine difficulty dials at extreme positions (Intensity 10, Mercy 0, Dirty or EV 0, Ramp 0); the anchors are first guesses and the soak test was not rerun at non-default dials.
-- [ ] G9. Decide which rows stay visible without Advanced (now only the dials plus Game minutes per second and Shift length); Traffic and Pedestrians are Advanced-only.
-- [ ] G10. Optional: mark derived versus hand-edited Advanced rows in the F2 panel.
-
-- [ ] G3. Split `Tests/EditMode/UI/TicketBoardTests.cs` (314 lines, limit 200). Owner: integration.
-- [ ] G4. Remove unused `TicketRow.ShowsInfoBox`, `ShowsDirtMeter`, `ShowsChargeMeter`, `ChargeShown`, `Dirt01` and their tests. Owner: integration.
-- [ ] G5. Check `CarAutoDrive._finalRotation` after a queue retarget (stays the first slot's rotation). Owner: cars.
-- [ ] G6. Find the real cause of the failed arrival spawn (pacer now retries); consider a "spawner blocked" hold reason in the F3 overlay.
-- [ ] G7. Play-test: slot tint colours, droplet/plug icon beside the plate, camera 0.78, pedestrian bounce feel and boing loudness, walkers vs cars and valet.
-
-- [ ] G1. Optional: install the `mattpocock-skills` plugin (`claude plugin install mattpocock-skills@claude-plugins-official`), then decide which skills clash with `CLAUDE.md`.
-- [ ] G2. Update `docs/status.md` with a short line pointing to this file.
+Done before the migration (not migrated): the car handling steps 1 to 3 (D1 to D3, D3d, D3f), the test review (G19), the release routine (G20), the rate-limit note (G16), the pickup patience and tip pop requests, and the status line pointing here (G2).

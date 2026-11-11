@@ -140,7 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (978 at the last full run, plus 16 PlayMode). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (992 at the last full run, plus 16 PlayMode). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -235,6 +235,7 @@ Draft: `docs/redesign/valet_powers.md` (open questions Q1 to Q7 must be answered
 | 2026-11-10 | Play-test round 3 merged: tightest turn radius is a direct F2 row (default 2.2, so 104 deg/s; above 4 u/s it opens up) and top speed, acceleration, braking, coast drag and reverse speed are live multipliers of each car's own values; tyre chirp, squeal, screech, bump thud and pedestrian boing softened (squeal about 500 Hz, low-pass, 'Tyre sound volume' and 'Tyre sound sharpness' F2 rows); trip cars (entering and leaving) are solid and immovable, the player's car bounces off them, they brake behind obstacles with a look-ahead and creep on after 6 s (Core `ITripObstacles`); lot widened: aisle 4.6 to 6.0 and east gap 1.0 to 3.5 (lot width about 37.2); the hand-tuned dial values are the new baseline (Intensity 8, Ramp 8, Late Rush 6, Dirty 5, EV 5, Dilemmas 6.5, Mercy 4, Skill 5.5, Seed 0, game minutes per second 1, shift 240 s); 974 EditMode and 16 PlayMode tests |
 | 2026-11-11 | Pickup patience lowered: default pickup window 60 to 45 game minutes; impatient patrons (25%) now wait 0.6x of that (27 min; before, impatient only changed the tip bonus); both are visible F2 rows under Clock ('Pickup patience (game min)', 'How much shorter impatient patrons wait (x)') and apply live to waiting patrons too; mood thresholds (0.6, 0.85) stay fractions of each patron's own window; release routine adopted (CLAUDE.md); 978 EditMode and 16 PlayMode tests |
 | 2026-11-11 | Stable and beta sites: `main` (stable, the playtesters' link) is served at the Pages root and `pivot/chaos` (beta) under `/beta/` by one workflow; new features go to beta first and are promoted by merging into `main` when the human says so; the current build was promoted to `main` (fast-forward) as the first stable build |
+| 2026-11-11 | Pickup patience default 25 game minutes (impatient about 15; angry from about 21 min of waiting); a '+$N' tip pop rises over the car at boarding (green, gold and larger from $40, muted $0; `TipPopTracker`, held per car from delivery until `PatronBoarded`); pending work moved to GitHub issues and the Uncanny Valet Project (CLAUDE.md, 'Tracking work'); 992 EditMode and 16 PlayMode tests |
 | 2026-11-10 | Valet powers drafted (A11, `docs/redesign/valet_powers.md`): event-filled vertical meter, three stackable powers (speed boost, freeze time, Park Smash) with their own art; planned, not built; seven open questions |
 
 ---

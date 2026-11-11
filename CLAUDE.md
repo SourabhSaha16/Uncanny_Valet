@@ -146,3 +146,10 @@ The slow parts are Unity itself (start-up 13 to 30 s per launch, web build about
 - `pivot/chaos` is **beta**: its committed `site/` is served at https://sourabhsaha16.github.io/Uncanny_Valet/beta/. All new work lands and is built here first.
 - **Promote** (beta to stable) only when the human says so: merge `pivot/chaos` into `main` (fast-forward when possible) and push `main`. Never push to `main` otherwise.
 - One workflow (`.github/workflows/ci-cd.yml`) assembles both and deploys on a push to either branch. The changelog check runs first; commits that were pushed without an entry are listed in `tools/changelog-exempt.txt` (history is never rewritten).
+
+## Tracking work (adopted 2026-11-11)
+
+- Pending work lives in **GitHub issues** of this repo, shown on the **Uncanny Valet** GitHub Project (columns: Backlog, Ready, In progress, In review, Done; fields Priority P0 to P2). `docs/pending_tasks.md` only points there.
+- Issue titles start with their old task ID in brackets (for example `[D3a]`). Labels: `area:*` (module), `type:*` (bug, feature, chore, playtest, decision) and `needs decision` (waiting on the human). Milestones group a feature (Car handling, Valet powers, Patron Director step 4, ...).
+- The lead creates and moves issues; agent briefs name the issue number and agent reports end with it. Commits and merges reference it (`Refs #n`). Work lands on `pivot/chaos`, which is not the default branch, so `Closes #n` only closes an issue when `main` is promoted: the lead closes issues with `gh issue close` after merging to beta and notes it in the changelog.
+- `gh` is at `C:\Program Files\GitHub CLI\gh.exe` (not on PATH in the lead's shell).
