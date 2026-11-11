@@ -537,3 +537,9 @@ Date: 2026-11-10
 Files: merges of worktree-agent-a5d7bd4e2d68a9b95 and worktree-agent-acc49e39f90d03a53, docs/design.md, docs/pending_tasks.md, docs/redesign/car_handling_spec.md, regenerated Bootstrap.unity and CarHandlingConfig.asset, site/
 Why: the human's notes (pickup facing arrow, bouncing car collisions) and car handling rollout step 2. Approved the ForwardGrip reading, the Core additions (IInputSource.Drift, IDrivable.SetDrift, CarsCollided) and the one-line SeatController edit.
 Tests: 917 of 917 EditMode, 11 of 11 PlayMode; browser smoke test shows the pickup arrows, no console errors. Drift and bounce not played.
+
+## lead: merge handling-step3 (skid marks, tyre audio), update docs, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a649e5206949c972d, docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity, site/
+Why: car handling rollout step 3 (docs/redesign/car_handling_spec.md section 6).
+Tests: 948 of 948 EditMode, 14 of 14 PlayMode (agent's run); browser smoke test with no console errors. Marks and sounds not seen or heard.

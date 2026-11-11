@@ -44,7 +44,7 @@ Nothing below has been played end to end; only browser smoke tests were done.
 Car controller (spec: `docs/redesign/car_handling_spec.md`, build order in its section 8; one step at a time per file set):
 - [x] D1. Step 1 (cars): measure the aisle width and car collider size, set R_min and MaxTurnRate, add the PlayMode test assembly and the bay-entry PlayMode test.
 - [x] D2. Step 2 (cars + Core input): `DriftModel`, `SteeringModel`, `IDriveModifier` seam, Drift input (Shift, right shoulder), `CarHandlingConfig` and its F2 keys.
-- [ ] D3. Step 3 (cars/fx + audio): minimal `DecalPool`, skid marks, tyre chirp and squeal.
+- [x] D3. Step 3 (cars/fx + audio): minimal `DecalPool`, skid marks, tyre chirp and squeal.
 - [ ] D3a. Step 4 (lot): `ParkJudge`, `ParkJudgeRunner`, `PerfectPark` event, pop, ding, camera kick, +$2 on the ticket, results stat.
 - [ ] D3b. Step 5 (valet): dash on foot, `BoostRules`, `ValetBoost`, barge-through, boost feedback, results stat.
 - [ ] D3c. Step 6 (cars): EV stat overrides in `CarDefinition`.
@@ -90,6 +90,9 @@ Later content:
 - [ ] F4. Local co-op input.
 
 ## G. Housekeeping
+
+- [ ] G14. Play-test skid marks (0.07 wide, visible at zoom 0.78? chord angularity?) and the tyre chirp, squeal loop (clicks in WebGL?) and screech balance. Tune through F2 > Advanced > Car handling. If marks are too faint, raise `_markThickness` in `SkidConfig`.
+- [ ] G15. `CarFactory` registers `ISlipSource` in Services (small deviation from 'only Bootstrap registers'); move it to Bootstrap if wanted.
 
 - [ ] G11. Play-test drift (Shift) and car bounce: slip angles at 6 u/s, bounce size, thud loudness, two moving cars colliding, gentle-touch ignore. Tune through F2 > Advanced > Car handling.
 - [ ] G12. `BootstrapSceneBuilder.cs` is 203 lines (limit 200); split. Owner: integration.
