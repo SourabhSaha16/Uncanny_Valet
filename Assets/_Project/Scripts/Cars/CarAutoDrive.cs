@@ -33,6 +33,7 @@ namespace UncannyValet.Cars
         private readonly CarTrip _trip = new CarTrip();
         private readonly TripProbe _probe = new TripProbe();
         private float _tripSpeed;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
 
         /// <summary>True while the car is driving in or out on its own, by road trip or straight.</summary>
         public bool IsBusy => _mode != Mode.Idle;
@@ -124,9 +125,10 @@ namespace UncannyValet.Cars
 
         private void FixedUpdate()
         {
-            if (_mode == Mode.Arriving) StepArrive(Time.fixedDeltaTime);
-            else if (_mode == Mode.Departing) StepDepart(Time.fixedDeltaTime);
-            else if (_mode != Mode.Idle) StepTrip(Time.fixedDeltaTime);
+            var dt = _world.Scaled(Time.fixedDeltaTime); // freeze time stops cars that drive themselves
+            if (_mode == Mode.Arriving) StepArrive(dt);
+            else if (_mode == Mode.Departing) StepDepart(dt);
+            else if (_mode != Mode.Idle) StepTrip(dt);
         }
 
         private void OnDestroy() => _trip.Cancel();

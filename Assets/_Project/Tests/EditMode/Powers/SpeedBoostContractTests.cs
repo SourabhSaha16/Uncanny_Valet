@@ -51,7 +51,7 @@ namespace UncannyValet.Tests.Powers
         }
 
         [Test]
-        public void Router_PlaysTheFanfareOnlyForTheSpeedBoost()
+        public void Router_PlaysTheFanfareForTheSpeedBoostAndTheTimeStopForFreezeTime()
         {
             var bus = new EventBus();
             var played = new System.Collections.Generic.List<SfxId>();
@@ -59,7 +59,7 @@ namespace UncannyValet.Tests.Powers
             router.Subscribe();
             bus.Publish(new PowerActivated(PowerKind.FreezeTime));
             bus.Publish(new PowerActivated(PowerKind.SpeedBoost));
-            CollectionAssert.AreEqual(new[] { SfxId.SpeedBoost }, played);
+            CollectionAssert.AreEqual(new[] { SfxId.TimeStop, SfxId.SpeedBoost }, played);
             router.Unsubscribe();
         }
     }

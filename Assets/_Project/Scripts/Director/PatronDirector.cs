@@ -22,7 +22,8 @@ namespace UncannyValet.Director
         private DirectorBrain _brain;
         private DilemmaDirector _dilemmas;
         private ReturnDirector _returns;
-        private float _sinceTick;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
+        private readonly DirectorTicker _ticker = new DirectorTicker();
 
         /// <summary>Hands over what only Bootstrap can supply. Must be called before this object is activated.</summary>
         /// <param name="maxCombo">The highest combo multiplier, for the form calculation.</param>
@@ -55,7 +56,7 @@ namespace UncannyValet.Director
             _returns = new ReturnDirector(bus, _clock, tuning, _settings);
             _brain = new DirectorBrain(bus, tuning, _clock, Services.Get<ILotSnapshotSource>(), tuned, _state,
                 _settings, _form, pacer, _dilemmas, _returns);
-            _sinceTick = 0f;
+            _ticker.Reset();
         }
 
         private void OnDisable()
@@ -73,11 +74,10 @@ namespace UncannyValet.Director
         private void Update()
         {
             if (_brain == null) return;
-            if (!_clock.IsRunning) { _sinceTick = 0f; return; }
-            _sinceTick += Time.deltaTime;
-            if (_sinceTick < _settings.TickSeconds) return;
-            _brain.Tick(_sinceTick);
-            _sinceTick = 0f;
+            if (!_clock.IsRunning) { _ticker.Reset(); return; }
+            var world = _world.Scaled(Time.deltaTime);
+            // Freeze time pauses pacing, the idle guard and returns, so no car is sent.
+            if (_ticker.TryTick(world, _world.IsSlowed, _settings.TickSeconds, out var elapsed)) _brain.Tick(elapsed);
         }
     }
 }

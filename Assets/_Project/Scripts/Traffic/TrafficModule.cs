@@ -28,6 +28,7 @@ namespace UncannyValet.Traffic
         private float _pendingExitSpeed = NoSpeed;
         private int _pendingMin = NoCount;
         private int _pendingTarget = NoCount;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
         private bool _ready;
 
         /// <summary>Fewest ambient cars kept on screen; below it a car is sent in at once. A live tuning value.</summary>
@@ -121,7 +122,7 @@ namespace UncannyValet.Traffic
         {
             if (!_ready || _camera == null) return;
             Vector3 at = _camera.transform.position;
-            _ambient.Step(Time.deltaTime, ViewWindow.Of(new Vector2(at.x, at.y), _camera.orthographicSize, _camera.aspect));
+            _ambient.Step(_world.Scaled(Time.deltaTime), ViewWindow.Of(new Vector2(at.x, at.y), _camera.orthographicSize, _camera.aspect));
         }
     }
 }
