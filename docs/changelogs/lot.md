@@ -73,3 +73,9 @@ Date: 2026-11-10
 Files: Scripts/UI/Hud/{ServiceIcons,WorldTicketPainter}.cs; Tests/EditMode/UI/ServiceIconsTests.cs
 Why: Play-test: the needs icons must show as soon as the car has arrived and its patron stepped out, not only inside the station (design.md Part A, stations). Beside the plate; under the car while no plate shows yet.
 Tests: 9 ServiceIcons tests (rule and event replays: arrive, carried in, cleaned, charged, ticket closed, no needs); full suite 815 passed, 0 failed.
+
+## lot: paint facing arrows in the pickup zone
+Date: 2026-11-10
+Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbArrowStyle,LotCurbArrows,CurbFacingRule,CurbZone,LotConfig,LotLayoutBuilder}.cs; Tests/EditMode/Lot/CurbArrowTests.cs
+Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
+Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.

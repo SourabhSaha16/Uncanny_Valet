@@ -1,4 +1,5 @@
 using UncannyValet.Core.Contracts;
+using UnityEngine;
 
 namespace UncannyValet.Lot
 {
@@ -10,6 +11,16 @@ namespace UncannyValet.Lot
     {
         /// <summary>Rotation of a car whose nose points straight down the screen.</summary>
         public const float DownDegrees = 180f;
+
+        /// <summary>Unit world direction a car's nose points in when it faces the required way (0 = up, positive turns anticlockwise).</summary>
+        public static Vector2 RequiredDirection
+        {
+            get
+            {
+                var radians = DownDegrees * Mathf.Deg2Rad;
+                return new Vector2(-Mathf.Sin(radians), Mathf.Cos(radians));
+            }
+        }
 
         private const float FullTurn = 360f;
         private const float HalfTurn = 180f;

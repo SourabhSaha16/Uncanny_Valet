@@ -102,11 +102,12 @@ namespace UncannyValet.Lot
                 rects.Make(transform, "Curb Fill", c.CurbPosition, c.CurbSize - Vector2.one * 0.3f, CurbFill, -6);
             }
             LotCurbArt.BuildLabel(transform, c);
+            var arrow = LotCurbArrows.Build(rects, transform, c);
             var zone = new GameObject("CurbZone");
             zone.transform.SetParent(transform, false);
             zone.transform.localPosition = c.CurbPosition;
             zone.AddComponent<BoxCollider2D>();
-            zone.AddComponent<CurbZone>().Init(c);
+            zone.AddComponent<CurbZone>().Init(c, arrow);
         }
     }
 }

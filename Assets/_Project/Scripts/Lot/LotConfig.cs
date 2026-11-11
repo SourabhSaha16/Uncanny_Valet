@@ -29,6 +29,8 @@ namespace UncannyValet.Lot
         [SerializeField, Range(5f, 90f), Tooltip("Largest angle from pointing straight down the screen at which the patron still takes the car (80 = any car pointing towards the road).")]
         private float _curbFacingToleranceDegrees = 80f;
 
+        [SerializeField] private CurbArrowStyle _curbArrow = new CurbArrowStyle();
+
         [Header("Frame")]
         [SerializeField] private float _margin = 1.5f;
         [SerializeField] private float _wallThickness = 0.6f;
@@ -120,6 +122,7 @@ namespace UncannyValet.Lot
         public Vector2 CurbSize => _curbSize;
         public float CurbToSpotsGap => _curbToSpotsGap;
         public float CurbFacingToleranceDegrees => _curbFacingToleranceDegrees;
+        public CurbArrowStyle CurbArrow => _curbArrow;
         public float SettleSeconds => _settleSeconds;
         public float StoppedSpeed => _stoppedSpeed;
         public float Margin => _margin;
