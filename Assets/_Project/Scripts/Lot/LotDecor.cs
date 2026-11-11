@@ -4,17 +4,14 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Builds the lot v2 scenery once at Awake: the dark asphalt outside the lot, the two-lane road below the lot with markings and a far sidewalk,
+    /// Builds the lot v2 scenery once at Awake: the dark asphalt outside the lot, the one-way entry road below the lot and the one-way exit road above it (markings, ENTRY and EXIT words, sidewalks),
     /// the right strip with the bus stop, the diner with its doors and the crosswalk stripes. Lives next to the lot
     /// (not under it) and sits at the same origin. Purely visual: it has no colliders and never touches the lot rules.
     /// </summary>
     public sealed class LotDecor : MonoBehaviour
     {
         private const int OutsideOrder = -30;
-        private const int GroundOrder = -25;
-        private const int MarkingOrder = -24;
         private const int StripOrder = -9;
-        private const float EdgeLineWidth = 0.12f;
 
         [SerializeField] private LotConfig _config;
         [SerializeField] private LotArtConfig _art;
@@ -36,7 +33,7 @@ namespace UncannyValet.Lot
             }
         }
 
-        /// <summary>Stretches <paramref name="rect"/> down just enough for the whole road and the far sidewalk to be in view.</summary>
+        /// <summary>Stretches <paramref name="rect"/> down just enough for the entry road and its sidewalk to be in view (the exit road above the lot may be partly out of view).</summary>
         public Rect ExtendView(Rect rect)
         {
             if (_config == null || _art == null) return rect;
@@ -64,22 +61,12 @@ namespace UncannyValet.Lot
             var rects = new RectFactory();
             var l = Layout;
             rects.Make(transform, "Outside Ground", l.Outside.center, l.Outside.size, _art.OutsideColor, OutsideOrder);
-            BuildRoad(rects, l);
+            LotRoadArt.Build(transform, rects, l, l.Lot, _art);
             BuildStrip(rects, l);
             LotWalkwayArt.Build(transform, rects, new WalkwayLayout(Geometry, _config.Site.WalkwayWidth), _art.Walkway, _art.CrosswalkColor);
             LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config);
         }
 
-        private void BuildRoad(RectFactory rects, DecorLayout l)
-        {
-            rects.Make(transform, "Road", l.Road.center, l.Road.size, _art.AsphaltColor, GroundOrder);
-            var dash = new Rect(l.Road.xMin, l.EastLane.yMin - _art.DashTileShift - 0.5f, l.Road.width, 1f);
-            SpriteTiler.Fill(transform, "Road Dashes", _art.RoadDashTile, dash, MarkingOrder);
-            SpriteTiler.Fill(transform, "Far Sidewalk", _art.SidewalkTile, l.FarSidewalk, GroundOrder);
-            var line = new Vector2(l.Road.width, EdgeLineWidth);
-            rects.Make(transform, "Road Edge N", new Vector2(l.Road.center.x, l.Road.yMax - EdgeLineWidth * 0.5f), line, _art.CrosswalkColor, MarkingOrder);
-            rects.Make(transform, "Road Edge S", new Vector2(l.Road.center.x, l.Road.yMin + EdgeLineWidth * 0.5f), line, _art.CrosswalkColor, MarkingOrder);
-        }
 
         private void BuildStrip(RectFactory rects, DecorLayout l)
         {

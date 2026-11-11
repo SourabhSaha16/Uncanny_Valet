@@ -4,7 +4,7 @@ namespace UncannyValet.Lot
 {
     /// <summary>
     /// Paints the facing arrows of the pickup zone: one on each side of the vertical text, pointing the way the facing
-    /// rule requires. Outlined like the exit-route arrows, above the curb paint and below the cars.
+    /// rule requires. Outlined, above the curb paint and below the cars.
     /// </summary>
     public static class LotCurbArrows
     {

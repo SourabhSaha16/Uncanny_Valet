@@ -66,7 +66,7 @@ namespace UncannyValet.Traffic
         [SerializeField, Min(0f)] private float _ambientPerMinute = 13f;
         [Tooltip("0 = exact interval, 1 = anywhere from nothing to double the mean.")]
         [SerializeField, Range(0f, 1f)] private float _intervalSpread = 0.6f;
-        [Tooltip("Chance that an ambient car takes the east lane (the lane next to the lot).")]
+        [Tooltip("Chance that an ambient car takes the entry road below the lot; the rest take the exit road above it (0.5 = the same rate on both).")]
         [SerializeField, Range(0f, 1f)] private float _eastShare = 0.5f;
         [Tooltip("Random seed for ambient traffic.")]
         [SerializeField] private int _seed = 1234;

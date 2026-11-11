@@ -6,7 +6,7 @@ using UncannyValet.Core.Ids;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// The drop-off zone. Publishes CarAtCurb once an empty car settles inside it facing down the screen (within the
+    /// The drop-off zone. Publishes CarAtCurb once an empty car settles inside it facing up the screen (within the
     /// configured tolerance). A resting car that faces the wrong way is not accepted; CurbFacingChanged tells the UI to
     /// show a hint until the car is turned or leaves.
     /// </summary>

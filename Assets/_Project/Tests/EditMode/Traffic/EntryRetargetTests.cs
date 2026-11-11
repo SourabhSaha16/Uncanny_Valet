@@ -17,7 +17,7 @@ namespace UncannyValet.Tests.Traffic
         private sealed class ColumnRoad : IRoadLayout
         {
             public IReadOnlyList<Vector2> EastLane { get; } = new[] { new Vector2(-10f, 0f), new Vector2(30f, 0f) };
-            public IReadOnlyList<Vector2> WestLane { get; } = new[] { new Vector2(30f, -2f), new Vector2(-10f, -2f) };
+            public IReadOnlyList<Vector2> TopLane { get; } = new[] { new Vector2(-10f, 10f), new Vector2(30f, 10f) };
             public float QueueTurnDistance => 20f;
             public float CurbMergeDistance => 20f;
 
@@ -52,11 +52,13 @@ namespace UncannyValet.Tests.Traffic
             var road = new ColumnRoad();
             var east = new LanePath();
             east.Rebuild(road.EastLane);
+            var top = new LanePath();
+            top.Rebuild(road.TopLane);
             var follow = new FollowSettings(5f, 0.6f, 0.8f, 3f, 6f);
             var merge = new MergeGapRule(2.5f, 2.5f, 0.8f);
             var tuning = new TripTuning(2f, 2f, 2.5f, 2f, 0.02f);
             _slots = new ScriptedSlots();
-            var context = new TripContext(road, east, new LaneOccupancy(16), follow, merge, tuning, new TripSpeeds(5f, 2.5f))
+            var context = new TripContext(road, east, top, new LaneOccupancy(16), follow, merge, tuning, new TripSpeeds(5f, 2.5f))
             {
                 Slots = _slots,
             };

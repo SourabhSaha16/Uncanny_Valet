@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace UncannyValet.Traffic
 {
-    /// <summary>What every patron trip shares: the road, the east lane path, the occupancy registry and the rules.</summary>
+    /// <summary>What every patron trip shares: the roads, the entry (east) and exit (top) lane paths, the occupancy registry and the rules.</summary>
     public sealed class TripContext
     {
         private const int ScratchCapacity = 16;
 
         public readonly IRoadLayout Road;
         public readonly LanePath EastPath;
+        public readonly LanePath TopPath;
         public readonly LaneOccupancy Occupancy;
         public readonly FollowSettings Follow;
         public readonly MergeGapRule Merge;
@@ -21,11 +22,12 @@ namespace UncannyValet.Traffic
         /// <summary>Reusable buffer for fetching routes from the road layout.</summary>
         public readonly List<Vector2> Scratch = new List<Vector2>(ScratchCapacity);
 
-        public TripContext(IRoadLayout road, LanePath eastPath, LaneOccupancy occupancy,
+        public TripContext(IRoadLayout road, LanePath eastPath, LanePath topPath, LaneOccupancy occupancy,
             FollowSettings follow, MergeGapRule merge, TripTuning tuning, TripSpeeds speeds = null)
         {
             Road = road;
             EastPath = eastPath;
+            TopPath = topPath;
             Occupancy = occupancy;
             Follow = follow;
             Merge = merge;
@@ -44,12 +46,12 @@ namespace UncannyValet.Traffic
             return slots != null;
         }
 
-        /// <summary>True when a car centred at <paramref name="distance"/> on the east lane has room to join it now.</summary>
-        public bool CanJoinEast(float distance)
+        /// <summary>True when a car centred at <paramref name="distance"/> on <paramref name="lane"/> has room to join it now.</summary>
+        public bool CanJoin(TrafficLane lane, float distance)
         {
             float length = Tuning.CarLength;
-            float ahead = Occupancy.GapAhead(TrafficLane.East, distance, length, 0, out _);
-            float behind = Occupancy.GapBehind(TrafficLane.East, distance, length, 0, out float followerSpeed);
+            float ahead = Occupancy.GapAhead(lane, distance, length, 0, out _);
+            float behind = Occupancy.GapBehind(lane, distance, length, 0, out float followerSpeed);
             return Merge.CanMerge(ahead, behind, followerSpeed);
         }
 
@@ -73,11 +75,11 @@ namespace UncannyValet.Traffic
             Occupancy.Update(state.Id, distance, speed);
         }
 
-        /// <summary>Registers a car on the east lane and returns its lane state.</summary>
-        public LaneState JoinEast(float distance, float speed)
+        /// <summary>Registers a car on <paramref name="lane"/> and returns its lane state.</summary>
+        public LaneState Join(TrafficLane lane, float distance, float speed)
         {
-            int id = Occupancy.Add(TrafficLane.East, distance, speed, Tuning.CarLength);
-            return new LaneState { Id = id, Lane = TrafficLane.East, Distance = distance, Speed = speed };
+            int id = Occupancy.Add(lane, distance, speed, Tuning.CarLength);
+            return new LaneState { Id = id, Lane = lane, Distance = distance, Speed = speed };
         }
     }
 }

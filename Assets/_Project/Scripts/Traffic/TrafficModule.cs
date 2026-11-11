@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UncannyValet.Traffic
 {
     /// <summary>
-    /// Runs the road traffic: spawns and steps ambient cars on both lanes with pooled visual-only cars, and provides the
+    /// Runs the road traffic: spawns and steps ambient cars on both roads with pooled visual-only cars, and provides the
     /// patron entry/exit trips. Created by Bootstrap; reads <see cref="IRoadLayout"/> from Services in Start and
     /// registers <see cref="IEntryRouter"/>, <see cref="IExitRouter"/> and <see cref="ITripDriver"/> there.
     /// </summary>
@@ -17,7 +17,7 @@ namespace UncannyValet.Traffic
         [SerializeField] private TrafficConfig _config;
 
         private readonly LanePath _east = new LanePath();
-        private readonly LanePath _west = new LanePath();
+        private readonly LanePath _top = new LanePath();
         private AmbientVehicle[] _vehicles;
         private LaneOccupancy _occupancy;
         private AmbientSpawner _spawner;
@@ -72,7 +72,7 @@ namespace UncannyValet.Traffic
         private void Build(IRoadLayout road)
         {
             _east.Rebuild(road.EastLane);
-            _west.Rebuild(road.WestLane);
+            _top.Rebuild(road.TopLane);
             _follow = new FollowSettings(_config.CruiseSpeed, _config.MinGap, _config.Headway, _config.Acceleration, _config.Brake);
             _merge = new MergeGapRule(_config.MergeGapAhead, _config.MergeGapBehind, _config.Headway);
             _occupancy = new LaneOccupancy(_config.MaxCars * 3);
@@ -95,7 +95,7 @@ namespace UncannyValet.Traffic
             _speeds.SetExitSpeed(_config.ExitSpeed);
             if (_pendingEntrySpeed > NoSpeed) _speeds.SetEntrySpeed(_pendingEntrySpeed);
             if (_pendingExitSpeed > NoSpeed) _speeds.SetExitSpeed(_pendingExitSpeed);
-            var router = new TripRouter(new TripContext(road, _east, _occupancy, _follow, _merge, tuning, _speeds), _config.MaxCars);
+            var router = new TripRouter(new TripContext(road, _east, _top, _occupancy, _follow, _merge, tuning, _speeds), _config.MaxCars);
             Services.Register<IEntryRouter>(router);
             Services.Register<IExitRouter>(router);
             Services.Register<ITripDriver>(router);
@@ -145,7 +145,7 @@ namespace UncannyValet.Traffic
 
         private void StepVehicle(AmbientVehicle vehicle, float dt)
         {
-            LanePath path = vehicle.State.Lane == TrafficLane.East ? _east : _west;
+            LanePath path = vehicle.State.Lane == TrafficLane.East ? _east : _top;
             LaneMotion.Step(ref vehicle.State, _config.CarLength, vehicle.DesiredSpeed * _speedScale,
                 float.PositiveInfinity, _occupancy, _follow, dt);
             float distance = vehicle.State.Distance;

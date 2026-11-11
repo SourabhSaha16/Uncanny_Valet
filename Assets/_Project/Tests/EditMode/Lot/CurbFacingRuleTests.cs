@@ -7,47 +7,54 @@ namespace UncannyValet.Tests.Lot
     {
         private readonly CurbFacingRule _rule = new CurbFacingRule(80f);
 
-        [TestCase(180f)]
-        [TestCase(150f)]
-        [TestCase(215f)]
-        [TestCase(-180f)]
-        [TestCase(540f)]
-        [TestCase(100f)]
-        [TestCase(260f)]
-        public void FacingDownWithinToleranceIsAccepted(float degrees) => Assert.IsTrue(_rule.IsAcceptable(degrees));
-
         [TestCase(0f)]
+        [TestCase(30f)]
+        [TestCase(-35f)]
+        [TestCase(360f)]
+        [TestCase(-360f)]
+        [TestCase(80f)]
+        [TestCase(280f)]
+        public void FacingUpWithinToleranceIsAccepted(float degrees) => Assert.IsTrue(_rule.IsAcceptable(degrees));
+
+        [TestCase(180f)]
         [TestCase(90f)]
         [TestCase(270f)]
         [TestCase(-90f)]
-        [TestCase(99f)]
-        [TestCase(261f)]
-        public void NotFacingDownIsRejected(float degrees) => Assert.IsFalse(_rule.IsAcceptable(degrees));
+        [TestCase(81f)]
+        [TestCase(279f)]
+        public void NotFacingUpIsRejected(float degrees) => Assert.IsFalse(_rule.IsAcceptable(degrees));
 
         [Test]
         public void ToleranceEdgeIsInclusive()
         {
-            Assert.IsTrue(_rule.IsAcceptable(100f));
-            Assert.IsTrue(_rule.IsAcceptable(260f));
+            Assert.IsTrue(_rule.IsAcceptable(80f));
+            Assert.IsTrue(_rule.IsAcceptable(-80f));
         }
 
-        [TestCase(180f, 0f)]
-        [TestCase(0f, 180f)]
-        [TestCase(-170f, 10f)]
-        [TestCase(350f, 170f)]
-        [TestCase(720f, 180f)]
+        [TestCase(0f, 0f)]
+        [TestCase(180f, 180f)]
+        [TestCase(-170f, 170f)]
+        [TestCase(350f, 10f)]
+        [TestCase(720f, 0f)]
         public void DeviationWrapsAroundTheFullTurn(float degrees, float expected)
-            => Assert.AreEqual(expected, CurbFacingRule.DeviationFromDown(degrees), 1e-3f);
+            => Assert.AreEqual(expected, CurbFacingRule.DeviationFromRequired(degrees), 1e-3f);
 
         [Test]
-        public void ZeroToleranceAcceptsOnlyStraightDown()
+        public void ZeroToleranceAcceptsOnlyStraightUp()
         {
             var strict = new CurbFacingRule(0f);
-            Assert.IsTrue(strict.IsAcceptable(180f));
-            Assert.IsFalse(strict.IsAcceptable(179f));
+            Assert.IsTrue(strict.IsAcceptable(0f));
+            Assert.IsFalse(strict.IsAcceptable(1f));
         }
 
         [Test]
-        public void NegativeToleranceIsTreatedAsZero() => Assert.IsTrue(new CurbFacingRule(-5f).IsAcceptable(180f));
+        public void NegativeToleranceIsTreatedAsZero() => Assert.IsTrue(new CurbFacingRule(-5f).IsAcceptable(0f));
+
+        [Test]
+        public void ADeliveryFacingDownIsRejectedAndOneFacingUpIsAccepted()
+        {
+            Assert.IsFalse(_rule.IsAcceptable(180f), "the old down-facing hand-over no longer counts");
+            Assert.IsTrue(_rule.IsAcceptable(0f));
+        }
     }
 }

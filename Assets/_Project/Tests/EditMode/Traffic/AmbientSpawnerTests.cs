@@ -45,21 +45,41 @@ namespace UncannyValet.Tests.Traffic
         }
 
         [Test]
-        public void Requests_StayInRange_AndUseBothLanes()
+        public void Requests_StayInRange_AndUseBothRoads()
         {
             AmbientSpawner spawner = Make(3);
             bool east = false;
-            bool west = false;
+            bool top = false;
             for (int i = 0; i < 20000; i++)
             {
                 if (!spawner.Tick(Dt, 60f, out SpawnRequest request)) continue;
                 Assert.That(request.LookIndex, Is.InRange(0, Looks - 1));
                 Assert.That(request.SpeedScale, Is.InRange(0.8f, 1.2f));
                 east |= request.Lane == TrafficLane.East;
-                west |= request.Lane == TrafficLane.West;
+                top |= request.Lane == TrafficLane.Top;
             }
-            Assert.IsTrue(east && west);
+            Assert.IsTrue(east && top);
         }
+
+        [Test]
+        public void AnEvenShare_GivesBothOneWayRoadsTheSameRate()
+        {
+            AmbientSpawner spawner = Make(11);
+            int entry = 0;
+            int exit = 0;
+            for (int i = 0; i < 60000; i++)
+            {
+                if (!spawner.Tick(Dt, 60f, out SpawnRequest request)) continue;
+                if (request.Lane == TrafficLane.East) entry++;
+                else exit++;
+            }
+            Assert.Greater(entry, 0);
+            Assert.AreEqual(entry, exit, (entry + exit) * 0.1f, "the exit road sees about as many cars as the entry road");
+        }
+
+        [Test]
+        public void TheLaneSetHasExactlyTheTwoOneWayRoads()
+            => CollectionAssert.AreEquivalent(new[] { TrafficLane.East, TrafficLane.Top }, System.Enum.GetValues(typeof(TrafficLane)));
 
         [Test]
         public void TurningRateOffThenOn_RestartsTheWait()

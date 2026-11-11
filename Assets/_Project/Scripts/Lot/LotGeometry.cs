@@ -4,7 +4,7 @@ namespace UncannyValet.Lot
 {
     /// <summary>
     /// Pure placement maths for lot v2: the bay grid (<see cref="BayPlan"/>), the curb with the gap west of it, the queue column under the
-    /// curb, the diner with its two doors, the right strip, the walkway lines and the road below, all computed from a
+    /// curb, the diner with its two doors, the right strip, the walkway lines and the entry road below and exit road above, all computed from a
     /// <see cref="LotConfig"/>. Local lot coordinates, y up. The frame is fixed: it holds every bay.
     /// </summary>
     public sealed class LotGeometry
@@ -34,16 +34,16 @@ namespace UncannyValet.Lot
         public Rect Corridor { get; }
         /// <summary>X of the north-south crosswalk in the corridor.</summary>
         public float CrossingX { get; }
-        /// <summary>X where cars leaving the curb run down the corridor.</summary>
-        public float ExitX { get; }
         /// <summary>Y of the middle of the drive aisle (and of the long crossing).</summary>
         public float AisleY { get; }
-        /// <summary>X range (min, max) of the opening in the south wall for the queue column and the corridor.</summary>
+        /// <summary>X range (min, max) of the opening in the south wall for the queue column.</summary>
         public Vector2 EntryGap { get; }
-        /// <summary>Centre line height of the eastbound lane (next to the lot).</summary>
+        /// <summary>X range (min, max) of the opening in the top wall directly above the curb, where delivered cars leave.</summary>
+        public Vector2 ExitGap { get; }
+        /// <summary>Centre line height of the entry road lane (below the lot, left to right).</summary>
         public float EastLaneY { get; }
-        /// <summary>Centre line height of the westbound lane.</summary>
-        public float WestLaneY { get; }
+        /// <summary>Centre line height of the exit road lane (above the top wall, left to right).</summary>
+        public float TopLaneY { get; }
         /// <summary>X range (min, max) the road is drawn and routed over.</summary>
         public Vector2 RoadSpan { get; }
         public float LaneWidth { get; }
@@ -65,7 +65,7 @@ namespace UncannyValet.Lot
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
             var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - c.AisleWidth * (BayPlan.Rows - 1);
             var sideY = Curb.yMax + s.SideDoorRise;
-            var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin;
+            var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
             var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin);
             Strip = new Rect(baysRight + s.StripGap, bottom, s.StripWidth, top - bottom);
@@ -77,12 +77,13 @@ namespace UncannyValet.Lot
             MainDoor = Box(new Vector2(dinerRight - s.DoorSize.x * 0.5f, Curb.center.y), s.DoorSize);
             Corridor = Rect.MinMaxRect(Curb.xMax, bottom, spotsLeft, top);
             CrossingX = Curb.xMax + c.CurbToSpotsGap * s.CrossingShare;
-            ExitX = Curb.xMax + c.CurbToSpotsGap * s.ExitShare;
-            EntryGap = new Vector2(queue.xMin - s.EntryPadding, spotsLeft);
+            EntryGap = new Vector2(queue.xMin - s.EntryPadding, queue.xMax + s.EntryPadding);
+            var exitHalf = c.QueueCarSize.x * 0.5f + s.EntryPadding;
+            ExitGap = new Vector2(Curb.center.x - exitHalf, Curb.center.x + exitHalf);
 
             LaneWidth = s.LaneWidth;
             EastLaneY = bottom - c.WallThickness - s.LaneWidth * 0.5f;
-            WestLaneY = EastLaneY - s.LaneWidth;
+            TopLaneY = Bounds.yMax + c.WallThickness + s.LaneWidth * 0.5f;
             RoadSpan = new Vector2(Bounds.xMin - c.WallThickness - s.RoadReach, Bounds.xMax + c.WallThickness + s.RoadReach);
         }
 

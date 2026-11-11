@@ -4,7 +4,7 @@ namespace UncannyValet.Traffic
 {
     /// <summary>
     /// Pure rule: decides when and what ambient car appears. Intervals are random around the mean implied by the rate,
-    /// the lane and look are random, all from one seeded generator. A rate of 0 switches it off.
+    /// the road and look are random, all from one seeded generator. A rate of 0 switches it off.
     /// </summary>
     public sealed class AmbientSpawner
     {
@@ -22,7 +22,7 @@ namespace UncannyValet.Traffic
         /// <param name="seed">Random seed.</param>
         /// <param name="lookCount">How many car looks exist (at least 1).</param>
         /// <param name="intervalSpread">0..1: how far an interval may stray from the mean (0 = exactly the mean).</param>
-        /// <param name="eastShare">0..1: chance that a car takes the east lane.</param>
+        /// <param name="eastShare">0..1: chance that a car takes the entry road (the rest take the exit road above the lot).</param>
         /// <param name="minSpeedScale">Lowest speed multiplier.</param>
         /// <param name="maxSpeedScale">Highest speed multiplier.</param>
         public AmbientSpawner(int seed, int lookCount, float intervalSpread, float eastShare,
@@ -69,7 +69,7 @@ namespace UncannyValet.Traffic
 
         private SpawnRequest Roll()
         {
-            TrafficLane lane = _random.NextDouble() < _eastShare ? TrafficLane.East : TrafficLane.West;
+            TrafficLane lane = _random.NextDouble() < _eastShare ? TrafficLane.East : TrafficLane.Top;
             int look = _random.Next(_lookCount);
             float scale = _minSpeedScale + (float)_random.NextDouble() * (_maxSpeedScale - _minSpeedScale);
             return new SpawnRequest(lane, look, scale);

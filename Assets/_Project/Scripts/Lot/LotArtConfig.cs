@@ -8,7 +8,6 @@ namespace UncannyValet.Lot
     {
         [Header("Sprites")]
         [SerializeField] private Sprite _sidewalkTile;
-        [SerializeField, Tooltip("Road tile with the dashed centre line near its top edge.")] private Sprite _roadDashTile;
         [Header("Colours")]
         [SerializeField, Tooltip("The ground outside the lot walls (left, right, above and around the road): darker than the lot asphalt.")]
         private Color _outsideColor = new Color(0.36f, 0.36f, 0.38f);
@@ -20,10 +19,14 @@ namespace UncannyValet.Lot
         [Header("Layout")]
         [SerializeField, Min(0.5f)] private float _sidewalkDepth = 1.5f;
         [SerializeField, Min(1f), Tooltip("How far the outside ground reaches past the lot and the road.")] private float _outsideReach = 40f;
-        [SerializeField, Tooltip("Height of the dash tile centre below the road middle (the dash sits near the tile top).")]
-        private float _dashTileShift = 0.27f;
         [SerializeField, Min(0.01f)] private float _curbEdgeWidth = 0.15f;
         [SerializeField] private Vector2 _curbPlateShare = new Vector2(0.7f, 0.92f);
+        [Header("Road labels (painted on the roads, pixel style)")]
+        [SerializeField, Tooltip("Word painted on the entry road below the lot.")] private string _entryWord = "ENTRY";
+        [SerializeField, Tooltip("Word painted on the exit road above the lot.")] private string _exitWord = "EXIT";
+        [SerializeField, Min(0.02f), Tooltip("Size of one pixel of a road label, world units.")] private float _roadLabelPixel = 0.14f;
+        [SerializeField, Range(0f, 1f), Tooltip("Where along the lot width a road label sits (0 = left wall, 1 = right wall).")] private float _roadLabelShare = 0.72f;
+        [SerializeField] private Color _roadLabelColor = new Color(0.97f, 0.97f, 0.94f, 0.9f);
         [Header("Diner and bus stop")]
         [SerializeField, Tooltip("The tall MetroCity building the diner's roof and facade are cut from (set by the editor builder).")]
         private Sprite _dinerBuilding;
@@ -52,7 +55,6 @@ namespace UncannyValet.Lot
         [SerializeField] private WalkwayStyle _walkway = new WalkwayStyle();
 
         public Sprite SidewalkTile => _sidewalkTile;
-        public Sprite RoadDashTile => _roadDashTile;
         public Color OutsideColor => _outsideColor;
         public Color AsphaltColor => _asphaltColor;
         public Color HedgeColor => _hedgeColor;
@@ -73,9 +75,13 @@ namespace UncannyValet.Lot
         public Color BusStopColor => _busStopColor;
         public Vector2 BusStopSize => _busStopSize;
         public float BusStopFromBottom => _busStopFromBottom;
+        public string EntryWord => _entryWord;
+        public string ExitWord => _exitWord;
+        public float RoadLabelPixel => _roadLabelPixel;
+        public float RoadLabelShare => _roadLabelShare;
+        public Color RoadLabelColor => _roadLabelColor;
         public float SidewalkDepth => _sidewalkDepth;
         public float OutsideReach => _outsideReach;
-        public float DashTileShift => _dashTileShift;
         public float CurbEdgeWidth => _curbEdgeWidth;
         public Vector2 CurbPlateShare => _curbPlateShare;
         public WalkwayStyle Walkway => _walkway;

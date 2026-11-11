@@ -80,9 +80,9 @@ namespace UncannyValet.Traffic
 
         private TripPose StepWaiting()
         {
-            if (_ctx.CanJoinEast(0f))
+            if (_ctx.CanJoin(TrafficLane.East, 0f))
             {
-                _lane = _ctx.JoinEast(0f, TurnSpeed);
+                _lane = _ctx.Join(TrafficLane.East, 0f, TurnSpeed);
                 _phase = TripPhase.OnLane;
             }
             return LanePose(_phase, 0f);

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Builds ground, walls (with the road opening in the south wall), the diner's solid block, curb, spots and
+    /// Builds ground, walls (with the entry opening in the south wall and the exit opening in the top wall), the diner's solid block, curb, spots and
     /// charging spots from a <see cref="LotConfig"/> at Awake, using generated coloured rectangles. Only open spots
     /// are shown; <see cref="LotExpander"/> opens and closes them with the night plan. Local origin is the lot's own
     /// transform. 0 degrees = car facing +Y (up).
@@ -57,13 +57,12 @@ namespace UncannyValet.Lot
             ChargingSpotCount = g.ChargingSpots.Length;
             _road = new RoadLayout(g, c.Site, transform.position);
             new LotFrame(rects, transform, c.WallThickness,
-                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap);
+                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
             BuildDiner(g);
             var judge = gameObject.AddComponent<PerfectRunner>();
             judge.Init(c, BuildCurb(rects));
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
             LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
-            LotRouteArrows.Build(transform, rects, _road, transform.position, style);
             var wash = StationBuilder.BuildWash(rects, transform, c, g.Wash);
             gameObject.AddComponent<StationSwitch>().Init(wash);
 

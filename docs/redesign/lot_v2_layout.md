@@ -55,3 +55,24 @@ Tunables (speed, gap, yield distance, ambient rate) are a ScriptableObject plus 
 | Queue slots | 3 |
 | Car entry | Keep the direction (queue nose up, delivery faces down); a road below with traffic: patron cars come from the left, turn into the queue; delivered cars drive down, slow and wait for a gap, exit right. Random ambient cars both ways. City-builder traffic mechanics |
 | Pedestrians | Only the two points as drawn |
+
+## v3: exit from the top (issue #68, 2026-11-11)
+
+Supersedes the "Road below the lot" and "Pickup arrow" parts above where they conflict.
+
+- **Bottom road = ENTRY**, one lane, one way left to right (the westbound lane is gone). Patron cars still enter from
+  the left and turn up into the queue column; ambient cars drive it left to right only. A pixel-style `ENTRY` word is
+  painted on the lane (`LotRoadArt`, `PixelFont`; word, pixel size and position are `LotArtConfig` fields).
+- **Top road = EXIT**, a new one-lane one-way road above the top wall, same style as the entry road (asphalt, edge
+  lines, sidewalk on its far side), left to right, with ambient cars at the same rate and speed
+  (`TrafficConfig` ambient keys apply to both; `EastShare` 0.5 splits the rate evenly). `EXIT` is painted on it.
+- The lot is taller by `SiteLayout.ExitRunway` (1.5) above the side door. The camera code is unchanged: it still frames
+  the lot, extended down to the entry road sidewalk; the exit road lies above the frame and may be partly out of view.
+- **Drop-off faces up.** `CurbFacingRule.RequiredDegrees` is 0 (nose up), tolerance unchanged (80 degrees; the F2 Perfect
+  drop-off angle is measured from up). The curb arrows point up. Patron walk and boarding are unchanged.
+- **Exit route.** A delivered car leaves the curb straight up through a gap in the top wall directly above the curb
+  (`LotGeometry.ExitGap`, one car wide plus padding), waits at the merge point for a gap on the exit road (same
+  `MergeGapRule` as the old curb exit, now on `TrafficLane.Top`), turns right and leaves along the exit road.
+  `IRoadLayout.WestLane` became `TopLane`; `CurbExitRoute` and `CurbMergeDistance` now describe this route.
+- The south wall opening shrank to just the queue column (the old exit corridor is gone) and the old painted exit-route
+  arrows were removed; the ENTRY and EXIT words replace them.
