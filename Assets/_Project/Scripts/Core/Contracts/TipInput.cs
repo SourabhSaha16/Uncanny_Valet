@@ -28,14 +28,19 @@ namespace UncannyValet.Core.Contracts
         /// <summary>Combo multiplier applied last, 1 or more (a value below 1 counts as 1).</summary>
         public readonly int ComboMultiplier;
 
+        /// <summary>Perfect Parks earned and not yet paid on this ticket. Each adds the Perfect Park bonus.</summary>
+        public readonly int PerfectParks;
+
         public TipInput(int baseTip, float waitMinutes, bool impatient, bool pickupExpired = false,
             bool chargedEv = false, bool cleanedDirty = false, bool uncleanedDirty = false,
-            float patienceRemaining01 = 0f, float damage01 = 0f, int comboMultiplier = 1)
+            float patienceRemaining01 = 0f, float damage01 = 0f, int comboMultiplier = 1,
+            int perfectParks = 0)
         {
             BaseTip = baseTip; WaitMinutes = waitMinutes; Impatient = impatient;
             PickupExpired = pickupExpired; ChargedEv = chargedEv;
             CleanedDirty = cleanedDirty; UncleanedDirty = uncleanedDirty;
             PatienceRemaining01 = patienceRemaining01; Damage01 = damage01; ComboMultiplier = comboMultiplier;
+            PerfectParks = perfectParks;
         }
     }
 }

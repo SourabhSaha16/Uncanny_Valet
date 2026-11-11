@@ -16,6 +16,8 @@ namespace UncannyValet.Economy
         private int _cleanBonus = 15;
         [SerializeField, Min(0), Tooltip("Dollars added when the patron still has all their patience left; scales down with the patience spent.")]
         private int _maxPatienceBonus = 10;
+        [SerializeField, Min(0), Tooltip("Dollars added for each Perfect Park earned on the ticket (before damage and combo).")]
+        private int _perfectParkBonus = 2;
         [SerializeField, Range(0.05f, 1f), Tooltip("Damage (0..1) per damage stage. 0.25 gives stages at 25%, 50%, 75% and 100%.")]
         private float _damageStageSize = 0.25f;
         [SerializeField, Range(0f, 1f), Tooltip("Share of the tip lost per damage stage. At 100% damage the tip is always $0.")]
@@ -28,6 +30,7 @@ namespace UncannyValet.Economy
         public int ChargeBonus => _chargeBonus;
         public int CleanBonus => _cleanBonus;
         public int MaxPatienceBonus => _maxPatienceBonus;
+        public int PerfectParkBonus => _perfectParkBonus;
         public float DamageStageSize => _damageStageSize;
         public float DamagePenaltyPerStage => _damagePenaltyPerStage;
     }

@@ -20,12 +20,17 @@ namespace UncannyValet.Core.Events
         /// <summary>The combo multiplier that was applied to the subtotal (1 or more).</summary>
         public readonly int ComboMultiplier;
 
+        /// <summary>Dollars for Perfect Parks on this ticket (before damage and combo).</summary>
+        public readonly int PerfectBonus;
+
         public TipBreakdown(int baseTip, int speedAdjust, int chargeBonus, int cleanBonus, int total,
-            TipZeroReason zeroReason, int patienceBonus = 0, int damageAdjust = 0, int comboMultiplier = 1)
+            TipZeroReason zeroReason, int patienceBonus = 0, int damageAdjust = 0, int comboMultiplier = 1,
+            int perfectBonus = 0)
         {
             BaseTip = baseTip; SpeedAdjust = speedAdjust; ChargeBonus = chargeBonus;
             CleanBonus = cleanBonus; Total = total; ZeroReason = zeroReason;
             PatienceBonus = patienceBonus; DamageAdjust = damageAdjust; ComboMultiplier = comboMultiplier;
+            PerfectBonus = perfectBonus;
         }
     }
 }
