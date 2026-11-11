@@ -6,7 +6,7 @@ namespace UncannyValet.Patrons
 {
     /// <summary>
     /// Applies a changed tuning value to open tickets. Charge and wash minutes reach tickets created afterwards;
-    /// the pickup window also reaches timers already running (progress so far is kept).
+    /// the pickup window (and the impatient scale) also reaches timers already running (progress so far is kept).
     /// </summary>
     public sealed class LiveTicketTuning
     {
@@ -32,8 +32,9 @@ namespace UncannyValet.Patrons
                     _book.Tuning = _tuning.Service;
                     break;
                 case TuningKey.PickupWindowMinutes:
+                case TuningKey.ImpatientWindowScale:
                     _book.CopyTo(_scratch);
-                    foreach (var t in _scratch) t.PickupTimer.SetLength(e.Value);
+                    foreach (var t in _scratch) t.PickupTimer.SetLength(_tuning.WindowFor(t.Request.Impatient));
                     break;
             }
         }

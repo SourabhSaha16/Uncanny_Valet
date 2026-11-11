@@ -16,8 +16,9 @@ MonoBehaviour:
   _stayRange: {x: 20, y: 45}
   _baseTip: 20
   _impatientChance: 0.25
+  _impatientWindowScale: 0.6
   _maxWaitingCars: 3
-  _pickupWindowMinutes: 60
+  _pickupWindowMinutes: 45
   _evStartCharge: 0.2
   _chargeMinutes: 20
   _washMinutes: 15

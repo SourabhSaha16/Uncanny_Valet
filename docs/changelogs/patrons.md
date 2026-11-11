@@ -73,3 +73,9 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Director/{DialStart,DifficultyDialsConfig,DifficultyDials,DifficultyDialsLink}.cs, Assets/_Project/Tests/EditMode/Integration/{DialRig,DifficultyDialsTests}.cs, docs/redesign/difficulty_dials.md
 Why: The human tuned the F2 panel (Intensity 8, Ramp 8, Late Rush 6, Dirty 5, EV 5, Dilemmas 6.5, Mercy 4, Skill 5.5, Seed 0) and wants it as the baseline. Dials now seed at configurable start positions and the derived keys are seeded at their derived values, so Reset and Reset all return to the baseline. Clock stays 1 min/s and 240 s (already the config values).
 Tests: anchor-default test kept (dials moved to 5 reproduce authored values); new tests for the seeded baseline and in-range derived keys, Reset semantics, and the shipped asset carrying the baseline. Full EditMode suite 953/953 passed.
+
+## patrons: lower pickup patience, impatient patrons wait less, visible tuning
+Date: 2026-11-10
+Files: Scripts/Patrons/{PatronRequest,PatronConfig,PatronTuning,PatronRequestRoller,LiveTicketTuning}.cs, Data/Patrons/PatronConfig.asset, Scripts/Core/Events/TuningKey.cs, Scripts/Core/Contracts/GameRows.cs, Scripts/Bootstrap/TuningSeeder.cs, Tests/EditMode/Patrons/LiveTuningTests.cs, Tests/EditMode/Integration/{DifficultyDialsTests,PhysicsAndTipTests}.cs
+Why: Play-test: patrons should lose patience sooner (design.md A4). Default window 60 -> 45 game min; impatient patrons wait 0.6x of it (was a tip flag only). New key ImpatientWindowScale; both rows visible in the Clock block; changes reach waiting tickets.
+Tests: 4 new in LiveTuningTests; dial-catalog visible count 11 -> 13; PhysicsAndTipTests pins a long window so complaint penalties do not skew its sum check. Full EditMode passes (978).

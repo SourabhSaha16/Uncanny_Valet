@@ -59,7 +59,7 @@ namespace UncannyValet.Tests.Integration
             _h.Bus.Subscribe<TipEarned>(e => { Assert.GreaterOrEqual(e.Amount, 0); sum += e.Amount; });
             for (var i = 0; i < 5; i++)
             {
-                var t = _h.Spawn(new PatronRequest(5f, 10 + i * 5, i % 2 == 0));
+                var t = _h.Spawn(new PatronRequest(5f, 10 + i * 5, i % 2 == 0, 1000f));
                 var spot = i % 4 + 1;
                 _h.Park(t, spot);
                 _h.Minutes(5 + i * 12);
