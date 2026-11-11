@@ -1,4 +1,13 @@
 === Last 50 commits ===
+9be084e  2026-11-10  lead: merge agent/handling-step2 (drift, steering, car bounce)
+8545e34  2026-11-10  cars: add bouncy car-on-car collisions and bump sound
+1a8d9ca  2026-11-10  cars: add drift and steering models, Drift input, handling tuning
+bf7c09e  2026-11-10  lead: merge agent/pickup-arrow
+5471574  2026-11-10  lot: paint facing arrows in the pickup zone
+114a646  2026-11-10  lead: merge handling-step1, update docs
+c51e9ae  2026-11-10  lead: merge agent/handling-step1
+690e583  2026-11-10  cars: measure lot, add TurningRadius and PlayMode bay test
+8e7e721  2026-11-10  lead: merge difficulty-dials, adopt car handling spec, rebuild site
 1df4b7f  2026-11-10  lead: merge agent/difficulty-dials
 33e985f  2026-11-10  patrons: nine difficulty dials, Advanced toggle, plain director rows
 46dd883  2026-11-10  lead: merge own-car fix and service icons, update docs, rebuild site
@@ -40,15 +49,6 @@ f7550d1  2026-11-10  lot-v3: dark asphalt outside the lot instead of grass
 90b1800  2026-11-10  lot-v3: crosswalks become white zebra stripes
 17d4cb3  2026-11-10  lot-v3: dotted slot boxes replace the arrival arrows
 b23584c  2026-11-10  lot-v3: label the curb zone VALET PICKUP
-58ab73a  2026-11-10  lot-v3: patrons face the curb zone while waiting
-4c2c42c  2026-11-10  lead: design doc traffic state
-ed1ab49  2026-11-10  lead: rebuild site for lot v2 and traffic
-7dea408  2026-11-10  lead: merge traffic-wire, rebuild site
-3356086  2026-11-10  traffic-wire: hook up road traffic, patron arrival and departure trips
-2896813  2026-11-10  lead: merge lot-v2 and traffic, update design doc
-d5f0bdc  2026-11-10  Merge branch 'worktree-agent-ad7a2343048ede8aa' into pivot/chaos
-8c1fe75  2026-11-10  lot-v2: rebuild lot to the sketch, road below, new routes
-2baa4b5  2026-11-10  traffic: add road traffic module with car following and patron trips
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -89,6 +89,12 @@ Tests: SfxTests.CarArrivesSoundPlaysOnCarArrivedNotOnTicketOpened added; full Ed
 # Cars changelog
 
 Entries are added by the cars agent, one per commit. Format in docs/changelogs/README.md.
+
+## cars: measure lot, add TurningRadius and PlayMode bay test
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Cars/{TurningRadius,CarHandlingConfig}.cs, Assets/_Project/Tests/EditMode/Cars/TurningRadiusTests.cs, Assets/_Project/Tests/PlayMode/{UncannyValet.Tests.PlayMode.asmdef,BayEntryDriver.cs,BayEntryTests.cs} (+ .meta)
+Why: docs/redesign/car_handling_spec.md section 8 step 1. Measurements (Unity units): drive aisle = clear gap between the bay rows = 4.6 (LotConfig 4.6; LotGeometry puts the top row bottom at y -1.9 and the bottom row top at y -6.5, so the gap equals the config); bays 2.6 x 4.4, pitch 3.2. Car: CarDefinition 1 x 2; the BoxCollider2D is 1 x 1 scaled by the car transform = 1.0 x 2.0; the visible sprite is scaled so its length is 2.0 and its width is 1.25 * 2 / (2.0 to 2.125) = about 1.18 to 1.25 (regular and EV sized the same way). The collider matches the length and is about 0.1 per side narrower than the sprite: not a clear mismatch, so no collider change. The spec's 1.8 x 4 car does not exist; the real car is 1 x 2 (queue slots assume 2.2 x 4.5). EV bay id = 7 (confirmed with IsChargingSpot(7)). R_min = 4.6 / 2 + 1 = 3.3; MaxTurnRate = 4 / 3.3 = 1.212 rad/s (69.5 deg/s). Pull-out rule A >= R_min + w/2 + 0.3 needs 4.1 (collider width 1.0) or 4.225 (sprite 1.25) and the aisle is 4.6: PASS, no aisle change. Bay slack (2.6 - w) / 2 = 0.8 per side (collider) or 0.7 (sprite). CarHandlingConfig holds TurnFullSpeed, MeasuredAisleWidth, radius margin and pull-out clearance with derived RMin and MaxTurnRate (not wired to any car). PlayMode: new assembly UncannyValet.Tests.PlayMode with the section 3 bay-entry test driven through BayEntryDriver (SetInput only). With today's CarDriver the test fails, so the 7 bay cases are [Ignore]d ("enabled in step 2"): at 2 u/s the car turns about 100 deg/s (radius about 1.2, tighter than R_min 3.3), ends about 1.6 units left of the bay centre with its body about 0.9 outside the bay edge, and for bays 3 and 4 also touches the neighbouring parked car (heading error up to 7 deg). One PlayMode measurement test runs and passes.
+Tests: EditMode 863/863 passed (10 new TurningRadius and config tests, baseline 853). PlayMode batch (Unity.exe -batchmode -nographics -projectPath . -runTests -testPlatform PlayMode -testResults playmode.xml -logFile playmode.log) exit 0: 1 passed, 7 ignored.
 
 ## cars: add driver, interaction, factory and physics maths
 Date: 2026-11-05
@@ -131,6 +137,18 @@ Date: 2026-11-06
 Files: Assets/_Project/Scripts/Cars/{CarFactory,CarDefinition,CarInteraction,CarMudMath,CarMudOverlay}.cs, new Assets/_Project/Scripts/Cars/{CarAutoDrive,CarAutoDriveMath,CarAutoDriveStyle}.cs (+ .meta), Assets/_Project/Tests/EditMode/Cars/{CarLooksMathTests,CarAutoDriveMathTests}.cs (+ .meta)
 Why: design.md sections 8-10 (arrival, departure, dirty look). SpawnArriving starts the car EntryDistance behind the stop point and CarAutoDrive eases it in (sqrt braking profile, kinematic MovePosition in FixedUpdate); DriveAwayAndDespawn accelerates it out along its heading and despawns it, and is safe when repeated or for a missing id. While auto-driving, the collider, CarDriver and CarInteraction are disabled (no shoving, no trigger events, no Enter prompt); on arrival the body returns to Dynamic. Tunables are in CarDefinition.AutoDrive. Mud is dark brown (0.17,0.09,0.04,0.9) at constant opacity; washing shrinks the overlay's local X from the left edge (right edge fixed), a left-to-right wipe distinct from the bottom-up timer fill, with no allocation and no renderer.material. CarMudMath.Alpha is replaced by Width/CenterX.
 Tests: 7 new or changed EditMode tests (CarAutoDriveMath x5, mud wipe x2); full EditMode run 287/287 passed.
+
+## cars: drift and steering models, Drift input, handling tuning
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Cars/{DriftModel,DriftSettings,SteeringModel,DriveInput,IDriveModifier,DriveModifierStack,CarHandlingLive,CarHandlingTuningLink}.cs (new), Assets/_Project/Scripts/Cars/{CarDriver,CarFactory,CarHandlingConfig,CarDefinition,CarPhysicsMath}.cs, Assets/_Project/Scripts/Core/Contracts/{IInputSource,IDrivable,TuningCatalog,HandlingRows}.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Valet/{KeyboardInputSource,SeatController}.cs, Assets/_Project/Scripts/Bootstrap/{GatedInputSource,TuningSeeder,GameBootstrap,HandlingAisleCheck}.cs, Assets/_Project/Editor/{HandlingAssetSetup,BootstrapSceneBuilder}.cs, Assets/_Project/Data/Cars/{CarHandlingConfig,Sedan}.asset, Assets/_Project/Scenes/Bootstrap.unity, tests (Cars/{DriftModelTests,SteeringModelTests,DriveModifierStackTests,CarHandlingTuningTests,CarPhysicsMathTests}, Integration/{HandlingAisleCheckTests,GatedInputSourceTests,FakeCarFactory}, PlayMode/{BayEntryTests,BayEntryDriver})
+Why: car_handling_spec.md rollout step 2. CarDriver now runs input modifiers, DriftModel (velocity lags the facing; speed-dependent grip; Shift handbrake) then throttle/brake and SteeringModel (turn rate = MaxTurnRate * steer * clamp01(vF / TurnFullSpeed), so the radius is R_min 3.3 below 4 u/s). IInputSource gains Drift (Left Shift, gamepad right shoulder; one read in KeyboardInputSource, shared with the later dash) and IDrivable gains SetDrift, fed by SeatController. CarHandlingConfig holds every section 2 value; CarHandlingLive is the shared runtime copy that CarHandlingTuningLink updates from the new F2 group "Car handling" (8 advanced rows). The aisle width is copied from LotConfig by HandlingAssetSetup in the scene build and HandlingAisleCheck logs an error at start if they differ. CarDefinition.Grip and TurnRate and the two CarPhysicsMath functions they fed are removed. Deviation from the spec text: "speed removed this step" is the speed magnitude the sideways damping costs (hypot), not the sideways speed itself; the literal version added ForwardGrip * v * turn rate of forward speed in every corner (about +4 u/s per second at 6 u/s full lock), so ForwardGrip 1 now keeps the speed exactly and 0 scrubs it. Slip angle after 2 s of full lock without throttle: about 12 deg at 6 u/s, about 43 deg with Shift. BayEntryTests: removed the Ignore, and the teardown now destroys the spawned cars (they leaked into the next case and were hit by the approaching car).
+Tests: EditMode 895/895 passed (new: DriftModel 19, SteeringModel 7, DriveModifierStack 5, CarHandlingTuning 5, HandlingAisleCheck 2; 6 old physics tests removed); PlayMode 8/8 passed (7 bay entries and the geometry check).
+
+## cars: bouncy car-on-car collisions with a bump sound
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Cars/{CarBounceRule,CarBumpLimiter,CarCollisionResponse,CarHandlingKit}.cs (new), Assets/_Project/Scripts/Cars/{CarDriver,CarFactory,CarHandlingConfig}.cs, Assets/_Project/Scripts/Core/Events/CarEvents.cs, Assets/_Project/Scripts/Audio/{SfxId,SfxAlerts,SfxRecipeBook,SfxEventRouter}.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, Assets/_Project/Scenes/Bootstrap.unity, tests (EditMode Cars/CarBounceRuleTests, Audio/CarBumpSfxTests, PlayMode/CarBounceTests)
+Why: the human asked for bouncing collisions between cars. An explicit rule, not a PhysicsMaterial2D, because Box2D restitution would also bounce cars off walls and cannot treat braked parked cars as heavy. CarCollisionResponse (one per car) runs in OnCollisionEnter2D and replaces the car's own speed along the contact normal with a 1D restitution result computed from both cars' pre-impact velocities (CarDriver.PreSolveVelocity, the velocity set before the physics step), so mass differences (EV 1.5x later) work. A car with nobody in it counts ParkedMassScale (8) times heavier: the driven car rebounds, the parked one only shuffles and settles under its drag. Rule for who takes part: both cars must have an enabled CarDriver and a Dynamic body. CarAutoDrive and trips switch the body to Kinematic, the collider off and the driver off, so arriving, departing and queued cars neither trigger nor suffer the response and are not jittered; walls, the valet and pedestrians are unchanged. CarsCollided(WorldX, WorldY, Strength01) is a new additive Core event published by the lower-id car of the pair, once per pair per 0.25 s (CarBumpLimiter), only above 0.5 u/s approach speed; strength is approach speed 0.5..6 mapped to 0..1. Audio: SfxId.CarBump, a 0.25 s falling sine thud plus a muffled knock (SfxAlerts.CarBump), SfxEventRouter plays it with its own 0.1 s SfxRateLimiter. Values (CarHandlingConfig): Bounciness 0.4, MinImpactSpeed 0.5, FullImpactSpeed 6, ParkedMassScale 8, BumpPairInterval 0.25. A driven car hitting a parked one at 3 u/s rebounds about 0.7 u/s and shoves it about 0.06 units.
+Tests: EditMode 910/910 passed (new: CarBounceRule and limiter 12, bump sfx 3); PlayMode 11/11 passed (3 new: rebound plus event plus settle, gentle touch ignored, non-live car ignored). Not verified by hand in play: the sound level and the feel of the rebound.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -803,6 +821,18 @@ Files: merges of worktree-agent-a3350361302357c08 and worktree-agent-af78fe44b6f
 Why: the human's notes: patrons pushed their own car on exit; need icons from queue arrival.
 Tests: 817 of 817 EditMode; browser smoke test with no console errors. Not played. Icon trigger is CarArrived (no patron-exited event exists in Core).
 
+## lead: merge difficulty-dials, adopt car handling spec, update docs, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a3ee1dcf52afb7383, docs/redesign/car_handling_spec.md, docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity and Director assets, site/
+Why: the human asked for fewer tunables with designer names, and handed over the car handling spec (checked against the code; corrections in the spec's section 0).
+Tests: 853 of 853 EditMode; browser smoke test with F2 open (dials show, no console errors). Not played.
+
+## lead: merge handling-step1, update docs
+Date: 2026-11-10
+Files: merge of worktree-agent-a79787fcea3c431c5, docs/design.md, docs/pending_tasks.md, docs/redesign/car_handling_spec.md
+Why: car handling rollout step 1 (docs/redesign/car_handling_spec.md section 8). No runtime change, so site/ was not rebuilt.
+Tests: 863 of 863 EditMode; PlayMode 1 passed, 7 ignored until step 2 (agent's run).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -993,6 +1023,12 @@ Date: 2026-11-10
 Files: Scripts/UI/Hud/{ServiceIcons,WorldTicketPainter}.cs; Tests/EditMode/UI/ServiceIconsTests.cs
 Why: Play-test: the needs icons must show as soon as the car has arrived and its patron stepped out, not only inside the station (design.md Part A, stations). Beside the plate; under the car while no plate shows yet.
 Tests: 9 ServiceIcons tests (rule and event replays: arrive, carried in, cleaned, charged, ticket closed, no needs); full suite 815 passed, 0 failed.
+
+## lot: paint facing arrows in the pickup zone
+Date: 2026-11-10
+Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbArrowStyle,LotCurbArrows,CurbFacingRule,CurbZone,LotConfig,LotLayoutBuilder}.cs; Tests/EditMode/Lot/CurbArrowTests.cs
+Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
+Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.
 
 === docs/changelogs/orders.md ===
 # Orders changelog

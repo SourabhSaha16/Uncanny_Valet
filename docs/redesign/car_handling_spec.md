@@ -24,6 +24,8 @@ These corrections apply to every agent. Where the spec text and this list disagr
 
 Measured in step 1 (2026-11-10): aisle 4.6, bay 2.6 x 4.4 pitch 3.2, EV bay id 7, real car 1 x 2 (the 1.8 x 4 car in sections 3 and 4 does not exist), R_min 3.3, MaxTurnRate 1.212 rad/s, pull-out rule passes, bay slack 0.8 per side.
 
+Decisions after step 2: (a) ForwardGrip hands back the speed magnitude the sideways damping removes, so ForwardGrip 1 keeps speed exactly and 0 scrubs it (the literal wording made cars accelerate in corners). (b) The delivery rule at the curb accepts a car within 80 degrees of facing down the screen, not 35 (design log 2026-11-09). (c) Car-vs-car bounce is in (section 6 skid work is step 3).
+
 Order of work (agents, one at a time per file set): see section 8.
 
 ## 1. Summary

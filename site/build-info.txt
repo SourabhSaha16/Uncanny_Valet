@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  1df4b7f
-Subject: lead: merge agent/difficulty-dials
-Date:    2026-11-10 18:41:48 -0800
+Commit:  9be084e
+Subject: lead: merge agent/handling-step2 (drift, steering, car bounce)
+Date:    2026-11-10 19:25:58 -0800
