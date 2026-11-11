@@ -17,13 +17,15 @@ namespace UncannyValet.Traffic
         public readonly FollowSettings Follow;
         public readonly MergeGapRule Merge;
         public readonly TripTuning Tuning;
+        /// <summary>Asks ambient cars on the exit lane to brake while a delivered car waits to merge.</summary>
+        public readonly YieldZone Yield;
         /// <summary>Live entry and exit speed scales.</summary>
         public readonly TripSpeeds Speeds;
         /// <summary>Reusable buffer for fetching routes from the road layout.</summary>
         public readonly List<Vector2> Scratch = new List<Vector2>(ScratchCapacity);
 
         public TripContext(IRoadLayout road, LanePath eastPath, LanePath topPath, LaneOccupancy occupancy,
-            FollowSettings follow, MergeGapRule merge, TripTuning tuning, TripSpeeds speeds = null)
+            FollowSettings follow, MergeGapRule merge, TripTuning tuning, TripSpeeds speeds = null, YieldZone yield = null)
         {
             Road = road;
             EastPath = eastPath;
@@ -33,6 +35,7 @@ namespace UncannyValet.Traffic
             Merge = merge;
             Tuning = tuning;
             Speeds = speeds ?? new TripSpeeds(1f, 1f);
+            Yield = yield ?? new YieldZone(merge.MinBehind);
         }
 
         /// <summary>Who decides the queue slot of an arriving car; null until Patrons registers it (see <see cref="TryGetSlots"/>).</summary>

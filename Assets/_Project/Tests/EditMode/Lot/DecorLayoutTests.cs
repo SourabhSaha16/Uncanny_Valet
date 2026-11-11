@@ -23,18 +23,22 @@ namespace UncannyValet.Tests.Lot
         public void TearDown() => Object.DestroyImmediate(_config);
 
         [Test]
-        public void TheEntryRoadIsOneLaneBelowTheSouthWallThenASidewalk()
+        public void TheEntryRoadIsTwoLanesBelowTheSouthWallThenASidewalk()
         {
             Assert.AreEqual(_geo.Bounds.yMin - _config.WallThickness, _layout.EastLane.yMax, 1e-4f);
-            Assert.AreEqual(_layout.EastLane.yMin, _layout.FarSidewalk.yMax, 1e-4f);
+            Assert.AreEqual(_layout.EastLane.yMin, _layout.EastBackLane.yMax, 1e-4f, "the opposite lane lies next to the patron lane, away from the lot");
+            Assert.AreEqual(_layout.EastBackLane.yMin, _layout.FarSidewalk.yMax, 1e-4f);
+            Assert.AreEqual(_geo.EastBackLaneY, _layout.EastBackLane.center.y, 1e-4f);
             Assert.AreEqual(_geo.LaneWidth, _layout.EastLane.height, 1e-4f);
         }
 
         [Test]
-        public void TheExitRoadIsOneLaneAboveTheTopWallThenASidewalk()
+        public void TheExitRoadIsTwoLanesAboveTheTopWallThenASidewalk()
         {
             Assert.AreEqual(_geo.Bounds.yMax + _config.WallThickness, _layout.TopLane.yMin, 1e-4f);
-            Assert.AreEqual(_layout.TopLane.yMax, _layout.TopSidewalk.yMin, 1e-4f);
+            Assert.AreEqual(_layout.TopLane.yMax, _layout.TopBackLane.yMin, 1e-4f);
+            Assert.AreEqual(_layout.TopBackLane.yMax, _layout.TopSidewalk.yMin, 1e-4f);
+            Assert.AreEqual(_geo.TopBackLaneY, _layout.TopBackLane.center.y, 1e-4f);
             Assert.AreEqual(_layout.EastLane.height, _layout.TopLane.height, 1e-4f, "same style as the entry road");
             Assert.AreEqual(_layout.EastLane.width, _layout.TopLane.width, 1e-4f);
         }
@@ -53,6 +57,12 @@ namespace UncannyValet.Tests.Lot
         {
             Assert.AreEqual(_geo.EastLaneY, _layout.EastLane.center.y, 1e-4f);
             Assert.AreEqual(_geo.TopLaneY, _layout.TopLane.center.y, 1e-4f);
+        }
+
+        [Test]
+        public void TheCameraFramingStaysWhereItWasWithOneEntryLane()
+        {
+            Assert.AreEqual(_layout.EastLane.yMin - 1.5f, _layout.ViewBottom, 1e-4f);
         }
 
         [Test]

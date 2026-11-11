@@ -18,6 +18,8 @@ namespace UncannyValet.Tests.Traffic
         {
             public IReadOnlyList<Vector2> EastLane { get; } = new[] { new Vector2(-10f, 0f), new Vector2(30f, 0f) };
             public IReadOnlyList<Vector2> TopLane { get; } = new[] { new Vector2(-10f, 10f), new Vector2(30f, 10f) };
+            public IReadOnlyList<Vector2> EastBackLane { get; } = new[] { new Vector2(30f, -3f), new Vector2(-10f, -3f) };
+            public IReadOnlyList<Vector2> TopBackLane { get; } = new[] { new Vector2(30f, 13f), new Vector2(-10f, 13f) };
             public float QueueTurnDistance => 20f;
             public float CurbMergeDistance => 20f;
 

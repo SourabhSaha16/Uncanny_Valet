@@ -38,10 +38,11 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.CleanBonus, "Tips", "Clean bonus", 0, 200, 1),
             new TuningInfo(TuningKey.SpeedWindowMinutes, "Tips", "Speed bonus window (game min)", 1, 60, 1),
             new TuningInfo(TuningKey.PedestrianCount, "Pedestrians", "Ambient pedestrians (walking in/out)", 0, 10, 1),
-            new TuningInfo(TuningKey.TrafficAmbientPerMinute, "Traffic", "Ambient cars per minute (0 = off)", 0, 40, 1),
             new TuningInfo(TuningKey.TrafficSpeedScale, "Traffic", "Ambient car speed scale", 0.2f, 2f, 0.05f),
             new TuningInfo(TuningKey.TrafficEntrySpeed, "Traffic", "Entry car speed (units/s)", 0.5f, 12f, 0.1f),
             new TuningInfo(TuningKey.TrafficExitSpeed, "Traffic", "Exit car speed (units/s)", 0.5f, 12f, 0.1f),
+            new TuningInfo(TuningKey.TrafficMinOnScreen, "Traffic", "Fewest road cars on screen (more are sent in below this)", 0, 8, 1),
+            new TuningInfo(TuningKey.TrafficTargetOnScreen, "Traffic", "Road cars on screen to aim for (0 = empty roads)", 0, 10, 1),
         };
     }
 }

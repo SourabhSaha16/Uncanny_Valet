@@ -53,8 +53,13 @@ MonoBehaviour:
   _blockedTimeout: 6
   _creepSpeed: 0.8
   _laneClearance: 1.6
-  _ambientPerMinute: 13
-  _intervalSpread: 0.6
-  _eastShare: 0.5
+  _minOnScreen: 3
+  _targetOnScreen: 4
+  _spawnGapSeconds: {x: 1.5, y: 4}
+  _countMargin: 1
+  _leaveLead: 6
+  _spawnMargin: 1.4
+  _despawnMargin: 1.4
+  _yieldLead: 10
   _seed: 1234
   _maxCars: 16

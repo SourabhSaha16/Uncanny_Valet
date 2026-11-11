@@ -17,6 +17,9 @@ namespace UncannyValet.Traffic
             _headway = headway;
         }
 
+        /// <summary>The smallest gap behind a merging car, for a follower at rest.</summary>
+        public float MinBehind => _minBehind;
+
         /// <summary>True when the car may merge. Gaps may be infinity (no car on that side).</summary>
         public bool CanMerge(float gapAhead, float gapBehind, float followerSpeed) =>
             gapAhead >= _minAhead && gapBehind >= _minBehind + followerSpeed * _headway;

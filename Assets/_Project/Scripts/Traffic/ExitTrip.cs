@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UncannyValet.Traffic
 {
     /// <summary>
-    /// A delivered car leaving: drives the curb exit route, yields at the merge point until the exit road above the lot has a gap,
+    /// A delivered car leaving: drives the curb exit route, asks ambient traffic on the exit road above the lot to slow, yields at the merge point until there is a gap,
     /// merges, and drives to the right end of the top lane where the trip finishes.
     /// </summary>
     public sealed class ExitTrip : ITrip
@@ -50,6 +50,7 @@ namespace UncannyValet.Traffic
         public void Cancel()
         {
             if (_lane.Id != 0) _ctx.Occupancy.Remove(_lane.Id);
+            _ctx.Yield.Release(Id);
             _lane = default;
             Id = TripId.None;
         }
@@ -58,11 +59,13 @@ namespace UncannyValet.Traffic
         {
             float mergeAt = _ctx.Road.CurbMergeDistance;
             bool open = _ctx.CanJoin(TrafficLane.Top, mergeAt);
+            if (_route.Remaining <= _ctx.Tuning.YieldLead) _ctx.Yield.Request(Id, mergeAt);
             bool yielding = _route.Remaining <= _ctx.Tuning.YieldDistance && !open;
             _route.Step(Mathf.Min(_ctx.Tuning.RouteSpeed * _ctx.Speeds.ExitScale, ObstacleCap(dt)), yielding, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
             if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
             if (!open) return _route.Pose(TripPhase.Yielding, 0f);
             _lane = _ctx.Join(TrafficLane.Top, mergeAt, _route.Speed);
+            _ctx.Yield.Release(Id);
             _phase = TripPhase.OnLane;
             return _route.Pose(TripPhase.OnLane, _route.Speed);
         }

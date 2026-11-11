@@ -112,8 +112,7 @@ namespace UncannyValet.Core.Events
         // Pedestrians (Pedestrians module owns). How many ambient people walk around; patrons are separate.
         PedestrianCount,
 
-        // Road traffic (Traffic module owns). Ambient cars per minute (0 = off) and a speed multiplier.
-        TrafficAmbientPerMinute,
+        // Road traffic (Traffic module owns). A speed multiplier for ambient cars (how many are kept on screen: see the end of this list).
         TrafficSpeedScale,
         // Patron cars: speed of cars driving in (lane cruise, the turn into the queue scales with it) and of delivered
         // cars driving off (curb route, the lane after merging scales with it), in units per second.
@@ -244,5 +243,10 @@ namespace UncannyValet.Core.Events
         ArrivalIdleLimit,
         /// <summary>No car is forced in when fewer seconds than this are left in the shift.</summary>
         ArrivalIdleCutoff,
+        // Ambient road traffic density (Traffic module owns). Issue 75.
+        /// <summary>Fewest ambient cars kept on screen; below it a car is sent in at once.</summary>
+        TrafficMinOnScreen,
+        /// <summary>Ambient cars on screen that spawning aims for (0 = no ambient traffic).</summary>
+        TrafficTargetOnScreen,
     }
 }

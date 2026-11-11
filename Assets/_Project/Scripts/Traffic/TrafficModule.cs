@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UncannyValet.Traffic
 {
     /// <summary>
-    /// Runs the road traffic: spawns and steps ambient cars on both roads with pooled visual-only cars, and provides the
+    /// Runs the road traffic: keeps ambient cars driving both ways on both roads with pooled visual-only cars, and provides the
     /// patron entry/exit trips. Created by Bootstrap; reads <see cref="IRoadLayout"/> from Services in Start and
     /// registers <see cref="IEntryRouter"/>, <see cref="IExitRouter"/> and <see cref="ITripDriver"/> there.
     /// </summary>
@@ -13,29 +13,44 @@ namespace UncannyValet.Traffic
     public sealed class TrafficModule : MonoBehaviour
     {
         private const float NoSpeed = -1f;
+        private const int NoCount = -1;
 
         [SerializeField] private TrafficConfig _config;
 
-        private readonly LanePath _east = new LanePath();
-        private readonly LanePath _top = new LanePath();
-        private AmbientVehicle[] _vehicles;
-        private LaneOccupancy _occupancy;
-        private AmbientSpawner _spawner;
-        private TrafficCarPool _pool;
-        private FollowSettings _follow;
-        private MergeGapRule _merge;
-        private float _ambientRate;
+        private readonly LaneNetwork _lanes = new LaneNetwork();
+        private AmbientTraffic _ambient;
+        private AmbientDensity _density;
+        private Camera _camera;
         private float _speedScale = 1f;
+        private bool _speedScaleSet;
         private TripSpeeds _speeds;
         private float _pendingEntrySpeed = NoSpeed;
         private float _pendingExitSpeed = NoSpeed;
+        private int _pendingMin = NoCount;
+        private int _pendingTarget = NoCount;
         private bool _ready;
 
-        /// <summary>Ambient cars per minute; 0 switches ambient traffic off. Starts at the config value.</summary>
-        public void SetAmbientRate(float carsPerMinute) => _ambientRate = Mathf.Max(0f, carsPerMinute);
+        /// <summary>Fewest ambient cars kept on screen; below it a car is sent in at once. A live tuning value.</summary>
+        public void SetMinOnScreen(float count)
+        {
+            if (_density != null) _density.SetMinOnScreen(Mathf.RoundToInt(count));
+            else _pendingMin = Mathf.RoundToInt(count);
+        }
+
+        /// <summary>Ambient cars on screen that spawning aims for (0 switches ambient traffic off). A live tuning value.</summary>
+        public void SetTargetOnScreen(float count)
+        {
+            if (_density != null) _density.SetTargetOnScreen(Mathf.RoundToInt(count));
+            else _pendingTarget = Mathf.RoundToInt(count);
+        }
 
         /// <summary>Multiplier on the speed of ambient cars (a live tuning value).</summary>
-        public void SetSpeedScale(float scale) => _speedScale = Mathf.Max(0f, scale);
+        public void SetSpeedScale(float scale)
+        {
+            _speedScale = Mathf.Max(0f, scale);
+            _speedScaleSet = true;
+            _ambient?.SetSpeedScale(_speedScale);
+        }
 
         /// <summary>Speed of patron cars driving in: lane cruise in units per second (the turn into the queue scales with it). A live tuning value.</summary>
         public void SetEntrySpeed(float speed)
@@ -65,37 +80,37 @@ namespace UncannyValet.Traffic
                 enabled = false;
                 return;
             }
+            _camera = Camera.main;
+            if (_camera == null) Debug.LogError($"{name}: TrafficModule found no camera tagged MainCamera; ambient cars need it to keep cars on screen.", this);
             Build(road);
             _ready = true;
         }
 
         private void Build(IRoadLayout road)
         {
-            _east.Rebuild(road.EastLane);
-            _top.Rebuild(road.TopLane);
-            _follow = new FollowSettings(_config.CruiseSpeed, _config.MinGap, _config.Headway, _config.Acceleration, _config.Brake);
-            _merge = new MergeGapRule(_config.MergeGapAhead, _config.MergeGapBehind, _config.Headway);
-            _occupancy = new LaneOccupancy(_config.MaxCars * 3);
-            _pool = new TrafficCarPool(transform, _config.MaxCars);
-            _vehicles = new AmbientVehicle[_config.MaxCars];
-            for (int i = 0; i < _vehicles.Length; i++) _vehicles[i] = new AmbientVehicle();
-            Vector2 scale = _config.SpeedScaleRange;
-            _spawner = new AmbientSpawner(_config.Seed, _config.LookCount, _config.IntervalSpread, _config.EastShare, scale.x, scale.y);
-            _ambientRate = _config.AmbientPerMinute;
-            _speedScale = _config.SpeedScale;
-            RegisterTrips(road);
+            _lanes.Rebuild(road);
+            var follow = new FollowSettings(_config.CruiseSpeed, _config.MinGap, _config.Headway, _config.Acceleration, _config.Brake);
+            var merge = new MergeGapRule(_config.MergeGapAhead, _config.MergeGapBehind, _config.Headway);
+            var occupancy = new LaneOccupancy(_config.MaxCars * 3);
+            var yield = new YieldZone(_config.MergeGapBehind);
+            _density = new AmbientDensity(_config.Seed, _config.LookCount, _config.SpeedScaleRange, _config.SpawnGapSeconds,
+                _pendingMin != NoCount ? _pendingMin : _config.MinOnScreen, _pendingTarget != NoCount ? _pendingTarget : _config.TargetOnScreen);
+            _ambient = new AmbientTraffic(_config, _lanes, occupancy, new TrafficCarPool(transform, _config.MaxCars), follow, merge, yield, _density);
+            if (_speedScaleSet) _ambient.SetSpeedScale(_speedScale);
+            RegisterTrips(road, occupancy, follow, merge, yield);
         }
 
-        private void RegisterTrips(IRoadLayout road)
+        private void RegisterTrips(IRoadLayout road, LaneOccupancy occupancy, FollowSettings follow, MergeGapRule merge, YieldZone yield)
         {
             var tuning = new TripTuning(_config.CarLength, _config.TurnSpeed, _config.RouteSpeed, _config.YieldDistance, _config.ArriveTolerance,
-                TripTuning.DefaultRetargetSeconds, _config.BlockedTimeout, _config.CreepSpeed, _config.LaneClearance);
+                TripTuning.DefaultRetargetSeconds, _config.BlockedTimeout, _config.CreepSpeed, _config.LaneClearance, _config.YieldLead);
             _speeds = new TripSpeeds(_config.CruiseSpeed, _config.RouteSpeed);
             _speeds.SetEntrySpeed(_config.EntrySpeed);
             _speeds.SetExitSpeed(_config.ExitSpeed);
             if (_pendingEntrySpeed > NoSpeed) _speeds.SetEntrySpeed(_pendingEntrySpeed);
             if (_pendingExitSpeed > NoSpeed) _speeds.SetExitSpeed(_pendingExitSpeed);
-            var router = new TripRouter(new TripContext(road, _east, _top, _occupancy, _follow, _merge, tuning, _speeds), _config.MaxCars);
+            var context = new TripContext(road, _lanes.Path(TrafficLane.East), _lanes.Path(TrafficLane.Top), occupancy, follow, merge, tuning, _speeds, yield);
+            var router = new TripRouter(context, _config.MaxCars);
             Services.Register<IEntryRouter>(router);
             Services.Register<IExitRouter>(router);
             Services.Register<ITripDriver>(router);
@@ -104,65 +119,9 @@ namespace UncannyValet.Traffic
 
         private void Update()
         {
-            if (!_ready) return;
-            float dt = Time.deltaTime;
-            if (_spawner.Tick(dt, _ambientRate, out SpawnRequest request)) TrySpawn(request);
-            for (int i = 0; i < _vehicles.Length; i++)
-            {
-                if (_vehicles[i].Active) StepVehicle(_vehicles[i], dt);
-            }
-        }
-
-        private void TrySpawn(SpawnRequest request)
-        {
-            float length = _config.CarLength;
-            float ahead = _occupancy.GapAhead(request.Lane, 0f, length, 0, out _);
-            if (!_merge.CanMerge(ahead, float.PositiveInfinity, 0f)) return;
-            AmbientVehicle vehicle = FreeVehicle();
-            TrafficCar view = _pool.Rent();
-            if (vehicle == null || view == null)
-            {
-                if (view != null) _pool.Return(view);
-                return;
-            }
-            float desired = _config.CruiseSpeed * request.SpeedScale;
-            int id = _occupancy.Add(request.Lane, 0f, desired, length);
-            vehicle.State = new LaneState { Id = id, Lane = request.Lane, Distance = 0f, Speed = desired };
-            vehicle.DesiredSpeed = desired;
-            vehicle.View = view;
-            vehicle.Active = true;
-            view.Show(_config.SpriteFor(request.LookIndex), _config.TintFor(request.LookIndex), _config.SortingOrder, _config.CarScale);
-        }
-
-        private AmbientVehicle FreeVehicle()
-        {
-            for (int i = 0; i < _vehicles.Length; i++)
-            {
-                if (!_vehicles[i].Active) return _vehicles[i];
-            }
-            return null;
-        }
-
-        private void StepVehicle(AmbientVehicle vehicle, float dt)
-        {
-            LanePath path = vehicle.State.Lane == TrafficLane.East ? _east : _top;
-            LaneMotion.Step(ref vehicle.State, _config.CarLength, vehicle.DesiredSpeed * _speedScale,
-                float.PositiveInfinity, _occupancy, _follow, dt);
-            float distance = vehicle.State.Distance;
-            if (distance >= path.Length)
-            {
-                Release(vehicle);
-                return;
-            }
-            vehicle.View.Place(path.PositionAt(distance), path.HeadingAt(distance));
-        }
-
-        private void Release(AmbientVehicle vehicle)
-        {
-            _occupancy.Remove(vehicle.State.Id);
-            _pool.Return(vehicle.View);
-            vehicle.View = null;
-            vehicle.Active = false;
+            if (!_ready || _camera == null) return;
+            Vector3 at = _camera.transform.position;
+            _ambient.Step(Time.deltaTime, ViewWindow.Of(new Vector2(at.x, at.y), _camera.orthographicSize, _camera.aspect));
         }
     }
 }

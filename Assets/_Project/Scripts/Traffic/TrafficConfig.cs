@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace UncannyValet.Traffic
 {
-    /// <summary>Every tunable of the road traffic: looks, speeds, gaps, merge rules and the ambient rate. Read-only at runtime.</summary>
+    /// <summary>Every tunable of the road traffic: looks, speeds, gaps, merge rules and how many ambient cars are kept on screen. Read-only at runtime.</summary>
     [CreateAssetMenu(menuName = "Uncanny Valet/Traffic Config", fileName = "TrafficConfig")]
     public sealed class TrafficConfig : ScriptableObject
     {
@@ -61,13 +61,23 @@ namespace UncannyValet.Traffic
         [Tooltip("A patron car turning off the lane stays visible to traffic on it until its centre is this far from the lane line.")]
         [SerializeField, Range(0.5f, 4f)] private float _laneClearance = 1.6f;
 
-        [Header("Ambient traffic")]
-        [Tooltip("Ambient cars per minute over both lanes. 0 switches ambient traffic off.")]
-        [SerializeField, Min(0f)] private float _ambientPerMinute = 13f;
-        [Tooltip("0 = exact interval, 1 = anywhere from nothing to double the mean.")]
-        [SerializeField, Range(0f, 1f)] private float _intervalSpread = 0.6f;
-        [Tooltip("Chance that an ambient car takes the entry road below the lot; the rest take the exit road above it (0.5 = the same rate on both).")]
-        [SerializeField, Range(0f, 1f)] private float _eastShare = 0.5f;
+        [Header("Ambient traffic (all four lanes: both roads, both directions)")]
+        [Tooltip("Fewest ambient cars kept on screen. Below this a car is sent in at once from the screen edge (the F2 panel can change it live).")]
+        [SerializeField, Range(0, 8)] private int _minOnScreen = 3;
+        [Tooltip("Ambient cars on screen that spawning aims for: between the minimum and this, a car follows after a random wait (the F2 panel can change it live). 0 switches ambient traffic off.")]
+        [SerializeField, Range(0, 10)] private int _targetOnScreen = 4;
+        [Tooltip("Shortest and longest wait in seconds before the next car while fewer than the target are on screen.")]
+        [SerializeField] private Vector2 _spawnGapSeconds = new Vector2(1.5f, 4f);
+        [Tooltip("A car counts as on screen while its centre is within this many units of the visible area (a little under half a car length, so a car with its nose still showing counts).")]
+        [SerializeField, Min(0f)] private float _countMargin = 1f;
+        [Tooltip("A car this close to the edge it drives out at no longer counts toward the minimum, so its replacement is sent in a moment before it goes (the minimum then never dips).")]
+        [SerializeField, Min(0f)] private float _leaveLead = 6f;
+        [Tooltip("New cars appear this many units beyond the screen edge they drive in from: just over half a car length, so they never pop in, and close enough that a replacement shows up at once.")]
+        [SerializeField, Min(0.5f)] private float _spawnMargin = 1.4f;
+        [Tooltip("A car is removed once it is this many units beyond the screen edge it drives out at (just over half a car length).")]
+        [SerializeField, Min(0.5f)] private float _despawnMargin = 1.4f;
+        [Tooltip("How far before the merge point a delivered car asks traffic on the exit road to start slowing for it (units of its route).")]
+        [SerializeField, Min(0f)] private float _yieldLead = 10f;
         [Tooltip("Random seed for ambient traffic.")]
         [SerializeField] private int _seed = 1234;
         [Tooltip("Most traffic cars alive at once (ambient and patron trips). Also the pool size.")]
@@ -95,9 +105,14 @@ namespace UncannyValet.Traffic
         public float BlockedTimeout => _blockedTimeout;
         public float CreepSpeed => _creepSpeed;
         public float LaneClearance => _laneClearance;
-        public float AmbientPerMinute => _ambientPerMinute;
-        public float IntervalSpread => _intervalSpread;
-        public float EastShare => _eastShare;
+        public int MinOnScreen => _minOnScreen;
+        public int TargetOnScreen => _targetOnScreen;
+        public Vector2 SpawnGapSeconds => _spawnGapSeconds;
+        public float CountMargin => _countMargin;
+        public float LeaveLead => _leaveLead;
+        public float SpawnMargin => _spawnMargin;
+        public float DespawnMargin => _despawnMargin;
+        public float YieldLead => _yieldLead;
         public int Seed => _seed;
         public int MaxCars => _maxCars;
 
@@ -111,6 +126,8 @@ namespace UncannyValet.Traffic
         {
             if (_sprites == null || _sprites.Length == 0) Debug.LogError($"{name}: TrafficConfig has no car sprites.", this);
             if (_speedScaleRange.y < _speedScaleRange.x) _speedScaleRange.y = _speedScaleRange.x;
+            if (_spawnGapSeconds.y < _spawnGapSeconds.x) _spawnGapSeconds.y = _spawnGapSeconds.x;
+            if (_targetOnScreen < _minOnScreen) _targetOnScreen = _minOnScreen;
         }
     }
 }
