@@ -561,3 +561,9 @@ Date: 2026-11-11
 Files: docs/changelogs/lead.md
 Why: commit 38e3723 ("lead: regenerate assets, rebuild site after dial baseline merge", Assets/ and site/ only) had no changelog entry, so the changelog check failed for the push ending at 9a8f5f2 and the deploy was skipped. History is not rewritten; the check only inspects the commits of each push, so this commit lets the next deploy run. 38e3723 regenerated the Bootstrap scene and CarHandlingConfig asset and rebuilt site/ after merging the dial baseline.
 Tests: none (docs only); EditMode 974 of 974 and PlayMode 16 of 16 at 9a8f5f2.
+
+## lead: merge qa test review
+Date: 2026-11-11
+Files: merge of worktree-agent-abb8c4e2d97e0350f (docs/redesign/test_review.md, PlateTests.cs, PlayMode/FastTimeFixture.cs), docs/pending_tasks.md
+Why: the human asked whether all tests are needed to cut build time. Result: none removed; two slow tests fixed (EditMode test time 6.1 s to 1.9 s, PlayMode 72 s to 32 s wall). Web build (497 s) and Unity start-up dominate. No runtime change, so site/ was not rebuilt.
+Tests: 974 of 974 EditMode, 16 of 16 PlayMode after the merge.

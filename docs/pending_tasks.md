@@ -108,7 +108,9 @@ Later content:
 
 - [ ] G17. Play-test round 3: tight turn (2.2) with Shift drift, softer sounds ('Tyre sound sharpness'), solid incoming and outgoing cars (stops, creep after 6 s, spawn overlap at the entrance, slot scan seeing trip cars), the wider lot and camera framing.
 - [ ] G18. Slot scan now counts trip cars' colliders as occupants (conservative); check no arrival is wrongly blocked.
-- [ ] G19. Review the test suite for tests that are not needed to cut build time (in progress).
+- [x] G19. Test review done (`docs/redesign/test_review.md`): no test needed deleting; fixed two slow tests (PlayMode 72 s to 32 s wall).
+- [ ] G20. Decide the release routine (proposals in `docs/redesign/test_review.md`): skip the 497 s web build unless something player-visible changed and batch merges per deploy; one Unity launch for setup plus tests; PlayMode only before deploy; skip RunBatch unless Editor/Data/Scenes changed.
+- [ ] G21. RunBatch rewrites Bootstrap.unity with about 1,200 changed lines on every run (fileID reshuffle); make the scene builder deterministic. Owner: integration.
 
 - [ ] G16. Rate limit hit during the play-test round of 2026-11-10: three agents (sharper turning and tunables and softer tyre sound; incoming cars solid; wider lot) stopped before finishing. Resume them with SendMessage after 10:50pm PT; their worktrees keep the partial work.
 
