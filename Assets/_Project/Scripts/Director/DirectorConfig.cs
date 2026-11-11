@@ -33,6 +33,9 @@ namespace UncannyValet.Director
         [Header("Archetype picker and assist hook")]
         [SerializeField] private PickerSettings _picker = new PickerSettings();
 
+        [Header("Patron returns and late-shift pickups")]
+        [SerializeField] private ReturnSettings _returns = new ReturnSettings();
+
         [Header("Difficulty dials")]
         [SerializeField, Tooltip("Anchor tables of the nine top-level dials (the F2 panel's Difficulty rows).")]
         private DifficultyDialsConfig _dials;
@@ -55,6 +58,7 @@ namespace UncannyValet.Director
             _rules.Seed(tuning);
             _gate.Seed(tuning);
             _picker.Seed(tuning);
+            _returns.Seed(tuning);
             ShapeSettings.Seed(tuning, profile.Weights);
         }
     }

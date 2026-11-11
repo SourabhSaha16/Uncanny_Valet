@@ -110,6 +110,20 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
+        public void AMovedReturnShowsInTheCountdownAndTheShiftedAmount()
+        {
+            Spawn(stay: 30f);
+            Clock.SetElapsed(10f);
+            Bus.Publish(new CarArrived(Car));
+            Bus.Publish(new CarParked(Car, 1));
+            Bus.Publish(new PatronReturnShifted(Ticket, Car, -6f));
+            Clock.SetElapsed(20f);
+            Assert.AreEqual(14f, Only().SecondsToPickup, 0.01f);
+            Assert.AreEqual(-6f, Only().ReturnShiftSeconds, 0.01f);
+            Assert.AreEqual(30f, Only().PlannedStaySeconds, 0.01f, "the planned stay is not changed by the move");
+        }
+
+        [Test]
         public void AngryPatronsAreCountedInsideTheWindow()
         {
             Clock.SetElapsed(10f);

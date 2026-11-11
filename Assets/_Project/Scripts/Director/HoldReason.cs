@@ -12,6 +12,9 @@ namespace UncannyValet.Director
         QueueFull,
 
         /// <summary>The shift's arrival budget (including slack) is used up.</summary>
-        BudgetSpent
+        BudgetSpent,
+
+        /// <summary>Too little of the shift is left for a new car to be parked and picked up (see ArrivalIdleCutoff).</summary>
+        ShiftEnding
     }
 }

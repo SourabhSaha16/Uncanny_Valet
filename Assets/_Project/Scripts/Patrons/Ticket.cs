@@ -21,7 +21,7 @@ namespace UncannyValet.Patrons
         public float StayStartMinute { get; private set; }
 
         /// <summary>Game minute the stay ends and the patron wants the car, wherever it is.</summary>
-        public float ReturnMinute => StayStartMinute + StayMinutes;
+        public float ReturnMinute => StayStartMinute + StayMinutes + StayShiftMinutes;
 
         /// <summary>True once the car arrived and the patron went into the diner (the stay clock restarted then).</summary>
         public bool DroppedOff { get; private set; }
@@ -64,8 +64,25 @@ namespace UncannyValet.Patrons
             Wash = new WashRule(tuning.WashMinutes);
         }
 
+        /// <summary>Game minutes the director has moved the end of the stay by; negative means earlier.</summary>
+        public float StayShiftMinutes { get; private set; }
+
         /// <summary>True for any open ticket that has not asked for the car yet (queued, parked, washing or charging) once the stay is over.</summary>
         public bool StayEnded(float minute) => IsBeforePickup && minute >= ReturnMinute;
+
+        /// <summary>
+        /// Moves the end of the stay (the director's return nudge). Only a patron still inside the diner can be moved:
+        /// dropped off, not yet asked for the car, not summoned, stay not over, whatever the car is doing. The new end
+        /// is never before <paramref name="nowMinute"/>. Returns the delta really applied, or 0 when nothing was moved.
+        /// </summary>
+        public float ShiftStay(float deltaMinutes, float nowMinute)
+        {
+            if (!DroppedOff || !IsBeforePickup || Summoned || StayEnded(nowMinute)) return 0f;
+            var end = ReturnMinute;
+            var applied = System.Math.Max(end + deltaMinutes, nowMinute) - end;
+            StayShiftMinutes += applied;
+            return applied;
+        }
 
         /// <summary>The patron has not asked for the car yet.</summary>
         public bool IsBeforePickup => State == TicketState.AwaitingPark || State == TicketState.Parked;

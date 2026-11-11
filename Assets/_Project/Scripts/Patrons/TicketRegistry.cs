@@ -17,6 +17,7 @@ namespace UncannyValet.Patrons
         private readonly CurbCall _call;
         private readonly LiveTicketTuning _live;
         private readonly PerfectBonusLedger _perfect;
+        private readonly ReturnShifter _returns;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         /// <summary>Game minutes a summoned patron may walk before the pickup is requested anyway; 0 = no walk (see <see cref="CurbCall"/>).</summary>
@@ -47,6 +48,7 @@ namespace UncannyValet.Patrons
             _perfect = new PerfectBonusLedger(bus);
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect);
             _stations = new StationService(bus, _book);
+            _returns = new ReturnShifter(bus, clock, _book);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<CarArrived>(OnCarArrived);
@@ -62,6 +64,7 @@ namespace UncannyValet.Patrons
         public void Dispose()
         {
             _stations.Dispose();
+            _returns.Dispose();
             _perfect.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);

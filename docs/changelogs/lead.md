@@ -718,3 +718,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-aafeaa8e9141bbe3f follow-up (TipCalculator, TipZeroReason, TicketBoard, tests), docs/changelogs/lead.md
 Why: issue 77 follow-ups decided by the owner: an unwashed dirty car now only loses the clean bonus (TipZeroReason.NotCleaned removed); a queued car appears on the key board and ticket list as soon as its patron asks.
 Tests: 1176 of 1176 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/director return scheduler, late-shift pickups, arrival cutoff (#12, #13, #73, #15) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a5e29e2d80f8fe89f (Director ReturnScheduler, LateReturnPlanner, ReturnCandidates, ReturnDirector, ReturnShifter in Patrons, ReturnRows, tuning keys, DirectorConfig asset, tests), docs/changelogs/lead.md
+Why: issues 12, 13, 73, 15 (patron director spec step 4 and the owner's end-of-shift request), built on the stay-from-drop-off definition (issue 77). Returns stay inside planned stay +/-25% before the late phase and 4 s spacing; in the last 60 s every open ticket is pulled forward; no new cars in the last 45 s (ArrivalIdleCutoff default 20 -> 45). New Advanced F2 rows: return window, pickup spacing, late-shift start, last late pickup lead. Soak (200 shifts): 13 of 2314 pickups violate spacing outside wave peaks, 11 cars arriving late still waiting at the end.
+Tests: 1215 of 1215 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).

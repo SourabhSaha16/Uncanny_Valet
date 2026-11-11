@@ -66,10 +66,11 @@ namespace UncannyValet.Tests.Director
 
         public CarId Car(CarLotState state, bool dirty = false, bool ev = false, bool washDone = false,
             bool chargeDone = false, bool awaitingPark = false, float washLeft = 0f, float patience = 1f,
-            float toPickup = float.PositiveInfinity)
+            float toPickup = float.PositiveInfinity, float plannedStay = 0f, float shift = 0f)
         {
             var id = new CarId(_next++);
-            _cars.Add(new CarSnapshot(id, state, dirty, ev, washDone, chargeDone, awaitingPark, washLeft, patience, toPickup));
+            _cars.Add(new CarSnapshot(id, state, dirty, ev, washDone, chargeDone, awaitingPark, washLeft, patience, toPickup,
+                plannedStay, shift));
             return id;
         }
 

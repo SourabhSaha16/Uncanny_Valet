@@ -62,6 +62,7 @@ namespace UncannyValet.Director
             var forced = _guard.Update(input, dt);
             if (!forced && _relief.Stage == ReliefStage.Holding) return Make(PacerAction.Hold, HoldReason.Relief, 0f, started, trigger, ended);
             if (input.ArrivalsUsed >= _settings.MaxArrivals) return Make(PacerAction.Hold, HoldReason.BudgetSpent, 0f, started, trigger, ended);
+            if (input.ShiftSecondsLeft < _settings.IdleCutoffSeconds) return Make(PacerAction.Hold, HoldReason.ShiftEnding, 0f, started, trigger, ended);
             if (_awaitingSpawn && StillAwaiting(dt)) return Make(PacerAction.Wait, HoldReason.None, 0f, started, trigger, ended);
             if (forced) return SendNow(ScheduleReason.Idle, started, trigger, ended);
 

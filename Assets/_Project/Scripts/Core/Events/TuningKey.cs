@@ -243,6 +243,15 @@ namespace UncannyValet.Core.Events
         ArrivalIdleLimit,
         /// <summary>No car is forced in when fewer seconds than this are left in the shift.</summary>
         ArrivalIdleCutoff,
+        // Patron return timing and end-of-shift pickups (Director owns). Issues 12, 13 and 73.
+        /// <summary>How far, in percent of the planned stay, the director may move a patron's return either way.</summary>
+        ReturnWindowPercent,
+        /// <summary>Fewest seconds between two patrons reaching the curb.</summary>
+        PickupSpacingSeconds,
+        /// <summary>From this many seconds before the end of the shift every open ticket's return is brought forward.</summary>
+        LatePickupStart,
+        /// <summary>The last late-shift pickup is requested this many seconds before the end, so there is time to deliver it.</summary>
+        LastPickupLead,
         // Ambient road traffic density (Traffic module owns). Issue 75.
         /// <summary>Fewest ambient cars kept on screen; below it a car is sent in at once.</summary>
         TrafficMinOnScreen,
