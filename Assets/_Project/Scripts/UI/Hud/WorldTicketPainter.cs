@@ -9,8 +9,8 @@ namespace UncannyValet.UI.Hud
 {
     /// <summary>
     /// Every placed ticketed car carries its licence plate just under it; the plate border and glow flash in the
-    /// patron's emotion colour once they want the car back. While the car is washed or charged a small droplet or
-    /// plug icon sits beside the plate (the slot itself lights up in the lot). Projected from the car's world
+    /// patron's emotion colour once they want the car back. Once the car has arrived, small droplet / plug icons say
+    /// what it still needs: beside the plate, or just under the car while no plate shows yet. Projected from the car's world
     /// position so it shares the pixel scale.
     /// </summary>
     public sealed class WorldTicketPainter
@@ -36,6 +36,9 @@ namespace UncannyValet.UI.Hud
             for (var i = rows.Count - 1; i >= 0; i--) // least urgent first, so urgent plates draw on top
                 if (rows[i].ShowsPlate && TryProject(rows[i], camera, -PlateDropWorldUnits, out var px, out var py))
                     DrawPlate(rows[i], px, py, CarWidthPixels(rows[i], camera), time);
+                else if (!rows[i].ShowsPlate && ServiceIcons.Count(rows[i]) > 0
+                         && TryProject(rows[i], camera, -PlateDropWorldUnits, out var ix, out var iy))
+                    DrawIcons(rows[i], ix - IconsWidth(rows[i]) / 2, iy); // no plate yet (car still in the queue): icons just under the car
         }
 
         // Canvas position of the point <offsetY> world units above the car; false when the car is gone or behind the camera.
@@ -70,15 +73,27 @@ namespace UncannyValet.UI.Hud
                 _plates.DrawGlowing(row.Plate, x, y, width, _style.ColorOf(emotion));
             else
                 _plates.Draw(row.Plate, x, y, width, PixelPalette.Ink);
-            if (ServiceIcons.TryGet(row, out var icon)) DrawServiceIcon(icon, x, y, width);
+            DrawIcons(row, PlateLayout.IconX(x, width), y);
         }
 
-        private void DrawServiceIcon(PixelIcon icon, int plateX, int plateY, int plateWidth)
+        // Total width of the row's icons side by side.
+        private int IconsWidth(TicketRow row)
         {
-            var iconWidth = _canvas.IconWidth(icon);
-            var x = WorldTicketLayout.ClampToCanvas(PlateLayout.IconX(plateX, plateWidth), iconWidth, PixelGrid.Width);
-            var y = PlateLayout.IconY(plateY, _canvas.IconHeight(icon));
-            _canvas.Icon(icon, x, y, 1, Color.white);
+            var width = 0;
+            for (var i = 0; ServiceIcons.TryGet(row, i, out var icon); i++)
+                width += _canvas.IconWidth(icon) + (i > 0 ? PlateLayout.IconGap : 0);
+            return width;
+        }
+
+        // Draws the icons left to right from <left>, centred on the plate row at <plateY>.
+        private void DrawIcons(TicketRow row, int left, int plateY)
+        {
+            var x = WorldTicketLayout.ClampToCanvas(left, IconsWidth(row), PixelGrid.Width);
+            for (var i = 0; ServiceIcons.TryGet(row, i, out var icon); i++)
+            {
+                _canvas.Icon(icon, x, PlateLayout.IconY(plateY, _canvas.IconHeight(icon)), 1, Color.white);
+                x += _canvas.IconWidth(icon) + PlateLayout.IconGap;
+            }
         }
     }
 }

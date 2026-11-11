@@ -67,3 +67,9 @@ Date: 2026-11-10
 Files: Scripts/Lot/{SlotTint,SlotTintRule,SlotTintPhase,LotConfig,SpotBuilder,StationBuilder,StopZone,ZoneRoster}.cs; Scripts/UI/Hud/{WorldTicketPainter,WorldTicketLayout,PlateLayout,ServiceIcons}.cs; Tests/EditMode/Lot/SlotTintRuleTests.cs; Tests/EditMode/UI/{ServiceIconsTests,HudRulesTests}.cs
 Why: Play-test: the world-space info box over cars was too big. The slot itself now lights (aqua wash, lime charge, fading flash when done) and a small droplet/plug icon sits beside the plate (design.md Part A, stations).
 Tests: 20 new EditMode tests (tint rule replays, icon rule, plate icon layout); full suite 791 passed, 0 failed.
+
+## lot: show wash and charge icons from car arrival until served
+Date: 2026-11-10
+Files: Scripts/UI/Hud/{ServiceIcons,WorldTicketPainter}.cs; Tests/EditMode/UI/ServiceIconsTests.cs
+Why: Play-test: the needs icons must show as soon as the car has arrived and its patron stepped out, not only inside the station (design.md Part A, stations). Beside the plate; under the car while no plate shows yet.
+Tests: 9 ServiceIcons tests (rule and event replays: arrive, carried in, cleaned, charged, ticket closed, no needs); full suite 815 passed, 0 failed.
