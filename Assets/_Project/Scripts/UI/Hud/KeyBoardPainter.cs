@@ -14,7 +14,8 @@ namespace UncannyValet.UI.Hud
     public sealed class KeyBoardPainter
     {
         private const int Margin = 4;
-        private const int Width = 118;
+        // Wide enough for the longest status word ("Cust. Angry", 65 px) beside the bell.
+        private const int Width = 134;
         private const int RowHeight = 13;
         private const int HeaderHeight = 10;
         private const int Border = 3;
@@ -22,7 +23,7 @@ namespace UncannyValet.UI.Hud
         private const int PlateOffset = 13;
         private const int SpotOffset = 42;
         private const int StatusOffset = 56;
-        private const int BellOffset = 100;
+        private const int BellOffset = 122;
         private const float LitGlow = 0.4f;
         private const float DimGlow = 0.12f;
 

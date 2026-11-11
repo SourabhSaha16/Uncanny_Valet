@@ -36,7 +36,7 @@ namespace UncannyValet.Tests.UI
         public void FlashSpeedFollowsTheEmotion()
         {
             var happy = Row(TicketRowState.PickupRequested, 0f);
-            var angry = Row(TicketRowState.PickupRequested, 1f);
+            var angry = Row(TicketRowState.PickupRequested, 0.9f);
             Assert.IsTrue(PickupMark.IsLit(happy, 0.1f, _style));
             Assert.IsFalse(PickupMark.IsLit(happy, 0.5f, _style)); // 1.5 Hz: period 0.67 s, lit for the first 0.33 s
             Assert.IsFalse(PickupMark.IsLit(angry, 0.1f, _style)); // 7 Hz: dark again after 0.07 s
@@ -47,7 +47,8 @@ namespace UncannyValet.Tests.UI
         {
             Assert.AreEqual(_config.HappyColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.1f), _style));
             Assert.AreEqual(_config.ImpatientColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.7f), _style));
-            Assert.AreEqual(_config.AngryColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true), _style));
+            Assert.AreEqual(_config.AngryColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.9f), _style));
+            Assert.AreEqual(_config.WillNotTipColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true), _style));
         }
     }
 }

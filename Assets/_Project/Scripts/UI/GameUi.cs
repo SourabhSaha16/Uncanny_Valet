@@ -28,6 +28,7 @@ namespace UncannyValet.UI
         [SerializeField, Tooltip("Emotion thresholds, flash speeds and colours of the pickup mark. Set by Setup/Build Everything.")]
         private HudEmotionConfig _emotions;
 
+        private EmotionTuningLink _emotionLink;
         private Func<string> _prompt = NoPrompt;
         private UiPhase _phase = UiPhase.Title;
         private float _phaseStartedAt;
@@ -53,6 +54,9 @@ namespace UncannyValet.UI
             _prompt = prompt ?? NoPrompt;
         }
 
+        /// <summary>The pickup emotion config (levels, flash speeds, colours); Bootstrap seeds the F2 rows from it.</summary>
+        public HudEmotionConfig Emotions => EmotionConfig();
+
         private static string NoPrompt() => string.Empty;
 
         private void OnEnable()
@@ -62,6 +66,7 @@ namespace UncannyValet.UI
             _kit = new PixelKit();
             _canvas = new PixelCanvas(_kit);
             var style = new EmotionStyle(EmotionConfig());
+            _emotionLink = new EmotionTuningLink(_bus, Services.Get<ITuning>(), style.Rule, EmotionConfig().AngryFrom, EmotionConfig().WillNotTipFrom);
             _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>(),
                 Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerMeter);
             _resultsPainter = new ResultsPainter(_canvas);
@@ -86,6 +91,7 @@ namespace UncannyValet.UI
                 _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
                 _bus.Unsubscribe<ShiftResultReady>(OnResult);
             }
+            _emotionLink?.Dispose();
             _playing?.Dispose();
             _stats?.Dispose();
             _kit?.Dispose();

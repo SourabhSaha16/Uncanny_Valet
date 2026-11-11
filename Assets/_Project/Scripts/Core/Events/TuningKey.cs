@@ -234,5 +234,10 @@ namespace UncannyValet.Core.Events
         PerfectParkMinTravel,
         /// <summary>Dollars a Perfect Park adds to the car's ticket (before the combo multiplier).</summary>
         PerfectParkBonus,
+        // Pickup emotions (UI owns). docs/design.md A8.
+        /// <summary>Share (0..1) of the pickup patience used up from which the patron is angry (red).</summary>
+        EmotionAngryFrom,
+        /// <summary>Share (0..1) of the pickup patience used up from which the patron will not tip any more.</summary>
+        EmotionWillNotTipFrom,
     }
 }

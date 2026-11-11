@@ -6,19 +6,38 @@ namespace UncannyValet.Tests.UI
 {
     public class EmotionTests
     {
-        private readonly EmotionRule _rule = new EmotionRule(0.6f, 0.85f);
+        private readonly EmotionRule _rule = new EmotionRule(0.6f, 0.8f, 1f);
 
         [TestCase(0f, Emotion.Happy)]
         [TestCase(0.59f, Emotion.Happy)]
         [TestCase(0.6f, Emotion.Impatient)]
-        [TestCase(0.84f, Emotion.Impatient)]
-        [TestCase(0.85f, Emotion.Angry)]
-        [TestCase(1f, Emotion.Angry)]
+        [TestCase(0.79f, Emotion.Impatient)]
+        [TestCase(0.8f, Emotion.Angry)]
+        [TestCase(0.99f, Emotion.Angry)]
+        [TestCase(1f, Emotion.WillNotTip)]
         public void PatienceMapsToAnEmotion(float elapsed, Emotion expected)
             => Assert.AreEqual(expected, _rule.Resolve(elapsed, false));
 
         [Test]
-        public void ExpiredIsAlwaysAngry() => Assert.AreEqual(Emotion.Angry, _rule.Resolve(0f, true));
+        public void ExpiredIsAlwaysWillNotTip() => Assert.AreEqual(Emotion.WillNotTip, _rule.Resolve(0f, true));
+
+        [Test]
+        public void LevelsCanBeRetunedLive()
+        {
+            var rule = new EmotionRule(0.6f, 0.8f, 1f);
+            rule.SetLevels(0.7f, 0.9f);
+            Assert.AreEqual(Emotion.Angry, rule.Resolve(0.7f, false));
+            Assert.AreEqual(Emotion.Angry, rule.Resolve(0.89f, false));
+            Assert.AreEqual(Emotion.WillNotTip, rule.Resolve(0.9f, false));
+        }
+
+        [Test]
+        public void WillNotTipLevelBelowAngryIsRaisedToIt()
+        {
+            var rule = new EmotionRule(0.6f, 0.8f, 0.5f);
+            Assert.AreEqual(Emotion.Impatient, rule.Resolve(0.79f, false));
+            Assert.AreEqual(Emotion.WillNotTip, rule.Resolve(0.8f, false));
+        }
 
         [Test]
         public void AngryThresholdBelowImpatientIsRaisedToIt()
@@ -45,6 +64,7 @@ namespace UncannyValet.Tests.UI
         [TestCase(Emotion.Happy)]
         [TestCase(Emotion.Impatient)]
         [TestCase(Emotion.Angry)]
+        [TestCase(Emotion.WillNotTip)]
         public void EveryBubbleFaceHasTheFullGrid(Emotion emotion)
         {
             var face = MoodBubbleLayout.Face(emotion);
@@ -57,6 +77,7 @@ namespace UncannyValet.Tests.UI
         {
             Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Happy), MoodBubbleLayout.Face(Emotion.Impatient));
             Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Impatient), MoodBubbleLayout.Face(Emotion.Angry));
+            Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Angry), MoodBubbleLayout.Face(Emotion.WillNotTip));
         }
 
         [Test]
@@ -67,6 +88,21 @@ namespace UncannyValet.Tests.UI
             Assert.IsTrue(rule.Applies(row));
             row.Elapsed01 = 0.7f;
             Assert.IsFalse(rule.Applies(row));
+            row.Elapsed01 = 1f;
+            Assert.IsFalse(rule.Applies(row), "a patron who gave up is not merely angry");
+        }
+
+        [Test]
+        public void WillNotTipStatusFollowsTheGivenUpEmotion()
+        {
+            var rule = new UncannyValet.UI.Status.WillNotTipStatusRule(_rule);
+            var row = new UncannyValet.UI.TicketRow { State = UncannyValet.UI.TicketRowState.PickupRequested, Elapsed01 = 0.95f };
+            Assert.IsFalse(rule.Applies(row));
+            row.Elapsed01 = 1f;
+            Assert.IsTrue(rule.Applies(row));
+            row.Elapsed01 = 0.2f;
+            row.Expired = true;
+            Assert.IsTrue(rule.Applies(row));
         }
     }
 }
