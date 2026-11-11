@@ -25,6 +25,9 @@ namespace UncannyValet.Cars
         public bool HasDriver { get; private set; }
         public CarDefinition Definition => _definition;
 
+        /// <summary>The velocity set in the last FixedUpdate, i.e. before the physics step (collisions read the pre-impact speed from it).</summary>
+        public Vector2 PreSolveVelocity { get; private set; }
+
         /// <summary>Input editors read before the handling model; faults add themselves here.</summary>
         public DriveModifierStack Modifiers { get; } = new DriveModifierStack();
 
@@ -96,7 +99,7 @@ namespace UncannyValet.Cars
             var forward = Vector2.Dot(velocity, up);
             var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, _definition.Acceleration,
                 _definition.Braking, _definition.CoastDrag, _definition.TopSpeed, _definition.ReverseFactor, Time.fixedDeltaTime);
-            _body.linearVelocity = velocity + up * (next - forward);
+            _body.linearVelocity = PreSolveVelocity = velocity + up * (next - forward);
             _body.angularVelocity = Mathf.Rad2Deg
                 * SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed);
         }

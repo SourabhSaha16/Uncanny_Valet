@@ -15,6 +15,7 @@ namespace UncannyValet.Audio
         Charged,
         Washed,
         StationStart,
-        PedestrianBump
+        PedestrianBump,
+        CarBump
     }
 }

@@ -24,8 +24,7 @@ namespace UncannyValet.Cars
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
         private Sprite _sprite;
         private CarFlashConfig _fallbackFlash;
-        private CarHandlingLive _live;
-        private CarHandlingTuningLink _handlingLink;
+        private CarHandlingKit _kit;
 
         /// <summary>The handling config asset (read-only); seeds the tuning store. Null when none is assigned.</summary>
         public CarHandlingConfig HandlingConfig => _handling;
@@ -33,17 +32,17 @@ namespace UncannyValet.Cars
         private void Start()
         {
             if (Services.TryGet<IEventBus>(out var bus))
-                _handlingLink = new CarHandlingTuningLink(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null, Live);
+                Kit.Link(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null);
         }
 
-        private void OnDestroy() => _handlingLink?.Dispose();
+        private void OnDestroy() => _kit?.Dispose();
 
-        private CarHandlingLive Live => _live ?? (_live = CreateLive());
+        private CarHandlingKit Kit => _kit ?? (_kit = CreateKit());
 
-        private CarHandlingLive CreateLive()
+        private CarHandlingKit CreateKit()
         {
             if (_handling == null) Debug.LogError("CarFactory has no CarHandlingConfig; using defaults. Rebuild with Setup/Build Everything.", this);
-            return new CarHandlingLive(_handling != null ? _handling : ScriptableObject.CreateInstance<CarHandlingConfig>());
+            return new CarHandlingKit(_handling != null ? _handling : ScriptableObject.CreateInstance<CarHandlingConfig>());
         }
 
         /// <summary>Optional bus for the publishSpawned overload. Set by the bootstrap.</summary>
@@ -129,7 +128,8 @@ namespace UncannyValet.Cars
             go.AddComponent<BoxCollider2D>().size = Vector2.one;
 
             var driver = go.AddComponent<CarDriver>();
-            driver.Initialize(id, def, Live);
+            driver.Initialize(id, def, Kit.Live);
+            go.AddComponent<CarCollisionResponse>().Initialize(Kit);
             go.AddComponent<CarInteraction>();
             go.AddComponent<CarAutoDrive>();
             var art = AttachBodyArt(go, id, def, renderer);

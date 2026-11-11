@@ -35,6 +35,28 @@ namespace UncannyValet.Cars
         [SerializeField, Range(0f, 1f), Tooltip("Units of space kept between a reversing car and the opposite bay row.")]
         private float _pullOutClearance = 0.3f;
 
+        [Header("Car-on-car bounce")]
+        [SerializeField, Range(0f, 1f), Tooltip("Restitution between two cars: 0 = dead stop, 1 = perfect rubber. Walls and the valet are unchanged.")]
+        private float _bounciness = 0.4f;
+        [SerializeField, Min(0f), Tooltip("Approach speed (units/s) below which a touch neither bounces nor makes a sound.")]
+        private float _minImpactSpeed = 0.5f;
+        [SerializeField, Min(0.1f), Tooltip("Approach speed (units/s) at which the bump counts as a full-strength hit.")]
+        private float _fullImpactSpeed = 6f;
+        [SerializeField, Min(1f), Tooltip("A car with nobody in it counts this many times heavier in a bump (it is braked), so a driven car visibly bounces off it while the parked car only shuffles.")]
+        private float _parkedMassScale = 8f;
+        [SerializeField, Min(0f), Tooltip("Seconds before the same pair of cars can report another bump.")]
+        private float _bumpPairInterval = 0.25f;
+
+        /// <summary>Restitution between two cars, 0..1.</summary>
+        public float Bounciness => _bounciness;
+        /// <summary>Approach speed below which a car-on-car touch is ignored, units per second.</summary>
+        public float MinImpactSpeed => _minImpactSpeed;
+        /// <summary>Approach speed of a full-strength bump, units per second.</summary>
+        public float FullImpactSpeed => _fullImpactSpeed;
+        /// <summary>How many times heavier a car without a driver counts in a bump.</summary>
+        public float ParkedMassScale => _parkedMassScale;
+        /// <summary>Minimum seconds between two bump reports of the same pair.</summary>
+        public float BumpPairInterval => _bumpPairInterval;
         /// <summary>Sideways decay rate at full grip, per second.</summary>
         public float LateralFriction => _lateralFriction;
         /// <summary>Share of removed sideways speed handed back forward.</summary>

@@ -23,3 +23,8 @@ MonoBehaviour:
   _measuredAisleWidth: 4.6
   _radiusMargin: 1
   _pullOutClearance: 0.3
+  _bounciness: 0.4
+  _minImpactSpeed: 0.5
+  _fullImpactSpeed: 6
+  _parkedMassScale: 8
+  _bumpPairInterval: 0.25
