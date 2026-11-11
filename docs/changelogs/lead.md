@@ -645,3 +645,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-ac46417314c5f98f3 (EntryTrip, TripContext, LanePath, TripTuning, TrafficConfig, TrafficModule, TurnIntoQueueTests), docs/changelogs/lead.md
 Why: issue 3. EntryTrip dropped the car from lane occupancy at the start of the turn into the queue, so an ambient car right behind it drove through it. The car stays registered until it is LaneClearance (1.6) from the lane line.
 Tests: 1077 of 1077 EditMode, 16 of 16 PlayMode (agent); 1077 of 1077 EditMode after the merge.
+
+## lead: merge agent/integration Angry at 80% and Will not tip (#7) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a0adec20aa7f251d4 (Emotion states, EmotionRows, EmotionTuningLink, CarStatus WillNotTip, HudEmotionConfig asset, KeyBoardPainter width, tests), docs/changelogs/lead.md
+Why: issue 7, the owner's decision: Angry from 80% of the pickup patience, Will not tip at 100% or expiry; both levels tunable in F2 (Patron mood). Tip maths unchanged. The CAR SLOTS panel is wider so Cust. Angry fits. Car body flash (CarFlashConfig 0.85) is unchanged and now differs from the plate's 80%.
+Tests: 1085 of 1085 EditMode, 16 of 16 PlayMode after merging the traffic and Angry branches; RunBatch regenerated TrafficConfig.asset (new LaneClearance field), Bootstrap.unity churn reverted.

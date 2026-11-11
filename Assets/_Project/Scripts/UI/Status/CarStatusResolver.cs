@@ -17,9 +17,10 @@ namespace UncannyValet.UI.Status
             _fallback = fallback;
         }
 
-        /// <summary>The game's rules: Cust. Angry, Pick Up, Washing, Charging, Washed, Charged, then Parked.</summary>
+        /// <summary>The game's rules: Won't tip, Cust. Angry, Pick Up, Washing, Charging, Washed, Charged, then Parked.</summary>
         public static CarStatusResolver CreateDefault(EmotionRule emotions) => new CarStatusResolver(new ICarStatusRule[]
         {
+            new WillNotTipStatusRule(emotions),
             new CustAngryStatusRule(emotions),
             new PickUpStatusRule(),
             new WashingStatusRule(),

@@ -2,7 +2,7 @@ using UncannyValet.UI.Mood;
 
 namespace UncannyValet.UI.Status
 {
-    /// <summary>The patron wants the car and is angry (the red emotion, which includes an expired timer).</summary>
+    /// <summary>The patron wants the car and is angry (the red emotion, before the patron gives up).</summary>
     public sealed class CustAngryStatusRule : ICarStatusRule
     {
         private readonly EmotionRule _emotions;

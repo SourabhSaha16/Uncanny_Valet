@@ -27,6 +27,12 @@ namespace UncannyValet.UI.Mood
             "##.....##", ".##...##.", "..#...#..", ".........", "..#####..", ".#.....#.", "........."
         };
 
+        // Given up: flat closed eyes and a downturned mouth, no brows.
+        private static readonly string[] WillNotTipFace =
+        {
+            ".........", ".........", ".##...##.", ".........", "..#####..", ".#.....#.", "........."
+        };
+
         public static int Width => FaceWidth + 2 * Frame;
 
         /// <summary>Box height without the tail.</summary>
@@ -35,6 +41,7 @@ namespace UncannyValet.UI.Mood
         /// <summary>The face rows of an emotion, <see cref="FaceHeight"/> strings of <see cref="FaceWidth"/> characters.</summary>
         public static string[] Face(Emotion emotion)
         {
+            if (emotion == Emotion.WillNotTip) return WillNotTipFace;
             if (emotion == Emotion.Angry) return AngryFace;
             return emotion == Emotion.Impatient ? ImpatientFace : HappyFace;
         }

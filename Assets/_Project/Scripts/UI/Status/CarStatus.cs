@@ -12,6 +12,7 @@ namespace UncannyValet.UI.Status
         Charging,
         Charged,
         PickUp,
-        CustAngry
+        CustAngry,
+        WillNotTip
     }
 }
