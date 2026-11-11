@@ -7,9 +7,10 @@ using UnityEngine;
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// Drives a car on its own: in to a stop point, or straight out of view. While active the body is kinematic,
-    /// the collider is off (no shoving, no trigger events) and CarDriver and CarInteraction are disabled, so the
-    /// valet cannot enter. Once arrived the car is restored and behaves like any spawned car.
+    /// Drives a car on its own: in to a stop point, or straight out of view. While active the body is kinematic and
+    /// CarDriver and CarInteraction are disabled, so the valet cannot enter. A road trip car stays solid (collider on):
+    /// other cars and the valet cannot pass through it, and it looks ahead and yields (see <see cref="TripProbe"/>).
+    /// Straight arrivals and departures have the collider off. Once arrived the car behaves like any spawned car.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(CarDriver))]
     [DisallowMultipleComponent]
@@ -30,9 +31,13 @@ namespace UncannyValet.Cars
         private float _travelled;
         private float _finalRotation;
         private readonly CarTrip _trip = new CarTrip();
+        private readonly TripProbe _probe = new TripProbe();
+        private float _tripSpeed;
 
         /// <summary>True while the car is driving in or out on its own, by road trip or straight.</summary>
         public bool IsBusy => _mode != Mode.Idle;
+        /// <summary>True while driving a road trip: the body is kinematic but the car is solid and immovable.</summary>
+        public bool IsTripping => _mode == Mode.TripArriving || _mode == Mode.TripDeparting;
         /// <summary>True once the car has started leaving.</summary>
         public bool IsDeparting => _mode == Mode.Departing || _mode == Mode.TripDeparting;
 
@@ -71,7 +76,7 @@ namespace UncannyValet.Cars
             _target = target;
             _finalRotation = rotationDegrees;
             _trip.Begin(trips, tripId);
-            SetAutoDriving(true);
+            SetAutoDriving(true, true);
             _mode = Mode.TripArriving;
             if (_trip.Advance(0f, out TripPose first) == TripStatus.Running) Place(first);
         }
@@ -92,7 +97,8 @@ namespace UncannyValet.Cars
             }
             _trip.Begin(trips, id);
             _onLeft = onLeft;
-            SetAutoDriving(true);
+            _tripSpeed = 0f;
+            SetAutoDriving(true, true);
             _mode = Mode.TripDeparting;
             return true;
         }
@@ -106,12 +112,12 @@ namespace UncannyValet.Cars
             if (_interaction == null) _interaction = GetComponent<CarInteraction>();
         }
 
-        private void SetAutoDriving(bool on)
+        private void SetAutoDriving(bool on, bool solid = false)
         {
             _body.bodyType = on ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
             _body.linearVelocity = Vector2.zero;
             _body.angularVelocity = 0f;
-            _collider.enabled = !on;
+            _collider.enabled = !on || solid;
             _driver.enabled = !on;
             _interaction.enabled = !on;
         }
@@ -127,9 +133,12 @@ namespace UncannyValet.Cars
 
         private void StepTrip(float dt)
         {
+            float look = CarAutoDriveMath.LookAhead(_tripSpeed, _style.LookAheadBase, _style.LookAheadSeconds);
+            _trip.ReportGap(_probe.Gap(_body, (Vector2)transform.up, look));
             TripStatus status = _trip.Advance(dt, out TripPose pose);
             if (status == TripStatus.Running)
             {
+                _tripSpeed = pose.Speed;
                 _body.MovePosition(pose.Position);
                 _body.MoveRotation(CarAutoDriveMath.TurnToward(_body.rotation, pose.HeadingDegrees, _style.TripTurnRate, dt));
                 return;
@@ -138,26 +147,28 @@ namespace UncannyValet.Cars
             {
                 _target = pose.Position;
                 ArriveAtTarget();
+                return;
             }
-            else
-            {
-                _mode = Mode.Idle;
-                _onLeft?.Invoke();
-            }
+            _mode = Mode.Idle;
+            _onLeft?.Invoke();
         }
 
         private void Place(TripPose pose)
         {
-            _body.position = pose.Position;
-            _body.rotation = pose.HeadingDegrees;
-            transform.SetPositionAndRotation(pose.Position, Quaternion.Euler(0f, 0f, pose.HeadingDegrees));
+            _tripSpeed = 0f;
+            Snap(pose.Position, pose.HeadingDegrees);
+        }
+
+        private void Snap(Vector2 position, float rotationDegrees)
+        {
+            _body.position = position;
+            _body.rotation = rotationDegrees;
+            transform.SetPositionAndRotation(position, Quaternion.Euler(0f, 0f, rotationDegrees));
         }
 
         private void ArriveAtTarget()
         {
-            _body.position = _target;
-            _body.rotation = _finalRotation;
-            transform.SetPositionAndRotation(_target, Quaternion.Euler(0f, 0f, _finalRotation));
+            Snap(_target, _finalRotation);
             _mode = Mode.Idle;
             SetAutoDriving(false);
             if (Services.TryGet<IEventBus>(out var bus)) bus.Publish(new CarArrived(_driver.Id));
@@ -169,12 +180,8 @@ namespace UncannyValet.Cars
             float remaining = Vector2.Distance(position, _target);
             float step = CarAutoDriveMath.ArriveStep(remaining, _style.ArriveSpeed, _style.ArriveEase, dt);
             _speed = dt > 0f ? step / dt : 0f;
-            if (step >= remaining || CarAutoDriveMath.HasArrived(remaining - step))
-            {
-                ArriveAtTarget();
-                return;
-            }
-            _body.MovePosition(position + _heading * step);
+            if (step >= remaining || CarAutoDriveMath.HasArrived(remaining - step)) ArriveAtTarget();
+            else _body.MovePosition(position + _heading * step);
         }
 
         private void StepDepart(float dt)

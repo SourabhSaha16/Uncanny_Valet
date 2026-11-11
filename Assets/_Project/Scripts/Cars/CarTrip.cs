@@ -6,6 +6,7 @@ namespace UncannyValet.Cars
     public sealed class CarTrip
     {
         private ITripDriver _driver;
+        private ITripObstacles _obstacles;
         private int _id = TripId.None;
 
         /// <summary>True from <see cref="Begin"/> until the trip finishes, is lost or is cancelled.</summary>
@@ -15,6 +16,7 @@ namespace UncannyValet.Cars
         public void Begin(ITripDriver driver, int id)
         {
             _driver = driver;
+            _obstacles = driver as ITripObstacles;
             _id = id;
         }
 
@@ -31,6 +33,12 @@ namespace UncannyValet.Cars
             if (pose.Phase != TripPhase.Finished) return TripStatus.Running;
             _id = TripId.None;
             return TripStatus.Finished;
+        }
+
+        /// <summary>Tells the trip the bumper gap to a solid obstacle ahead (infinity when clear).</summary>
+        public void ReportGap(float gap)
+        {
+            if (Active) _obstacles?.SetObstacleGap(_id, gap);
         }
 
         /// <summary>Ends the trip early so the router frees everything it holds. Safe when idle.</summary>

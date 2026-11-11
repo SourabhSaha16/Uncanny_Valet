@@ -24,6 +24,15 @@ namespace UncannyValet.Cars
         [SerializeField, Min(10f), Tooltip("Most degrees per second a car turns toward the road route's heading.")]
         private float _tripTurnRate = 300f;
 
+        [SerializeField, Min(0f), Tooltip("A trip car looks this far ahead for something solid (the player's car, the valet, parked cars) even when slow.")]
+        private float _lookAheadBase = 3f;
+        [SerializeField, Min(0f), Tooltip("Extra look-ahead per unit of speed, in seconds of travel.")]
+        private float _lookAheadSeconds = 0.9f;
+
+        /// <summary>Minimum look-ahead distance of a trip car.</summary>
+        public float LookAheadBase => _lookAheadBase;
+        /// <summary>Look-ahead added per unit of speed.</summary>
+        public float LookAheadSeconds => _lookAheadSeconds;
         /// <summary>Distance behind the stop point where an arriving car starts.</summary>
         public float EntryDistance => _entryDistance;
         /// <summary>Cruise speed while arriving.</summary>

@@ -15,6 +15,7 @@ namespace UncannyValet.Traffic
         private TripPhase _phase;
         private int _slot;
         private float _sinceAsk;
+        private readonly TripObstacle _obstacle = new TripObstacle();
 
         public EntryTrip(TripContext context)
         {
@@ -36,6 +37,7 @@ namespace UncannyValet.Traffic
             _ctx.Road.QueueEntryRoute(slot, _ctx.Scratch);
             _route.Begin(_ctx.Scratch);
             _lane = default;
+            _obstacle.Reset();
             _phase = TripPhase.Waiting;
         }
 
@@ -48,6 +50,11 @@ namespace UncannyValet.Traffic
             else pose = StepRoute(dt);
             if (pose.Phase == TripPhase.Finished) Cancel();
         }
+
+        /// <inheritdoc />
+        public void SetObstacleGap(float gap) => _obstacle.Report(gap);
+
+        private float ObstacleCap(float dt) => _obstacle.SpeedCap(_ctx.Follow, _ctx.Tuning.CreepSpeed, _ctx.Tuning.BlockedTimeout, dt);
 
         /// <inheritdoc />
         public void Cancel()
@@ -83,7 +90,7 @@ namespace UncannyValet.Traffic
         private TripPose StepLane(float dt)
         {
             float turnAt = _ctx.Road.QueueTurnDistance;
-            float cap = ApproachSpeed.Cap(turnAt - _lane.Distance, TurnSpeed, _ctx.Follow.Brake);
+            float cap = Mathf.Min(ApproachSpeed.Cap(turnAt - _lane.Distance, TurnSpeed, _ctx.Follow.Brake), ObstacleCap(dt));
             float cruise = _ctx.Follow.DesiredSpeed * _ctx.Speeds.EntryScale;
             LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, cruise, cap, _ctx.Occupancy, _ctx.Follow, dt);
             if (_lane.Distance < turnAt) return LanePose(TripPhase.OnLane, _lane.Speed);
@@ -97,7 +104,7 @@ namespace UncannyValet.Traffic
 
         private TripPose StepRoute(float dt)
         {
-            _route.Step(TurnSpeed, true, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
+            _route.Step(Mathf.Min(TurnSpeed, ObstacleCap(dt)), true, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
             if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
             return _route.Pose(TripPhase.Finished, 0f);
         }

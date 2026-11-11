@@ -10,6 +10,9 @@ namespace UncannyValet.Traffic
         /// <summary>Advances the trip. The pose with <see cref="TripPhase.Finished"/> is the last; the trip then goes idle.</summary>
         void Step(float dt, out TripPose pose);
 
+        /// <summary>Records the gap to a solid obstacle ahead (infinity when clear); see <see cref="TripObstacle"/>.</summary>
+        void SetObstacleGap(float gap);
+
         /// <summary>Stops the trip and releases its lane registration.</summary>
         void Cancel();
     }

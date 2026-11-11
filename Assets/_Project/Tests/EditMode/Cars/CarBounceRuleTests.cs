@@ -109,6 +109,26 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
+        public void ImmovableTripCar_ReflectsTheLiveCarAtRestitutionTimesApproach()
+        {
+            Assert.AreEqual(0.4f * 3f, Own(-3f, 0f, 20f, CarBounceRule.ImmovableMass, 0.4f), 1e-3f, "rebounds as off a wall");
+        }
+
+        [Test]
+        public void ImmovableTripCar_DrivingIntoAStandingCar_KnocksItAlong()
+        {
+            Assert.Greater(Own(0f, 4f, 20f, CarBounceRule.ImmovableMass, 0.4f), 4f);
+        }
+
+        [Test]
+        public void LookAhead_GrowsWithSpeed()
+        {
+            Assert.AreEqual(3f, CarAutoDriveMath.LookAhead(0f, 3f, 0.9f), 1e-5f);
+            Assert.AreEqual(3f + 0.9f * 5f, CarAutoDriveMath.LookAhead(5f, 3f, 0.9f), 1e-5f);
+            Assert.AreEqual(3f, CarAutoDriveMath.LookAhead(-2f, 3f, 0.9f), 1e-5f, "reversing does not shrink it");
+        }
+
+        [Test]
         public void Config_BounceDefaultsAreInRange()
         {
             var config = ScriptableObject.CreateInstance<CarHandlingConfig>();

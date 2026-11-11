@@ -52,6 +52,12 @@ namespace UncannyValet.Traffic
         [Tooltip("A car counts as arrived this close to the end of its route.")]
         [SerializeField, Min(0.001f)] private float _arriveTolerance = 0.02f;
 
+        [Header("Obstacles")]
+        [Tooltip("Seconds a patron car waits behind something solid (the player's car, the valet, a parked car) before it creeps on.")]
+        [SerializeField, Range(1f, 30f)] private float _blockedTimeout = 6f;
+        [Tooltip("Speed of that creep, in units per second.")]
+        [SerializeField, Range(0.1f, 3f)] private float _creepSpeed = 0.8f;
+
         [Header("Ambient traffic")]
         [Tooltip("Ambient cars per minute over both lanes. 0 switches ambient traffic off.")]
         [SerializeField, Min(0f)] private float _ambientPerMinute = 13f;
@@ -83,6 +89,8 @@ namespace UncannyValet.Traffic
         public float MergeGapBehind => _mergeGapBehind;
         public float YieldDistance => _yieldDistance;
         public float ArriveTolerance => _arriveTolerance;
+        public float BlockedTimeout => _blockedTimeout;
+        public float CreepSpeed => _creepSpeed;
         public float AmbientPerMinute => _ambientPerMinute;
         public float IntervalSpread => _intervalSpread;
         public float EastShare => _eastShare;

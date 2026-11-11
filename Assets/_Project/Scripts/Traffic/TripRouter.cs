@@ -6,7 +6,7 @@ namespace UncannyValet.Traffic
     /// Owns the pooled entry and exit trips and hands out trip ids. Implements the three small trip interfaces so
     /// callers depend on only what they use.
     /// </summary>
-    public sealed class TripRouter : IEntryRouter, IExitRouter, ITripDriver
+    public sealed class TripRouter : IEntryRouter, IExitRouter, ITripDriver, ITripObstacles
     {
         private readonly EntryTrip[] _entries;
         private readonly ExitTrip[] _exits;
@@ -64,6 +64,9 @@ namespace UncannyValet.Traffic
 
         /// <inheritdoc />
         public void Cancel(int tripId) => Find(tripId)?.Cancel();
+
+        /// <inheritdoc />
+        public void SetObstacleGap(int tripId, float gap) => Find(tripId)?.SetObstacleGap(gap);
 
         private ITrip Find(int tripId)
         {

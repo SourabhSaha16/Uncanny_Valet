@@ -39,5 +39,8 @@ namespace UncannyValet.Cars
 
         /// <summary>True once the car has driven far enough to be out of view.</summary>
         public static bool HasLeft(float travelled, float exitDistance) => travelled >= exitDistance;
+
+        /// <summary>How far a trip car at <paramref name="speed"/> looks ahead for obstacles.</summary>
+        public static float LookAhead(float speed, float baseDistance, float secondsAhead) => baseDistance + Mathf.Max(0f, speed) * secondsAhead;
     }
 }
