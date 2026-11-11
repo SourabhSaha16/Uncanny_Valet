@@ -20,9 +20,21 @@ namespace UncannyValet.Traffic
         /// <summary>Default for <see cref="RetargetSeconds"/>.</summary>
         public const float DefaultRetargetSeconds = 0.2f;
 
+        /// <summary>Seconds a trip car waits behind a solid obstacle before it creeps on.</summary>
+        public readonly float BlockedTimeout;
+        /// <summary>Speed of that creep, in units per second.</summary>
+        public readonly float CreepSpeed;
+
+        /// <summary>Default for <see cref="BlockedTimeout"/>.</summary>
+        public const float DefaultBlockedTimeout = 6f;
+        /// <summary>Default for <see cref="CreepSpeed"/>.</summary>
+        public const float DefaultCreepSpeed = 0.8f;
+
         public TripTuning(float carLength, float turnSpeed, float routeSpeed, float yieldDistance, float arriveTolerance,
-            float retargetSeconds = DefaultRetargetSeconds)
+            float retargetSeconds = DefaultRetargetSeconds, float blockedTimeout = DefaultBlockedTimeout, float creepSpeed = DefaultCreepSpeed)
         {
+            BlockedTimeout = blockedTimeout;
+            CreepSpeed = creepSpeed;
             RetargetSeconds = retargetSeconds;
             CarLength = carLength;
             TurnSpeed = turnSpeed;

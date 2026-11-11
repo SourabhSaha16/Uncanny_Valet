@@ -8,6 +8,9 @@ namespace UncannyValet.Cars
     /// </summary>
     public static class CarBounceRule
     {
+        /// <summary>Mass of a car that cannot be shoved (a road trip car, pose driven): the other car just reflects off it.</summary>
+        public const float ImmovableMass = 1000000f;
+
         /// <summary>True when the impact is big enough to bounce and to be heard.</summary>
         public static bool IsImpact(float approachSpeed, float minImpactSpeed) => approachSpeed >= minImpactSpeed;
 

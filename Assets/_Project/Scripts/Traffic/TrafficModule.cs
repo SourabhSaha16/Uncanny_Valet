@@ -88,7 +88,8 @@ namespace UncannyValet.Traffic
 
         private void RegisterTrips(IRoadLayout road)
         {
-            var tuning = new TripTuning(_config.CarLength, _config.TurnSpeed, _config.RouteSpeed, _config.YieldDistance, _config.ArriveTolerance);
+            var tuning = new TripTuning(_config.CarLength, _config.TurnSpeed, _config.RouteSpeed, _config.YieldDistance, _config.ArriveTolerance,
+                TripTuning.DefaultRetargetSeconds, _config.BlockedTimeout, _config.CreepSpeed);
             _speeds = new TripSpeeds(_config.CruiseSpeed, _config.RouteSpeed);
             _speeds.SetEntrySpeed(_config.EntrySpeed);
             _speeds.SetExitSpeed(_config.ExitSpeed);
@@ -98,6 +99,7 @@ namespace UncannyValet.Traffic
             Services.Register<IEntryRouter>(router);
             Services.Register<IExitRouter>(router);
             Services.Register<ITripDriver>(router);
+            Services.Register<ITripObstacles>(router);
         }
 
         private void Update()
