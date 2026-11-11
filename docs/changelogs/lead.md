@@ -748,3 +748,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a2657675453e36f8b (IPowerBoost, ValetBoost, ValetBoostFx, BargeScanner/BargeRule, TrailEmitter, SparklePool, OnFootMover, Pedestrians stumble (PedestrianStumbleRule, WalkerStumbler), PedestrianId, Audio SfxPowers, PowerRows keys, ValetSceneBuilder, Bootstrap.unity, PedestrianConfig asset, tests), docs/changelogs/lead.md
 Why: issue 41 (valet powers level 1). While boosted the valet walks 40% faster, ignores pedestrian blocking (pedestrians stumble 0.4 s), shows a rainbow outline and sparkle trail, and a fanfare plays. Test it by lowering F2 'Meter per Perfect Park' and 'Speed boost unlocks at'. Scene file kept whole (real new components plus fileID churn).
 Tests: 1231 of 1231 EditMode, 21 of 21 PlayMode after the merge (incl. Bootstrap scene smoke test).
+
+## lead: merge agent/lot stay starts when a car first rests clear of the queue (#78) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a9a4911bde6bb31bc (QueueClearRule/Runner/Settings, StayStarter, Ticket, TicketRegistry, CarClearedQueue/StayStarted events, QueueRows and two tuning keys, Director CarRecord/CarBook/LotStateTracker/SnapshotBuilder, tests), docs/changelogs/lead.md
+Why: issue 78 closes the loophole of holding a car in the queue and returning it fast. The stay starts the first time the car rests 6 units clear of the queue (F2 Queue clear distance), or when a bay parks it, or after 3 game minutes in the queue (F2 Longest wait in the queue). Replaces the stay-from-drop-off start of issue 77; a ticket whose stay has not started has no return time and is left alone by the ReturnScheduler.
+Tests: 1242 of 1242 EditMode, 21 of 21 PlayMode after resolving the TuningKey conflict (kept both appended groups) and RunBatch (Bootstrap.unity churn reverted).

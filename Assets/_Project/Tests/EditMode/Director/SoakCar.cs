@@ -26,7 +26,11 @@ namespace UncannyValet.Tests.Director
         /// <summary>The stay as first planned, and what the director moved it by (negative = earlier).</summary>
         public float PlannedStay;
         public float Shifted;
-        /// <summary>Shift seconds at which it arrived (the stay clock starts there).</summary>
+        /// <summary>True once the stay clock runs: the bot placed the car clear of the queue, or it waited out the queue limit.</summary>
+        public bool StayStarted;
+        /// <summary>Seconds the car has sat in the queue since it arrived.</summary>
+        public float QueuedFor;
+        /// <summary>Shift seconds at which it arrived.</summary>
         public float ParkedAt;
         /// <summary>Order in which the pickup was requested (lower is older).</summary>
         public int RequestOrder;

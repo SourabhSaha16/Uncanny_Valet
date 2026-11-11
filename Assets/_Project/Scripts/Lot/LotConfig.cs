@@ -7,6 +7,7 @@ namespace UncannyValet.Lot
     public class LotConfig : ScriptableObject
     {
         [SerializeField] private PerfectSettings _perfect = new PerfectSettings();
+        [SerializeField] private QueueClearSettings _queueClear = new QueueClearSettings();
 
         [Header("Spots")]
         [SerializeField, Tooltip("Size of one tall bay (width, length). The bay grid itself is fixed by BayPlan: two rows of four.")]
@@ -126,6 +127,7 @@ namespace UncannyValet.Lot
         public float CurbFacingToleranceDegrees => _curbFacingToleranceDegrees;
         public CurbArrowStyle CurbArrow => _curbArrow;
         public PerfectSettings Perfect => _perfect;
+        public QueueClearSettings QueueClear => _queueClear;
         public float SettleSeconds => _settleSeconds;
         public float StoppedSpeed => _stoppedSpeed;
         public float Margin => _margin;

@@ -18,6 +18,7 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(GameRows.Clock);
             all.AddRange(ArrivalRows.Rows);
             all.AddRange(ReturnRows.Rows);
+            all.AddRange(QueueRows.Rows);
             all.AddRange(DirectorPacingRows.PacingRows);
             all.AddRange(DirectorMixRows.MixRows);
             all.AddRange(DirectorMixRows.DilemmaRows);

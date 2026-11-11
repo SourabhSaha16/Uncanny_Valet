@@ -21,6 +21,8 @@ namespace UncannyValet.Tests.Director
         public const float ChargeSeconds = 20f;
         public const float PickupWindowSeconds = 60f;
         private const float ArriveSeconds = 3f;
+        /// <summary>Seconds in the queue after which a car's stay starts anyway (the 3 game minute default at 1 s per minute).</summary>
+        public const float QueueWaitSeconds = 3f;
         private const float ParkTaskSeconds = 8f;
         private const float DeliverTaskSeconds = 10f;
         private const float StayMin = 20f;
@@ -127,8 +129,11 @@ namespace UncannyValet.Tests.Director
                 case CarLotState.WaitingToPark:
                 case CarLotState.Parked:
                 case CarLotState.InStation:
-                    // The stay runs from the drop-off, wherever the car sits; unfinished services just earn nothing.
+                    // The stay runs from the first rest clear of the queue (or the queue wait limit), wherever the car
+                    // sits; unfinished services just earn nothing.
+                    if (car.State == CarLotState.WaitingToPark && (car.QueuedFor += dt) >= QueueWaitSeconds) car.StayStarted = true;
                     Serve(car, dt);
+                    if (!car.StayStarted) break;
                     car.StayLeft -= dt;
                     if (car.StayLeft <= 0f) RequestPickup(car);
                     break;

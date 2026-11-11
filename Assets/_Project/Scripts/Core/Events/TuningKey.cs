@@ -262,5 +262,10 @@ namespace UncannyValet.Core.Events
         PowerStumbleSeconds,
         /// <summary>Sparkles per second in the boosted valet's trail.</summary>
         PowerTrailPerSecond,
+        // Patron stay start: when a queued car's clock starts (Lot and Patrons own). Issue 78.
+        /// <summary>World units a resting car must be from the nearest queue slot centre for the patron's stay to start.</summary>
+        QueueClearDistance,
+        /// <summary>Game minutes after arrival at which a car still in the queue gets its stay started anyway.</summary>
+        QueueMaxWaitMinutes,
     }
 }

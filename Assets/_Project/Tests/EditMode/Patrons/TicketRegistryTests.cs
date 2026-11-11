@@ -52,6 +52,7 @@ namespace UncannyValet.Tests.Patrons
         public void WholeTicket_OpenParkWaitPickupClose()
         {
             var ticket = _registry.Open(_car, new PatronRequest(30f, 20, true));
+            _bus.Publish(new CarClearedQueue(_car));
             Tick(10f);
             _bus.Publish(new CarParked(_car, 3));
             Assert.AreEqual(TicketState.Parked, ticket.State);
@@ -127,6 +128,7 @@ namespace UncannyValet.Tests.Patrons
         public void ShiftTick_BeforePark_StillRequestsPickupWhenTheStayEnds()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));
+            _bus.Publish(new CarClearedQueue(_car));
             Tick(4f);
             Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
             Tick(10f);
