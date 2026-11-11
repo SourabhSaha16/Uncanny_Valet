@@ -12,6 +12,10 @@ namespace UncannyValet.Patrons
         public PatronTuning(ITuning tuning, PatronConfig config) { _tuning = tuning; _config = config; }
 
         public float PickupWindow => Read(TuningKey.PickupWindowMinutes, _config.PickupWindowMinutes);
+        public float ImpatientWindowScale => Read(TuningKey.ImpatientWindowScale, _config.ImpatientWindowScale);
+
+        /// <summary>The pickup window a patron gets: the live window, scaled down when impatient.</summary>
+        public float WindowFor(bool impatient) => impatient ? PickupWindow * ImpatientWindowScale : PickupWindow;
         public float StayMin => Read(TuningKey.StayMinMinutes, _config.StayRange.x);
         public float StayMax => Read(TuningKey.StayMaxMinutes, _config.StayRange.y);
         public float GapMin => Read(TuningKey.ArrivalGapMinMinutes, _config.ArrivalIntervalRange.x);

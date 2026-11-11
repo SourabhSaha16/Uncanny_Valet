@@ -21,6 +21,9 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
 
+        [Tooltip("Impatient patrons wait this fraction of the pickup window (1 = same as everyone).")]
+        [SerializeField, Range(0.3f, 1f)] private float _impatientWindowScale = 0.6f;
+
         [Tooltip("Charge an EV arrives with (0..1).")]
         [SerializeField, Range(0f, 1f)] private float _evStartCharge = 0.2f;
 
@@ -53,6 +56,7 @@ namespace UncannyValet.Patrons
         public int BaseTip => _baseTip;
         public float ImpatientChance => _impatientChance;
         public float PickupWindowMinutes => _pickupWindowMinutes;
+        public float ImpatientWindowScale => _impatientWindowScale;
         public float ChargeMinutes => _chargeMinutes;
         public float WashMinutes => _washMinutes;
     }

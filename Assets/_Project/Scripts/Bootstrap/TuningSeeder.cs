@@ -43,6 +43,7 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ArrivalGapMinMinutes, patrons.ArrivalIntervalRange.x);
             t.Seed(TuningKey.ArrivalGapMaxMinutes, patrons.ArrivalIntervalRange.y);
             t.Seed(TuningKey.ImpatientChance, patrons.ImpatientChance);
+            t.Seed(TuningKey.ImpatientWindowScale, patrons.ImpatientWindowScale);
             t.Seed(TuningKey.ChargeMinutes, service.ChargeMinutes);
             t.Seed(TuningKey.WashMinutes, service.WashMinutes);
 

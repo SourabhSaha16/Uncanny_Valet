@@ -11,6 +11,10 @@ namespace UncannyValet.Core.Contracts
                 "How fast patron timers run against real time.", false),
             new TuningInfo(TuningKey.ShiftLengthSeconds, "Clock", "Shift length (s, next shift)", 60, 600, 10,
                 "Real seconds in a shift. Applies when the next shift starts.", false),
+            new TuningInfo(TuningKey.PickupWindowMinutes, "Clock", "Pickup patience (game min)", 5, 120, 1,
+                "Game minutes a patron waits at the curb before the tip drops to $0. Applies to waiting patrons too.", false),
+            new TuningInfo(TuningKey.ImpatientWindowScale, "Clock", "How much shorter impatient patrons wait (x)", 0.3f, 1f, 0.05f,
+                "Impatient patrons wait this fraction of the pickup patience (1 = same as everyone).", false),
         };
 
         public static readonly TuningInfo[] Rest =
@@ -22,7 +26,6 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.PlanDirtyChance, "Shift plan", "Chance a car is dirty", 0f, 1f, 0.05f),
             new TuningInfo(TuningKey.PlanLateEvChance, "Shift plan", "Chance a car is an EV at shift end", 0f, 1f, 0.05f),
             new TuningInfo(TuningKey.PlanLateEvStart, "Shift plan", "EV surge starts at (fraction of shift)", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.PickupWindowMinutes, "Patrons", "Pickup window (game min)", 5, 120, 1),
             new TuningInfo(TuningKey.StayMinMinutes, "Patrons", "Shortest stay (game min)", 5, 120, 1),
             new TuningInfo(TuningKey.StayMaxMinutes, "Patrons", "Longest stay (game min)", 5, 180, 1),
             new TuningInfo(TuningKey.ArrivalGapMinMinutes, "Patrons", "Old timer: shortest gap (game min)", 1, 60, 1),

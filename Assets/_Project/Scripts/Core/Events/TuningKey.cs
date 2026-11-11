@@ -189,5 +189,9 @@ namespace UncannyValet.Core.Events
         TyreSoundVolume,
         /// <summary>How bright the tyre sounds are, 0 = dull and round, 1 = sharp (Audio owns).</summary>
         TyreSoundSharpness,
+
+        // Patrons (appended so earlier key numbers stay put).
+        /// <summary>Multiplier on the pickup window of impatient patrons (0.3..1; 1 = they wait as long as anyone).</summary>
+        ImpatientWindowScale,
     }
 }
