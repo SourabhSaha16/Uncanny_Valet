@@ -18,6 +18,7 @@ namespace UncannyValet.Patrons
         private readonly LiveTicketTuning _live;
         private readonly PerfectBonusLedger _perfect;
         private readonly ReturnShifter _returns;
+        private readonly StayStarter _stays;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         /// <summary>Game minutes a summoned patron may walk before the pickup is requested anyway; 0 = no walk (see <see cref="CurbCall"/>).</summary>
@@ -49,9 +50,9 @@ namespace UncannyValet.Patrons
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect);
             _stations = new StationService(bus, _book);
             _returns = new ReturnShifter(bus, clock, _book);
+            _stays = new StayStarter(bus, clock, _book);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
-            _bus.Subscribe<CarArrived>(OnCarArrived);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
             _bus.Subscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Subscribe<PatronReachedCurb>(OnPatronReachedCurb);
@@ -65,10 +66,10 @@ namespace UncannyValet.Patrons
         {
             _stations.Dispose();
             _returns.Dispose();
+            _stays.Dispose();
             _perfect.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
-            _bus.Unsubscribe<CarArrived>(OnCarArrived);
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
             _bus.Unsubscribe<CarAtCurb>(OnCarAtCurb);
             _bus.Unsubscribe<PatronReachedCurb>(OnPatronReachedCurb);
@@ -94,9 +95,7 @@ namespace UncannyValet.Patrons
         /// <summary>Like <see cref="Open"/> but announces nothing; follow with <see cref="AnnounceArrival"/>.</summary>
         public Ticket Create(CarId car, PatronRequest request)
         {
-            var ticket = _book.Add(car, request);
-            ticket.StartStay(_clock.ElapsedMinutes);
-            return ticket;
+            return _book.Add(car, request);
         }
 
         /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
@@ -115,11 +114,6 @@ namespace UncannyValet.Patrons
             if (!_book.TryGetByCar(e.Car, out var t)) return;
             t.AtCurb = false;
             t.MarkParked();
-        }
-
-        private void OnCarArrived(CarArrived e)
-        {
-            if (_book.TryGetByCar(e.Car, out var t)) t.MarkDroppedOff(_clock.ElapsedMinutes);
         }
 
         private void OnCarEntered(CarEntered e)

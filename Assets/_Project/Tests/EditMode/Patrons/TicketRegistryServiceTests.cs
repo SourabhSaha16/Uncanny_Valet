@@ -58,6 +58,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var t = _registry.Create(_car, new PatronRequest(10f, 20, false, 60f, ev, dirty));
             _registry.AnnounceArrival(t);
+            _bus.Publish(new CarClearedQueue(_car));
             return t;
         }
 

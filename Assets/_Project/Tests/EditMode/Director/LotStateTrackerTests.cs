@@ -102,10 +102,13 @@ namespace UncannyValet.Tests.Director
         {
             Spawn(stay: 30f);
             Bus.Publish(new CarArrived(Car));
+            Clock.SetElapsed(5f);
+            Assert.IsTrue(float.IsInfinity(Only().SecondsToPickup), "no return time while the stay has not started");
             Clock.SetElapsed(10f);
             Bus.Publish(new CarParked(Car, 1));
+            Bus.Publish(new StayStarted(Ticket, Car, 0f));
             Clock.SetElapsed(20f);
-            Assert.AreEqual(10f, Tracker.Capture().SecondsToNextPickup, 0.01f, "the stay counts from the drop-off");
+            Assert.AreEqual(10f, Tracker.Capture().SecondsToNextPickup, 0.01f, "the stay counts from the first rest clear of the queue");
             Assert.AreEqual(10f, Only().SecondsToPickup, 0.01f);
         }
 
@@ -116,6 +119,7 @@ namespace UncannyValet.Tests.Director
             Clock.SetElapsed(10f);
             Bus.Publish(new CarArrived(Car));
             Bus.Publish(new CarParked(Car, 1));
+            Bus.Publish(new StayStarted(Ticket, Car, 10f));
             Bus.Publish(new PatronReturnShifted(Ticket, Car, -6f));
             Clock.SetElapsed(20f);
             Assert.AreEqual(14f, Only().SecondsToPickup, 0.01f);

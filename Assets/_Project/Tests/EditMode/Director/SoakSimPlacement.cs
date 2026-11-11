@@ -44,6 +44,7 @@ namespace UncannyValet.Tests.Director
             var dest = DestinationOf(car);
             if (!dest.HasValue) { car.State = CarLotState.WaitingToPark; return; }
             var d = dest.Value;
+            car.StayStarted = true;
             switch (d.Where)
             {
                 case Where.Spot:

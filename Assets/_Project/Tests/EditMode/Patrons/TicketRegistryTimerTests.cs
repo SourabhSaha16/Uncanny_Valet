@@ -58,7 +58,9 @@ namespace UncannyValet.Tests.Patrons
         private Ticket OpenTicket(CarId car, float stay = 20f)
         {
             _cars.Spawn(car, UnityEngine.Vector2.zero, 0f);
-            return _registry.Open(car, Request(stay));
+            var ticket = _registry.Open(car, Request(stay));
+            _bus.Publish(new CarClearedQueue(car));
+            return ticket;
         }
 
         private void Tick(float minute)

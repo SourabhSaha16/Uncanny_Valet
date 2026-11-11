@@ -33,6 +33,10 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes in the wash bay to get a dirty car clean.")]
         [SerializeField, Min(1f)] private float _washMinutes = 15f;
 
+        [Header("Stay start")]
+        [SerializeField, Min(0.5f), Tooltip("Game minutes a car may sit in the arrival queue before the patron's stay starts anyway. Normally the stay starts when the car first rests clear of the queue.")]
+        private float _queueWaitMinutes = ServiceTuning.DefaultQueueWaitMinutes;
+
         [Header("Late arrivals")]
         [SerializeField, Min(0f), Tooltip("Game minutes before the end of the shift by which a patron must be asking for the car, so every parked car gets its patron back. A stay that would run later is cut short.")]
         private float _lateStayLeadMinutes = 25f;
@@ -49,7 +53,8 @@ namespace UncannyValet.Patrons
         public float LateStayLeadMinutes => _lateStayLeadMinutes;
         public float LateStayFloorMinutes => _lateStayFloorMinutes;
         public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;
-        public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes);
+        public float QueueWaitMinutes => _queueWaitMinutes;
+        public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes, _queueWaitMinutes);
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;

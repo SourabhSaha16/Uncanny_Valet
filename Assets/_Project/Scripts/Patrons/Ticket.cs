@@ -17,14 +17,20 @@ namespace UncannyValet.Patrons
 
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
 
-        /// <summary>Game minute the stay clock started: ticket creation, moved to the drop-off by <see cref="MarkDroppedOff"/>.</summary>
+        /// <summary>Game minute the stay clock started (see <see cref="StartStay"/>); meaningless until <see cref="StayStarted"/>.</summary>
         public float StayStartMinute { get; private set; }
 
-        /// <summary>Game minute the stay ends and the patron wants the car, wherever it is.</summary>
-        public float ReturnMinute => StayStartMinute + StayMinutes + StayShiftMinutes;
+        /// <summary>True once the stay clock started: the car first rested clear of the queue, was parked, or waited out the queue limit.</summary>
+        public bool StayStarted { get; private set; }
 
-        /// <summary>True once the car arrived and the patron went into the diner (the stay clock restarted then).</summary>
-        public bool DroppedOff { get; private set; }
+        /// <summary>Game minute the car arrived in the queue; meaningless until <see cref="HasArrived"/>.</summary>
+        public float ArrivedMinute { get; private set; }
+
+        /// <summary>True once the car finished driving in.</summary>
+        public bool HasArrived { get; private set; }
+
+        /// <summary>Game minute the stay ends and the patron wants the car, wherever it is; infinity while the stay has not started.</summary>
+        public float ReturnMinute => StayStarted ? StayStartMinute + StayMinutes + StayShiftMinutes : float.PositiveInfinity;
         public float PickupRequestMinute { get; private set; }
         public TicketTimer PickupTimer { get; }
 
@@ -68,16 +74,16 @@ namespace UncannyValet.Patrons
         public float StayShiftMinutes { get; private set; }
 
         /// <summary>True for any open ticket that has not asked for the car yet (queued, parked, washing or charging) once the stay is over.</summary>
-        public bool StayEnded(float minute) => IsBeforePickup && minute >= ReturnMinute;
+        public bool StayEnded(float minute) => StayStarted && IsBeforePickup && minute >= ReturnMinute;
 
         /// <summary>
         /// Moves the end of the stay (the director's return nudge). Only a patron still inside the diner can be moved:
-        /// dropped off, not yet asked for the car, not summoned, stay not over, whatever the car is doing. The new end
+        /// stay started, not yet asked for the car, not summoned, stay not over, whatever the car is doing. The new end
         /// is never before <paramref name="nowMinute"/>. Returns the delta really applied, or 0 when nothing was moved.
         /// </summary>
         public float ShiftStay(float deltaMinutes, float nowMinute)
         {
-            if (!DroppedOff || !IsBeforePickup || Summoned || StayEnded(nowMinute)) return 0f;
+            if (!StayStarted || !IsBeforePickup || Summoned || StayEnded(nowMinute)) return 0f;
             var end = ReturnMinute;
             var applied = System.Math.Max(end + deltaMinutes, nowMinute) - end;
             StayShiftMinutes += applied;
@@ -87,16 +93,29 @@ namespace UncannyValet.Patrons
         /// <summary>The patron has not asked for the car yet.</summary>
         public bool IsBeforePickup => State == TicketState.AwaitingPark || State == TicketState.Parked;
 
-        /// <summary>Starts the stay clock at ticket creation; the first drop-off then moves it (see <see cref="MarkDroppedOff"/>).</summary>
-        public void StartStay(float minute) => StayStartMinute = minute;
-
-        /// <summary>The car arrived and the patron went into the diner: the fixed stay counts from now, wherever the car ends up.</summary>
-        public void MarkDroppedOff(float minute)
+        /// <summary>
+        /// Starts the stay clock; only the first call counts (a car moved back into the queue does not restart it).
+        /// Returns true when it started now.
+        /// </summary>
+        public bool StartStay(float minute)
         {
-            if (DroppedOff || !IsBeforePickup) return;
-            DroppedOff = true;
+            if (StayStarted || !IsBeforePickup) return false;
+            StayStarted = true;
             StayStartMinute = minute;
+            return true;
         }
+
+        /// <summary>The car finished driving in; remembered for the queue wait limit. Only the first call counts.</summary>
+        public void MarkArrived(float minute)
+        {
+            if (HasArrived) return;
+            HasArrived = true;
+            ArrivedMinute = minute;
+        }
+
+        /// <summary>True when the car has sat in the queue for <paramref name="maxWaitMinutes"/> without the stay starting.</summary>
+        public bool QueueWaitOver(float minute, float maxWaitMinutes)
+            => !StayStarted && HasArrived && IsBeforePickup && minute >= ArrivedMinute + maxWaitMinutes;
 
         public void MarkParked()
         {

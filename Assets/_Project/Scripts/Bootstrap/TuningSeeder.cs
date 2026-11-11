@@ -27,12 +27,13 @@ namespace UncannyValet.Bootstrap
         /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
         /// <param name="powers">The valet power config; null seeds the config defaults.</param>
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
+        /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
         /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null,
-            PerfectSettings perfect = null, HudEmotionConfig emotions = null)
+            PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null)
         {
             SeedEmotions(t, emotions);
             new PerfectTuning(perfect ?? new PerfectSettings()).Seed(t);
@@ -56,6 +57,8 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ImpatientWindowScale, patrons.ImpatientWindowScale);
             t.Seed(TuningKey.ChargeMinutes, service.ChargeMinutes);
             t.Seed(TuningKey.WashMinutes, service.WashMinutes);
+            t.Seed(TuningKey.QueueMaxWaitMinutes, service.QueueWaitMinutes);
+            t.Seed(TuningKey.QueueClearDistance, (queueClear ?? new QueueClearSettings()).ClearDistance);
 
             t.Seed(TuningKey.BaseTip, patrons.BaseTip);
             t.Seed(TuningKey.ChargeBonus, tips.ChargeBonus);
