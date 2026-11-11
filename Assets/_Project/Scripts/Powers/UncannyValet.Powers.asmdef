@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Powers",
+    "rootNamespace": "UncannyValet.Powers",
+    "references": ["UncannyValet.Core", "Unity.InputSystem"],
+    "autoReferenced": true
+}

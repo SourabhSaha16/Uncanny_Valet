@@ -6,6 +6,7 @@ using UncannyValet.Core.Events;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Patrons;
+using UncannyValet.Powers;
 using UncannyValet.Traffic;
 using UnityEngine;
 
@@ -22,14 +23,16 @@ namespace UncannyValet.Bootstrap
         /// <param name="bus">When given, the returned link re-derives the director numbers whenever a dial moves.</param>
         /// <param name="handling">The car handling config; null seeds the config defaults.</param>
         /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
+        /// <param name="powers">The valet power config; null seeds the config defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null)
+            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null)
         {
             SeedTraffic(t, traffic);
             SeedHandling(t, handling);
             SeedTyreSound(t, audio);
+            SeedPowers(t, powers);
             t.Seed(TuningKey.PedestrianCount, pedestrians);
             if (director != null && profile != null) director.SeedInto(t, profile);
 
@@ -84,6 +87,13 @@ namespace UncannyValet.Bootstrap
             var config = handling != null ? handling : ScriptableObject.CreateInstance<CarHandlingConfig>();
             new CarHandlingLive(config).Seed(t);
             if (handling == null) Object.DestroyImmediate(config);
+        }
+
+        private static void SeedPowers(ITuning t, PowerMeterConfig powers)
+        {
+            var config = powers != null ? powers : ScriptableObject.CreateInstance<PowerMeterConfig>();
+            config.SeedInto(t);
+            if (powers == null) Object.DestroyImmediate(config);
         }
 
         private static void SeedTyreSound(ITuning t, AudioConfig audio)

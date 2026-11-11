@@ -13,6 +13,7 @@
         "UncannyValet.Night",
         "UncannyValet.Director",
         "UncannyValet.Audio",
+        "UncannyValet.Powers",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap",
         "UnityEngine.TestRunner",
