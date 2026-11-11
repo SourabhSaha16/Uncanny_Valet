@@ -80,7 +80,7 @@ namespace UncannyValet.Tests.Director
         {
             while (!_pacer.Tick(EmptyLate(), Dt).IsSpawn) { }
             _pacer.NotifySpawned();
-            Assert.IsFalse(_pacer.Tick(EmptyLate(), Dt).IsSpawn);
+            Assert.IsFalse(_pacer.Tick(EmptyLate(queue: 1), Dt).IsSpawn, "the arrived car is in the queue");
         }
 
         private bool ForcePlainSpawn(PacerInput input, float seconds)

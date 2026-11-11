@@ -16,6 +16,7 @@ namespace UncannyValet.Core.Contracts
             var all = new List<TuningInfo>();
             all.AddRange(DifficultyRows.Rows);
             all.AddRange(GameRows.Clock);
+            all.AddRange(ArrivalRows.Rows);
             all.AddRange(DirectorPacingRows.PacingRows);
             all.AddRange(DirectorMixRows.MixRows);
             all.AddRange(DirectorMixRows.DilemmaRows);

@@ -239,5 +239,10 @@ namespace UncannyValet.Core.Events
         EmotionAngryFrom,
         /// <summary>Share (0..1) of the pickup patience used up from which the patron will not tip any more.</summary>
         EmotionWillNotTipFrom,
+        // Arrival idle guard (Director owns). Issue 70.
+        /// <summary>Longest, in seconds, the arrival queue may stay empty before a car is sent whatever the pacing says.</summary>
+        ArrivalIdleLimit,
+        /// <summary>No car is forced in when fewer seconds than this are left in the shift.</summary>
+        ArrivalIdleCutoff,
     }
 }

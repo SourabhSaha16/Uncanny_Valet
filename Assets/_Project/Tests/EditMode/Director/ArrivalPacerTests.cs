@@ -19,8 +19,8 @@ namespace UncannyValet.Tests.Director
         }
 
         private static PacerInput In(float w = 1f, float t = 1f, float p = 0f, float form = 0f, int angry = 0,
-            int queue = 0, int cap = 3, int used = 0)
-            => new PacerInput(w, p, t, form, angry, queue, cap, used, 240f, 240f, 15f, 25f);
+            int queue = 1, int cap = 3, int used = 0, float left = 240f)
+            => new PacerInput(w, p, t, form, angry, queue, cap, used, 240f, 240f, 15f, 25f, left);
 
         // Ticks until the pacer sends a car (or the guard runs out); returns the decision and the seconds waited.
         private PacerDecision RunUntilSpawn(PacerInput input, out float waited, float limit = 300f)

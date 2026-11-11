@@ -36,6 +36,8 @@ namespace UncannyValet.Tests.Director
             _config = ScriptableObject.CreateInstance<DirectorConfig>();
             _profile = ScriptableObject.CreateInstance<DirectorProfile>();
             _config.SeedInto(_tuning, _profile);
+            // These tests cover the pacer's own idle rule; the empty-queue guard has its own test below.
+            _tuning.Set(TuningKey.ArrivalIdleLimit, 30f);
             _clock = new FakeClock();
             _lot = new FakeLot(_clock);
             _state = new DirectorState();
@@ -79,6 +81,15 @@ namespace UncannyValet.Tests.Director
             Assert.IsTrue(_scheduled[0].ArchetypeChosen, "step 3: the director picks the type");
             Assert.AreEqual(CarArchetype.Plain, _scheduled[0].Archetype, "an empty lot has no stations unlocked");
             Assert.AreEqual(1, _state.DecisionCount);
+        }
+
+        [Test]
+        public void AnEmptyQueueGetsACarWithinTheIdleLimit()
+        {
+            _tuning.Set(TuningKey.ArrivalIdleLimit, 2f);
+            Run(3f);
+            Assert.AreEqual(1, _scheduled.Count);
+            Assert.AreEqual(ScheduleReason.Idle, _scheduled[0].Reason);
         }
 
         [Test]
