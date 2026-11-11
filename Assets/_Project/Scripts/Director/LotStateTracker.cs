@@ -46,6 +46,7 @@ namespace UncannyValet.Director
             _bus.Unsubscribe<TicketOpened>(OnOpened);
             _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Unsubscribe<CarArrived>(OnArrived);
+            _bus.Unsubscribe<StayStarted>(OnStayStarted);
             _bus.Unsubscribe<CarEntered>(OnEntered);
             _bus.Unsubscribe<CarExited>(OnExited);
             _bus.Unsubscribe<CarParked>(OnParked);
@@ -71,6 +72,7 @@ namespace UncannyValet.Director
             _bus.Subscribe<TicketOpened>(OnOpened);
             _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
             _bus.Subscribe<CarArrived>(OnArrived);
+            _bus.Subscribe<StayStarted>(OnStayStarted);
             _bus.Subscribe<CarEntered>(OnEntered);
             _bus.Subscribe<CarExited>(OnExited);
             _bus.Subscribe<CarParked>(OnParked);
@@ -101,7 +103,8 @@ namespace UncannyValet.Director
         private void OnSpawned(CarSpawned e) => _book.Spawned(e.Car);
         private void OnOpened(TicketOpened e) => _book.Stay(e.Car, e.StayMinutes);
         private void OnTraits(TicketTraitsAssigned e) => _book.Traits(e.Car, e.IsEv, e.IsDirty);
-        private void OnArrived(CarArrived e) => _book.Arrived(e.Car, _clock.ElapsedMinutes);
+        private void OnArrived(CarArrived e) => _book.Arrived(e.Car);
+        private void OnStayStarted(StayStarted e) => _book.StayStarted(e.Car, e.Minute);
         private void OnEntered(CarEntered e) => _book.Driven(e.Car, true);
         private void OnExited(CarExited e) => _book.Driven(e.Car, false);
         private void OnParked(CarParked e) => _book.Parked(e.Car, e.SpotId);

@@ -36,11 +36,11 @@ namespace UncannyValet.Director
         private static int TotalSpots(CarBook book)
             => book.ActiveSpots > 0 && book.ActiveSpots < book.RegularSpots ? book.ActiveSpots : book.RegularSpots;
 
-        // Seconds until the patron of a dropped-off car wants it back (wherever it is); infinity once requested or before arrival.
+        // Seconds until the patron wants the car back (wherever it is); infinity once requested or while the stay has not started.
         private static float SecondsToPickup(CarRecord r, float nowMinutes, float secondsPerMinute)
         {
-            if (r.PickupRequested || float.IsNaN(r.ArrivedAtMinute)) return float.PositiveInfinity;
-            var minutes = r.ArrivedAtMinute + r.StayMinutes + r.ShiftedMinutes - nowMinutes;
+            if (r.PickupRequested || float.IsNaN(r.StayStartedAtMinute)) return float.PositiveInfinity;
+            var minutes = r.StayStartedAtMinute +r.StayMinutes + r.ShiftedMinutes - nowMinutes;
             return (minutes < 0f ? 0f : minutes) * secondsPerMinute;
         }
 

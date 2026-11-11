@@ -8,7 +8,7 @@ namespace UncannyValet.Director
     /// so the player can still collect tips (tips are paid only for pickups). The first batch is spread evenly from now
     /// to the last useful moment; a car that parks later takes the first free slot. No two returns are closer than the
     /// pickup spacing. A car is planned once; later ticks only keep the spacing, so the spread does not collapse into a
-    /// rush as time passes. A car counts wherever it is: queued, parked, driven, washing or charging.
+    /// rush as time passes. A car counts wherever it is (parked, driven, washing or charging) once its stay has started; a car still in the queue with no stay started has no return time and is left alone (the queue wait limit starts it).
     /// </summary>
     internal sealed class LateReturnPlanner
     {

@@ -19,13 +19,13 @@ namespace UncannyValet.Tests.Director
             RequestFromStation.Add(car.State == CarLotState.InStation);
         }
 
-        // A patron can only be moved while inside the diner: dropped off, not asked for the car yet.
+        // A patron can only be moved while inside the diner: stay started, not asked for the car yet.
         private void OnReturnShift(ReturnShiftRequested e)
         {
             foreach (var car in _cars)
             {
                 if (car.Id.Value != e.Car.Value) continue;
-                if (car.State == CarLotState.Arriving || car.State == CarLotState.PickupRequested) return;
+                if (!car.StayStarted || car.State == CarLotState.Arriving || car.State == CarLotState.PickupRequested) return;
                 var applied = System.Math.Max(car.StayLeft + e.DeltaMinutes, 0f) - car.StayLeft;
                 car.StayLeft += applied;
                 car.Shifted += applied;

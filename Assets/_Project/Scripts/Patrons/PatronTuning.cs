@@ -30,7 +30,8 @@ namespace UncannyValet.Patrons
 
         /// <summary>Charge and wash numbers for tickets created from now on.</summary>
         public ServiceTuning Service => new ServiceTuning(_config.Tuning.EvStartCharge,
-            Read(TuningKey.ChargeMinutes, _config.ChargeMinutes), Read(TuningKey.WashMinutes, _config.WashMinutes));
+            Read(TuningKey.ChargeMinutes, _config.ChargeMinutes), Read(TuningKey.WashMinutes, _config.WashMinutes),
+            Read(TuningKey.QueueMaxWaitMinutes, _config.QueueWaitMinutes));
 
         private float Read(TuningKey key, float fallback) => _tuning.TryGet(key, out var v) ? v : fallback;
     }

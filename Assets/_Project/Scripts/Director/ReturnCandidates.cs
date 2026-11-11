@@ -5,8 +5,9 @@ namespace UncannyValet.Director
 {
     /// <summary>
     /// The open tickets whose patron is still inside the diner (stay not over), sorted by return time, as a reusable working list for
-    /// one scheduler tick. The car may be anywhere (the stay clock runs from the drop-off); only a ticket
-    /// that already asked for the car, or whose patron is on the way to the curb, is left out.
+    /// one scheduler tick. The car may be anywhere; only a ticket that already asked for the car, whose patron is on
+    /// the way to the curb, or whose stay has not started (the car is still in the queue: no return time known, so
+    /// nothing to move, in the late phase too) is left out.
     /// </summary>
     internal sealed class ReturnCandidates
     {

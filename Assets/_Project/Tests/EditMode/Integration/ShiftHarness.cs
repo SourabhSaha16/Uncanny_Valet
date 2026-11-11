@@ -65,6 +65,7 @@ namespace UncannyValet.Tests.Integration
             Cars.Spawn(car, Vector2.zero, 0f);
             var ticket = Registry.Open(car, request);
             Bus.Publish(new CarSpawned(car, ticket.TicketId));
+            Bus.Publish(new CarClearedQueue(car));
             return ticket;
         }
 

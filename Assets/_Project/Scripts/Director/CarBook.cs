@@ -65,11 +65,14 @@ namespace UncannyValet.Director
             if (_cars.TryGetValue(car, out var r)) r.ShiftedMinutes += deltaMinutes;
         }
 
-        public void Arrived(CarId car, float nowMinutes)
+        public void Arrived(CarId car)
         {
-            if (!_cars.TryGetValue(car, out var r)) return;
-            r.Arrived = true;
-            if (float.IsNaN(r.ArrivedAtMinute)) r.ArrivedAtMinute = nowMinutes;
+            if (_cars.TryGetValue(car, out var r)) r.Arrived = true;
+        }
+
+        public void StayStarted(CarId car, float minute)
+        {
+            if (_cars.TryGetValue(car, out var r) && float.IsNaN(r.StayStartedAtMinute)) r.StayStartedAtMinute = minute;
         }
 
         public void Driven(CarId car, bool driven) { if (_cars.TryGetValue(car, out var r)) r.Driven = driven; }

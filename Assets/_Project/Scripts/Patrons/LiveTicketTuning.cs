@@ -29,6 +29,7 @@ namespace UncannyValet.Patrons
             {
                 case TuningKey.ChargeMinutes:
                 case TuningKey.WashMinutes:
+                case TuningKey.QueueMaxWaitMinutes:
                     _book.Tuning = _tuning.Service;
                     break;
                 case TuningKey.PickupWindowMinutes:

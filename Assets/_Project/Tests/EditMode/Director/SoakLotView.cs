@@ -22,8 +22,9 @@ namespace UncannyValet.Tests.Director
             var nextPickup = float.PositiveInfinity;
             foreach (var car in _sim.Cars)
             {
-                var toPickup = car.State == CarLotState.Parked || car.State == CarLotState.InStation
-                    ? car.StayLeft : float.PositiveInfinity;
+                var counting = car.State == CarLotState.WaitingToPark || car.State == CarLotState.Parked
+                    || car.State == CarLotState.InStation;
+                var toPickup = counting && car.StayStarted ? car.StayLeft : float.PositiveInfinity;
                 if (toPickup < nextPickup) nextPickup = toPickup;
                 _cars.Add(new CarSnapshot(car.Id, car.State, car.Dirty, car.Ev, car.WashDone, car.ChargeDone,
                     car.AwaitingPark, WashLeft01(car), Patience(car), toPickup, car.PlannedStay, car.Shifted));

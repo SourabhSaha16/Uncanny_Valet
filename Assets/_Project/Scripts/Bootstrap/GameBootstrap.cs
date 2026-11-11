@@ -126,7 +126,7 @@ namespace UncannyValet.Bootstrap
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions);
+                emotions: _ui.Emotions, queueClear: _lot.QueueClear);
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
