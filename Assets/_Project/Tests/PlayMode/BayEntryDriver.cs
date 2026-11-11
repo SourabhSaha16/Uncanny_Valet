@@ -35,8 +35,7 @@ namespace UncannyValet.Tests.PlayMode
                 var stopping = speed * speed / (2f * car.Definition.Braking);
                 var braking = aligned && remaining <= stopping;
                 var throttle = braking ? (speed > StoppedSpeed ? -1f : 0f) : (speed < CruiseSpeed ? 1f : 0f);
-                car.SetInput(throttle, aligned ? 0f : steer);
-                if (braking && speed <= StoppedSpeed) yield break;
+                car.SetInput(throttle, aligned ? 0f : steer);                if (braking && speed <= StoppedSpeed) yield break;
             }
         }
     }

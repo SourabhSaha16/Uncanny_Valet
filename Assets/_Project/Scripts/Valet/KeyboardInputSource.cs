@@ -11,8 +11,13 @@ namespace UncannyValet.Valet
 
         public bool InteractPressed { get; private set; }
 
+        /// <summary>Left Shift or the gamepad right shoulder: the one Dash/Handbrake button (handbrake in a car, dash on foot).</summary>
+        public bool Drift { get; private set; }
+
         private void Update()
         {
+            var pad = Gamepad.current;
+            Drift = (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) || (pad != null && pad.rightShoulder.isPressed);
             var kb = Keyboard.current;
             if (kb == null) { Move = Vector2.zero; InteractPressed = false; return; }
 

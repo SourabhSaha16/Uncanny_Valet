@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7b7a655e8ec2f14dbbee7ebe38bc8c5, type: 3}
+  m_Name: CarHandlingConfig
+  m_EditorClassIdentifier: UncannyValet.Cars::UncannyValet.Cars.CarHandlingConfig
+  _lateralFriction: 8
+  _forwardGrip: 0.6
+  _gripLowSpeed: 3
+  _gripHighSpeed: 6
+  _gripAtSpeed: 0.55
+  _driftGripScale: 0.25
+  _driftMinSpeed: 1
+  _turnFullSpeed: 4
+  _measuredAisleWidth: 4.6
+  _radiusMargin: 1
+  _pullOutClearance: 0.3
+  _bounciness: 0.4
+  _minImpactSpeed: 0.5
+  _fullImpactSpeed: 6
+  _parkedMassScale: 8
+  _bumpPairInterval: 0.25

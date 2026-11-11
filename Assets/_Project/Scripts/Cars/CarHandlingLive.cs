@@ -1,0 +1,69 @@
+using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
+
+namespace UncannyValet.Cars
+{
+    /// <summary>
+    /// The live handling numbers every car reads, seeded from a <see cref="CarHandlingConfig"/> and changed by the F2 panel
+    /// (the config asset itself stays read-only). One instance is shared by all cars of a factory.
+    /// </summary>
+    public sealed class CarHandlingLive
+    {
+        private float _lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed, _gripAtSpeed, _driftGripScale;
+        private float _driftMinSpeed, _turnFullSpeed, _rMin;
+
+        public CarHandlingLive(CarHandlingConfig config)
+        {
+            _lateralFriction = config.LateralFriction;
+            _forwardGrip = config.ForwardGrip;
+            _gripLowSpeed = config.GripLowSpeed;
+            _gripHighSpeed = config.GripHighSpeed;
+            _gripAtSpeed = config.GripAtSpeed;
+            _driftGripScale = config.DriftGripScale;
+            _driftMinSpeed = config.DriftMinSpeed;
+            _turnFullSpeed = config.TurnFullSpeed;
+            _rMin = config.RMin;
+        }
+
+        /// <summary>The drift model's numbers.</summary>
+        public DriftSettings Drift => new DriftSettings(_lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed,
+            _gripAtSpeed, _driftGripScale, _driftMinSpeed);
+
+        /// <summary>Speed at which steering reaches full effect.</summary>
+        public float TurnFullSpeed => _turnFullSpeed;
+        /// <summary>Tightest radius at low speed.</summary>
+        public float RMin => _rMin;
+        /// <summary>Turn rate at full lock and full steering speed, radians per second.</summary>
+        public float MaxTurnRate => TurningRadius.MaxTurnRate(_turnFullSpeed, _rMin);
+
+        /// <summary>Writes the live values into the tuning store as its seeds.</summary>
+        public void Seed(ITuning tuning)
+        {
+            tuning.Seed(TuningKey.HandlingLateralFriction, _lateralFriction);
+            tuning.Seed(TuningKey.HandlingForwardGrip, _forwardGrip);
+            tuning.Seed(TuningKey.HandlingGripLowSpeed, _gripLowSpeed);
+            tuning.Seed(TuningKey.HandlingGripHighSpeed, _gripHighSpeed);
+            tuning.Seed(TuningKey.HandlingGripAtSpeed, _gripAtSpeed);
+            tuning.Seed(TuningKey.HandlingDriftGripScale, _driftGripScale);
+            tuning.Seed(TuningKey.HandlingTurnFullSpeed, _turnFullSpeed);
+            tuning.Seed(TuningKey.HandlingMinTurnRadius, _rMin);
+        }
+
+        /// <summary>Applies a tuning change; false when the key is not a handling key.</summary>
+        public bool TrySet(TuningKey key, float value)
+        {
+            switch (key)
+            {
+                case TuningKey.HandlingLateralFriction: _lateralFriction = value; return true;
+                case TuningKey.HandlingForwardGrip: _forwardGrip = value; return true;
+                case TuningKey.HandlingGripLowSpeed: _gripLowSpeed = value; return true;
+                case TuningKey.HandlingGripHighSpeed: _gripHighSpeed = value; return true;
+                case TuningKey.HandlingGripAtSpeed: _gripAtSpeed = value; return true;
+                case TuningKey.HandlingDriftGripScale: _driftGripScale = value; return true;
+                case TuningKey.HandlingTurnFullSpeed: _turnFullSpeed = value; return true;
+                case TuningKey.HandlingMinTurnRadius: _rMin = value; return true;
+                default: return false;
+            }
+        }
+    }
+}

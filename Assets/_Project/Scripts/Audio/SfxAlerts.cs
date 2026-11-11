@@ -24,6 +24,14 @@ namespace UncannyValet.Audio
         private const float BumpEndHz = 340f;
         private const float BumpSeconds = 0.14f;
         private const float BumpGain = 0.5f;
+        private const float ThudStartHz = 150f;
+        private const float ThudEndHz = 48f;
+        private const float ThudSeconds = 0.16f;
+        private const float ThudGain = 0.8f;
+        private const float KnockHz = 95f;
+        private const float KnockSeconds = 0.05f;
+        private const float KnockGain = 0.3f;
+        private const float KnockFilterHz = 700f;
         private static readonly int[] JingleMidi = { 72, 76, 79, 84 };
 
         public static float[] PickupRequested(int rate)
@@ -79,6 +87,17 @@ namespace UncannyValet.Audio
             var boing = VoiceSpec.Tone(Waveform.Sine, BumpStartHz, BumpSeconds, BumpGain).Gliding(BumpEndHz)
                 .WithEnvelope(new Adsr(0.003f, BumpSeconds, 0f, 0.05f));
             b.AddVoice(0f, boing);
+            return SfxActions.Finish(b);
+        }
+
+        /// <summary>A short, soft rubbery "thud" for two cars bumping: a falling low sine plus a muffled knock.</summary>
+        public static float[] CarBump(int rate)
+        {
+            var b = new MixBuffer(rate * 25 / 100, rate, false);
+            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Sine, ThudStartHz, ThudSeconds, ThudGain).Gliding(ThudEndHz)
+                .WithEnvelope(new Adsr(0.002f, ThudSeconds, 0f, 0.06f)));
+            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Square, KnockHz, KnockSeconds, KnockGain).Filtered(KnockFilterHz, KnockFilterHz, 1f)
+                .WithEnvelope(new Adsr(0.001f, KnockSeconds, 0f, 0.02f)));
             return SfxActions.Finish(b);
         }
 

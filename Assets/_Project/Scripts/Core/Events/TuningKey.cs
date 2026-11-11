@@ -149,5 +149,23 @@ namespace UncannyValet.Core.Events
         DirWeightDirty,
         DirWeightEv,
         DirWeightDirtyEv,
+
+        // Car handling (Cars module owns; applies live to every car). docs/redesign/car_handling_spec.md section 2.
+        /// <summary>How fast sideways slide dies out at full grip, per second.</summary>
+        HandlingLateralFriction,
+        /// <summary>Share of the removed sideways speed handed back as forward speed (0 scrub, 1 keep momentum).</summary>
+        HandlingForwardGrip,
+        /// <summary>Speed at and below which the tyres have full grip.</summary>
+        HandlingGripLowSpeed,
+        /// <summary>Speed at and above which grip has dropped to HandlingGripAtSpeed.</summary>
+        HandlingGripHighSpeed,
+        /// <summary>Grip fraction at high speed.</summary>
+        HandlingGripAtSpeed,
+        /// <summary>Grip multiplier while the handbrake (Shift) is held.</summary>
+        HandlingDriftGripScale,
+        /// <summary>Speed at which steering reaches full effect.</summary>
+        HandlingTurnFullSpeed,
+        /// <summary>Tightest turning radius at low speed; sets the maximum turn rate.</summary>
+        HandlingMinTurnRadius,
     }
 }

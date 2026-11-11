@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace UncannyValet.Cars
 {
-    /// <summary>Pure steering, throttle and grip maths. Speeds are along the car's own axes.</summary>
+    /// <summary>Pure throttle, brake and coast maths along the car's forward axis (grip and steering live in DriftModel and SteeringModel).</summary>
     public static class CarPhysicsMath
     {
         /// <summary>Next forward speed (negative is reverse) after one step.</summary>
@@ -18,20 +18,6 @@ namespace UncannyValet.Cars
             else
                 next = forward + throttle * acceleration * dt;
             return Mathf.Clamp(next, -topSpeed * reverseFactor, topSpeed);
-        }
-
-        /// <summary>Counter-clockwise turn rate in degrees per second. Zero at rest, full at 30% of top speed.</summary>
-        public static float TurnDegreesPerSecond(float steer, float forward, float turnRate, float topSpeed)
-        {
-            float reference = Mathf.Max(0.01f, topSpeed * 0.3f);
-            float speedFactor = Mathf.Clamp(forward / reference, -1f, 1f);
-            return -Mathf.Clamp(steer, -1f, 1f) * turnRate * speedFactor;
-        }
-
-        /// <summary>Sideways speed after grip damping; exponential so it is frame-rate independent.</summary>
-        public static float DampSideways(float sideways, float grip, float dt)
-        {
-            return sideways * Mathf.Exp(-Mathf.Max(0f, grip) * dt);
         }
     }
 }

@@ -80,6 +80,18 @@ namespace UncannyValet.Core.Events
     }
 
     /// <summary>
+    /// Two cars bumped into each other (published by Cars, once per pair at most every 0.25 s). WorldX / WorldY locate
+    /// the contact; Strength01 is the impact from 0 (a nudge) to 1 (a hard hit).
+    /// </summary>
+    public readonly struct CarsCollided : IGameEvent
+    {
+        public readonly float WorldX;
+        public readonly float WorldY;
+        public readonly float Strength01;
+        public CarsCollided(float worldX, float worldY, float strength01) { WorldX = worldX; WorldY = worldY; Strength01 = strength01; }
+    }
+
+    /// <summary>
     /// An empty car resting in the curb zone is (Wrong = true) or is no longer facing the wrong way. Drives the
     /// "please park it properly" hint over the patron. Also published with Wrong = false when the car leaves.
     /// </summary>

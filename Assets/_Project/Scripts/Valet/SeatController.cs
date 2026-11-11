@@ -76,6 +76,7 @@ namespace UncannyValet.Valet
             if (_car is Object unityCar && !unityCar) { LeaveVanishedCar(); return; }
             transform.position = _car.Transform.position;
             _car.SetInput(_input.Move.y, _input.Move.x);
+            _car.SetDrift(_input.Drift);
             if (_input.InteractPressed && Time.frameCount != _enterFrame) Exit();
         }
 

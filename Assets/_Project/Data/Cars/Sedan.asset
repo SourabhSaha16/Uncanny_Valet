@@ -17,8 +17,6 @@ MonoBehaviour:
   _acceleration: 6
   _braking: 12
   _coastDrag: 3
-  _turnRate: 120
-  _grip: 6
   _reverseFactor: 0.4
   _size: {x: 1, y: 2}
   _color: {r: 0.8, g: 0.2, b: 0.2, a: 1}

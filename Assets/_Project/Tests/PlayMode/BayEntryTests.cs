@@ -22,7 +22,6 @@ namespace UncannyValet.Tests.PlayMode
         private const float HeadingToleranceDegrees = 5f;
         private const float NeighbourMoveLimit = 0.05f;
         private const int BayCount = 7;
-        const string Step2 = "Enabled in step 2: the current CarDriver turns at about 100 deg/s at 2 u/s (radius about 1.2, tighter than R_min 3.3), so the car ends about 1.6 units left of the bay centre and partly outside the bay (bays 3 and 4 also touch the neighbouring parked car).";
 
         private GameObject _lot;
         private GameObject _factoryObject;
@@ -30,6 +29,7 @@ namespace UncannyValet.Tests.PlayMode
         private LotGeometry _geometry;
         private CarFactory _factory;
         private CarDefinition _definition;
+        private CarHandlingConfig _handling;
 
         [SetUp]
         public void SetUp()
@@ -41,23 +41,27 @@ namespace UncannyValet.Tests.PlayMode
             _lot = Build<LotLayoutBuilder>("Lot", "_config", _config, out _);
             _definition = ScriptableObject.CreateInstance<CarDefinition>();
             var flash = ScriptableObject.CreateInstance<CarFlashConfig>();
+            _handling = ScriptableObject.CreateInstance<CarHandlingConfig>();
             _factoryObject = Build<CarFactory>("Cars", "_defaultDefinition", _definition, out var factory);
             typeof(CarFactory).GetField("_flash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(factory, flash);
+            typeof(CarFactory).GetField("_handling", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(factory, _handling);
             _factory = factory;
         }
 
         [TearDown]
         public void TearDown()
         {
+            // Spawned cars are not children of the factory; remove them now so they cannot touch the next case.
+            foreach (var car in Object.FindObjectsByType<CarDriver>(FindObjectsSortMode.None)) Object.DestroyImmediate(car.gameObject);
             Object.Destroy(_lot);
             Object.Destroy(_factoryObject);
             Services.Reset();
         }
 
-        [UnityTest, Ignore(Step2)]
+        [UnityTest]
         public IEnumerator Car_FromAisleCentre_EndsInsideBay_Regular([NUnit.Framework.Range(1, 6)] int bayId) => EnterBay(bayId);
 
-        [UnityTest, Ignore(Step2)]
+        [UnityTest]
         public IEnumerator Car_FromAisleCentre_EndsInsideBay_Ev() => EnterBay(7);
 
         [Test]
@@ -79,7 +83,7 @@ namespace UncannyValet.Tests.PlayMode
             var bay = BayRect(bayId);
             var neighbours = SpawnNeighbours(bayId);
             var up = bay.center.y > _geometry.AisleY;
-            var rMin = TurningRadius.RMin(_config.AisleWidth, 1f);
+            var rMin = _handling.RMin;
             var start = new Vector2(bay.center.x - rMin, _geometry.AisleY);
             var car = (CarDriver)_factory.Spawn(_definition, new CarId(100), start, -90f, default, false);
             var body = car.GetComponent<Rigidbody2D>();
