@@ -73,6 +73,7 @@ Unity correctness
 Code quality
 - Pure rules are plain C# with EditMode tests written with the rule. Every bug fix adds a regression test.
 - Public API gets an XML summary. No dead code, no commented-out code, no TODO without an owner in status.md.
+- `TuningKey` (and any enum stored as an integer in an asset) is **append-only**: never remove, reorder or insert in the middle, because `DifficultyDialsConfig.asset` stores raw key numbers. A removal once broke start-up in the web build (issue found 2026-11-11); `BootstrapSceneSmokeTests` guards it.
 - Handle expected failures with return values (`TryGet`), not exceptions. Never swallow exceptions.
 - Prefer enums, readonly structs and small types over loose bools, ints and tuples.
 - Before committing, an agent re-reads its diff against this list and the file-size limits.

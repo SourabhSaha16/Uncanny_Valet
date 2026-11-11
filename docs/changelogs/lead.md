@@ -730,3 +730,9 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/Traffic/*.cs.meta, Traffic.meta, UncannyValet.Traffic.asmdef.meta, Assets/_Project/Tests/EditMode/Traffic/*.cs.meta (29 files), docs/changelogs/lead.md
 Why: commit 7dea408 (Nov 10 lead merge of traffic-wire) left unresolved conflict markers in 29 .meta files. Kept the guid already referenced by the scene (TrafficModule, TrafficConfig) / the HEAD guid for the rest; no other file referenced either guid.
 Tests: 1215 of 1215 EditMode after the fix.
+
+## lead: merge agent/integration fix start-up crash from shifted TuningKey numbers [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a1737e27686b092a4 (DifficultyDialsConfig.asset, BootstrapSceneSmokeTests, PlayMode asmdef), CLAUDE.md (TuningKey is append-only), docs/changelogs/lead.md
+Why: the web build threw KeyNotFoundException 'DirTargetScale' at start-up. Commit c6992c0 (two-way traffic) deleted TrafficAmbientPerMinute from the middle of TuningKey, shifting every later key while DifficultyDialsConfig.asset stores raw key numbers, so each dial pointed at the wrong key. The asset was corrected and a PlayMode smoke test now loads the real Bootstrap scene and fails on any logged error. I missed it in the merge review: the traffic report said the key was removed.
+Tests: 1215 of 1215 EditMode, 17 of 17 PlayMode (including the new Bootstrap scene smoke test).
