@@ -1,4 +1,24 @@
 === Last 50 commits ===
+75c0ceb  2026-11-11  lead: Ready queue workflow and [Claude] tagging rule [Claude]
+87ab6e0  2026-11-11  lead: make Uncanny_Valet_Kanban the main tracking project
+4d6ad7b  2026-11-11  lead: merge agent/integration tip pop fix
+7cc6875  2026-11-11  integration: fix tip pop never showing after boarding
+c43c6ca  2026-11-11  lead: merge powers wiring, Perfect Park bonus, update design
+2b83023  2026-11-11  Merge branch 'worktree-agent-a7dac40ca1c52e782' into pivot/chaos
+e77dca7  2026-11-11  Merge branch 'worktree-agent-ae6387393fc8291b2' into pivot/chaos
+09037ab  2026-11-11  Merge branch 'worktree-agent-a1617d9ae486b4055' into pivot/chaos
+8128ada  2026-11-11  integration: wire Powers, PERFECT! pop, camera kick, ding, results stat
+af6a7fc  2026-11-11  patrons: pay the Perfect Park bonus on the ticket's tip
+72dbe09  2026-11-11  powers: fill the meter from PerfectPark
+9b91cc8  2026-11-11  lead: merge agent/lot perfect drop-off and Perfect Park
+6aa3d69  2026-11-11  lot: judge Perfect Drop-off and Perfect Park
+95ca339  2026-11-11  lead: merge agent/powers meter, activation and stacking
+b16e601  2026-11-11  powers: add Powers module, meter, stacking and F2 keys
+501f5ca  2026-11-11  lead: merge agent/integration power meter HUD
+c3a5505  2026-11-11  integration: vertical power meter HUD (#39)
+45399fd  2026-11-11  lead: valet powers decisions, Core power events and IWorldTime
+bbc1a65  2026-11-11  lead: remove Kev from docs, plain issue titles rule
+6449cbc  2026-11-10  lead: merge tip-pop, move pending work to GitHub issues, rebuild site
 edadc81  2026-11-10  lead: merge agent/tip-pop (patience 25, tip pop)
 c976667  2026-11-10  integration: patience 25 min and tip pop over boarding patron
 c01ac70  2026-11-10  lead: stable and beta Pages sites, changelog exemption list
@@ -29,26 +49,6 @@ b2c8450  2026-11-10  lead: merge pickup-arrow and handling-step2, update docs, r
 8545e34  2026-11-10  cars: add bouncy car-on-car collisions and bump sound
 1a8d9ca  2026-11-10  cars: add drift and steering models, Drift input, handling tuning
 bf7c09e  2026-11-10  lead: merge agent/pickup-arrow
-5471574  2026-11-10  lot: paint facing arrows in the pickup zone
-114a646  2026-11-10  lead: merge handling-step1, update docs
-c51e9ae  2026-11-10  lead: merge agent/handling-step1
-690e583  2026-11-10  cars: measure lot, add TurningRadius and PlayMode bay test
-8e7e721  2026-11-10  lead: merge difficulty-dials, adopt car handling spec, rebuild site
-1df4b7f  2026-11-10  lead: merge agent/difficulty-dials
-33e985f  2026-11-10  patrons: nine difficulty dials, Advanced toggle, plain director rows
-46dd883  2026-11-10  lead: merge own-car fix and service icons, update docs, rebuild site
-34797e3  2026-11-10  lead: merge agent/slot-tint service icons at arrival
-971e598  2026-11-10  lead: merge agent/ped-collision own-car fix
-5bd29c2  2026-11-10  pedestrians: patrons ignore their own car (no push, wait or bounce)
-9c6e485  2026-11-10  lot: show wash and charge icons from car arrival until served
-5743dfe  2026-11-10  lead: move play-test round row into the design log
-f95297f  2026-11-10  lead: merge play-test round, update docs, rebuild site
-90c6269  2026-11-10  lead: merge agent/ped-collision
-af9a732  2026-11-10  pedestrians: collision, wait-and-resume, rubber bounce and bump sound
-0f80cef  2026-11-10  lead: merge agent/slot-tint
-c5bbacd  2026-11-10  lot: light up wash and charging slots, drop the big ticket box
-18d1805  2026-11-10  lead: merge agent/status-camera
-b879d90  2026-11-10  integration: Washed/Charged status clears on park; closer camera
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -320,6 +320,24 @@ Date: 2026-11-10
 Files: Scripts/Patrons/PatronRequest.cs, Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/LiveTuningTests.cs, Scripts/UI/Hud/{TipPopSettings,PendingTipPops,TipPopKind,TipPopText,TipPops,TipPopTracker,TipPopPainter,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/TipPopTests.cs
 Why: Play-test notes: pickup patience default 45 -> 25 game minutes (impatient 15; patrons module one-off edit), and a floating "+$N" over the car when the patron boards (design.md A4 tips and pickup).
 Tests: 14 new EditMode (PendingTipPops pairing, text/look/curves, pool); LiveTuningTests updated to 25/15. EditMode 992 pass, 0 fail.
+
+## integration: vertical power meter HUD
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/UI/Hud/{PowerMeterSettings,PowerMeterView,ActivePowers,PowerMeterTracker,PowerMeterPainter,PowerColors,SquareRing,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/PowerMeterTests.cs
+Why: Issue #39, valet_powers.md section 4. Vertical bar on the right edge (gold, ice blue, hot pink notches, smooth fill, pulse on every fill, star at the level reached) plus a letter icon with a countdown ring per active power. Listens only to Core PowerMeterChanged, PowerActivated and PowerEnded; ring durations are serialized in PowerMeterSettings (HudEmotionConfig.PowerMeter), no Powers reference.
+Tests: 12 new EditMode (view smoothing, pulse, ready, active timers, tracker events and dispose, ring geometry); EditMode suite 1004 pass, 0 fail.
+
+## integration: wire Powers, PERFECT! pop, camera kick, ding, results stat
+Date: 2026-11-11
+Files: Assets/_Project/Editor/{BootstrapSceneBuilder,ValetSceneBuilder,PowersSceneBuilder,ProjectSetup}.cs, Editor/UncannyValet.Editor.asmdef, Scenes/Bootstrap.unity, Data/Powers/PowerMeterConfig.asset, Scripts/Bootstrap/{GameBootstrap,CameraFollow,CameraKick,PerfectKickLink,PerfectFeedback,PedestrianBootstrap}.cs, Scripts/UI/{ShiftStats,GameUi}.cs, Scripts/UI/Hud/{TipPopSettings,TipPopText,TipPops,TipPopTracker}.cs, Scripts/UI/Screens/ResultsFormatter.cs, Scripts/Audio/{SfxId,SfxRecipeBook,SfxEventRouter,SfxAlerts}.cs (one small hook, authorised by the lead), Tests/EditMode/Integration/{PerfectFeedbackTests,TransformCarFactory}.cs
+Why: Issues #16 (feedback), #38 (wiring), #60 (builder split; BootstrapSceneBuilder 214 to 146 lines, valet and camera moved to ValetSceneBuilder). A Powers object (PowerMeterController, PowerActivationController, PerfectFeedback) starts inactive and GameBootstrap activates it after the bus and tuning are registered; PowerMeterConfig is created by Setup and passed as powers: to TuningSeeder. PerfectPark and PerfectDropOff give a PERFECT! pop over the car, a 0.08 s / 0.05 unit camera kick along the car nose (CameraFollow serialized fields), a ding, and the results screen shows PERFECT PARKS. PedestrianBootstrap extracted to keep GameBootstrap under 200 lines. design.md A8, valet_powers.md, car_handling_spec.md section 4.
+Tests: 8 new EditMode (kick maths, kick link, pop tracker, stats, results line, ding routing). RunBatch ok, EditMode 1062 pass, PlayMode 16 pass.
+
+## integration: fix tip pop never showing after boarding
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/UI/Hud/{PendingTipPops,TipPopTracker}.cs, Tests/EditMode/UI/TipPopTests.cs, Tests/EditMode/Integration/{TipPopFlowTests,TransformCarFactory}.cs
+Why: Refs #67. PatronBoarded makes Patrons/PatronDeparture publish CarDeparted and despawn the car synchronously, and it subscribes before the HUD, so the tracker dropped the held tip on CarDeparted and then could not find the car. The tracker now reads the car's spot when the ticket closes, keeps it with the tip, and no longer drops on CarDeparted (PatronWalkers always publishes PatronBoarded for a delivered patron; ShiftEnded still clears). Settings from HudEmotionConfig.asset checked: defaults survive the missing nested field.
+Tests: 2 new EditMode (real bus + real PatronDeparture + tracker; shipped asset settings), 1 changed. EditMode 1074 pass, PlayMode 16 pass.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -910,6 +928,54 @@ Files: .github/workflows/ci-cd.yml, tools/check-changelog.sh, tools/changelog-ex
 Why: the human wants a beta site to test new features, with the main site link given to playtesters. The workflow now deploys main's site/ at the root and pivot/chaos's site/ under /beta/. The changelog check skips commits listed in tools/changelog-exempt.txt (38e3723, pushed without an entry; history is not rewritten) so the first push of main can pass. Current pivot/chaos promoted to main as the first stable build.
 Tests: tools/check-changelog.sh run locally over origin/main..HEAD: passed (97 commits). No game change.
 
+## lead: merge tip-pop (patience 25, tip pop), move pending work to GitHub issues, rebuild site
+Date: 2026-11-11
+Files: merge of worktree-agent-ae877026573b0fc40, docs/design.md, docs/pending_tasks.md, CLAUDE.md, regenerated PatronConfig asset, site/
+Why: the human's notes (patience 25, tip pop over the patron) and the request to track pending work as GitHub issues and a Project. 65 issues created from docs/pending_tasks.md, added to Project 4 with Status and Priority; labels and milestones created; CLAUDE.md gained 'Tracking work'.
+Tests: 992 of 992 EditMode, 16 of 16 PlayMode; browser smoke test with the F2 panel open, no console errors. Tip pop not seen in play.
+
+## lead: remove Kev from the docs, update the issue title rule
+Date: 2026-11-11
+Files: CLAUDE.md, docs/design.md, docs/redesign/chaos_redesign.md, docs/redesign/ui_style_guide.md, docs/changelogs/lead.md
+Why: the human dropped Kev, the task board and the swap button, and asked for plain issue titles with a two-line description and one acceptance line. GitHub issues were retitled, rewritten and given priority:1 to priority:4 labels; Kev issues closed as not planned.
+Tests: docs only, none run.
+
+## lead: valet powers decisions and Core events (PowerKind, power events, IWorldTime)
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Events/PowerKind.cs, PowerEvents.cs, Contracts/IWorldTime.cs (+ metas), docs/redesign/valet_powers.md, docs/design.md, docs/decisions.md, docs/changelogs/lead.md
+Why: the human answered the seven valet powers questions (valet_powers.md section 6, design A11); issue 35 adds the shared events and the freeze time-scale contract that every power module builds on.
+Tests: 992 of 992 EditMode (Core compiles; no new logic yet).
+
+## lead: merge agent/integration power meter HUD (#39)
+Date: 2026-11-11
+Files: merge of worktree-agent-ad38424284dae36c8 (UI/Hud power meter files, HudEmotionConfig, PowerMeterTests), docs/changelogs/lead.md
+Why: valet powers issue 39 (design A11). The HUD listens only to PowerMeterChanged, PowerActivated and PowerEnded; nothing publishes them yet, so it is invisible until the Powers module merges. Notch positions and ring durations in PowerMeterSettings are placeholders to match PowerMeterConfig.
+Tests: 1004 of 1004 EditMode (12 new).
+
+## lead: merge agent/powers meter, activation and stacking (#37, #40, #44, #38 part)
+Date: 2026-11-11
+Files: merge of worktree-agent-a1617d9ae486b4055 (Scripts/Powers/, PowerRows, TuningKey, TuningSeeder, asmdefs, tests), UI/Hud/PowerMeterSettings.cs, docs/changelogs/lead.md
+Why: valet powers issues 37, 40, 44 and the listener part of 38 (design A11). HUD notch defaults changed to 0.25 and 0.55 to match the 25/55/100 level thresholds. PerfectPark listener is a seam until issue 16 lands; the Powers objects are not yet in the scene (wiring pending).
+Tests: 1027 of 1027 EditMode (including the HUD merge).
+
+## lead: merge agent/lot perfect drop-off and Perfect Park (#36, #16 part)
+Date: 2026-11-11
+Files: merge of worktree-agent-a4901f8ee332749de (Lot judges and runner, Core ParkEvents and PerfectRows, tuning keys), conflict resolution in TuningKey, TuningCatalog, TuningSeeder (kept both agents' keys; Seed call in GameBootstrap now passes perfect by name), docs/changelogs/lead.md
+Why: valet powers issue 36 and the judging part of issue 16 (design A11, car handling spec section 4). Still open: the +$2 tip bonus (Patrons/Economy), the PERFECT! pop, ding and camera kick, the results stat, and the PowerMeterController PerfectPark listener.
+Tests: 1055 of 1055 EditMode after merging HUD, Powers and Lot (lot agent reported 16 of 16 PlayMode before the merge).
+
+## lead: merge powers follow-up, Perfect Park tip bonus and powers wiring (#16, #38, #60)
+Date: 2026-11-11
+Files: merges of worktree-agent-a1617d9ae486b4055 (PerfectPark listener), worktree-agent-ae6387393fc8291b2 (PerfectBonusLedger, tip bonus), worktree-agent-a7dac40ca1c52e782 (Powers scene wiring, PowerMeterConfig asset, builder split, results stat, PERFECT! pop, camera kick, ding), docs/design.md
+Why: valet powers phase 1 (design A11) and car handling step 4 (+$2 Perfect Park). Bootstrap.unity re-run by RunBatch showed only fileID churn (637 of 637 lines) and was reverted.
+Tests: 1072 of 1072 EditMode, 16 of 16 PlayMode after the merges. Not played in a browser.
+
+## lead: merge agent/integration tip pop fix (#67)
+Date: 2026-11-11
+Files: merge of worktree-agent-a61775407c959e1e4 (TipPopTracker, PendingTipPops, tests), docs/changelogs/lead.md
+Why: issue 67. PatronDeparture removed the car on PatronBoarded before the HUD heard it, and the tracker also dropped the tip on CarDeparted, so the tip pop never showed. The tracker now stores the car position at TicketClosed. Not seen in play yet.
+Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent), see rebuild commit.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1107,6 +1173,12 @@ Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbA
 Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
 Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.
 
+## lot: judge Perfect Drop-off and Perfect Park
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Lot/{PerfectSettings,PerfectTuning,DropOffJudge,ParkJudge,ParkVerdict,PerfectParkGate,CarTicketMap,PerfectRunner}.cs (new), Lot/{LotConfig,LotLayoutBuilder,ParkingSpot,SpotBuilder,CurbZone}.cs, Core/Events/{ParkEvents (new),TuningKey}.cs, Core/Contracts/{PerfectRows (new),TuningCatalog}.cs, Bootstrap/{TuningSeeder,GameBootstrap}.cs (one-line seeding), Tests/EditMode/Lot/PerfectJudgeTests.cs
+Why: issues 36 and 16; valet_powers.md Q1 and car_handling_spec.md section 4. PerfectRunner publishes PerfectDropOff when Patrons accepts a delivery (CarDelivered) that was within 15 degrees of down, settled in the curb zone, before half the pickup timer; and PerfectPark (new Core event) when a car rests in a bay within 5 degrees, 0.15 side, 0.3 length, touching nothing, moved 3 units since last rest, 10 s per car. Thresholds live in LotConfig.Perfect and F2 Advanced rows. The +$2 ticket bonus is not wired (TipInput has no bonus field); key PerfectParkBonus carries the amount.
+Tests: 31 new EditMode cases; EditMode 1020/1020, PlayMode 16/16.
+
 ## lot: widen drive aisle to 6.0 and add east asphalt
 Date: 2026-11-10
 Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs
@@ -1212,6 +1284,12 @@ Date: 2026-11-10
 Files: Scripts/Patrons/{PatronRequest,PatronConfig,PatronTuning,PatronRequestRoller,LiveTicketTuning}.cs, Data/Patrons/PatronConfig.asset, Scripts/Core/Events/TuningKey.cs, Scripts/Core/Contracts/GameRows.cs, Scripts/Bootstrap/TuningSeeder.cs, Tests/EditMode/Patrons/LiveTuningTests.cs, Tests/EditMode/Integration/{DifficultyDialsTests,PhysicsAndTipTests}.cs
 Why: Play-test: patrons should lose patience sooner (design.md A4). Default window 60 -> 45 game min; impatient patrons wait 0.6x of it (was a tip flag only). New key ImpatientWindowScale; both rows visible in the Clock block; changes reach waiting tickets.
 Tests: 4 new in LiveTuningTests; dial-catalog visible count 11 -> 13; PhysicsAndTipTests pins a long window so complaint penalties do not skew its sum check. Full EditMode passes (978).
+
+## patrons: pay the Perfect Park bonus on the ticket's tip
+Date: 2026-11-11
+Files: Scripts/Patrons/{PerfectBonusLedger,TicketSettler,TicketRegistry}.cs, Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Core/Contracts/TipInput.cs, Scripts/Core/Events/TipBreakdown.cs, Tests/EditMode/Patrons/PerfectBonusTests.cs
+Why: Issue #16 (money part). PerfectBonusLedger counts PerfectPark events per ticket, the settler takes the count on payout and clears it on void; the calculator adds count x PerfectParkBonus (live tuning, default $2) to the subtotal so damage and combo apply, and TipBreakdown.PerfectBonus shows it.
+Tests: 6 new in PerfectBonusTests (bonus, combo, per-ticket survival to pickup, one per event, ticketless/void, zero tip). Full EditMode 1061/1061 passed.
 
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog
@@ -1439,6 +1517,33 @@ Tests: three new EditMode fixtures (car art maths, valet animation maths, decor 
 
 ### Build
 Setup > Build Everything now also creates Data/Lot/LotArtConfig, Data/Cars/CarArtConfig and Data/Valet/ValetArtConfig and wires them (factory, lot, decor, valet animator, bootstrap).
+
+=== docs/changelogs/powers.md ===
+# powers changelog
+
+## powers: add Powers module, meter, stacking and F2 keys
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Powers/* (UncannyValet.Powers asmdef, PowerMeter, PowerMeterConfig, PowerSettings, DriftFillTracker, PowerTimer, IPowerEffect, SpeedBoostEffect, FreezeTimeEffect, ParkSmashEffect, PowerStack, IPowerInput, KeyboardPowerInput, PowerMeterController, PowerActivationController); Assets/_Project/Scripts/Core/Events/TuningKey.cs (11 Power* keys), Core/Contracts/PowerRows.cs (new), Core/Contracts/TuningCatalog.cs; Bootstrap/TuningSeeder.cs + Bootstrap asmdef (seed power keys, needed by the existing "every catalog key is seeded" test); Tests/EditMode/Powers/*, Tests asmdef reference.
+Why: design.md A11, docs/redesign/valet_powers.md; issues #37 (meter), #40 (activation), #44 (stacking), #38 (non-art parts).
+Tests: 20 new EditMode tests; full EditMode suite 1015 passed, 0 failed.
+
+Wiring needed (integration/lead), in the Bootstrap scene or GameBootstrap:
+- Add one GameObject with `PowerMeterController` (assign a `PowerMeterConfig` asset, create via Assets > Create > Uncanny Valet > Power Meter Config; defaults match the spec) and `PowerActivationController` (assign the meter controller). Both resolve `IEventBus` in Start, so they must start after the bus is registered. `PowerActivationController` registers `IWorldTime` in Start (FreezeTimeEffect); consumers should resolve it with `Services.TryGet` in their own Start or lazily.
+- Optional: pass the config to `TuningSeeder.Seed(..., powers: config)`; without it the seeder uses config defaults.
+- Optional: register an `IPowerInput` to replace the built-in Q / left shoulder `KeyboardPowerInput`.
+- Valet adoption (later task): read `PowerActivationController.SpeedBoost.WalkMultiplier`.
+
+Open seams and deviations:
+- `PerfectPark` event (lot agent, issue #16) is not in Core yet: `PowerMeterController.AddPerfectPark()` is the named seam; subscribe to the event there when it lands.
+- Activate input lives in the Powers module (`IPowerInput`) so the Valet module and `IInputSource` are untouched.
+- Manager (`PowerStack`) publishes PowerActivated for every power, including Park Smash; the effects themselves stay free of events.
+- Edited Bootstrap `TuningSeeder` and its asmdef (one optional parameter) because `TuningSeederTests` requires every catalog key to be seeded.
+
+## powers: fill the meter from PerfectPark
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Powers/PowerMeterController.cs, Assets/_Project/Tests/EditMode/Powers/PowerMeterControllerTests.cs
+Why: PerfectPark now exists in Core (ParkEvents.cs); it replaces the AddPerfectPark seam (design.md A11, issue #38).
+Tests: 4 new controller tests (park and drop-off fill, shift reset, unsubscribe on disable); full EditMode suite run.
 
 === docs/changelogs/qa.md ===
 # QA changelog

@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  edadc81
-Subject: lead: merge agent/tip-pop (patience 25, tip pop)
-Date:    2026-11-10 22:22:26 -0800
+Commit:  75c0ceb
+Subject: lead: Ready queue workflow and [Claude] tagging rule [Claude]
+Date:    2026-11-11 08:56:16 -0800

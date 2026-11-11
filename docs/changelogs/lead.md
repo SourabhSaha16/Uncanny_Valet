@@ -633,3 +633,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a61775407c959e1e4 (TipPopTracker, PendingTipPops, tests), docs/changelogs/lead.md
 Why: issue 67. PatronDeparture removed the car on PatronBoarded before the HUD heard it, and the tracker also dropped the tip on CarDeparted, so the tip pop never showed. The tracker now stores the car position at TicketClosed. Not seen in play yet.
 Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent), see rebuild commit.
+
+## lead: rebuild beta site with Perfect Park, powers meter wiring and tip pop fix [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: first player-visible build of Perfect Park (+$2 bonus, PERFECT! pop, kick, ding, results stat), the power meter HUD and Q activation (powers have no effect yet), and the tip pop fix (issue 67). Beta site only; main stays on the earlier build.
+Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent runs); browser smoke test: title and shift load, no console errors. Perfect Park, meter and tip pop not seen in play.
