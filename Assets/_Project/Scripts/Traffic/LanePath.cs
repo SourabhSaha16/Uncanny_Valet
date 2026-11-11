@@ -55,6 +55,25 @@ namespace UncannyValet.Traffic
             return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - QuarterTurnDegrees;
         }
 
+        /// <summary>Distance along the path of the point nearest <paramref name="point"/>, and how far <paramref name="point"/> is from the path.</summary>
+        public float Project(Vector2 point, out float lateral)
+        {
+            float bestDistance = 0f;
+            lateral = float.PositiveInfinity;
+            for (int i = 0; i + 1 < _count; i++)
+            {
+                Vector2 a = _points[i];
+                Vector2 span = _points[i + 1] - a;
+                float length = span.magnitude;
+                float t = length > 0f ? Mathf.Clamp(Vector2.Dot(point - a, span) / (length * length), 0f, 1f) : 0f;
+                float away = Vector2.Distance(point, a + span * t);
+                if (away >= lateral) continue;
+                lateral = away;
+                bestDistance = _cumulative[i] + t * length;
+            }
+            return bestDistance;
+        }
+
         private int SegmentAt(float distance)
         {
             int last = _count - 2;

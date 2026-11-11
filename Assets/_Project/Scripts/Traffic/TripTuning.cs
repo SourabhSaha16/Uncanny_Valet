@@ -30,9 +30,17 @@ namespace UncannyValet.Traffic
         /// <summary>Default for <see cref="CreepSpeed"/>.</summary>
         public const float DefaultCreepSpeed = 0.8f;
 
+        /// <summary>How far a turning car's centre must be from the lane line before the lane stops counting it as there.</summary>
+        public readonly float LaneClearance;
+
+        /// <summary>Default for <see cref="LaneClearance"/>.</summary>
+        public const float DefaultLaneClearance = 1.6f;
+
         public TripTuning(float carLength, float turnSpeed, float routeSpeed, float yieldDistance, float arriveTolerance,
-            float retargetSeconds = DefaultRetargetSeconds, float blockedTimeout = DefaultBlockedTimeout, float creepSpeed = DefaultCreepSpeed)
+            float retargetSeconds = DefaultRetargetSeconds, float blockedTimeout = DefaultBlockedTimeout, float creepSpeed = DefaultCreepSpeed,
+            float laneClearance = DefaultLaneClearance)
         {
+            LaneClearance = laneClearance;
             BlockedTimeout = blockedTimeout;
             CreepSpeed = creepSpeed;
             RetargetSeconds = retargetSeconds;

@@ -58,6 +58,9 @@ namespace UncannyValet.Traffic
         [Tooltip("Speed of that creep, in units per second.")]
         [SerializeField, Range(0.1f, 3f)] private float _creepSpeed = 0.8f;
 
+        [Tooltip("A patron car turning off the lane stays visible to traffic on it until its centre is this far from the lane line.")]
+        [SerializeField, Range(0.5f, 4f)] private float _laneClearance = 1.6f;
+
         [Header("Ambient traffic")]
         [Tooltip("Ambient cars per minute over both lanes. 0 switches ambient traffic off.")]
         [SerializeField, Min(0f)] private float _ambientPerMinute = 13f;
@@ -91,6 +94,7 @@ namespace UncannyValet.Traffic
         public float ArriveTolerance => _arriveTolerance;
         public float BlockedTimeout => _blockedTimeout;
         public float CreepSpeed => _creepSpeed;
+        public float LaneClearance => _laneClearance;
         public float AmbientPerMinute => _ambientPerMinute;
         public float IntervalSpread => _intervalSpread;
         public float EastShare => _eastShare;

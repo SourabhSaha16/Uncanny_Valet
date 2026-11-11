@@ -53,6 +53,26 @@ namespace UncannyValet.Traffic
             return Merge.CanMerge(ahead, behind, followerSpeed);
         }
 
+        /// <summary>
+        /// Keeps a car that has turned off the east lane registered on it (at the distance nearest its position, at its
+        /// speed) until it is <see cref="TripTuning.LaneClearance"/> away from the lane line, so lane traffic still brakes for it.
+        /// Does nothing when the car has no registration.
+        /// </summary>
+        public void TrackLane(ref LaneState state, Vector2 position, float speed)
+        {
+            if (state.Id == 0) return;
+            float distance = EastPath.Project(position, out float lateral);
+            if (lateral >= Tuning.LaneClearance)
+            {
+                Occupancy.Remove(state.Id);
+                state = default;
+                return;
+            }
+            state.Distance = distance;
+            state.Speed = speed;
+            Occupancy.Update(state.Id, distance, speed);
+        }
+
         /// <summary>Registers a car on the east lane and returns its lane state.</summary>
         public LaneState JoinEast(float distance, float speed)
         {
