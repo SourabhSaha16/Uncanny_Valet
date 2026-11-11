@@ -98,7 +98,7 @@ Only the lead rebuilds and commits `site/` (about 58 MB per build, so only at pu
 
 ## Changelog rule (every commit)
 
-1. Commit subject: `<agent>: <what changed, under 72 chars>`, e.g. `cars: add CarDriver top-down steering`.
+1. Commit subject: `<agent>: <what changed, under 72 chars> [Claude]`, e.g. `cars: add CarDriver top-down steering [Claude]`. Every commit mentions `[Claude]` so the human can tell Claude's commits from their own.
 2. In the **same commit**, append an entry to `docs/changelogs/<agent>.md`:
 
 ```
@@ -153,3 +153,11 @@ The slow parts are Unity itself (start-up 13 to 30 s per launch, web build about
 - Issue titles are plain, human-readable sentences (no task ID prefix; the old IDs are mapped in `docs/pending_tasks.md`). Every issue body is a two-line description, a blank line, then one line `**Done when:** <acceptance criterion>`. Labels: `area:*` (module), `type:*` (bug, feature, chore, playtest, decision), `priority:1` to `priority:4` (1 do first, 2 do next, 3 do later, 4 someday; set by the human) and `needs decision` (waiting on the human). Milestones group a feature (Car handling, Valet powers, Patron Director step 4, ...).
 - The lead creates and moves issues; agent briefs name the issue number and agent reports end with it. Commits and merges reference it (`Refs #n`). Work lands on `pivot/chaos`, which is not the default branch, so `Closes #n` only closes an issue when `main` is promoted: the lead closes issues with `gh issue close` after merging to beta and notes it in the changelog.
 - `gh` is at `C:\Program Files\GitHub CLI\gh.exe` (not on PATH in the lead's shell).
+
+## Ready queue workflow (adopted 2026-11-11)
+
+- The human puts issues in the **Ready** column of the Kanban project in the order they want them done (top first) and then asks the lead to pick them up one by one.
+- Pick up the top Ready card: move it to **In progress**, work it, move it to **In review** when merged to `pivot/chaos`, and to **Done** (and close the issue) only after the human confirms or the issue's own acceptance line is met and the human has been told.
+- Every status update goes on the issue as a **comment**, not only in chat: started, plan or blocker, what was merged (commit hash), tests, and what is left. Keep them short.
+- **Every comment and every commit Claude writes starts or ends with `[Claude]`** (comments start with it, commit subjects end with it) so the human can tell them from their own.
+- Work one card at a time unless the human says otherwise. If a card needs a decision, comment the question, add `needs decision` and ask in chat.
