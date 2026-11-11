@@ -1,3 +1,4 @@
+using UncannyValet.UI.Hud;
 using UnityEngine;
 
 namespace UncannyValet.UI.Mood
@@ -28,6 +29,10 @@ namespace UncannyValet.UI.Mood
         [SerializeField] private Color _impatientColor = new Color32(0xFF, 0xE0, 0x3A, 255);
         [SerializeField] private Color _angryColor = new Color32(0xF0, 0x3A, 0x2A, 255);
 
+        [Header("Tip pop over a boarding patron")]
+        [SerializeField] private TipPopSettings _tipPop = new TipPopSettings();
+
+        public TipPopSettings TipPop => _tipPop;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
         public float HappyHz => _happyHz;

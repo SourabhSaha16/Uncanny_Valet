@@ -113,12 +113,12 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void Defaults_AreFortyFiveMinutesAndImpatientWaitSixtyPercent()
+        public void Defaults_AreTwentyFiveMinutesAndImpatientWaitSixtyPercent()
         {
-            Assert.AreEqual(45f, PatronRequest.DefaultPickupWindowMinutes);
-            Assert.AreEqual(45f, _config.PickupWindowMinutes);
-            Assert.AreEqual(45f, _live.WindowFor(false), 1e-4f);
-            Assert.AreEqual(27f, _live.WindowFor(true), 1e-4f);
+            Assert.AreEqual(25f, PatronRequest.DefaultPickupWindowMinutes);
+            Assert.AreEqual(25f, _config.PickupWindowMinutes);
+            Assert.AreEqual(25f, _live.WindowFor(false), 1e-4f);
+            Assert.AreEqual(15f, _live.WindowFor(true), 1e-4f);
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var roller = new PatronRequestRoller(_config, _live, new PatronPlan(3), new Scripted { Next = 0.1f });
             Assert.IsTrue(roller.Roll(0.1f).Impatient);
-            Assert.AreEqual(27f, roller.Roll(0.1f).PickupWindowMinutes, 1e-4f);
+            Assert.AreEqual(15f, roller.Roll(0.1f).PickupWindowMinutes, 1e-4f);
             _tuning.Set(TuningKey.ImpatientWindowScale, 0.5f);
             _tuning.Set(TuningKey.PickupWindowMinutes, 30f);
             Assert.AreEqual(15f, roller.Roll(0.1f).PickupWindowMinutes, 1e-4f);
@@ -138,15 +138,15 @@ namespace UncannyValet.Tests.Patrons
         public void ImpatientScaleChange_ReachesWaitingImpatientTicketsOnly()
         {
             var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
-            var impatient = registry.Create(new CarId(1), new PatronRequest(10f, 20, true, 27f));
-            var calm = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 45f));
+            var impatient = registry.Create(new CarId(1), new PatronRequest(10f, 20, true, 15f));
+            var calm = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 25f));
             _tuning.Set(TuningKey.ImpatientWindowScale, 0.3f);
             _bus.Publish(new TuningChanged(TuningKey.ImpatientWindowScale, 0.3f));
             impatient.PickupTimer.Start(0f);
             calm.PickupTimer.Start(0f);
             impatient.PickupTimer.Tick(13.6f);
             calm.PickupTimer.Tick(13.6f);
-            Assert.IsTrue(impatient.PickupTimer.IsExpired, "13.5 = 0.3 x 45");
+            Assert.IsTrue(impatient.PickupTimer.IsExpired, "13.5 = 0.3 x 25");
             Assert.IsFalse(calm.PickupTimer.IsExpired);
         }
 
@@ -156,7 +156,7 @@ namespace UncannyValet.Tests.Patrons
             var shortTimer = new TicketTimer(_live.WindowFor(true));
             var longTimer = new TicketTimer(_live.WindowFor(false));
             shortTimer.Start(0f); longTimer.Start(0f);
-            shortTimer.Tick(16.2f); longTimer.Tick(27f);
+            shortTimer.Tick(9f); longTimer.Tick(15f);
             Assert.AreEqual(0.6f, shortTimer.Elapsed01, 1e-4f);
             Assert.AreEqual(0.6f, longTimer.Elapsed01, 1e-4f);
         }
