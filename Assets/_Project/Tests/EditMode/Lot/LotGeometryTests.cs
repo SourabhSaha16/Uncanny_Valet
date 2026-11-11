@@ -39,6 +39,22 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void TheDriveAisleIsSixUnitsTall()
+        {
+            var gap = _geo.Spots[0].yMin - _geo.ChargingSpots[0].yMax;
+            Assert.AreEqual(6f, gap, 0.001f);
+            Assert.AreEqual(6f, _config.AisleWidth, 0.001f);
+        }
+
+        [Test]
+        public void OpenAsphaltSeparatesTheLastBayColumnFromTheStrip()
+        {
+            var last = _geo.Spots[3];
+            Assert.AreEqual(_config.Site.StripGap, _geo.Strip.xMin - last.xMax, 0.001f);
+            Assert.GreaterOrEqual(_geo.Strip.xMin - last.xMax, 3f, "room to swing out of the end bays");
+        }
+
+        [Test]
         public void TopRowIsFourRegularSpotsInReadingOrder()
         {
             for (var i = 1; i < 4; i++)
