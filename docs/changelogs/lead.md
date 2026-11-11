@@ -712,3 +712,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-aafeaa8e9141bbe3f (Ticket, CurbCall, TicketRegistry, Director CarBook/CarRecord/LotStateTracker/SnapshotBuilder/WorkloadEstimator, tests), docs/changelogs/lead.md
 Why: issue 77. The stay clock starts at drop-off (CarArrived) instead of when a car settles in a bay, and a patron whose stay ends asks for the car from any open state (queue, wash, charge, aisle, bay); Director return time = arrival + stay. Open follow-ups: dirty unwashed car zeroes the tip (existing NotCleaned rule); queued car whose patron asked is not on the key board until Placed.
 Tests: 1175 of 1175 EditMode, 16 of 16 PlayMode after the merge.
+
+## lead: merge agent/patrons unwashed dirty car tips, asked-for car joins key board (#77) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-aafeaa8e9141bbe3f follow-up (TipCalculator, TipZeroReason, TicketBoard, tests), docs/changelogs/lead.md
+Why: issue 77 follow-ups decided by the owner: an unwashed dirty car now only loses the clean bonus (TipZeroReason.NotCleaned removed); a queued car appears on the key board and ticket list as soon as its patron asks.
+Tests: 1176 of 1176 EditMode after the merge (agent: 16 of 16 PlayMode).

@@ -68,11 +68,15 @@ namespace UncannyValet.Tests.Economy
         }
 
         [Test]
-        public void Explain_UncleanedZeroes()
+        public void Explain_UncleanedDirtyCar_PaysBaseAndSpeed_WithNoCleanBonus()
         {
-            var b = Explain(new TipInput(10, 5f, false, uncleanedDirty: true));
-            Assert.AreEqual(0, b.Total);
-            Assert.AreEqual(TipZeroReason.NotCleaned, b.ZeroReason);
+            var clean = Explain(new TipInput(10, 5f, false, cleanedDirty: true));
+            var unclean = Explain(new TipInput(10, 5f, false, uncleanedDirty: true));
+            Assert.AreEqual(TipZeroReason.None, unclean.ZeroReason);
+            Assert.AreEqual(0, unclean.CleanBonus);
+            Assert.AreEqual(10 + unclean.SpeedAdjust, unclean.Total);
+            Assert.Greater(unclean.Total, 0);
+            Assert.Less(unclean.Total, clean.Total);
         }
 
         [Test]

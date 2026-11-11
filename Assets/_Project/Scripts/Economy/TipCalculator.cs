@@ -24,7 +24,6 @@ namespace UncannyValet.Economy
         public TipBreakdown Explain(in TipInput input)
         {
             if (input.PickupExpired) return Zeroed(TipZeroReason.PickupExpired);
-            if (input.UncleanedDirty) return Zeroed(TipZeroReason.NotCleaned);
             if (DamagePenalty.IsWrecked(input.Damage01)) return Zeroed(TipZeroReason.Wrecked);
             var speed = SpeedAdjust(input);
             var baseTip = Live(TuningKey.BaseTip, input.BaseTip);
