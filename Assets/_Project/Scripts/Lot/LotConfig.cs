@@ -6,6 +6,8 @@ namespace UncannyValet.Lot
     [CreateAssetMenu(menuName = "Uncanny Valet/Lot Config", fileName = "LotConfig")]
     public class LotConfig : ScriptableObject
     {
+        [SerializeField] private PerfectSettings _perfect = new PerfectSettings();
+
         [Header("Spots")]
         [SerializeField, Tooltip("Size of one tall bay (width, length). The bay grid itself is fixed by BayPlan: two rows of four.")]
         private Vector2 _spotSize = new Vector2(2.6f, 4.4f);
@@ -123,6 +125,7 @@ namespace UncannyValet.Lot
         public float CurbToSpotsGap => _curbToSpotsGap;
         public float CurbFacingToleranceDegrees => _curbFacingToleranceDegrees;
         public CurbArrowStyle CurbArrow => _curbArrow;
+        public PerfectSettings Perfect => _perfect;
         public float SettleSeconds => _settleSeconds;
         public float StoppedSpeed => _stoppedSpeed;
         public float Margin => _margin;

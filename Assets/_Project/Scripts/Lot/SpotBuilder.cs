@@ -16,7 +16,7 @@ namespace UncannyValet.Lot
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
         /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
         public static ParkingSpot Build(RectFactory rects, Transform parent, LotConfig c, int id, Rect area,
-            bool charging, SpotOccupancy occupancy, Color? regularPad = null)
+            bool charging, SpotOccupancy occupancy, Color? regularPad = null, PerfectRunner judge = null)
         {
             var root = new GameObject((charging ? "Charging Spot " : "Spot ") + id);
             root.transform.SetParent(parent, false);
@@ -30,7 +30,7 @@ namespace UncannyValet.Lot
                     PlugIconArt.Rows, PlugIconArt.TryColor);
             root.AddComponent<BoxCollider2D>();
             var spot = root.AddComponent<ParkingSpot>();
-            spot.Init(id, c, occupancy, charging);
+            spot.Init(id, c, occupancy, charging, judge);
             if (charging)
                 root.AddComponent<SlotTint>().Init(spot, StationKind.Charging, pad.GetComponent<SpriteRenderer>(), c.ChargeLitColor, c);
             root.SetActive(false);

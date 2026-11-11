@@ -30,6 +30,8 @@ namespace UncannyValet.Lot
         public IReadOnlyList<Vector2> ArrivalSlots => _arrivalSlots;
         public float ArrivalRotationDegrees => _config.QueueRotationDegrees;
         public Vector2 ValetStartPoint { get; private set; }
+        /// <summary>Starting Perfect Park and drop-off thresholds, for Bootstrap to seed into the tuning store.</summary>
+        public PerfectSettings Perfect => _config.Perfect;
         public int RegularSpotCount { get; private set; }
         public int ChargingSpotCount { get; private set; }
 
@@ -57,7 +59,8 @@ namespace UncannyValet.Lot
             new LotFrame(rects, transform, c.WallThickness,
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap);
             BuildDiner(g);
-            BuildCurb(rects);
+            var judge = gameObject.AddComponent<PerfectRunner>();
+            judge.Init(c, BuildCurb(rects));
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
             LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
             LotRouteArrows.Build(transform, rects, _road, transform.position, style);
@@ -73,7 +76,7 @@ namespace UncannyValet.Lot
                 var charging = i >= g.Spots.Length;
                 var area = charging ? g.ChargingSpots[i - g.Spots.Length] : g.Spots[i];
                 spots[i] = SpotBuilder.Build(rects, transform, c, i + 1, area, charging, _occupancy,
-                    _art != null ? _art.AsphaltColor : (Color?)null);
+                    _art != null ? _art.AsphaltColor : (Color?)null, judge);
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
@@ -89,7 +92,7 @@ namespace UncannyValet.Lot
             block.AddComponent<BoxCollider2D>().size = g.Diner.size;
         }
 
-        private void BuildCurb(RectFactory rects)
+        private CurbZone BuildCurb(RectFactory rects)
         {
             var c = _config;
             if (_art != null && _art.SidewalkTile != null)
@@ -107,7 +110,9 @@ namespace UncannyValet.Lot
             zone.transform.SetParent(transform, false);
             zone.transform.localPosition = c.CurbPosition;
             zone.AddComponent<BoxCollider2D>();
-            zone.AddComponent<CurbZone>().Init(c, arrow);
+            var curb = zone.AddComponent<CurbZone>();
+            curb.Init(c, arrow);
+            return curb;
         }
     }
 }

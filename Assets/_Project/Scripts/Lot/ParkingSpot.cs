@@ -11,11 +11,14 @@ namespace UncannyValet.Lot
     {
         private SpotOccupancy _occupancy;
         private bool _charging;
+        private PerfectRunner _judge;
 
         public int SpotId { get; private set; }
 
-        public void Init(int spotId, LotConfig config, SpotOccupancy occupancy, bool charging)
+        /// <param name="judge">Told when a car comes to rest here so it can judge a Perfect Park; null for none.</param>
+        public void Init(int spotId, LotConfig config, SpotOccupancy occupancy, bool charging, PerfectRunner judge = null)
         {
+            _judge = judge;
             SpotId = spotId;
             _occupancy = occupancy;
             _charging = charging;
@@ -27,6 +30,7 @@ namespace UncannyValet.Lot
             if (!_occupancy.Park(SpotId, car)) return;
             Bus.Publish(new CarParked(car, SpotId));
             if (_charging) Bus.Publish(new CarEnteredStation(car, StationKind.Charging));
+            if (_judge != null && TryGetCar(car, out var drivable)) _judge.Parked(transform, drivable);
         }
 
         protected override void OnLeft(CarId car)

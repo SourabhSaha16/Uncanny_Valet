@@ -26,6 +26,15 @@ namespace UncannyValet.Lot
             _arrow = arrow;
         }
 
+        /// <summary>Rotation in degrees (0 = nose up) of a car the zone still tracks; false when it is not here.</summary>
+        public bool TryGetRotation(CarId car, out float degrees)
+        {
+            degrees = 0f;
+            if (!TryGetCar(car, out var drivable)) return false;
+            degrees = drivable.Transform.eulerAngles.z;
+            return true;
+        }
+
         protected override bool Accepts(IDrivable car, bool resting)
         {
             var facing = _facing.IsAcceptable(car.Transform.eulerAngles.z);

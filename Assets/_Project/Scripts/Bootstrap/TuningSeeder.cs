@@ -5,6 +5,7 @@ using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Director;
 using UncannyValet.Economy;
+using UncannyValet.Lot;
 using UncannyValet.Patrons;
 using UncannyValet.Traffic;
 using UnityEngine;
@@ -22,11 +23,13 @@ namespace UncannyValet.Bootstrap
         /// <param name="bus">When given, the returned link re-derives the director numbers whenever a dial moves.</param>
         /// <param name="handling">The car handling config; null seeds the config defaults.</param>
         /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
+        /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null)
+            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PerfectSettings perfect = null)
         {
+            new PerfectTuning(perfect ?? new PerfectSettings()).Seed(t);
             SeedTraffic(t, traffic);
             SeedHandling(t, handling);
             SeedTyreSound(t, audio);
