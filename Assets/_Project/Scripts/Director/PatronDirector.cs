@@ -50,7 +50,8 @@ namespace UncannyValet.Director
             var rules = DilemmaRules.CreateAll(_settings.Rules);
             var picker = new ArchetypePicker(_random, rules, _settings.Picker);
             _dilemmas = new DilemmaDirector(bus, _clock, picker, new DilemmaGate(_settings.Gate), rules, _state);
-            _brain = new DirectorBrain(bus, tuning, _clock, Services.Get<ILotSnapshotSource>(), _profile, _state,
+            var tuned = new TunedIntensityProfile(_profile, _settings.Shape, _profile.RisingLookahead);
+            _brain = new DirectorBrain(bus, tuning, _clock, Services.Get<ILotSnapshotSource>(), tuned, _state,
                 _settings, _form, pacer, _dilemmas);
             _sinceTick = 0f;
         }

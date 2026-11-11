@@ -17,8 +17,11 @@ namespace UncannyValet.Bootstrap
         /// <param name="profile">The lot's director profile, which supplies the arrival budget.</param>
         /// <param name="traffic">The road traffic config; null seeds the config defaults.</param>
         /// <param name="pedestrians">How many ambient pedestrians start active (the F2 panel can change it).</param>
-        public static void Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
-            DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null)
+        /// <param name="bus">When given, the returned link re-derives the director numbers whenever a dial moves.</param>
+        /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
+        public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
+            DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
+            IEventBus bus = null)
         {
             SeedTraffic(t, traffic);
             t.Seed(TuningKey.PedestrianCount, pedestrians);
@@ -50,6 +53,23 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
+            return SeedDials(t, director, bus);
+        }
+
+        // Dials start at their default position and the mapper runs once, so every derived number is consistent at startup.
+        private static DifficultyDialsLink SeedDials(ITuning t, DirectorConfig director, IEventBus bus)
+        {
+            var config = director != null ? director.Dials : null;
+            var temporary = config == null;
+            if (temporary)
+            {
+                if (director != null) Debug.LogWarning("DirectorConfig has no Difficulty Dials Config: run Uncanny Valet/Setup/Build Everything. Using the built-in anchors.", director);
+                config = ScriptableObject.CreateInstance<DifficultyDialsConfig>();
+            }
+            var dials = new DifficultyDials(config);
+            dials.SeedDials(t);
+            if (temporary) Object.DestroyImmediate(config);
+            return bus != null ? new DifficultyDialsLink(bus, t, dials) : null;
         }
 
         private static void SeedTraffic(ITuning t, TrafficConfig traffic)

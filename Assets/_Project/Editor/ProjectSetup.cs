@@ -21,6 +21,7 @@ namespace UncannyValet.EditorTools
         public const string AudioConfigPath = "Assets/_Project/Data/Audio/AudioConfig.asset";
         public const string ShiftConfigPath = "Assets/_Project/Data/Shift/ShiftConfig.asset";
         public const string DirectorConfigPath = "Assets/_Project/Data/Director/DirectorConfig.asset";
+        public const string DifficultyDialsPath = "Assets/_Project/Data/Director/DifficultyDialsConfig.asset";
         public const string DinerDirectorProfilePath = "Assets/_Project/Data/Director/DinerDirectorProfile.asset";
 
         [MenuItem("Uncanny Valet/Setup/Create Config Assets")]
@@ -32,7 +33,20 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<ShiftConfig>(ShiftConfigPath);
             CreateIfMissing<DirectorConfig>(DirectorConfigPath);
             CreateIfMissing<DirectorProfile>(DinerDirectorProfilePath);
+            CreateIfMissing<DifficultyDialsConfig>(DifficultyDialsPath);
+            WireDialsIntoDirectorConfig();
             AssetDatabase.SaveAssets();
+        }
+
+        // The dial anchors travel with the DirectorConfig the bootstrap already references.
+        private static void WireDialsIntoDirectorConfig()
+        {
+            var director = AssetDatabase.LoadAssetAtPath<DirectorConfig>(DirectorConfigPath);
+            var dials = AssetDatabase.LoadAssetAtPath<DifficultyDialsConfig>(DifficultyDialsPath);
+            var so = new SerializedObject(director);
+            so.FindProperty("_dials").objectReferenceValue = dials;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(director);
         }
 
         [MenuItem("Uncanny Valet/Setup/Build Everything")]

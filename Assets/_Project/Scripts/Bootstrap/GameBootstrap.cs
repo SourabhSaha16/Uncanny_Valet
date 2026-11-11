@@ -59,6 +59,7 @@ namespace UncannyValet.Bootstrap
         private ShiftRandom _random;
         private DirectorBootstrap _directorBoot;
         private TrafficTuningLink _trafficLink;
+        private DifficultyDialsLink _dialsLink;
 
         private void Awake()
         {
@@ -114,9 +115,10 @@ namespace UncannyValet.Bootstrap
         // spot count, which only matters when the plan says 0 ("all spots open").
         private void SeedTuning(ITuning tuning, int spotCount)
         {
-            TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
+            _dialsLink?.Dispose();
+            _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
-                _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig);
+                _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>());
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
@@ -188,6 +190,7 @@ namespace UncannyValet.Bootstrap
             _flow?.Dispose();
             _directorBoot?.Dispose();
             _trafficLink?.Dispose();
+            _dialsLink?.Dispose();
             _random?.Dispose();
             _score?.Dispose();
             Services.Reset();

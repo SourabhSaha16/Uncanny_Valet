@@ -35,6 +35,7 @@ MonoBehaviour:
     _budgetBlend: 0.5
     _minIntervalSeconds: 5
     _maxIntervalSeconds: 40
+    _spawnAckSeconds: 8
   _relief:
     _workload: 1.4
     _pressure: 0.85
@@ -52,3 +53,26 @@ MonoBehaviour:
     _angryWeight: 1
     _comboWeight: 0.4
     _angryForFullPenalty: 2
+  _rules:
+    _washBlocked: 3
+    _washBusy: 1.5
+    _baysBlocked: 3
+    _baySquatted: 2.5
+    _lastBay: 1.5
+    _lotTight: 1.5
+    _chain: 2
+    _lotTightSpots: 1
+    _solvablePickupSeconds: 10
+  _gate:
+    _cooldownSeconds: 25
+    _blackoutSeconds: 20
+    _headroomGap: 0.15
+  _picker:
+    _underHeavy: 1.5
+    _overHeavy: 0.5
+    _overPlain: 1.5
+    _streakLimit: 2
+    _mixTolerance: 0.1
+    _assist: 0
+    _assistDilemmaScale: 0.5
+  _dials: {fileID: 11400000, guid: 7d1e58fd5421bc943aabf6547e1e2eb1, type: 2}

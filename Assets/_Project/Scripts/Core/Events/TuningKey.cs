@@ -119,5 +119,35 @@ namespace UncannyValet.Core.Events
         // cars driving off (curb route, the lane after merging scales with it), in units per second.
         TrafficEntrySpeed,
         TrafficExitSpeed,
+
+        // Difficulty dials (Director module maps each to many underlying keys; designers tune only these). 0..10.
+        /// <summary>Dial: how much work the player is kept busy with.</summary>
+        DialIntensity,
+        /// <summary>Dial: how steeply intensity rises and dips over the shift (0 flat).</summary>
+        DialRamp,
+        /// <summary>Dial: strength of the end-of-shift surge.</summary>
+        DialLateRush,
+        /// <summary>Dial: share of cars that need a wash.</summary>
+        DialDirtyCars,
+        /// <summary>Dial: share of EVs that need a charge.</summary>
+        DialEvCars,
+        /// <summary>Dial: how often the director sets up squeeze moments.</summary>
+        DialDilemmas,
+        /// <summary>Dial: how readily the director backs off when the player is overwhelmed.</summary>
+        DialMercy,
+        /// <summary>Dial: how much good play raises the difficulty.</summary>
+        DialSkillReward,
+
+        // Director values only the dials derive (no dial-free meaning): shape of the target curve and base car-mix weights.
+        /// <summary>Multiplier on the target workload curve (1 = as authored).</summary>
+        DirTargetScale,
+        /// <summary>How much of the curve's rise and dip is kept around its average (0 flat, 1 as authored).</summary>
+        DirRampShape,
+        /// <summary>Extra target workload at the very end of the shift, as a fraction; ramps in from PlanLateEvStart.</summary>
+        DirLateTargetBoost,
+        DirWeightPlain,
+        DirWeightDirty,
+        DirWeightEv,
+        DirWeightDirtyEv,
     }
 }
