@@ -19,6 +19,7 @@ namespace UncannyValet.Audio
         private PendingCarTracker _pending;
         private UrgencyRule _urgency;
         private SfxBank _bank;
+        private TyreAudio _tyres;
         private AudioSource _music;
         private AudioSource[] _voices;
         private int _nextVoice;
@@ -60,6 +61,7 @@ namespace UncannyValet.Audio
         private void Update()
         {
             if (_music == null) return;
+            _tyres.Tick(Time.unscaledDeltaTime, Time.timeScale <= 0f);
             _music.pitch = _urgency.Step(_pending.Count, Time.unscaledDeltaTime);
             var keyboard = Keyboard.current;
             if (keyboard == null || !keyboard.mKey.wasPressedThisFrame) return;
@@ -82,6 +84,10 @@ namespace UncannyValet.Audio
                 _voices[i] = gameObject.AddComponent<AudioSource>();
                 _voices[i].playOnAwake = false;
             }
+            var squeal = new SquealMix(_config.SquealMinVolume, _config.SquealMaxVolume, _config.SquealMinPitch,
+                _config.SquealMaxPitch, _config.SquealFadeSeconds, _config.SquealAttackSeconds);
+            var squealClip = ClipFactory.Create("SquealLoop", SquealLoop.Build(settings.SampleRate), settings.SampleRate, false);
+            _tyres = new TyreAudio(gameObject.AddComponent<AudioSource>(), squealClip, squeal);
             ApplyVolumes();
             _music.Play();
         }
@@ -91,6 +97,7 @@ namespace UncannyValet.Audio
             float master = _mute.Apply(_config.MasterVolume);
             _music.volume = master * _config.MusicVolume;
             for (int i = 0; i < _voices.Length; i++) _voices[i].volume = master * _config.SfxVolume;
+            _tyres.SetGain(master * _config.SfxVolume);
         }
 
         private void Play(SfxId id)

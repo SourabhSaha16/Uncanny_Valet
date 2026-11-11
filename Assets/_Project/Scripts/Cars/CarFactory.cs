@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.Cars.Fx;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
@@ -25,12 +26,15 @@ namespace UncannyValet.Cars
         private Sprite _sprite;
         private CarFlashConfig _fallbackFlash;
         private CarHandlingKit _kit;
+        private DecalPool _decals;
+        private readonly SlipMeter _slip = new SlipMeter();
 
         /// <summary>The handling config asset (read-only); seeds the tuning store. Null when none is assigned.</summary>
         public CarHandlingConfig HandlingConfig => _handling;
 
         private void Start()
         {
+            Services.Register<ISlipSource>(_slip);
             if (Services.TryGet<IEventBus>(out var bus))
                 Kit.Link(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null);
         }
@@ -132,12 +136,16 @@ namespace UncannyValet.Cars
             go.AddComponent<CarCollisionResponse>().Initialize(Kit);
             go.AddComponent<CarInteraction>();
             go.AddComponent<CarAutoDrive>();
+            go.AddComponent<SkidEmitter>().Initialize(Kit, Decals, _slip);
             var art = AttachBodyArt(go, id, def, renderer);
             AttachLooks(go, id, def, renderer, art);
             CarHeadlights.Attach(go, def.Size, FlashConfig(), GetSprite());
             CarKeyTag.Attach(go, id, art, FlashConfig());
             return driver;
         }
+
+        private DecalPool Decals => _decals != null ? _decals
+            : _decals = DecalPool.Create(transform, Kit.Config.Skid.DecalCap, GetSprite(), Kit.Config.Skid.DecalSortingOrder);
 
         private CarFlashConfig FlashConfig()
         {

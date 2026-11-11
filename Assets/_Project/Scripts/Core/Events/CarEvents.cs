@@ -101,4 +101,25 @@ namespace UncannyValet.Core.Events
         public readonly bool Wrong;
         public CurbFacingChanged(CarId car, bool wrong) { Car = car; Wrong = wrong; }
     }
+
+    /// <summary>A human-driven car started sliding (sideways speed crossed the slide threshold). Published once per slide by Cars.</summary>
+    public readonly struct CarSlideStarted : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarSlideStarted(CarId car) { Car = car; }
+    }
+
+    /// <summary>The car's slide ended (grip came back, or the driver got out).</summary>
+    public readonly struct CarSlideEnded : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarSlideEnded(CarId car) { Car = car; }
+    }
+
+    /// <summary>A human-driven car began braking hard from speed (once per brake, not while it continues).</summary>
+    public readonly struct CarHardBraked : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarHardBraked(CarId car) { Car = car; }
+    }
 }

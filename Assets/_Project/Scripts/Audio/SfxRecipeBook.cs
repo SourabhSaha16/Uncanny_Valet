@@ -24,6 +24,8 @@ namespace UncannyValet.Audio
                 case SfxId.StationStart: return SfxStations.StationStart(sampleRate);
                 case SfxId.PedestrianBump: return SfxAlerts.PedestrianBump(sampleRate);
                 case SfxId.CarBump: return SfxAlerts.CarBump(sampleRate);
+                case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate);
+                case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");
             }
         }

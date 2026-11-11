@@ -42,7 +42,11 @@ namespace UncannyValet.Cars
         {
             var forward = Vector2.Dot(velocity, facing);
             var sideways = Vector2.Dot(velocity, new Vector2(facing.y, -facing.x));
-            return Mathf.Atan2(Mathf.Abs(sideways), Mathf.Abs(forward)) * Mathf.Rad2Deg;
+            return SlipAngleDegrees(forward, sideways);
         }
+
+        /// <summary>The same angle from the forward and sideways speeds already split.</summary>
+        public static float SlipAngleDegrees(float forward, float sideways)
+            => Mathf.Atan2(Mathf.Abs(sideways), Mathf.Abs(forward)) * Mathf.Rad2Deg;
     }
 }

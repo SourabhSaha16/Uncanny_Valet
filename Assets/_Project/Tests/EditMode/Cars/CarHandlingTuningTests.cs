@@ -31,6 +31,27 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
+        public void SkidDefaultsMatchTheSpecAndTheLiveValuesFollowTheKeys()
+        {
+            var live = new CarHandlingLive(_config);
+            var s = live.Skid;
+            Assert.AreEqual(1.2f, s.SlideThreshold);
+            Assert.AreEqual(2f, s.ShiftSlideSpeed);
+            Assert.AreEqual(0.8f, s.MaxOpacity);
+            Assert.AreEqual(4f, s.HardBrakeSpeed);
+            Assert.AreEqual(6f, live.MarkFadeSeconds);
+            Assert.AreEqual(40, _config.Skid.DecalCap);
+            live.TrySet(TuningKey.HandlingSlideThreshold, 2f);
+            live.TrySet(TuningKey.HandlingShiftSlideSpeed, 3f);
+            live.TrySet(TuningKey.HandlingMarkOpacity, 0.5f);
+            live.TrySet(TuningKey.HandlingMarkFadeSeconds, 9f);
+            Assert.AreEqual(2f, live.Skid.SlideThreshold);
+            Assert.AreEqual(3f, live.Skid.ShiftSlideSpeed);
+            Assert.AreEqual(0.5f, live.Skid.MaxOpacity);
+            Assert.AreEqual(9f, live.MarkFadeSeconds);
+        }
+
+        [Test]
         public void EveryCatalogRowSeedsAndTrySetAcceptsIt()
         {
             var live = new CarHandlingLive(_config);
