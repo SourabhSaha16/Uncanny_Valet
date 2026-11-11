@@ -513,3 +513,9 @@ Date: 2026-11-10
 Files: merges of worktree-agent-a7bab8b9a3bcd29a6, -af222a4dbf298956c, -af78fe44b6f7ba760, -a3350361302357c08; docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity and PedestrianConfig.asset, site/
 Why: the human's play-test notes (status after wash, arrival sound on stop, camera zoom, big box replaced by slot tint, pedestrian collision with bounce and sound). Approved new Core files PhysicsLayers and PedestrianEvents and the ArrivalSlotScanner layer filter.
 Tests: 811 of 811 EditMode; browser smoke test with no console errors. Not played.
+
+## lead: merge ped-collision own-car fix and slot-tint service icons; update docs; rebuild site
+Date: 2026-11-10
+Files: merges of worktree-agent-a3350361302357c08 and worktree-agent-af78fe44b6f7ba760, docs/design.md, regenerated Bootstrap.unity, site/
+Why: the human's notes: patrons pushed their own car on exit; need icons from queue arrival.
+Tests: 817 of 817 EditMode; browser smoke test with no console errors. Not played. Icon trigger is CarArrived (no patron-exited event exists in Core).

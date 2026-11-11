@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  90c6269
-Subject: lead: merge agent/ped-collision
-Date:    2026-11-10 14:45:11 -0800
+Commit:  34797e3
+Subject: lead: merge agent/slot-tint service icons at arrival
+Date:    2026-11-10 18:01:20 -0800
