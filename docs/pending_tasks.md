@@ -42,13 +42,15 @@ Nothing below has been played end to end; only browser smoke tests were done.
 ## D. Redesign backlog (planned in `docs/design.md` A8)
 
 Car controller (spec: `docs/redesign/car_handling_spec.md`, build order in its section 8; one step at a time per file set):
-- [ ] D1. Step 1 (cars): measure the aisle width and car collider size, set R_min and MaxTurnRate, add the PlayMode test assembly and the bay-entry PlayMode test.
+- [x] D1. Step 1 (cars): measure the aisle width and car collider size, set R_min and MaxTurnRate, add the PlayMode test assembly and the bay-entry PlayMode test.
 - [ ] D2. Step 2 (cars + Core input): `DriftModel`, `SteeringModel`, `IDriveModifier` seam, Drift input (Shift, right shoulder), `CarHandlingConfig` and its F2 keys.
 - [ ] D3. Step 3 (cars/fx + audio): minimal `DecalPool`, skid marks, tyre chirp and squeal.
 - [ ] D3a. Step 4 (lot): `ParkJudge`, `ParkJudgeRunner`, `PerfectPark` event, pop, ding, camera kick, +$2 on the ticket, results stat.
 - [ ] D3b. Step 5 (valet): dash on foot, `BoostRules`, `ValetBoost`, barge-through, boost feedback, results stat.
 - [ ] D3c. Step 6 (cars): EV stat overrides in `CarDefinition`.
-- [ ] D3d. Human decision: is the 4.6 aisle enough (pull-out rule), or widen it?
+- [x] D3d. Aisle 4.6 passes the pull-out rule; no widening needed.
+- [ ] D3e. Human decision: keep the real 1 x 2 car (spec assumed about 1.8 x 4; bay slack 0.8 per side), or resize cars, sprites and the queue?
+- [ ] D3f. Step 2 must keep `CarHandlingConfig.MeasuredAisleWidth` in sync with `LotConfig.AisleWidth` (cars cannot reference Lot) and enable the 7 ignored PlayMode bay cases.
 
 Damage:
 - [ ] D4. Impact damage rule (pure class, tests).

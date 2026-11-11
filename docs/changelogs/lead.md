@@ -525,3 +525,9 @@ Date: 2026-11-10
 Files: merge of worktree-agent-a3ee1dcf52afb7383, docs/redesign/car_handling_spec.md, docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity and Director assets, site/
 Why: the human asked for fewer tunables with designer names, and handed over the car handling spec (checked against the code; corrections in the spec's section 0).
 Tests: 853 of 853 EditMode; browser smoke test with F2 open (dials show, no console errors). Not played.
+
+## lead: merge handling-step1, update docs
+Date: 2026-11-10
+Files: merge of worktree-agent-a79787fcea3c431c5, docs/design.md, docs/pending_tasks.md, docs/redesign/car_handling_spec.md
+Why: car handling rollout step 1 (docs/redesign/car_handling_spec.md section 8). No runtime change, so site/ was not rebuilt.
+Tests: 863 of 863 EditMode; PlayMode 1 passed, 7 ignored until step 2 (agent's run).

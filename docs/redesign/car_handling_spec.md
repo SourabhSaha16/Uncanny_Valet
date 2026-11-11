@@ -22,6 +22,8 @@ These corrections apply to every agent. Where the spec text and this list disagr
 | 11 | Car physics keys | `CarDefinition` already has `_topSpeed`, `_acceleration`, `_braking`, `_turnRate` (deg/s), `_grip`; `CarPhysicsMath.DampSideways` and `TurnDegreesPerSecond` exist | `DriftModel` and `SteeringModel` replace those two functions' use in `CarDriver`; keep the old fields as the source for acceleration, braking, top speed; new handling numbers go in `CarHandlingConfig`. Keep tests green or replace them deliberately. |
 | 12 | Tuning keys for everything | `TuningKey` / `TuningCatalog` / the 9 difficulty dials work is in flight | Add the handling keys under a group "Car handling" and "Perfect Park" and "Golden Valet", with plain-language labels (see the difficulty-dials naming rule). Do this after the dials work merges. |
 
+Measured in step 1 (2026-11-10): aisle 4.6, bay 2.6 x 4.4 pitch 3.2, EV bay id 7, real car 1 x 2 (the 1.8 x 4 car in sections 3 and 4 does not exist), R_min 3.3, MaxTurnRate 1.212 rad/s, pull-out rule passes, bay slack 0.8 per side.
+
 Order of work (agents, one at a time per file set): see section 8.
 
 ## 1. Summary
