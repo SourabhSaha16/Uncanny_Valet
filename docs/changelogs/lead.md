@@ -651,3 +651,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a0adec20aa7f251d4 (Emotion states, EmotionRows, EmotionTuningLink, CarStatus WillNotTip, HudEmotionConfig asset, KeyBoardPainter width, tests), docs/changelogs/lead.md
 Why: issue 7, the owner's decision: Angry from 80% of the pickup patience, Will not tip at 100% or expiry; both levels tunable in F2 (Patron mood). Tip maths unchanged. The CAR SLOTS panel is wider so Cust. Angry fits. Car body flash (CarFlashConfig 0.85) is unchanged and now differs from the plate's 80%.
 Tests: 1085 of 1085 EditMode, 16 of 16 PlayMode after merging the traffic and Angry branches; RunBatch regenerated TrafficConfig.asset (new LaneClearance field), Bootstrap.unity churn reverted.
+
+## lead: merge agent/lot plain-language Perfect rows and looser Perfect Park (#69) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a95488145e96040e2 (PerfectRows, PerfectSettings, PerfectJudgeTests, DifficultyDialsTests), docs/changelogs/lead.md
+Why: issue 69. Perfect rows have plain-language labels; the three judging rows and the bonus show without Advanced; defaults loosened (angle 12 degrees, side 0.35, lengthwise 0.7; lengthwise slider max 1.2 = bay end slack).
+Tests: 1088 of 1088 EditMode after the merge (agent: 16 of 16 PlayMode).

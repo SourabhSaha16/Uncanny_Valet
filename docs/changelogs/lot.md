@@ -91,3 +91,9 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs
 Why: human asked for more room to manoeuvre (design.md A5 Lot v2). Aisle 4.6 -> 6.0 (now Range 3..9), StripGap 1.0 -> 3.5; everything else derives from these.
 Tests: EditMode 950/950 (2 new geometry tests; shipped-defaults test now compares the shipped assets), PlayMode 14/14 (gap assertion 4.6 -> 6).
+
+## lot: plain-language Perfect rows, loosen Perfect Park [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectSettings.cs, Assets/_Project/Tests/EditMode/Lot/PerfectJudgeTests.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs
+Why: issue 69. Every Perfect label and tooltip rewritten in designer language with an example number; the three Perfect Park judging rows and the bonus now show without the Advanced toggle. Defaults loosened: angle 5 to 12 degrees, side offset 0.15 to 0.35, lengthwise 0.3 to 0.7 (bay slack is 0.8 side, 1.2 end, so both fit; length slider max lowered 1.5 to 1.2 to match). LotConfig.asset stores no Perfect block, so no asset change.
+Tests: new cases (10 deg, 0.3, 0.6 perfect; 14 deg not); catalog visible count 13 to 17. EditMode 1088/1088, PlayMode 16/16.

@@ -15,11 +15,11 @@ namespace UncannyValet.Lot
 
         [Header("Perfect park")]
         [SerializeField, Range(1f, 20f), Tooltip("Largest angle off the bay's long axis, nose in or tail in.")]
-        private float _parkAngleDegrees = 5f;
-        [SerializeField, Min(0.05f), Tooltip("Largest side-to-side offset from the bay centre line. Must stay inside the bay slack.")]
-        private float _parkSideOffset = 0.15f;
-        [SerializeField, Min(0.1f), Tooltip("Largest lengthwise offset from the bay centre.")]
-        private float _parkLengthOffset = 0.3f;
+        private float _parkAngleDegrees = 12f;
+        [SerializeField, Min(0.05f), Tooltip("Largest side-to-side offset from the bay centre line. Must stay inside the bay slack (0.8).")]
+        private float _parkSideOffset = 0.35f;
+        [SerializeField, Min(0.1f), Tooltip("Largest lengthwise offset from the bay centre. Must stay inside the bay slack (1.2).")]
+        private float _parkLengthOffset = 0.7f;
         [SerializeField, Min(0f), Tooltip("Seconds before the same car can earn another Perfect Park.")]
         private float _parkCooldownSeconds = 10f;
         [SerializeField, Min(0f), Tooltip("Units a car must have moved since it last stopped for a Perfect Park to count again.")]

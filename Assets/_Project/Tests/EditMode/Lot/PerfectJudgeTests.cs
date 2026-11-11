@@ -38,11 +38,14 @@ namespace UncannyValet.Tests.Lot
         [TestCase(4f, 0f, 0f, false, ParkVerdict.Perfect)]
         [TestCase(176f, 0f, 0f, false, ParkVerdict.Perfect)]
         [TestCase(-4f, 0f, 0f, false, ParkVerdict.Perfect)]
-        [TestCase(8f, 0f, 0f, false, ParkVerdict.Crooked)]
+        [TestCase(10f, 0.3f, 0.6f, false, ParkVerdict.Perfect)]
+        [TestCase(-190f, -0.3f, -0.6f, false, ParkVerdict.Perfect)]
+        [TestCase(14f, 0f, 0f, false, ParkVerdict.Crooked)]
+        [TestCase(14f, 0.3f, 0.6f, false, ParkVerdict.Crooked)]
         [TestCase(90f, 0f, 0f, false, ParkVerdict.Crooked)]
-        [TestCase(0f, 0.2f, 0f, false, ParkVerdict.OffCentreSide)]
-        [TestCase(0f, -0.2f, 0f, false, ParkVerdict.OffCentreSide)]
-        [TestCase(0f, 0f, 0.4f, false, ParkVerdict.OffCentreLength)]
+        [TestCase(0f, 0.4f, 0f, false, ParkVerdict.OffCentreSide)]
+        [TestCase(0f, -0.4f, 0f, false, ParkVerdict.OffCentreSide)]
+        [TestCase(0f, 0f, 0.8f, false, ParkVerdict.OffCentreLength)]
         [TestCase(0f, 0f, 0f, true, ParkVerdict.Touching)]
         public void ParkJudgeChecksAngleOffsetsAndContact(float angle, float side, float length, bool touching, ParkVerdict expected) =>
             Assert.AreEqual(expected, new ParkJudge(_tuning).Judge(angle, side, length, touching));
