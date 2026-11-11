@@ -639,3 +639,9 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: first player-visible build of Perfect Park (+$2 bonus, PERFECT! pop, kick, ding, results stat), the power meter HUD and Q activation (powers have no effect yet), and the tip pop fix (issue 67). Beta site only; main stays on the earlier build.
 Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent runs); browser smoke test: title and shift load, no console errors. Perfect Park, meter and tip pop not seen in play.
+
+## lead: merge agent/traffic keep a turning patron car visible to lane traffic (#3) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-ac46417314c5f98f3 (EntryTrip, TripContext, LanePath, TripTuning, TrafficConfig, TrafficModule, TurnIntoQueueTests), docs/changelogs/lead.md
+Why: issue 3. EntryTrip dropped the car from lane occupancy at the start of the turn into the queue, so an ambient car right behind it drove through it. The car stays registered until it is LaneClearance (1.6) from the lane line.
+Tests: 1077 of 1077 EditMode, 16 of 16 PlayMode (agent); 1077 of 1077 EditMode after the merge.

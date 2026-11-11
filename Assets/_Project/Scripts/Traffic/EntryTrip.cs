@@ -5,7 +5,8 @@ namespace UncannyValet.Traffic
 {
     /// <summary>
     /// A patron car arriving: waits off-screen at the east lane start until it has a gap, drives the lane with car
-    /// following, slows toward the queue turn, then drives the queue entry route and stops at its end.
+    /// following, slows toward the queue turn, then drives the queue entry route and stops at its end. While the turn
+    /// still overlaps the lane the car stays registered on it, so ambient cars behind keep their distance.
     /// </summary>
     public sealed class EntryTrip : ITrip
     {
@@ -96,8 +97,6 @@ namespace UncannyValet.Traffic
             if (_lane.Distance < turnAt) return LanePose(TripPhase.OnLane, _lane.Speed);
             _lane.Distance = turnAt;
             _route.Speed = _lane.Speed;
-            _ctx.Occupancy.Remove(_lane.Id);
-            _lane = default;
             _phase = TripPhase.OnRoute;
             return _route.Pose(TripPhase.OnRoute, _route.Speed);
         }
@@ -105,7 +104,9 @@ namespace UncannyValet.Traffic
         private TripPose StepRoute(float dt)
         {
             _route.Step(Mathf.Min(TurnSpeed, ObstacleCap(dt)), true, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
-            if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
+            TripPose pose = _route.Pose(TripPhase.OnRoute, _route.Speed);
+            _ctx.TrackLane(ref _lane, pose.Position, pose.Speed);
+            if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return pose;
             return _route.Pose(TripPhase.Finished, 0f);
         }
 
