@@ -669,3 +669,9 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last beta build: issues 7 (Angry at 80%, Will not tip), 3 (turning patron car visible to lane traffic), 69 (plain Perfect Park rows, looser defaults) and 68 (one-way ENTRY road below, one-way EXIT road above, up-facing drop-off). Beta site only; main stays on the earlier build.
 Tests: 1098 of 1098 EditMode, 16 of 16 PlayMode; browser smoke test at 1280x800: title and shift load, curb arrows face up, exit gap visible in the top wall, no console errors. The exit route, labels, Will not tip and traffic fix were not seen in play.
+
+## lead: merge agent/director always a car in the arrival queue (#70) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-abc606cd9b17808d8 (IdleGuard, ArrivalRows, ArrivalPacer, PacerInput, PacingSettings, DirectorBrain, TuningKey, TuningCatalog, DirectorConfig asset, tests, docs/changelogs/director.md), docs/changelogs/lead.md
+Why: issue 70. When no car is waiting in the arrival queue the Director sends one within ArrivalIdleLimit (2 s, F2, visible); the first car of a shift too; the guard stops near the end of the shift (ArrivalIdleCutoff 20 s, Advanced) and at the hard arrival cap; queued cars leave the old pacing, mercy and queue-full holds in force. Fast parkers use the arrival budget sooner (no schedule check).
+Tests: 1111 of 1111 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted). Soak: longest empty-queue gap 1.5 s over 200 shifts.

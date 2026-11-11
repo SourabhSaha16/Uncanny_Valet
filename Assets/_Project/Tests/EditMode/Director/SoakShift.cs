@@ -16,6 +16,10 @@ namespace UncannyValet.Tests.Director
         public int MostOpenAtOnce;
         /// <summary>The longest stretch with no open task and no arrival while cars were still due.</summary>
         public float LongestQuietSeconds;
+        /// <summary>The longest stretch with no car in the arrival queue while the idle guard was allowed to send.</summary>
+        public float LongestEmptyQueueSeconds;
+        /// <summary>When the first car arrived, seconds into the shift (-1 when none did).</summary>
+        public float FirstArrivalSeconds = -1f;
     }
 
     /// <summary>Runs one seeded shift: the real DirectorBrain against the fake lot and the scripted bot.</summary>
@@ -55,6 +59,7 @@ namespace UncannyValet.Tests.Director
         private static void Play(FakeClock clock, SoakSim sim, DirectorBrain brain, DirectorSettings settings, SoakResult result)
         {
             var quiet = 0f;
+            var empty = 0f;
             for (var t = Dt; t <= ShiftSeconds; t += Dt)
             {
                 clock.SetElapsed(t);
@@ -64,6 +69,11 @@ namespace UncannyValet.Tests.Director
                 brain.Tick(Dt);
                 var active = sim.HasOpenTask || sim.Arrivals != before;
                 quiet = active ? 0f : quiet + Dt;
+                if (result.FirstArrivalSeconds < 0f && sim.Arrivals > 0) result.FirstArrivalSeconds = t;
+                var guarded = sim.Arrivals < settings.Pacing.MaxArrivals
+                    && ShiftSeconds - t >= settings.Pacing.IdleCutoffSeconds;
+                empty = sim.AwaitingCount == 0 && guarded ? empty + Dt : 0f;
+                if (empty > result.LongestEmptyQueueSeconds) result.LongestEmptyQueueSeconds = empty;
                 var cardsDue = sim.Arrivals < settings.Pacing.ArrivalBudget;
                 if (cardsDue && quiet > result.LongestQuietSeconds) result.LongestQuietSeconds = quiet;
             }

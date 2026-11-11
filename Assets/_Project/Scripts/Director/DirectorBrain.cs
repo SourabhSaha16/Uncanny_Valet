@@ -78,7 +78,7 @@ namespace UncannyValet.Director
             return new PacerInput(load.W, load.P, target, EffectiveForm, lot.CountAngry(_settings.Relief.AngryWindowSeconds),
                 queue, cap, _state.ArrivalsUsed, _profile.AreaFrom(fraction, length), _profile.AreaFrom(0f, length),
                 Read(TuningKey.ArrivalGapMinMinutes, DefaultGapMin) * toSeconds,
-                Read(TuningKey.ArrivalGapMaxMinutes, DefaultGapMax) * toSeconds);
+                Read(TuningKey.ArrivalGapMaxMinutes, DefaultGapMax) * toSeconds, _clock.SecondsRemaining);
         }
 
         private void Publish(in PacerDecision d, WorkloadReading load, float target, in LotSnapshot lot,

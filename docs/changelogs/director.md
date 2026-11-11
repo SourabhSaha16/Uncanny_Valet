@@ -1,0 +1,7 @@
+# Changelog: director
+
+## director: always a car in the arrival queue (idle guard) [Claude]
+Date: 2026-11-11
+Files: Scripts/Director/{IdleGuard,ArrivalPacer,PacerInput,PacingSettings,DirectorBrain}.cs, Scripts/Core/Contracts/{ArrivalRows,TuningCatalog}.cs, Scripts/Core/Events/TuningKey.cs, Data/Director/DirectorConfig.asset, Tests/EditMode/Director/{IdleGuardTests,ArrivalPacerTests,ArrivalPacerStuckTests,DirectorBrainTests,DirectorSoakTests,SoakShift}.cs, Tests/EditMode/Integration/DifficultyDialsTests.cs
+Why: Issue #70, no more than about 2 s with an empty arrival queue. New pure IdleGuard counts seconds with no car awaiting park; at the limit the pacer sends one regardless of its countdown or relief hold (a relief send is plain). A queued car resets it, so normal pacing, mercy and the queue cap are untouched. It stands down when the arrival budget is spent or fewer than ArrivalIdleCutoff (20 s) remain. The first car of a shift is due after one limit. A lost send is retried within the limit while the queue is empty. Keys ArrivalIdleLimit (2 s, visible) and ArrivalIdleCutoff (advanced) are seeded by PacingSettings, not by a dial. F3 "next in" shows the guard countdown.
+Tests: 11 new in IdleGuardTests, 1 in DirectorBrainTests; soak asserts the empty-queue gap and first car within limit + 1 s over 200 shifts (longest observed 1.5 s). EditMode 1111/1111, PlayMode 16/16 passed. RunBatch run; Bootstrap.unity churn reverted.

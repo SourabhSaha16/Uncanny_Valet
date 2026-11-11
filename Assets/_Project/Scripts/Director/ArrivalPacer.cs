@@ -16,6 +16,7 @@ namespace UncannyValet.Director
         private readonly IDirectorRandom _random;
         private readonly PacingSettings _settings;
         private readonly ReliefGate _relief;
+        private readonly IdleGuard _guard;
         private float _progress;
         private float _baseInterval;
         private float _factor = 1f;
@@ -25,7 +26,7 @@ namespace UncannyValet.Director
 
         public ArrivalPacer(IDirectorRandom random, PacingSettings settings, ReliefGate relief)
         {
-            _random = random; _settings = settings; _relief = relief;
+            _random = random; _settings = settings; _relief = relief; _guard = new IdleGuard(settings);
         }
 
         /// <summary>True while relief holds arrivals or restricts them to plain cars.</summary>
@@ -41,6 +42,7 @@ namespace UncannyValet.Director
             _awaitingSpawn = false;
             _awaitingSeconds = 0f;
             _relief.Reset();
+            _guard.Reset();
         }
 
         /// <summary>A car really arrived (the spawner executed the schedule). Returns true when relief ended with it.</summary>
@@ -57,9 +59,11 @@ namespace UncannyValet.Director
         {
             var ended = _relief.Tick(dt);
             var started = _relief.TryStart(input.Workload, input.Pressure, input.AngryRecent, out var trigger);
-            if (_relief.Stage == ReliefStage.Holding) return Make(PacerAction.Hold, HoldReason.Relief, 0f, started, trigger, ended);
+            var forced = _guard.Update(input, dt);
+            if (!forced && _relief.Stage == ReliefStage.Holding) return Make(PacerAction.Hold, HoldReason.Relief, 0f, started, trigger, ended);
             if (input.ArrivalsUsed >= _settings.MaxArrivals) return Make(PacerAction.Hold, HoldReason.BudgetSpent, 0f, started, trigger, ended);
             if (_awaitingSpawn && StillAwaiting(dt)) return Make(PacerAction.Wait, HoldReason.None, 0f, started, trigger, ended);
+            if (forced) return SendNow(ScheduleReason.Idle, started, trigger, ended);
 
             UpdateIdle(input, dt);
             var idle = _idleTimer >= _settings.IdleSeconds && BehindSchedule(input);
@@ -70,9 +74,15 @@ namespace UncannyValet.Director
             if (_progress < 1f && !idle) return Make(PacerAction.Wait, HoldReason.None, SecondsLeft(interval), started, trigger, ended);
             if (input.Queue >= input.QueueCap) return Make(PacerAction.Hold, HoldReason.QueueFull, 0f, started, trigger, ended);
 
+            return SendNow(band, started, trigger, ended);
+        }
+
+        // Sends a car and starts waiting for the spawner to confirm it. Relief still makes the car a plain one.
+        private PacerDecision SendNow(ScheduleReason band, bool started, ReliefTrigger trigger, bool ended)
+        {
             _awaitingSpawn = true;
             _awaitingSeconds = 0f;
-            var plain = _relief.Stage == ReliefStage.Plain;
+            var plain = _relief.Active;
             var reason = plain ? ScheduleReason.ReliefCar : band;
             return new PacerDecision(PacerAction.Spawn, reason, HoldReason.None, plain, 0f, started, trigger, ended);
         }
@@ -82,7 +92,8 @@ namespace UncannyValet.Director
         private bool StillAwaiting(float dt)
         {
             _awaitingSeconds += dt;
-            if (_awaitingSeconds < _settings.SpawnAckSeconds) return true;
+            var ack = _guard.Armed ? Mathf.Min(_settings.SpawnAckSeconds, _guard.Limit) : _settings.SpawnAckSeconds;
+            if (_awaitingSeconds < ack) return true;
             _awaitingSpawn = false;
             return false;
         }
@@ -141,8 +152,13 @@ namespace UncannyValet.Director
             return Mathf.Max(0f, untilIdle > 0f && untilIdle < left && _idleTimer > 0f ? untilIdle : left);
         }
 
-        private static PacerDecision Make(PacerAction action, HoldReason hold, float seconds, bool started,
+        // The idle guard's countdown caps the number shown as "next arrival in".
+        private PacerDecision Make(PacerAction action, HoldReason hold, float seconds, bool started,
             ReliefTrigger trigger, bool ended)
-            => new PacerDecision(action, ScheduleReason.OnTarget, hold, false, seconds, started, trigger, ended);
+        {
+            var left = _guard.SecondsUntilForced;
+            if (left >= 0f) seconds = seconds > 0f ? Mathf.Min(seconds, left) : left;
+            return new PacerDecision(action, ScheduleReason.OnTarget, hold, false, seconds, started, trigger, ended);
+        }
     }
 }

@@ -23,6 +23,8 @@ namespace UncannyValet.Director
         public readonly float TargetAreaLeft;
         /// <summary>Area under T over the whole shift, in workload-seconds; with the area left it tells how far the shift has got.</summary>
         public readonly float TargetAreaTotal;
+        /// <summary>Seconds of the shift left; the idle guard stands down when too little remains.</summary>
+        public readonly float ShiftSecondsLeft;
         /// <summary>Shortest base interval, seconds (the old 15-25 s range, scaled by the plan).</summary>
         public readonly float BaseIntervalMin;
         /// <summary>Longest base interval, seconds.</summary>
@@ -33,12 +35,13 @@ namespace UncannyValet.Director
 
         public PacerInput(float workload, float pressure, float target, float form, int angryRecent, int queue,
             int queueCap, int arrivalsUsed, float targetAreaLeft, float targetAreaTotal, float baseIntervalMin,
-            float baseIntervalMax)
+            float baseIntervalMax, float shiftSecondsLeft = float.PositiveInfinity)
         {
             Workload = workload; Pressure = pressure; Target = target; Form = form; AngryRecent = angryRecent;
             Queue = queue; QueueCap = queueCap; ArrivalsUsed = arrivalsUsed; TargetAreaLeft = targetAreaLeft;
             TargetAreaTotal = targetAreaTotal;
             BaseIntervalMin = baseIntervalMin; BaseIntervalMax = baseIntervalMax;
+            ShiftSecondsLeft = shiftSecondsLeft;
         }
     }
 }

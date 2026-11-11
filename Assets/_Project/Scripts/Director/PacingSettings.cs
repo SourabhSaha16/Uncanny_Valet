@@ -32,6 +32,11 @@ namespace UncannyValet.Director
         [SerializeField, Min(1f), Tooltip("Seconds the pacer waits for a sent car to really arrive before it counts the send as lost and sends again.")]
         private float _spawnAckSeconds = 8f;
 
+        [SerializeField, Range(0.5f, 30f), Tooltip("Longest the arrival queue may stay empty, in seconds, before a car is sent whatever the pacing says.")]
+        private float _maxEmptyQueueSeconds = 2f;
+        [SerializeField, Min(0f), Tooltip("No car is forced in when fewer seconds than this are left in the shift.")]
+        private float _idleCutoffSeconds = 20f;
+
         // Not serialized: the lot's DirectorProfile owns the budget and seeds it (see Seed).
         private int _arrivalBudget = DirectorProfile.DefaultArrivalBudget;
         private int _budgetSlack = DirectorProfile.DefaultBudgetSlack;
@@ -47,6 +52,8 @@ namespace UncannyValet.Director
         public float MinIntervalSeconds => _minIntervalSeconds;
         public float MaxIntervalSeconds => _maxIntervalSeconds;
         public float SpawnAckSeconds => _spawnAckSeconds;
+        public float MaxEmptyQueueSeconds => _maxEmptyQueueSeconds;
+        public float IdleCutoffSeconds => _idleCutoffSeconds;
         public int ArrivalBudget => _arrivalBudget;
         public int BudgetSlack => _budgetSlack;
 
@@ -66,6 +73,8 @@ namespace UncannyValet.Director
             t.Seed(TuningKey.DirBudgetBlend, _budgetBlend);
             t.Seed(TuningKey.DirMinInterval, _minIntervalSeconds);
             t.Seed(TuningKey.DirMaxInterval, _maxIntervalSeconds);
+            t.Seed(TuningKey.ArrivalIdleLimit, _maxEmptyQueueSeconds);
+            t.Seed(TuningKey.ArrivalIdleCutoff, _idleCutoffSeconds);
             t.Seed(TuningKey.DirArrivalBudget, arrivalBudget);
             t.Seed(TuningKey.DirBudgetSlack, budgetSlack);
         }
@@ -84,6 +93,8 @@ namespace UncannyValet.Director
             _minIntervalSeconds = TuningRead.Float(t, TuningKey.DirMinInterval, _minIntervalSeconds);
             _maxIntervalSeconds = Mathf.Max(_minIntervalSeconds,
                 TuningRead.Float(t, TuningKey.DirMaxInterval, _maxIntervalSeconds));
+            _maxEmptyQueueSeconds = TuningRead.Float(t, TuningKey.ArrivalIdleLimit, _maxEmptyQueueSeconds);
+            _idleCutoffSeconds = TuningRead.Float(t, TuningKey.ArrivalIdleCutoff, _idleCutoffSeconds);
             _arrivalBudget = Mathf.RoundToInt(TuningRead.Float(t, TuningKey.DirArrivalBudget, _arrivalBudget));
             _budgetSlack = Mathf.RoundToInt(TuningRead.Float(t, TuningKey.DirBudgetSlack, _budgetSlack));
         }
