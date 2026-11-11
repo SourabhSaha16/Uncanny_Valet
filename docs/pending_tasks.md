@@ -1,7 +1,7 @@
 # Pending tasks
 
-Pending work is tracked as **GitHub issues** on the **Uncanny Valet** GitHub Project:
-https://github.com/users/SourabhSaha16/projects/4 (columns Backlog, Ready, In progress, In review, Done; Priority P0 to P2).
+Pending work is tracked as **GitHub issues** on the **Uncanny_Valet_Kanban** GitHub Project (the main project; the older project 4 is retired):
+https://github.com/users/SourabhSaha16/projects/5 (columns Backlog, Ready, In progress, In review, Done; priority is the `priority:1` to `priority:4` issue label).
 Issues: https://github.com/SourabhSaha16/Uncanny_Valet/issues. The rules are in `CLAUDE.md`, section 'Tracking work'.
 This file is no longer edited; it only maps the old task IDs (migrated 2026-11-11) to their issues.
 
