@@ -63,7 +63,7 @@ namespace UncannyValet.UI
             _canvas = new PixelCanvas(_kit);
             var style = new EmotionStyle(EmotionConfig());
             _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>(),
-                Services.Get<ICarFactory>(), style, EmotionConfig().TipPop);
+                Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerMeter);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);

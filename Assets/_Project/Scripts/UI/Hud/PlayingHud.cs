@@ -28,10 +28,14 @@ namespace UncannyValet.UI.Hud
         private readonly CurbHintPainter _hintPainter;
         private readonly OccupiedHintTracker _occupiedHints;
         private readonly OccupiedHintPainter _occupiedPainter;
+        private readonly PowerMeterTracker _powerTracker;
+        private readonly PowerMeterPainter _power;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftScoreView score, ICarFactory cars, EmotionStyle style,
-            TipPopSettings tipPop)
+            TipPopSettings tipPop, PowerMeterSettings powerMeter)
         {
+            _powerTracker = new PowerMeterTracker(bus, powerMeter);
+            _power = new PowerMeterPainter(canvas, _powerTracker, powerMeter);
             _board = new TicketBoard(bus);
             _hud = new HudPainter(canvas, clock, score);
             _keyBoard = new KeyBoardPainter(canvas, style);
@@ -58,6 +62,7 @@ namespace UncannyValet.UI.Hud
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
             _hud.Draw(time);
+            _power.Draw(time);
             _board.CollectKeyBoardRows(_keyRows);
             _keyBoard.Draw(_keyRows, time);
             _notices.Draw(prompt);
@@ -67,6 +72,7 @@ namespace UncannyValet.UI.Hud
         {
             _board.Dispose();
             _tipPopTracker.Dispose();
+            _powerTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
         }

@@ -73,3 +73,9 @@ Date: 2026-11-10
 Files: Scripts/Patrons/PatronRequest.cs, Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/LiveTuningTests.cs, Scripts/UI/Hud/{TipPopSettings,PendingTipPops,TipPopKind,TipPopText,TipPops,TipPopTracker,TipPopPainter,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/TipPopTests.cs
 Why: Play-test notes: pickup patience default 45 -> 25 game minutes (impatient 15; patrons module one-off edit), and a floating "+$N" over the car when the patron boards (design.md A4 tips and pickup).
 Tests: 14 new EditMode (PendingTipPops pairing, text/look/curves, pool); LiveTuningTests updated to 25/15. EditMode 992 pass, 0 fail.
+
+## integration: vertical power meter HUD
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/UI/Hud/{PowerMeterSettings,PowerMeterView,ActivePowers,PowerMeterTracker,PowerMeterPainter,PowerColors,SquareRing,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/PowerMeterTests.cs
+Why: Issue #39, valet_powers.md section 4. Vertical bar on the right edge (gold, ice blue, hot pink notches, smooth fill, pulse on every fill, star at the level reached) plus a letter icon with a countdown ring per active power. Listens only to Core PowerMeterChanged, PowerActivated and PowerEnded; ring durations are serialized in PowerMeterSettings (HudEmotionConfig.PowerMeter), no Powers reference.
+Tests: 12 new EditMode (view smoothing, pulse, ready, active timers, tracker events and dispose, ring geometry); EditMode suite 1004 pass, 0 fail.
