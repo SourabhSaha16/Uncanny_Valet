@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Ids;
 using UncannyValet.Lot;
 using UnityEngine;
 
@@ -14,6 +16,51 @@ namespace UncannyValet.Tests.Lot
 
         [Test]
         public void AnyRightCarIsRight() => Assert.AreEqual(CurbArrowState.Right, CurbArrowRule.Evaluate(1, 1));
+
+        private sealed class FakeAccept : IPickupAcceptance
+        {
+            public bool Yes;
+            public bool WillAccept(CarId car) => Yes;
+        }
+
+        [Test]
+        public void RightFacingButNotAcceptedIsIdle()
+        {
+            var t = new CurbArrowTracker();
+            t.Set(new CarId(1), true);
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(new FakeAccept()));
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(null));
+        }
+
+        [Test]
+        public void WrongFacingStaysWrongEvenIfAccepting()
+        {
+            var t = new CurbArrowTracker();
+            t.Set(new CarId(1), false);
+            Assert.AreEqual(CurbArrowState.Wrong, t.Evaluate(new FakeAccept { Yes = true }));
+        }
+
+        [Test]
+        public void ArrowFlipsGreenWhenPatronAsksThenIdleWhenCarLeaves()
+        {
+            var t = new CurbArrowTracker();
+            var accept = new FakeAccept();
+            t.Set(new CarId(1), true);
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(accept));
+            accept.Yes = true;
+            Assert.AreEqual(CurbArrowState.Right, t.Evaluate(accept));
+            Assert.IsTrue(t.Remove(new CarId(1)));
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(accept));
+        }
+
+        [Test]
+        public void AcceptedAndWrongCarsTogetherShowRight()
+        {
+            var t = new CurbArrowTracker();
+            t.Set(new CarId(1), true);
+            t.Set(new CarId(2), false);
+            Assert.AreEqual(CurbArrowState.Right, t.Evaluate(new FakeAccept { Yes = true }));
+        }
 
         [Test]
         public void RequiredDirectionPointsUpTheScreen()

@@ -50,6 +50,7 @@ namespace UncannyValet.Patrons
             Services.TryGet<IShiftScoreView>(out var score);
             Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
+            Services.Register<IPickupAcceptance>(new PickupAcceptance(Registry));
             _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);
             Services.Register<IQueueSlotSource>(_slots);
             _departure = new PatronDeparture(_bus, _cars, _clock, _config.BoardingTimeoutMinutes);
