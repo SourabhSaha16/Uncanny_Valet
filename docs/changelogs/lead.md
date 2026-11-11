@@ -687,3 +687,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a8e38eff03cfeb80c (HowToPlayGate, HowToPlayText, HowToPlayPainter, WordWrap, HighlightMask, UiInput, GameUi, UiPhase, tests), docs/changelogs/lead.md
 Why: issue 72. After the first press-any-key on the title a how-to-play screen (the owner's five lines and the controls) shows once per page load; any key starts the shift; retry skips it. Not seen in a browser by the agent.
 Tests: 1117 of 1117 EditMode, 16 of 16 PlayMode after both merges.
+
+## lead: rebuild beta site (idle guard, arrows green on accept, how-to-play screen) [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last beta build: issues 70 (a car always within 2 s when the queue is empty), 71 (pickup arrows green only when the patron will accept) and 72 (how-to-play screen after the first title press). Beta site only; main stays on the earlier build.
+Tests: 1121 of 1121 EditMode, 16 of 16 PlayMode; browser smoke test at 1280x800: title, how-to-play screen (renders, text fits, gold highlights), shift starts on the second key at 3:56, no console errors. The arrows, idle guard and earlier items were not seen in play.

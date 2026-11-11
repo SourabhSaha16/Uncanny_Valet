@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  ea4f7ca
-Subject: lead: merge agent/lot top exit road and up-facing drop-off [Claude]
-Date:    2026-11-11 09:27:15 -0800
+Commit:  8899f3a
+Subject: lead: merge agent/integration how-to-play screen [Claude]
+Date:    2026-11-11 10:37:50 -0800
