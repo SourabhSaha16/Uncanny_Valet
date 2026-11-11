@@ -627,3 +627,9 @@ Date: 2026-11-11
 Files: merges of worktree-agent-a1617d9ae486b4055 (PerfectPark listener), worktree-agent-ae6387393fc8291b2 (PerfectBonusLedger, tip bonus), worktree-agent-a7dac40ca1c52e782 (Powers scene wiring, PowerMeterConfig asset, builder split, results stat, PERFECT! pop, camera kick, ding), docs/design.md
 Why: valet powers phase 1 (design A11) and car handling step 4 (+$2 Perfect Park). Bootstrap.unity re-run by RunBatch showed only fileID churn (637 of 637 lines) and was reverted.
 Tests: 1072 of 1072 EditMode, 16 of 16 PlayMode after the merges. Not played in a browser.
+
+## lead: merge agent/integration tip pop fix (#67)
+Date: 2026-11-11
+Files: merge of worktree-agent-a61775407c959e1e4 (TipPopTracker, PendingTipPops, tests), docs/changelogs/lead.md
+Why: issue 67. PatronDeparture removed the car on PatronBoarded before the HUD heard it, and the tracker also dropped the tip on CarDeparted, so the tip pop never showed. The tracker now stores the car position at TicketClosed. Not seen in play yet.
+Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent), see rebuild commit.
