@@ -21,7 +21,7 @@ MonoBehaviour:
   _driftMinSpeed: 1
   _turnFullSpeed: 4
   _tightestRadius: 2.2
-  _measuredAisleWidth: 4.6
+  _measuredAisleWidth: 6
   _radiusMargin: 1
   _pullOutClearance: 0.3
   _topSpeedScale: 1

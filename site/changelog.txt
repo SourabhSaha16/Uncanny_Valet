@@ -1,4 +1,12 @@
 === Last 50 commits ===
+ce2dc8d  2026-11-10  lead: merge agent/difficulty-dials baseline
+91e940d  2026-11-10  patrons: adopt hand-tuned dial baseline as new defaults
+0f86c48  2026-11-10  lead: merge agent/handling play-test fixes (turning, drive scales, softer sound)
+0e0db08  2026-11-10  cars: sharper turning, live drive scales, softer tyre sounds
+53c2596  2026-11-10  lead: merge agent/wider-lot
+6409d70  2026-11-10  lot: widen drive aisle to 6.0 and add east asphalt
+ea5ca2e  2026-11-10  lead: draft valet powers in design and pending tasks
+76e5a07  2026-11-10  lead: merge handling-step3, update docs, rebuild site
 2813b60  2026-11-10  lead: merge agent/handling-step3 (skid marks, tyre audio)
 0dc5761  2026-11-10  cars: skid marks and tyre audio
 b2c8450  2026-11-10  lead: merge pickup-arrow and handling-step2, update docs, rebuild site
@@ -41,14 +49,6 @@ c669f27  2026-11-10  ui-status: split TicketBoard and GameUi under 200 lines
 7d25542  2026-11-10  lot-v4: fewer exit route arrows
 ab582e0  2026-11-10  lot-v4: rename the key board panel to CAR SLOTS
 70c2b43  2026-11-10  lot-v4: key board lists a car only once it is parked
-609f356  2026-11-10  lot-v4: waiting patrons always face the pickup zone
-bacd282  2026-11-10  lot-v4: traffic defaults from the F2 tuning
-ee90f40  2026-11-10  lot-v4: drop cars returned from the results screen
-6bf66d8  2026-11-10  lead: merge lot-v3, update design doc, rebuild site
-1b84215  2026-11-10  lot-v3: entry and exit car speed in the F2 panel
-815110d  2026-11-10  lot-v3: painted arrows along the car exit route
-f7550d1  2026-11-10  lot-v3: dark asphalt outside the lot instead of grass
-64273c9  2026-11-10  lot-v3: real diner building from MetroCity sprites
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -155,6 +155,12 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Cars/SlipReading.cs (new), Assets/_Project/Scripts/Cars/Fx/{SkidConfig,SkidSettings,SkidState,SkidRule,SkidEmitter,DecalLedger,DecalPool,MarkSegment,TyreTrail,TyreMarkMath,SlipMeter}.cs (new), Assets/_Project/Scripts/Cars/{CarDriver,CarFactory,CarHandlingConfig,CarHandlingLive,DriftModel}.cs, Assets/_Project/Scripts/Core/Contracts/{ISlipSource,HandlingRows}.cs, Assets/_Project/Scripts/Core/Events/{CarEvents,TuningKey}.cs, Assets/_Project/Scripts/Audio/{SfxTyres,SquealLoop,SquealMix,TyreAudio}.cs (new), Assets/_Project/Scripts/Audio/{AudioConfig,AudioDirector,SfxEventRouter,SfxId,SfxRecipeBook}.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, tests (EditMode Cars/{SkidRuleTests,DecalLedgerTests,TyreMarkTests,CarHandlingTuningTests}, Audio/TyreSoundTests; PlayMode/SkidMarkTests)
 Why: car_handling_spec.md section 6 and lead notes 7 and 12 (rollout step 3). CarDriver exposes a read-only SlipReading (vF, vL, throttle, Shift) per FixedUpdate, taken before that step's damping; SkidRule (pure, one per car) turns it into sliding (|vL| > 1.2, or Shift above 2 u/s; ends below 75% of the threshold), intensity from DriftModel's slip angle (40 deg = full) and mark opacity (30% to 80%), and a hard-brake start (throttle against travel above 4 u/s). SkidEmitter is a thin shell on every car, active only with a seated driver and an enabled CarDriver (trip and auto-driven cars never emit): it drops a stroke behind each rear tyre every 1.0 unit of tyre travel, lying from the tyre's previous to its current position (the true travel direction), into DecalPool (cap 40, fade 6 s, oldest recycled, per-instance colour with a tint parameter for blood, shared 1x1 sprite, sorting order -3: above asphalt -25/-24 and route and curb arrows -5/-4, below traffic 1, pedestrians 4 and cars 9+). Events (additive, Core): CarSlideStarted, CarSlideEnded, CarHardBraked. The squeal reads slip strength through the new Core contract ISlipSource (IsSliding, Intensity01), polled by Audio each frame: no event per frame and no allocation; CarFactory registers its SlipMeter in Services at Start (Bootstrap is not edited). Audio: SfxId.TyreChirp (0.15 s rising high chirp, rate limited 0.25 s) on CarSlideStarted, SfxId.TyreScreech (0.45 s, rate limited 0.6 s) on CarHardBraked, and a 0.4 s seamless squeal loop (whole cycles per tone, circular high-passed hiss) on a dedicated AudioSource driven by TyreAudio and the pure SquealMix (volume 0.25..0.8 and pitch 0.9..1.5 with intensity, 0.03 s attack, 0.15 s fade-out, fades while paused). F2 keys under Car handling (advanced): slide threshold, Shift skid speed, mark darkness, mark fade time; the other skid numbers (SkidConfig, serialized inside CarHandlingConfig so no new asset) and the decal cap are fixed. Mark spacing is 1.0 unit and stroke width 0.07 (one art pixel) because a 40-decal cap with short strokes would recycle in under a second.
 Tests: EditMode 948/948 passed (31 new: SkidRule 11, decals and tyre trail 10, slip meter 1, tuning 1, audio 8); PlayMode 14/14 passed (3 new: driven slide leaves marks and reports the slide, slide ends when the driver gets out, driverless car never emits). Not verified by hand: mark visibility at zoom 0.78, sound character, loop seam in WebGL.
+
+## cars: sharper turning, live drive scales, softer tyre and bump sounds
+Date: 2026-11-10
+Files: Cars/{CarHandlingConfig,CarHandlingLive,CarDriver,TurningRadius}.cs, Cars/DriveSettings.cs (new), Core/Contracts/{HandlingRows,TuningCatalog}.cs, Core/Events/TuningKey.cs, Bootstrap/{HandlingAisleCheck,TuningSeeder,GameBootstrap}.cs, Audio/{SoftenFilter,TyreSoundTuning}.cs (new), Audio/{SfxTyres,SquealLoop,SfxAlerts,SfxBank,SfxRecipeBook,AudioConfig,AudioDirector,TyreAudio}.cs, Data/Cars/CarHandlingConfig.asset, tests (Cars/{TurningRadiusTests,CarHandlingTuningTests}, Audio/TyreSoundTests)
+Why: play-test notes. (1) The tightest turn radius is a direct key ('Tightest turn radius', default 2.2, was derived 3.3 from the aisle); MaxTurnRate = TurnFullSpeed / radius = 1.82 rad/s (104 deg/s); above 4 u/s the radius still grows as speed / MaxTurnRate (8 u/s gives 4.4). MeasuredAisleWidth and HandlingAisleCheck stay as warnings (width mismatch, or radius above aisle/2 + margin via TurningRadius.CanEnterBay). Bay-entry PlayMode tests still pass. (2) Driving values are live multipliers (0.5..2, default 1) on each CarDefinition value, applied in CarHandlingLive.DriveFor: multipliers keep per-car differences and the later EV overrides intact. Keys: top speed, acceleration, braking, coasting slow-down (0.25..3), reverse speed (capped so reverse never exceeds the top speed). Seeded through CarHandlingLive.Seed (already called by TuningSeeder). (3) Sounds softened: tyre chirp 1900-2700 Hz sine+triangle with a hiss, 90 ms, to 600-850 Hz pure sine, 60 ms, 10 ms attack, no hiss; screech 1250-900 Hz saw with hiss, 300 ms, to 480-360 Hz triangle with 35% saw, filtered 1200-700 Hz, 30 ms attack, 250 ms, no hiss; squeal loop 1000/1502/2005 Hz plus strong hiss to 500/752 Hz, the 1000 Hz partial and a little grit scaled by sharpness; every tyre sound gets a one-pole low-pass whose cutoff runs 500 Hz (sharpness 0) to 4000 Hz (1), default 0.35 = about 1.7 kHz. Squeal volume 0.25..0.8 to 0.12..0.4. Car bump: thud attack 2 to 12 ms, knock square to triangle with a 400 Hz filter (was 700), whole sound low-passed at 1100 Hz. Pedestrian boing: 170-340 Hz to 130-230 Hz, attack 3 to 12 ms, low-passed at 1100 Hz. New F2 keys 'Tyre sound volume' (default 1, also scales chirp, squeal and screech; the one-shots sit at 0.6 of the effect volume) and 'Tyre sound sharpness' (default 0.35); the panel re-renders the tyre clips on change. They are seeded by TuningSeeder from AudioConfig (new optional parameter).
+Tests: EditMode 958/958 passed (10 new: radius, drive scales, dullness by zero-crossing rate and brightness ratio, sharpness ordering, seam at 3 sharpness values, tuning link); PlayMode 14/14 passed (bay entries unchanged). Not verified by ear.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -845,6 +851,18 @@ Files: merges of worktree-agent-a5d7bd4e2d68a9b95 and worktree-agent-acc49e39f90
 Why: the human's notes (pickup facing arrow, bouncing car collisions) and car handling rollout step 2. Approved the ForwardGrip reading, the Core additions (IInputSource.Drift, IDrivable.SetDrift, CarsCollided) and the one-line SeatController edit.
 Tests: 917 of 917 EditMode, 11 of 11 PlayMode; browser smoke test shows the pickup arrows, no console errors. Drift and bounce not played.
 
+## lead: merge handling-step3 (skid marks, tyre audio), update docs, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a649e5206949c972d, docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity, site/
+Why: car handling rollout step 3 (docs/redesign/car_handling_spec.md section 6).
+Tests: 948 of 948 EditMode, 14 of 14 PlayMode (agent's run); browser smoke test with no console errors. Marks and sounds not seen or heard.
+
+## lead: draft valet powers, add to design and pending tasks
+Date: 2026-11-10
+Files: docs/redesign/valet_powers.md, docs/design.md, docs/pending_tasks.md
+Why: the human's note on a power meter with three stackable powers (speed boost, freeze time, Park Smash). Draft with open questions; no code.
+Tests: none (docs only).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1042,6 +1060,12 @@ Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbA
 Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
 Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.
 
+## lot: widen drive aisle to 6.0 and add east asphalt
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs
+Why: human asked for more room to manoeuvre (design.md A5 Lot v2). Aisle 4.6 -> 6.0 (now Range 3..9), StripGap 1.0 -> 3.5; everything else derives from these.
+Tests: EditMode 950/950 (2 new geometry tests; shipped-defaults test now compares the shipped assets), PlayMode 14/14 (gap assertion 4.6 -> 6).
+
 === docs/changelogs/orders.md ===
 # Orders changelog
 
@@ -1129,6 +1153,12 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Core/Contracts/{TuningInfo,TuningCatalog,DifficultyRows,GameRows,DirectorPacingRows,DirectorMixRows,DirectorPlayerRows}.cs, Assets/_Project/Scripts/Director/{DialLink,DialEffect,DialAnchors,DialDilemmaAnchors,DialPlayerAnchors,DifficultyDialsConfig,DifficultyDials,DifficultyDialsLink,ShapeSettings,TunedIntensityProfile,DirectorConfig,DirectorProfile,DirectorSettings,PatronDirector}.cs, Assets/_Project/Scripts/Bootstrap/{TuningSeeder,GameBootstrap}.cs, Assets/_Project/Scripts/UI/{TuningPanel,TuningRowView,DirectorOverlay,DirectorOverlayText}.cs, Assets/_Project/Editor/ProjectSetup.cs, Assets/_Project/Data/Director/{DifficultyDialsConfig,DirectorConfig}.asset, regenerated Bootstrap scene, Assets/_Project/Tests/EditMode/{Integration/DialRig,Integration/DifficultyDialsTests,Director/TunedIntensityProfileTests}.cs, docs/redesign/difficulty_dials.md
 Why: The human wants fewer tunables. Eight new dials (plus the existing seed) drive about 70 underlying director, plan and mix keys through piecewise-linear anchors, and the default position reproduces every authored value exactly. Everything but the dials and the clock rows sits behind an Advanced toggle in F2; director rows were renamed into plain designer language and regrouped (Pacing, Car mix, Dilemmas, Mercy, Skill reward, Workload costs). Seven director values that had no tuning key (target curve scale, ramp shape, late boost, four base weights) became keys so dials can reach them; the director reads them through TunedIntensityProfile. design.md A10.
 Tests: new DifficultyDialsTests (defaults reproduce all values, round trips, monotone direction per dial, no feedback loop, hand-edit rule, catalog layout) and TunedIntensityProfileTests. Unity run: see the report.
+
+## patrons: adopt the hand-tuned dial baseline as the new defaults
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Director/{DialStart,DifficultyDialsConfig,DifficultyDials,DifficultyDialsLink}.cs, Assets/_Project/Tests/EditMode/Integration/{DialRig,DifficultyDialsTests}.cs, docs/redesign/difficulty_dials.md
+Why: The human tuned the F2 panel (Intensity 8, Ramp 8, Late Rush 6, Dirty 5, EV 5, Dilemmas 6.5, Mercy 4, Skill 5.5, Seed 0) and wants it as the baseline. Dials now seed at configurable start positions and the derived keys are seeded at their derived values, so Reset and Reset all return to the baseline. Clock stays 1 min/s and 240 s (already the config values).
+Tests: anchor-default test kept (dials moved to 5 reproduce authored values); new tests for the seeded baseline and in-range derived keys, Reset semantics, and the shipped asset carrying the baseline. Full EditMode suite 953/953 passed.
 
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog

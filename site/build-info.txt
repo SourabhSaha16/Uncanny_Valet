@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  2813b60
-Subject: lead: merge agent/handling-step3 (skid marks, tyre audio)
-Date:    2026-11-10 19:49:04 -0800
+Commit:  ce2dc8d
+Subject: lead: merge agent/difficulty-dials baseline
+Date:    2026-11-10 21:02:44 -0800
