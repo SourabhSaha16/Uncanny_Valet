@@ -18,8 +18,8 @@ namespace UncannyValet.Tests.UI
         public void DeliveredThenClosedThenBoarded_GivesTheTip()
         {
             _pending.Delivered(_a);
-            _pending.Closed(_a, 37);
-            Assert.IsTrue(_pending.TryBoard(_a, out var tip));
+            _pending.Closed(_a, 37, Vector2.zero);
+            Assert.IsTrue(_pending.TryBoard(_a, out var tip, out _));
             Assert.AreEqual(37, tip);
             Assert.AreEqual(0, _pending.Count);
         }
@@ -28,34 +28,34 @@ namespace UncannyValet.Tests.UI
         public void BoardedBeforeTheAmountIsKnown_GivesNothingAndForgets()
         {
             _pending.Delivered(_a);
-            Assert.IsFalse(_pending.TryBoard(_a, out _));
+            Assert.IsFalse(_pending.TryBoard(_a, out _, out _));
             Assert.AreEqual(0, _pending.Count);
         }
 
         [Test]
         public void ClosedWithoutDelivery_IsNeverHeld()
         {
-            _pending.Closed(_a, 0);
+            _pending.Closed(_a, 0, Vector2.zero);
             Assert.AreEqual(0, _pending.Count);
-            Assert.IsFalse(_pending.TryBoard(_a, out _));
+            Assert.IsFalse(_pending.TryBoard(_a, out _, out _));
         }
 
         [Test]
         public void ZeroTip_IsStillHeldAndPops()
         {
             _pending.Delivered(_a);
-            _pending.Closed(_a, 0);
-            Assert.IsTrue(_pending.TryBoard(_a, out var tip));
+            _pending.Closed(_a, 0, Vector2.zero);
+            Assert.IsTrue(_pending.TryBoard(_a, out var tip, out _));
             Assert.AreEqual(0, tip);
         }
 
         [Test]
-        public void DroppedCar_NeverPops()
+        public void KeepsTheSpotGivenWhenTheTicketClosed()
         {
             _pending.Delivered(_a);
-            _pending.Closed(_a, 20);
-            _pending.Drop(_a);
-            Assert.IsFalse(_pending.TryBoard(_a, out _));
+            _pending.Closed(_a, 20, new Vector2(3f, 4f));
+            Assert.IsTrue(_pending.TryBoard(_a, out _, out var at));
+            Assert.AreEqual(new Vector2(3f, 4f), at);
         }
 
         [Test]
@@ -63,10 +63,10 @@ namespace UncannyValet.Tests.UI
         {
             _pending.Delivered(_a);
             _pending.Delivered(_b);
-            _pending.Closed(_a, 10);
-            _pending.Closed(_b, 55);
-            Assert.IsTrue(_pending.TryBoard(_b, out var second));
-            Assert.IsTrue(_pending.TryBoard(_a, out var first));
+            _pending.Closed(_a, 10, Vector2.zero);
+            _pending.Closed(_b, 55, Vector2.zero);
+            Assert.IsTrue(_pending.TryBoard(_b, out var second, out _));
+            Assert.IsTrue(_pending.TryBoard(_a, out var first, out _));
             Assert.AreEqual(55, second);
             Assert.AreEqual(10, first);
         }
@@ -75,11 +75,11 @@ namespace UncannyValet.Tests.UI
         public void Clear_ForgetsEverything()
         {
             _pending.Delivered(_a);
-            _pending.Closed(_a, 10);
+            _pending.Closed(_a, 10, Vector2.zero);
             _pending.Delivered(_b);
             _pending.Clear();
             Assert.AreEqual(0, _pending.Count);
-            Assert.IsFalse(_pending.TryBoard(_a, out _));
+            Assert.IsFalse(_pending.TryBoard(_a, out _, out _));
         }
 
         [Test]

@@ -9,8 +9,10 @@ namespace UncannyValet.UI.Hud
     /// <summary>
     /// Turns tip events into pops: CarDelivered then TicketClosed (the final tip, combo included) are held per car in
     /// <see cref="PendingTipPops"/>; when PatronBoarded fires a pop starts over that car, where the patron gets in.
-    /// PerfectPark and PerfectDropOff start a PERFECT! pop over their car at once.
-    /// A car that departs without its patron boarding, or the shift ending, drops the held tip.
+    /// PerfectPark and PerfectDropOff start a PERFECT! pop over their car at once. The car's spot is read when the ticket
+    /// closes, because PatronBoarded also sends the car off and the car may be gone by the time this hears of it. A
+    /// delivered patron always boards eventually (PatronWalkers publishes it), so a departing car does not drop the tip;
+    /// only the shift ending does.
     /// </summary>
     public sealed class TipPopTracker : IDisposable
     {
@@ -31,7 +33,6 @@ namespace UncannyValet.UI.Hud
             _bus.Subscribe<CarDelivered>(OnDelivered);
             _bus.Subscribe<TicketClosed>(OnClosed);
             _bus.Subscribe<PatronBoarded>(OnBoarded);
-            _bus.Subscribe<CarDeparted>(OnDeparted);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
             _bus.Subscribe<PerfectPark>(OnPerfectPark);
             _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
@@ -42,7 +43,6 @@ namespace UncannyValet.UI.Hud
             _bus.Unsubscribe<CarDelivered>(OnDelivered);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
             _bus.Unsubscribe<PatronBoarded>(OnBoarded);
-            _bus.Unsubscribe<CarDeparted>(OnDeparted);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
             _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
             _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
@@ -50,9 +50,11 @@ namespace UncannyValet.UI.Hud
 
         private void OnDelivered(CarDelivered e) => _pending.Delivered(e.Car);
 
-        private void OnClosed(TicketClosed e) => _pending.Closed(e.Car, e.Tip);
-
-        private void OnDeparted(CarDeparted e) => _pending.Drop(e.Car);
+        private void OnClosed(TicketClosed e)
+        {
+            if (!_cars.TryGet(e.Car, out var car) || car.Transform == null) return;
+            _pending.Closed(e.Car, e.Tip, car.Transform.position);
+        }
 
         private void OnShiftEnded(ShiftEnded e)
         {
@@ -74,9 +76,7 @@ namespace UncannyValet.UI.Hud
 
         private void OnBoarded(PatronBoarded e)
         {
-            if (!_pending.TryBoard(e.Car, out var tip)) return;
-            if (!_cars.TryGet(e.Car, out var car) || car.Transform == null) return;
-            var at = car.Transform.position;
+            if (!_pending.TryBoard(e.Car, out var tip, out var at)) return;
             _pops.Start(new Vector2(at.x, at.y + _settings.LiftWorldUnits), tip, _clock());
         }
     }
