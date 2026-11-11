@@ -724,3 +724,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a5e29e2d80f8fe89f (Director ReturnScheduler, LateReturnPlanner, ReturnCandidates, ReturnDirector, ReturnShifter in Patrons, ReturnRows, tuning keys, DirectorConfig asset, tests), docs/changelogs/lead.md
 Why: issues 12, 13, 73, 15 (patron director spec step 4 and the owner's end-of-shift request), built on the stay-from-drop-off definition (issue 77). Returns stay inside planned stay +/-25% before the late phase and 4 s spacing; in the last 60 s every open ticket is pulled forward; no new cars in the last 45 s (ArrivalIdleCutoff default 20 -> 45). New Advanced F2 rows: return window, pickup spacing, late-shift start, last late pickup lead. Soak (200 shifts): 13 of 2314 pickups violate spacing outside wave peaks, 11 cars arriving late still waiting at the end.
 Tests: 1215 of 1215 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).
+
+## lead: fix merge conflict markers in Traffic .meta files [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Traffic/*.cs.meta, Traffic.meta, UncannyValet.Traffic.asmdef.meta, Assets/_Project/Tests/EditMode/Traffic/*.cs.meta (29 files), docs/changelogs/lead.md
+Why: commit 7dea408 (Nov 10 lead merge of traffic-wire) left unresolved conflict markers in 29 .meta files. Kept the guid already referenced by the scene (TrafficModule, TrafficConfig) / the HEAD guid for the rest; no other file referenced either guid.
+Tests: 1215 of 1215 EditMode after the fix.
