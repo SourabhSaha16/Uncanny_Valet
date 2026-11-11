@@ -26,8 +26,11 @@ else
   COMMITS=$(git rev-list --no-merges "$BASE..$HEAD")
 fi
 
+EXEMPT_FILE="$(dirname "$0")/changelog-exempt.txt"
 FAILED=0
 for c in $COMMITS; do
+  # Commits already pushed without an entry; history is never rewritten, so they are listed here with a reason.
+  if [ -f "$EXEMPT_FILE" ] && grep -q "^$c" "$EXEMPT_FILE"; then continue; fi
   FILES=$(git diff-tree --no-commit-id --name-only -r "$c")
   if echo "$FILES" | grep -Eq "$WATCHED" && ! echo "$FILES" | grep -Eq "$LOGS"; then
     echo "::error::$(git log -1 --format='%h %s' "$c") changes project files but no docs/changelogs/ entry."

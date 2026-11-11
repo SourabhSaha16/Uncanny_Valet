@@ -1,0 +1,1 @@
+38e37235bbda8e17b0dfec5616bdcceb04560e2a lead: regenerate assets, rebuild site (2026-11-11): changelog entry added later in 4a0ee22; history is not rewritten

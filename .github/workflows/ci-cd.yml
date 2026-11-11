@@ -1,7 +1,8 @@
 name: CI/CD
 
 # Local-build route: the Web player is built on a developer PC (tools/build-web.ps1), which copies it
-# into the committed site/ folder. CI checks changelogs and publishes site/ to GitHub Pages.
+# into the committed site/ folder. CI checks changelogs and publishes to GitHub Pages: the committed site/ of
+# `main` (stable, the playtesters' link) at the root and the site/ of `pivot/chaos` (beta) under /beta/.
 # No Unity license or secrets are needed in CI.
 
 on:
@@ -36,10 +37,13 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   deploy:
-    name: Publish site/ to GitHub Pages
+    name: Publish stable (main) at / and beta (pivot/chaos) at /beta/
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/pivot/chaos')
     needs: changelog
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write
@@ -48,15 +52,27 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Check that site/ holds a Web build
+        with:
+          ref: main
+          path: stable
+      - uses: actions/checkout@v4
+        with:
+          ref: pivot/chaos
+          path: beta
+      - name: Assemble the site (stable at the root, beta under /beta/)
         run: |
-          if [ ! -f site/index.html ]; then
-            echo "::error::site/index.html is missing. Run tools/build-web.ps1 locally and commit site/."
-            exit 1
-          fi
+          for d in stable beta; do
+            if [ ! -f "$d/site/index.html" ]; then
+              echo "::error::$d/site/index.html is missing. Run tools/build-web.ps1 locally and commit site/ on that branch."
+              exit 1
+            fi
+          done
+          mkdir -p _site/beta
+          cp -r stable/site/. _site/
+          cp -r beta/site/. _site/beta/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

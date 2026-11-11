@@ -579,3 +579,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a8c773291166eb506, docs/design.md, regenerated Bootstrap.unity, site/
 Why: the human's note: pickup patrons should lose patience sooner and the timers should be tunable (docs/changelogs/patrons.md).
 Tests: 978 of 978 EditMode, 16 of 16 PlayMode; browser smoke test shows the two new rows (45 and 0.6), no console errors. Not played.
+
+## lead: stable and beta Pages sites, changelog exemption list
+Date: 2026-11-11
+Files: .github/workflows/ci-cd.yml, tools/check-changelog.sh, tools/changelog-exempt.txt, CLAUDE.md, docs/design.md
+Why: the human wants a beta site to test new features, with the main site link given to playtesters. The workflow now deploys main's site/ at the root and pivot/chaos's site/ under /beta/. The changelog check skips commits listed in tools/changelog-exempt.txt (38e3723, pushed without an entry; history is not rewritten) so the first push of main can pass. Current pivot/chaos promoted to main as the first stable build.
+Tests: tools/check-changelog.sh run locally over origin/main..HEAD: passed (97 commits). No game change.

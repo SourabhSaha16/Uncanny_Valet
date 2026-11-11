@@ -139,3 +139,10 @@ The slow parts are Unity itself (start-up 13 to 30 s per launch, web build about
 - **PlayMode** only before a site deploy, when Cars, Lot, Traffic, Valet or Pedestrians physics code changed, or on request. Module agents run PlayMode for their own area.
 - **Web build and `site/`** only when something player-visible changed (runtime code, art, audio, scenes or data), and then once for a batch of merges, not per merge. Docs-only, tests-only and tooling-only merges never rebuild `site/`; pushing them redeploys the committed `site/`.
 - **Changelog:** every commit that touches `Assets/`, `Packages/`, `ProjectSettings/`, `.github/` or `tools/` carries a `docs/changelogs/` entry, including the lead's own regenerate-and-rebuild commits (CI failed once on this).
+
+## Stable and beta sites (adopted 2026-11-11)
+
+- `main` is **stable**: its committed `site/` is served at https://sourabhsaha16.github.io/Uncanny_Valet/ (the link given to playtesters).
+- `pivot/chaos` is **beta**: its committed `site/` is served at https://sourabhsaha16.github.io/Uncanny_Valet/beta/. All new work lands and is built here first.
+- **Promote** (beta to stable) only when the human says so: merge `pivot/chaos` into `main` (fast-forward when possible) and push `main`. Never push to `main` otherwise.
+- One workflow (`.github/workflows/ci-cd.yml`) assembles both and deploys on a push to either branch. The changelog check runs first; commits that were pushed without an entry are listed in `tools/changelog-exempt.txt` (history is never rewritten).
