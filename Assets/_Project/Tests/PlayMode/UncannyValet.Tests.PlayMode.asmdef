@@ -1,0 +1,16 @@
+{
+    "name": "UncannyValet.Tests.PlayMode",
+    "rootNamespace": "UncannyValet.Tests.PlayMode",
+    "references": [
+        "UncannyValet.Core",
+        "UncannyValet.Cars",
+        "UncannyValet.Lot",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}
