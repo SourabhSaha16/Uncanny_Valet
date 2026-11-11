@@ -1,4 +1,13 @@
 === Last 50 commits ===
+ea4f7ca  2026-11-11  lead: merge agent/lot top exit road and up-facing drop-off [Claude]
+45f19cc  2026-11-11  lead: merge agent/lot plain-language Perfect rows, looser Perfect Park [Claude]
+46fd4b1  2026-11-11  lot: exit delivered cars through the top wall onto a one-way top road [Claude]
+15e3b09  2026-11-11  lot: plain-language Perfect rows, loosen Perfect Park [Claude]
+a745682  2026-11-11  lead: merge agent/integration Will not tip and Angry at 80% [Claude]
+fdd6b8c  2026-11-11  lead: merge agent/traffic turning patron car stays visible [Claude]
+2f91d0a  2026-11-11  integration: Will not tip state, angry at 80%, tunable levels [Claude]
+bc2cc92  2026-11-11  traffic: keep a turning patron car visible to lane traffic [Claude]
+046186f  2026-11-11  lead: rebuild beta site (Perfect Park, power meter, tip pop fix) [Claude]
 75c0ceb  2026-11-11  lead: Ready queue workflow and [Claude] tagging rule [Claude]
 87ab6e0  2026-11-11  lead: make Uncanny_Valet_Kanban the main tracking project
 4d6ad7b  2026-11-11  lead: merge agent/integration tip pop fix
@@ -40,15 +49,6 @@ ce2dc8d  2026-11-10  lead: merge agent/difficulty-dials baseline
 0e0db08  2026-11-10  cars: sharper turning, live drive scales, softer tyre sounds
 53c2596  2026-11-10  lead: merge agent/wider-lot
 6409d70  2026-11-10  lot: widen drive aisle to 6.0 and add east asphalt
-ea5ca2e  2026-11-10  lead: draft valet powers in design and pending tasks
-76e5a07  2026-11-10  lead: merge handling-step3, update docs, rebuild site
-2813b60  2026-11-10  lead: merge agent/handling-step3 (skid marks, tyre audio)
-0dc5761  2026-11-10  cars: skid marks and tyre audio
-b2c8450  2026-11-10  lead: merge pickup-arrow and handling-step2, update docs, rebuild site
-9be084e  2026-11-10  lead: merge agent/handling-step2 (drift, steering, car bounce)
-8545e34  2026-11-10  cars: add bouncy car-on-car collisions and bump sound
-1a8d9ca  2026-11-10  cars: add drift and steering models, Drift input, handling tuning
-bf7c09e  2026-11-10  lead: merge agent/pickup-arrow
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -338,6 +338,12 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/UI/Hud/{PendingTipPops,TipPopTracker}.cs, Tests/EditMode/UI/TipPopTests.cs, Tests/EditMode/Integration/{TipPopFlowTests,TransformCarFactory}.cs
 Why: Refs #67. PatronBoarded makes Patrons/PatronDeparture publish CarDeparted and despawn the car synchronously, and it subscribes before the HUD, so the tracker dropped the held tip on CarDeparted and then could not find the car. The tracker now reads the car's spot when the ticket closes, keeps it with the tip, and no longer drops on CarDeparted (PatronWalkers always publishes PatronBoarded for a delivered patron; ShiftEnded still clears). Settings from HudEmotionConfig.asset checked: defaults survive the missing nested field.
 Tests: 2 new EditMode (real bus + real PatronDeparture + tracker; shipped asset settings), 1 changed. EditMode 1074 pass, PlayMode 16 pass.
+
+## integration: Will not tip state, angry at 80%, tunable levels [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Core/Contracts/{EmotionRows,TuningCatalog}.cs, Scripts/Bootstrap/{TuningSeeder,GameBootstrap}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Hud/KeyBoardPainter.cs, Scripts/UI/Mood/{Emotion,EmotionRule,EmotionStyle,EmotionTuningLink,HudEmotionConfig,MoodBubbleLayout}.cs, Scripts/UI/Status/{CarStatus,CarStatusTable,CarStatusResolver,CustAngryStatusRule,WillNotTipStatusRule}.cs, Data/UI/HudEmotionConfig.asset, Tests/EditMode/UI/{EmotionTests,EmotionTuningLinkTests,CarStatusTests,PickupMarkTests}.cs
+Why: Refs #7, design.md A8. Angry (red plate, bubble, Cust. Angry) now starts at 80% of the pickup patience (was 85%); at 100% or on expiry the patron is WillNotTip: dark red, slow flash, frown bubble, status word "Won't tip" (short "No tip"). Both levels are F2 Advanced rows (Patron mood) seeded from HudEmotionConfig and applied live by EmotionTuningLink. The CAR SLOTS panel is 16 px wider so "Cust. Angry" and "Won't tip" show in full (issue 11). Tip maths unchanged.
+Tests: EditMode 1082 pass (threshold, live retune, status rule, link, catalog; 85% tests updated); RunBatch ok (scene churn reverted); PlayMode 16 pass.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -976,6 +982,36 @@ Files: merge of worktree-agent-a61775407c959e1e4 (TipPopTracker, PendingTipPops,
 Why: issue 67. PatronDeparture removed the car on PatronBoarded before the HUD heard it, and the tracker also dropped the tip on CarDeparted, so the tip pop never showed. The tracker now stores the car position at TicketClosed. Not seen in play yet.
 Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent), see rebuild commit.
 
+## lead: rebuild beta site with Perfect Park, powers meter wiring and tip pop fix [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: first player-visible build of Perfect Park (+$2 bonus, PERFECT! pop, kick, ding, results stat), the power meter HUD and Q activation (powers have no effect yet), and the tip pop fix (issue 67). Beta site only; main stays on the earlier build.
+Tests: 1074 of 1074 EditMode, 16 of 16 PlayMode (agent runs); browser smoke test: title and shift load, no console errors. Perfect Park, meter and tip pop not seen in play.
+
+## lead: merge agent/traffic keep a turning patron car visible to lane traffic (#3) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-ac46417314c5f98f3 (EntryTrip, TripContext, LanePath, TripTuning, TrafficConfig, TrafficModule, TurnIntoQueueTests), docs/changelogs/lead.md
+Why: issue 3. EntryTrip dropped the car from lane occupancy at the start of the turn into the queue, so an ambient car right behind it drove through it. The car stays registered until it is LaneClearance (1.6) from the lane line.
+Tests: 1077 of 1077 EditMode, 16 of 16 PlayMode (agent); 1077 of 1077 EditMode after the merge.
+
+## lead: merge agent/integration Angry at 80% and Will not tip (#7) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a0adec20aa7f251d4 (Emotion states, EmotionRows, EmotionTuningLink, CarStatus WillNotTip, HudEmotionConfig asset, KeyBoardPainter width, tests), docs/changelogs/lead.md
+Why: issue 7, the owner's decision: Angry from 80% of the pickup patience, Will not tip at 100% or expiry; both levels tunable in F2 (Patron mood). Tip maths unchanged. The CAR SLOTS panel is wider so Cust. Angry fits. Car body flash (CarFlashConfig 0.85) is unchanged and now differs from the plate's 80%.
+Tests: 1085 of 1085 EditMode, 16 of 16 PlayMode after merging the traffic and Angry branches; RunBatch regenerated TrafficConfig.asset (new LaneClearance field), Bootstrap.unity churn reverted.
+
+## lead: merge agent/lot plain-language Perfect rows and looser Perfect Park (#69) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a95488145e96040e2 (PerfectRows, PerfectSettings, PerfectJudgeTests, DifficultyDialsTests), docs/changelogs/lead.md
+Why: issue 69. Perfect rows have plain-language labels; the three judging rows and the bonus show without Advanced; defaults loosened (angle 12 degrees, side 0.35, lengthwise 0.7; lengthwise slider max 1.2 = bay end slack).
+Tests: 1088 of 1088 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/lot exit delivered cars through the top wall (#68) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-abc3d4111115c7d90 (Lot geometry, frame, road art, curb facing up, PixelFont; Traffic ExitTrip, TripContext, AmbientSpawner; IRoadLayout WestLane renamed TopLane; LotArtConfig asset; tests), conflict in docs/changelogs/lot.md (kept both entries), docs/changelogs/lead.md
+Why: issue 68. The drop-off faces up, delivered cars leave straight up through a gap above the curb onto a new one-way EXIT road; the bottom road is a one-way ENTRY road; ambient cars split evenly over both. Camera framing unchanged. Not seen in play.
+Tests: 1098 of 1098 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn 563 of 563 lines reverted).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1184,6 +1220,18 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs
 Why: human asked for more room to manoeuvre (design.md A5 Lot v2). Aisle 4.6 -> 6.0 (now Range 3..9), StripGap 1.0 -> 3.5; everything else derives from these.
 Tests: EditMode 950/950 (2 new geometry tests; shipped-defaults test now compares the shipped assets), PlayMode 14/14 (gap assertion 4.6 -> 6).
+
+## lot: plain-language Perfect rows, loosen Perfect Park [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectSettings.cs, Assets/_Project/Tests/EditMode/Lot/PerfectJudgeTests.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs
+Why: issue 69. Every Perfect label and tooltip rewritten in designer language with an example number; the three Perfect Park judging rows and the bonus now show without the Advanced toggle. Defaults loosened: angle 5 to 12 degrees, side offset 0.15 to 0.35, lengthwise 0.3 to 0.7 (bay slack is 0.8 side, 1.2 end, so both fit; length slider max lowered 1.5 to 1.2 to match). LotConfig.asset stores no Perfect block, so no asset change.
+Tests: new cases (10 deg, 0.3, 0.6 perfect; 14 deg not); catalog visible count 13 to 17. EditMode 1088/1088, PlayMode 16/16.
+
+## lot: exit delivered cars through the top wall onto a one-way top road [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Contracts/{IRoadLayout,IExitRouter,ICurbFacing}.cs; Scripts/Lot/{CurbFacingRule,DropOffJudge,CurbZone,LotCurbArrows,LotConfig,SiteLayout,LotGeometry,RoadLayout,LotFrame,LotLayoutBuilder,DecorLayout,LotDecor,LotArtConfig,WalkwayStyle,PixelDecal}.cs; new Scripts/Lot/{LotRoadArt,PixelFont}.cs; removed Scripts/Lot/{LotRouteArrows,RouteMarks,RouteMark}.cs; Editor/Art/LotArtBuilder.cs; Data/Lot/LotArtConfig.asset; Tests/EditMode/Lot/{CurbFacingRuleTests,CurbArrowTests,PerfectJudgeTests,RoadLayoutTests,LotGeometryTests,DecorLayoutTests,PixelFontTests}.cs; removed RouteMarksTests.cs; docs/redesign/lot_v2_layout.md
+Why: Issue #68, docs/redesign/lot_v2_layout.md "v3: exit from the top". Drop-off now faces up (curb arrows too), delivered cars leave straight up through a gap in the top wall above the curb and merge into a new one-way top road (EXIT); the bottom road is one-way (ENTRY); both labelled with pixel text; the old exit-route arrows are gone. Lot is taller by SiteLayout.ExitRunway. IRoadLayout.WestLane became TopLane.
+Tests: new facing-up accept/reject, exit-route-goes-up-through-gap-and-right, road layout and PixelFont tests. RunBatch ran (Bootstrap.unity was pure fileID churn, reverted). EditMode 1095/1095, PlayMode 16/16.
 
 === docs/changelogs/orders.md ===
 # Orders changelog
@@ -1585,6 +1633,18 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Traffic/* (new assembly UncannyValet.Traffic), Assets/_Project/Tests/EditMode/Traffic/{CarFollowingTests,LanePathTests,LaneOccupancyTests,MergeGapRuleTests,AmbientSpawnerTests,TripTests}.cs, Assets/_Project/Tests/EditMode/UncannyValet.Tests.EditMode.asmdef (reference added)
 Why: docs/redesign/lot_v2_layout.md "Road below the lot" and "Traffic mechanics". Pure rules (lane path, car following, merge gap, ambient spawner, occupancy registry), pooled visual-only ambient cars on both lanes (TrafficModule + TrafficConfig), and entry/exit trips (IEntryRouter, IExitRouter, ITripDriver) for patron cars, built on the Core IRoadLayout contract.
 Tests: six EditMode fixtures written; Unity not run in this sandbox, the lead compiles and runs them.
+
+## traffic: keep a turning patron car visible to lane traffic [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Traffic/{EntryTrip,LanePath,TripContext,TripTuning,TrafficConfig,TrafficModule}.cs, Assets/_Project/Tests/EditMode/Traffic/TurnIntoQueueTests.cs
+Why: Issue #3. EntryTrip dropped the car from LaneOccupancy at the turn point, so an ambient car right behind it accelerated and drove through the car while it was still arcing across the lane. The car now stays registered (at its nearest lane distance and speed) until its centre is LaneClearance (new TrafficConfig tunable) from the lane line. See docs/redesign/lot_v2_layout.md "Traffic mechanics".
+Tests: new TurnIntoQueueTests (entry turn with real RoadLayout failed before the fix, plus an exit-merge sweep that passes). EditMode 1077/1077 and PlayMode 16/16 pass.
+
+## lot: exit delivered cars through the top wall onto a one-way top road [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Traffic/{TrafficLane,AmbientSpawner,TrafficModule,TripContext,EntryTrip,ExitTrip,TrafficConfig}.cs, Assets/_Project/Tests/EditMode/Traffic/{AmbientSpawnerTests,LaneOccupancyTests,TripTests,TripObstacleTests,EntryRetargetTests,TurnIntoQueueTests}.cs
+Why: Issue #68. TrafficLane.West became Top (the one-way exit road above the lot); ambient cars split evenly over the entry and exit roads, both left to right at the same speed; ExitTrip merges into the top lane and yields to top-road traffic only (TripContext.CanJoin/Join take the lane). EastShare tooltip updated.
+Tests: new exit tests (goes up then right onto the top lane, ignores entry-road traffic, yields to top-road traffic), spawner share test. EditMode and PlayMode pass.
 
 === docs/changelogs/ui-status.md ===
 # ui-status changelog
