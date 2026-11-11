@@ -681,3 +681,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a2e5e86efc6289fb1 (IPickupAcceptance, PickupAcceptance, CurbArrowTracker, CurbArrowRule, CurbZone, PatronSpawner registration line, tests), docs/changelogs/lead.md
 Why: issue 71. The curb arrows are green only when the car faces right and its ticket is PickupRequested (the patron will accept it); neutral when facing right but the patron has not asked; red for wrong facing; they flip live when the patron asks.
 Tests: 1115 of 1115 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/integration how-to-play screen (#72) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a8e38eff03cfeb80c (HowToPlayGate, HowToPlayText, HowToPlayPainter, WordWrap, HighlightMask, UiInput, GameUi, UiPhase, tests), docs/changelogs/lead.md
+Why: issue 72. After the first press-any-key on the title a how-to-play screen (the owner's five lines and the controls) shows once per page load; any key starts the shift; retry skips it. Not seen in a browser by the agent.
+Tests: 1117 of 1117 EditMode, 16 of 16 PlayMode after both merges.
