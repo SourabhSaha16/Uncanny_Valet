@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  ce2dc8d
-Subject: lead: merge agent/difficulty-dials baseline
-Date:    2026-11-10 21:02:44 -0800
+Commit:  99a15db
+Subject: lead: merge agent/incoming-collision
+Date:    2026-11-10 21:11:12 -0800

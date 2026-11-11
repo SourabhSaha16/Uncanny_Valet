@@ -50,6 +50,8 @@ MonoBehaviour:
   _mergeGapBehind: 2.5
   _yieldDistance: 2
   _arriveTolerance: 0.02
+  _blockedTimeout: 6
+  _creepSpeed: 0.8
   _ambientPerMinute: 13
   _intervalSpread: 0.6
   _eastShare: 0.5

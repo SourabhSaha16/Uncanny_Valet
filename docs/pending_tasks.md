@@ -106,6 +106,10 @@ Later content:
 
 ## G. Housekeeping
 
+- [ ] G17. Play-test round 3: tight turn (2.2) with Shift drift, softer sounds ('Tyre sound sharpness'), solid incoming and outgoing cars (stops, creep after 6 s, spawn overlap at the entrance, slot scan seeing trip cars), the wider lot and camera framing.
+- [ ] G18. Slot scan now counts trip cars' colliders as occupants (conservative); check no arrival is wrongly blocked.
+- [ ] G19. Review the test suite for tests that are not needed to cut build time (in progress).
+
 - [ ] G16. Rate limit hit during the play-test round of 2026-11-10: three agents (sharper turning and tunables and softer tyre sound; incoming cars solid; wider lot) stopped before finishing. Resume them with SendMessage after 10:50pm PT; their worktrees keep the partial work.
 
 - [ ] G14. Play-test skid marks (0.07 wide, visible at zoom 0.78? chord angularity?) and the tyre chirp, squeal loop (clicks in WebGL?) and screech balance. Tune through F2 > Advanced > Car handling. If marks are too faint, raise `_markThickness` in `SkidConfig`.

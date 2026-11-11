@@ -549,3 +549,9 @@ Date: 2026-11-10
 Files: docs/redesign/valet_powers.md, docs/design.md, docs/pending_tasks.md
 Why: the human's note on a power meter with three stackable powers (speed boost, freeze time, Park Smash). Draft with open questions; no code.
 Tests: none (docs only).
+
+## lead: merge play-test round 3 (handling, sounds, solid trip cars, wider lot, dial baseline); update docs; rebuild site
+Date: 2026-11-10
+Files: merges of worktree-agent-a649e5206949c972d, -a0f26c5db645b6d0e, -a3ee1dcf52afb7383, -ad23a3ed458e2fe98; docs, regenerated assets and scene, site/
+Why: the human's notes (sharper turning and tunable driving values, softer sound, collision for incoming cars, wider lot) and the hand-tuned dial values as the baseline. Approved Core ITripObstacles. Set CarHandlingConfig code default aisle to 6.
+Tests: 974 of 974 EditMode, 16 of 16 PlayMode; browser smoke test shows the wider lot, no console errors. Not played.
