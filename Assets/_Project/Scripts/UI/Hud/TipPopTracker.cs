@@ -1,6 +1,7 @@
 using System;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
@@ -8,6 +9,7 @@ namespace UncannyValet.UI.Hud
     /// <summary>
     /// Turns tip events into pops: CarDelivered then TicketClosed (the final tip, combo included) are held per car in
     /// <see cref="PendingTipPops"/>; when PatronBoarded fires a pop starts over that car, where the patron gets in.
+    /// PerfectPark and PerfectDropOff start a PERFECT! pop over their car at once.
     /// A car that departs without its patron boarding, or the shift ending, drops the held tip.
     /// </summary>
     public sealed class TipPopTracker : IDisposable
@@ -31,6 +33,8 @@ namespace UncannyValet.UI.Hud
             _bus.Subscribe<PatronBoarded>(OnBoarded);
             _bus.Subscribe<CarDeparted>(OnDeparted);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Subscribe<PerfectPark>(OnPerfectPark);
+            _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
         }
 
         public void Dispose()
@@ -40,6 +44,8 @@ namespace UncannyValet.UI.Hud
             _bus.Unsubscribe<PatronBoarded>(OnBoarded);
             _bus.Unsubscribe<CarDeparted>(OnDeparted);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
+            _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
         }
 
         private void OnDelivered(CarDelivered e) => _pending.Delivered(e.Car);
@@ -52,6 +58,18 @@ namespace UncannyValet.UI.Hud
         {
             _pending.Clear();
             _pops.Clear();
+        }
+
+        private void OnPerfectPark(PerfectPark e) => PopPerfect(e.Car);
+
+        private void OnPerfectDropOff(PerfectDropOff e) => PopPerfect(e.Car);
+
+        private void PopPerfect(CarId id)
+        {
+            if (!_cars.TryGet(id, out var car) || car.Transform == null) return;
+            var at = car.Transform.position;
+            var lift = _settings.LiftWorldUnits + _settings.PerfectExtraLiftWorldUnits;
+            _pops.StartLabel(new Vector2(at.x, at.y + lift), TipPopText.PerfectLabel, _clock());
         }
 
         private void OnBoarded(PatronBoarded e)

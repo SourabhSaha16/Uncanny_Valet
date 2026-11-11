@@ -24,6 +24,10 @@ namespace UncannyValet.UI.Hud
         [SerializeField, Range(1, 8), Tooltip("Most pops alive at once; a new one replaces the oldest.")]
         private int _maxPops = 4;
 
+        [SerializeField, Range(0f, 3f), Tooltip("Extra world units a PERFECT! pop sits above a tip pop, so the two do not overlap.")]
+        private float _perfectExtraLiftWorldUnits = 0.7f;
+
+        public float PerfectExtraLiftWorldUnits => _perfectExtraLiftWorldUnits;
         public float DurationSeconds => _durationSeconds;
         public int RisePixels => _risePixels;
         public float LiftWorldUnits => _liftWorldUnits;

@@ -23,6 +23,10 @@ namespace UncannyValet.Bootstrap
         [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.78 = about 22% closer). The play area is never cropped.")]
         private float _fitTightness = 0.78f;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
+        [SerializeField, Range(0f, 0.5f), Tooltip("Seconds the Perfect Park camera kick lasts (out and back).")]
+        private float _kickSeconds = 0.08f;
+        [SerializeField, Range(0f, 0.5f), Tooltip("World units the Perfect Park camera kick moves the view.")]
+        private float _kickUnits = 0.05f;
         [SerializeField, Tooltip("Shifts the view from the target when no bounds are set.")]
         private Vector2 _focusOffset = Vector2.zero;
 
@@ -43,6 +47,8 @@ namespace UncannyValet.Bootstrap
         private Rect _mustShow;
         private bool _hasBounds;
         private float _aspect;
+        private Vector2 _basePosition;
+        private CameraKick _kick;
 
         /// <summary>Follows this transform; snaps to it immediately.</summary>
         public void SetTarget(Transform target)
@@ -50,6 +56,9 @@ namespace UncannyValet.Bootstrap
             _target = target;
             if (target != null) Snap();
         }
+
+        /// <summary>Nudges the view along a direction for a moment (the Perfect Park kick). Length and time are serialized.</summary>
+        public void Kick(Vector2 direction) => _kick.Start(direction, _kickUnits, _kickSeconds, Time.unscaledTime);
 
         /// <summary>Sets the world rectangle of the lot (walls included) and refits the zoom.</summary>
         public void SetWorldBounds(Rect bounds) => SetWorldBounds(bounds, bounds);
@@ -67,6 +76,7 @@ namespace UncannyValet.Bootstrap
         private void Awake()
         {
             ApplySize();
+            _basePosition = transform.position;
         }
 
         private void LateUpdate()
@@ -74,10 +84,22 @@ namespace UncannyValet.Bootstrap
             if (!Mathf.Approximately(_aspect, Cam.aspect)) ApplySize();
             if (_target == null) return;
             var t = _smoothing <= 0f ? 1f : 1f - Mathf.Exp(-_smoothing * Time.deltaTime);
-            transform.position = Vector3.Lerp(transform.position, Goal(), t);
+            _basePosition = Vector2.Lerp(_basePosition, Goal(), t);
+            Place();
         }
 
-        private void Snap() => transform.position = Goal();
+        private void Snap()
+        {
+            _basePosition = Goal();
+            Place();
+        }
+
+        // The follow position is kept apart from the kick, so the smoothing never chases the nudge.
+        private void Place()
+        {
+            var at = _basePosition + _kick.Offset(Time.unscaledTime);
+            transform.position = new Vector3(at.x, at.y, transform.position.z);
+        }
 
         private void ApplySize()
         {
@@ -91,7 +113,7 @@ namespace UncannyValet.Bootstrap
             Cam.orthographicSize = size;
         }
 
-        private Vector3 Goal()
+        private Vector2 Goal()
         {
             var p = (Vector2)_target.position;
             if (!_hasBounds) p += _focusOffset;
@@ -101,7 +123,7 @@ namespace UncannyValet.Bootstrap
                 p.x = Clamp(p.x, _bounds.xMin - _boundsMargin, _bounds.xMax + _boundsMargin, half.x);
                 p.y = Clamp(p.y, _bounds.yMin - _boundsMargin, _bounds.yMax + _boundsMargin, half.y);
             }
-            return new Vector3(p.x, p.y, transform.position.z);
+            return p;
         }
 
         private static float Clamp(float v, float min, float max, float half)

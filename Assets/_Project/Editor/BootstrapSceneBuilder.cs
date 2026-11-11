@@ -9,6 +9,7 @@ using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
+using UncannyValet.Powers;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.UI.Mood;
@@ -26,10 +27,6 @@ namespace UncannyValet.EditorTools
         private const string DefaultCarPath = "Assets/_Project/Data/Cars/Sedan.asset";
         private const string CarFlashConfigPath = "Assets/_Project/Data/Cars/CarFlashConfig.asset";
         private const string HudEmotionConfigPath = "Assets/_Project/Data/UI/HudEmotionConfig.asset";
-        private const float ValetScale = 1.4f;
-        private const float ValetColliderRadius = 0.3f; // times the scale: about the old 0.4 world radius
-        private const int ValetSortingOrder = 20;
-        private static readonly string[] ValetLayerNames = { "Model", "Outfit", "Hair" };
 
         public static void Build()
         {
@@ -49,14 +46,15 @@ namespace UncannyValet.EditorTools
             Set(directorOverlay, "_tuningPanel", tuningPanel);
             var carArt = CarArtBuilder.Build();
             var lotArt = LotArtBuilder.Build();
-            var valet = BuildValet(root, ValetArtBuilder.Build());
+            var valet = ValetSceneBuilder.BuildValet(root, ValetArtBuilder.Build());
             var decor = BuildDecor(root, lotArt);
             var crowd = Child<PedestrianCrowd>(root, "Pedestrians");
             Set(crowd, "_config", PedestrianArtBuilder.Build());
             var traffic = Child<TrafficModule>(root, "Traffic");
             var trafficConfig = TrafficArtBuilder.Build(carArt, Load<CarDefinition>(DefaultCarPath));
             Set(traffic, "_config", trafficConfig);
-            var camera = BuildCamera();
+            var camera = ValetSceneBuilder.BuildCamera();
+            var powers = PowersSceneBuilder.Build(root, camera);
 
             Set(factory, "_defaultDefinition", Load<CarDefinition>(DefaultCarPath));
             Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
@@ -90,6 +88,8 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_directorOverlay").objectReferenceValue = directorOverlay;
             so.FindProperty("_traffic").objectReferenceValue = traffic;
             so.FindProperty("_trafficConfig").objectReferenceValue = trafficConfig;
+            so.FindProperty("_powers").objectReferenceValue = powers;
+            so.FindProperty("_powerConfig").objectReferenceValue = RequireAsset<PowerMeterConfig>(ProjectSetup.PowerMeterConfigPath);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));
@@ -117,68 +117,6 @@ namespace UncannyValet.EditorTools
             return decor;
         }
 
-        private static GameObject BuildValet(GameObject parent, ValetArtConfig art)
-        {
-            var go = new GameObject("Valet");
-            go.transform.SetParent(parent.transform, false);
-            go.SetActive(false);
-            go.transform.localScale = new Vector3(ValetScale, ValetScale, 1f);
-
-            var body = go.AddComponent<Rigidbody2D>();
-            body.gravityScale = 0f;
-            body.freezeRotation = true;
-            body.interpolation = RigidbodyInterpolation2D.Interpolate;
-            var collider = go.AddComponent<CircleCollider2D>();
-            collider.radius = ValetColliderRadius;
-            var layers = AddValetLayers(go, art);
-
-            go.AddComponent<KeyboardInputSource>();
-            var mover = go.AddComponent<OnFootMover>();
-            var interactor = go.AddComponent<Interactor>();
-            var seat = go.AddComponent<SeatController>();
-
-            var so = new SerializedObject(seat);
-            so.FindProperty("_mover").objectReferenceValue = mover;
-            so.FindProperty("_interactor").objectReferenceValue = interactor;
-            SetArray(so.FindProperty("_bodyRenderers"), layers);
-            SetArray(so.FindProperty("_bodyColliders"), collider);
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return go;
-        }
-
-        private static SpriteRenderer[] AddValetLayers(GameObject valet, ValetArtConfig art)
-        {
-            var layers = new SpriteRenderer[ValetLayerNames.Length];
-            for (var i = 0; i < layers.Length; i++)
-            {
-                var child = new GameObject(ValetLayerNames[i]);
-                child.transform.SetParent(valet.transform, false);
-                layers[i] = child.AddComponent<SpriteRenderer>();
-                layers[i].sortingOrder = ValetSortingOrder + i;
-            }
-            var animator = valet.AddComponent<ValetAnimator>();
-            var so = new SerializedObject(animator);
-            so.FindProperty("_config").objectReferenceValue = art;
-            so.FindProperty("_model").objectReferenceValue = layers[0];
-            so.FindProperty("_outfit").objectReferenceValue = layers[1];
-            so.FindProperty("_hair").objectReferenceValue = layers[2];
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return layers;
-        }
-
-        private static CameraFollow BuildCamera()
-        {
-            var go = new GameObject("Main Camera") { tag = "MainCamera" };
-            go.transform.position = new Vector3(-9f, 0f, -10f); // valet start; CameraFollow snaps here
-            var cam = go.AddComponent<Camera>();
-            go.AddComponent<AudioListener>();
-            cam.orthographic = true;
-            cam.orthographicSize = CameraFollow.DefaultOrthographicSize;
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.07f, 0.07f, 0.09f);
-            return go.AddComponent<CameraFollow>();
-        }
-
         // The handling config follows the lot's aisle; the check component reports a later mismatch at start.
         private static void AddHandling(GameObject root, CarFactory factory, LotConfig lot)
         {
@@ -187,12 +125,6 @@ namespace UncannyValet.EditorTools
             var check = root.AddComponent<HandlingAisleCheck>();
             Set(check, "_lot", lot);
             Set(check, "_handling", handling);
-        }
-
-        private static void SetArray(SerializedProperty array, params Object[] items)
-        {
-            array.arraySize = items.Length;
-            for (var i = 0; i < items.Length; i++) array.GetArrayElementAtIndex(i).objectReferenceValue = items[i];
         }
 
         private static void Set(Object target, string field, Object value)
