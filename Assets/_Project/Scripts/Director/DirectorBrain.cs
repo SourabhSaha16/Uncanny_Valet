@@ -26,15 +26,16 @@ namespace UncannyValet.Director
         private readonly ArrivalPacer _pacer;
         private readonly DilemmaDirector _dilemmas;
         private readonly DirectorSettings _settings;
+        private readonly ReturnDirector _returns;
         private bool _phaseKnown;
         private DirectorPhase _phase;
 
         public DirectorBrain(IEventBus bus, ITuning tuning, IGameClock clock, ILotSnapshotSource lot,
             IIntensityProfile profile, DirectorState state, DirectorSettings settings, FormTracker form,
-            ArrivalPacer pacer, DilemmaDirector dilemmas)
+            ArrivalPacer pacer, DilemmaDirector dilemmas, ReturnDirector returns = null)
         {
             _bus = bus; _tuning = tuning; _clock = clock; _lot = lot; _profile = profile; _state = state;
-            _settings = settings; _form = form; _pacer = pacer; _dilemmas = dilemmas;
+            _settings = settings; _form = form; _pacer = pacer; _dilemmas = dilemmas; _returns = returns;
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<CarSpawned>(OnCarSpawned);
         }
@@ -61,6 +62,7 @@ namespace UncannyValet.Director
             var input = BuildInput(lot, load, target, fraction, length);
             var decision = _pacer.Tick(input, dt);
             _dilemmas.Tick(lot);
+            _returns?.Tick(lot, input.Gap(_settings.Pacing.FormInfluence), _pacer.InRelief, _phase);
             Publish(decision, load, target, lot, input, fraction);
         }
 

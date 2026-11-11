@@ -34,8 +34,8 @@ namespace UncannyValet.Director
 
         [SerializeField, Range(0.5f, 30f), Tooltip("Longest the arrival queue may stay empty, in seconds, before a car is sent whatever the pacing says.")]
         private float _maxEmptyQueueSeconds = 2f;
-        [SerializeField, Min(0f), Tooltip("No car is forced in when fewer seconds than this are left in the shift.")]
-        private float _idleCutoffSeconds = 20f;
+        [SerializeField, Min(0f), Tooltip("No car is sent (forced or paced) when fewer seconds than this are left in the shift: it could not be parked, called back and delivered in time.")]
+        private float _idleCutoffSeconds = 45f;
 
         // Not serialized: the lot's DirectorProfile owns the budget and seeds it (see Seed).
         private int _arrivalBudget = DirectorProfile.DefaultArrivalBudget;

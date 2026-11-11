@@ -60,6 +60,11 @@ namespace UncannyValet.Director
             if (_cars.TryGetValue(car, out var r)) r.StayMinutes = stayMinutes;
         }
 
+        public void ReturnShifted(CarId car, float deltaMinutes)
+        {
+            if (_cars.TryGetValue(car, out var r)) r.ShiftedMinutes += deltaMinutes;
+        }
+
         public void Arrived(CarId car) { if (_cars.TryGetValue(car, out var r)) r.Arrived = true; }
 
         public void Driven(CarId car, bool driven) { if (_cars.TryGetValue(car, out var r)) r.Driven = driven; }

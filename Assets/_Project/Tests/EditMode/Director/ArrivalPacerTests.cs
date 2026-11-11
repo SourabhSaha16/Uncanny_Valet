@@ -37,6 +37,21 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
+        public void NoCarIsSentWhenTooLittleOfTheShiftIsLeftToServeIt()
+        {
+            var cutoff = _settings.Pacing.IdleCutoffSeconds;
+            var d = RunUntilSpawn(In(w: 0f, queue: 0, left: cutoff - 1f), out _, limit: 120f);
+            Assert.IsFalse(d.IsSpawn, "even an empty queue gets no car this late");
+            Assert.AreEqual(HoldReason.ShiftEnding, d.Hold);
+        }
+
+        [Test]
+        public void ACarIsStillSentJustBeforeTheCutoff()
+        {
+            Assert.IsTrue(RunUntilSpawn(In(w: 0f, queue: 0, left: _settings.Pacing.IdleCutoffSeconds + 1f), out _).IsSpawn);
+        }
+
+        [Test]
         public void IdleLotGetsACarAfterTheIdleSeconds()
         {
             var d = RunUntilSpawn(In(w: 0f), out var waited);

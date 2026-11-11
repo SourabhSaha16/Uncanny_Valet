@@ -41,6 +41,7 @@ namespace UncannyValet.Tests.Director
         {
             _bus = bus; _random = random;
             _bus.Subscribe<PatronScheduled>(OnScheduled);
+            _bus.Subscribe<ReturnShiftRequested>(OnReturnShift);
         }
 
         public IReadOnlyList<SoakCar> Cars => _cars;
@@ -71,7 +72,11 @@ namespace UncannyValet.Tests.Director
             }
         }
 
-        public void Dispose() => _bus.Unsubscribe<PatronScheduled>(OnScheduled);
+        public void Dispose()
+        {
+            _bus.Unsubscribe<PatronScheduled>(OnScheduled);
+            _bus.Unsubscribe<ReturnShiftRequested>(OnReturnShift);
+        }
 
         /// <summary>Advances the lot by dt seconds: late spawns, the cars' own clocks, then the bot.</summary>
         public void Step(float dt)
@@ -96,11 +101,13 @@ namespace UncannyValet.Tests.Director
             if (!_hasPending || AwaitingCount >= QueueCap) return;
             _hasPending = false;
             var id = new CarId(_nextId++);
+            var stay = StayMin + (StayMax - StayMin) * (float)_random.NextDouble();
             var car = new SoakCar
             {
+                PlannedStay = stay,
                 Id = id, Dirty = ArchetypeKinds.NeedsWash(_pendingArchetype), Ev = ArchetypeKinds.NeedsCharge(_pendingArchetype),
                 State = CarLotState.Arriving, ArriveLeft = ArriveSeconds,
-                StayLeft = StayMin + (StayMax - StayMin) * (float)_random.NextDouble(),
+                StayLeft = stay,
             };
             _cars.Add(car);
             Arrivals++;
@@ -136,8 +143,10 @@ namespace UncannyValet.Tests.Director
 
         private void RequestPickup(SoakCar car)
         {
+            RecordRequest(car);
             car.State = CarLotState.PickupRequested;
             car.RequestOrder = ++_requestCounter;
+            _bus.Publish(new PatronSummoned(new TicketId(car.Id.Value), car.Id));
         }
 
         private void GoAngry(SoakCar car)

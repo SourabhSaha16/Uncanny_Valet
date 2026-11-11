@@ -12,8 +12,8 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.ArrivalIdleLimit, Group, "Longest wait with an empty queue (s)", 0.5f, 30f, 0.5f,
                 "When no car is waiting to be parked, the next one is sent after this many seconds at most, even if the pacing would wait longer. While cars are queued nothing changes.",
                 advanced: false),
-            new TuningInfo(TuningKey.ArrivalIdleCutoff, Group, "No forced arrivals in the last (s)", 0f, 120f, 1f,
-                "The empty-queue rule stops this many seconds before the shift ends, because a car sent that late cannot be served."),
+            new TuningInfo(TuningKey.ArrivalIdleCutoff, Group, "No new cars in the last (s)", 0f, 120f, 1f,
+                "No car is sent when fewer than this many seconds are left: it could not be parked, called back and delivered in time. Allow park time, the walk to the curb and the delivery."),
         };
     }
 }

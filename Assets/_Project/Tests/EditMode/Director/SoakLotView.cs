@@ -26,7 +26,7 @@ namespace UncannyValet.Tests.Director
                     ? car.StayLeft : float.PositiveInfinity;
                 if (toPickup < nextPickup) nextPickup = toPickup;
                 _cars.Add(new CarSnapshot(car.Id, car.State, car.Dirty, car.Ev, car.WashDone, car.ChargeDone,
-                    car.AwaitingPark, WashLeft01(car), Patience(car), toPickup));
+                    car.AwaitingPark, WashLeft01(car), Patience(car), toPickup, car.PlannedStay, car.Shifted));
             }
             _slots.Add(SlotOf(StationKind.Wash, _sim.WashSlot));
             foreach (var bay in _sim.BaySlots) _slots.Add(SlotOf(StationKind.Charging, bay));

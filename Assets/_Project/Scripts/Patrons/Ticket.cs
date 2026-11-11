@@ -56,7 +56,25 @@ namespace UncannyValet.Patrons
             Wash = new WashRule(tuning.WashMinutes);
         }
 
-        public bool StayEnded(float minute) => State == TicketState.Parked && minute >= ParkedMinute + StayMinutes;
+        /// <summary>Game minutes the director has moved the end of the stay by; negative means earlier.</summary>
+        public float StayShiftMinutes { get; private set; }
+
+        public bool StayEnded(float minute)
+            => State == TicketState.Parked && minute >= ParkedMinute + StayMinutes + StayShiftMinutes;
+
+        /// <summary>
+        /// Moves the end of the stay (the director's return nudge). Only a patron still inside the diner can be moved:
+        /// parked, not summoned, stay not over. The new end is never before <paramref name="nowMinute"/>.
+        /// Returns the delta really applied, or 0 when nothing was moved.
+        /// </summary>
+        public float ShiftStay(float deltaMinutes, float nowMinute)
+        {
+            if (State != TicketState.Parked || Summoned || StayEnded(nowMinute)) return 0f;
+            var end = ParkedMinute + StayMinutes + StayShiftMinutes;
+            var applied = System.Math.Max(end + deltaMinutes, nowMinute) - end;
+            StayShiftMinutes += applied;
+            return applied;
+        }
 
         public void MarkParked(float minute)
         {

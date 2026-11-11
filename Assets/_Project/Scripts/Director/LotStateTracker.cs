@@ -59,6 +59,7 @@ namespace UncannyValet.Director
             _bus.Unsubscribe<TicketTimerChanged>(OnTimer);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
             _bus.Unsubscribe<ComplaintFiled>(OnComplaint);
+            _bus.Unsubscribe<PatronReturnShifted>(OnReturnShifted);
         }
 
         private void Subscribe()
@@ -83,6 +84,7 @@ namespace UncannyValet.Director
             _bus.Subscribe<TicketTimerChanged>(OnTimer);
             _bus.Subscribe<TicketClosed>(OnClosed);
             _bus.Subscribe<ComplaintFiled>(OnComplaint);
+            _bus.Subscribe<PatronReturnShifted>(OnReturnShifted);
         }
 
         private float NowSeconds() => _clock.ShiftLengthSeconds - _clock.SecondsRemaining;
@@ -112,6 +114,7 @@ namespace UncannyValet.Director
         private void OnPickup(PickupRequested e) => _book.PickupRequested(e.Car);
         private void OnTimer(TicketTimerChanged e) => _book.TimerChanged(e.Car, e.Elapsed01);
         private void OnClosed(TicketClosed e) => _book.Closed(e.Car);
+        private void OnReturnShifted(PatronReturnShifted e) => _book.ReturnShifted(e.Car, e.DeltaMinutes);
 
         private void OnComplaint(ComplaintFiled e)
         {

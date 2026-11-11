@@ -24,7 +24,8 @@ namespace UncannyValet.Director
                 if (toPickup < nextPickup) nextPickup = toPickup;
                 if (r.SpotId != CarRecord.NoSpot && r.SpotId <= book.RegularSpots) occupiedRegular++;
                 _cars.Add(new CarSnapshot(r.Car, r.State, r.IsDirty, r.IsEv, r.WashDone, r.ChargeDone, r.AwaitingPark,
-                    r.IsDirty && !r.WashDone ? 1f - r.Clean01 : 0f, r.Patience01, toPickup));
+                    r.IsDirty && !r.WashDone ? 1f - r.Clean01 : 0f, r.Patience01, toPickup,
+                    r.StayMinutes * secondsPerMinute, r.ShiftedMinutes * secondsPerMinute));
             }
             BuildSlots(book);
             var total = TotalSpots(book);
@@ -39,7 +40,7 @@ namespace UncannyValet.Director
         private static float SecondsToPickup(CarRecord r, float nowMinutes, float secondsPerMinute)
         {
             if (r.PickupRequested || float.IsNaN(r.ParkedAtMinute)) return float.PositiveInfinity;
-            var minutes = r.ParkedAtMinute + r.StayMinutes - nowMinutes;
+            var minutes = r.ParkedAtMinute + r.StayMinutes + r.ShiftedMinutes - nowMinutes;
             return (minutes < 0f ? 0f : minutes) * secondsPerMinute;
         }
 

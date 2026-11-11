@@ -37,7 +37,7 @@ MonoBehaviour:
     _maxIntervalSeconds: 40
     _spawnAckSeconds: 8
     _maxEmptyQueueSeconds: 2
-    _idleCutoffSeconds: 20
+    _idleCutoffSeconds: 45
   _relief:
     _workload: 1.4
     _pressure: 0.85

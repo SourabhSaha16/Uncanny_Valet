@@ -57,4 +57,28 @@ namespace UncannyValet.Core.Events
     /// until the return scheduler exists; the debug overlay shows it.
     /// </summary>
     public readonly struct ReturnForwardWanted : IGameEvent { }
+
+    /// <summary>
+    /// The director asks the Patrons module to move the end of one parked patron's stay. Only a patron still inside
+    /// the diner can be moved; the answer is <see cref="PatronReturnShifted"/> (or nothing when it cannot be done).
+    /// </summary>
+    public readonly struct ReturnShiftRequested : IGameEvent
+    {
+        public readonly CarId Car;
+        /// <summary>Game minutes to add to the stay (negative brings the return forward).</summary>
+        public readonly float DeltaMinutes;
+        public ReturnShiftRequested(CarId car, float deltaMinutes) { Car = car; DeltaMinutes = deltaMinutes; }
+    }
+
+    /// <summary>The Patrons module moved a patron's return. <see cref="DeltaMinutes"/> is what was really applied.</summary>
+    public readonly struct PatronReturnShifted : IGameEvent
+    {
+        public readonly TicketId Ticket;
+        public readonly CarId Car;
+        public readonly float DeltaMinutes;
+        public PatronReturnShifted(TicketId ticket, CarId car, float deltaMinutes)
+        {
+            Ticket = ticket; Car = car; DeltaMinutes = deltaMinutes;
+        }
+    }
 }

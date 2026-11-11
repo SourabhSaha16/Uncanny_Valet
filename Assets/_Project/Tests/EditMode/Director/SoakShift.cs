@@ -20,6 +20,18 @@ namespace UncannyValet.Tests.Director
         public float LongestEmptyQueueSeconds;
         /// <summary>When the first car arrived, seconds into the shift (-1 when none did).</summary>
         public float FirstArrivalSeconds = -1f;
+        /// <summary>Pickup requests closer together than the spacing, outside wave peaks: all, and those where neither car was in a station.</summary>
+        public int SpacingViolationsAll;
+        public int SpacingViolations;
+        public int PickupsRequested;
+        /// <summary>Cars still waiting at the end that were parked in time to be picked up: in a regular spot, or in a station.</summary>
+        public int UnrequestedInSpot;
+        public int UnrequestedInStation;
+        /// <summary>Cars still waiting at the end that were parked after the last useful pickup moment.</summary>
+        public int ParkedTooLate;
+        /// <summary>Returns moved outside the window before the late-shift phase.</summary>
+        public int MovedOutsideWindow;
+        public int Moves;
     }
 
     /// <summary>Runs one seeded shift: the real DirectorBrain against the fake lot and the scripted bot.</summary>
@@ -43,16 +55,22 @@ namespace UncannyValet.Tests.Director
             var dilemmas = new DilemmaDirector(bus, clock, new ArchetypePicker(random, rules, settings.Picker),
                 new DilemmaGate(settings.Gate), rules, state);
             var lot = new SoakLotView(sim);
-            var brain = new DirectorBrain(bus, tuning, clock, lot, new SoakProfile(), state, settings, form,
-                new ArrivalPacer(random, settings.Pacing, new ReliefGate(settings.Relief)), dilemmas);
+            var profile = new SoakProfile();
+            var returns = new ReturnDirector(bus, clock, tuning, settings);
+            var brain = new DirectorBrain(bus, tuning, clock, lot, profile, state, settings, form,
+                new ArrivalPacer(random, settings.Pacing, new ReliefGate(settings.Relief)), dilemmas, returns);
             var result = new SoakResult();
-            Watch(bus, lot, settings, result);
+            Watch(bus, lot, sim, settings, result);
             bus.Publish(new ShiftStarted());
             Play(clock, sim, brain, settings, result);
             result.Arrivals = sim.Arrivals;
             result.Delivered = sim.Delivered;
             result.Angry = sim.AngryTimes.Count;
-            brain.Dispose(); dilemmas.Dispose(); form.Dispose(); sim.Dispose();
+            SoakReturnAudit.CountSpacing(sim, profile, ShiftSeconds, settings.Returns.SpacingSeconds, Dt, result);
+            var rs = settings.Returns;
+            SoakReturnAudit.CountUnrequested(sim, ShiftSeconds, rs.LastLeadSeconds,
+                rs.MinLeadSeconds + 2f * rs.SpacingSeconds, result);
+            brain.Dispose(); returns.Dispose(); dilemmas.Dispose(); form.Dispose(); sim.Dispose();
             return result;
         }
 
@@ -70,17 +88,18 @@ namespace UncannyValet.Tests.Director
                 var active = sim.HasOpenTask || sim.Arrivals != before;
                 quiet = active ? 0f : quiet + Dt;
                 if (result.FirstArrivalSeconds < 0f && sim.Arrivals > 0) result.FirstArrivalSeconds = t;
+                var guardedByTime = ShiftSeconds - t >= settings.Pacing.IdleCutoffSeconds;
                 var guarded = sim.Arrivals < settings.Pacing.MaxArrivals
                     && ShiftSeconds - t >= settings.Pacing.IdleCutoffSeconds;
                 empty = sim.AwaitingCount == 0 && guarded ? empty + Dt : 0f;
                 if (empty > result.LongestEmptyQueueSeconds) result.LongestEmptyQueueSeconds = empty;
-                var cardsDue = sim.Arrivals < settings.Pacing.ArrivalBudget;
+                var cardsDue = sim.Arrivals < settings.Pacing.ArrivalBudget && guardedByTime;
                 if (cardsDue && quiet > result.LongestQuietSeconds) result.LongestQuietSeconds = quiet;
             }
         }
 
         // Counts dilemmas and checks each was solvable the moment it was made.
-        private static void Watch(EventBus bus, SoakLotView view, DirectorSettings settings, SoakResult result)
+        private static void Watch(EventBus bus, SoakLotView view, SoakSim sim, DirectorSettings settings, SoakResult result)
         {
             var open = 0;
             bus.Subscribe<DilemmaCreated>(e =>
@@ -96,6 +115,14 @@ namespace UncannyValet.Tests.Director
             {
                 result.DilemmasResolved++;
                 open--;
+            });
+            bus.Subscribe<PatronReturnShifted>(e =>
+            {
+                result.Moves++;
+                var late = ShiftSeconds - sim.Now <= settings.Returns.LateStartSeconds;
+                foreach (var car in sim.Cars)
+                    if (car.Id.Value == e.Car.Value && !late && SoakReturnAudit.OutsideWindow(car, settings.Returns.WindowFraction))
+                        result.MovedOutsideWindow++;
             });
         }
     }
