@@ -555,3 +555,9 @@ Date: 2026-11-10
 Files: merges of worktree-agent-a649e5206949c972d, -a0f26c5db645b6d0e, -a3ee1dcf52afb7383, -ad23a3ed458e2fe98; docs, regenerated assets and scene, site/
 Why: the human's notes (sharper turning and tunable driving values, softer sound, collision for incoming cars, wider lot) and the hand-tuned dial values as the baseline. Approved Core ITripObstacles. Set CarHandlingConfig code default aisle to 6.
 Tests: 974 of 974 EditMode, 16 of 16 PlayMode; browser smoke test shows the wider lot, no console errors. Not played.
+
+## lead: record missing changelog for 38e3723 so CI deploys the current site
+Date: 2026-11-11
+Files: docs/changelogs/lead.md
+Why: commit 38e3723 ("lead: regenerate assets, rebuild site after dial baseline merge", Assets/ and site/ only) had no changelog entry, so the changelog check failed for the push ending at 9a8f5f2 and the deploy was skipped. History is not rewritten; the check only inspects the commits of each push, so this commit lets the next deploy run. 38e3723 regenerated the Bootstrap scene and CarHandlingConfig asset and rebuilt site/ after merging the dial baseline.
+Tests: none (docs only); EditMode 974 of 974 and PlayMode 16 of 16 at 9a8f5f2.
