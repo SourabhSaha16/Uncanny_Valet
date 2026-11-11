@@ -11,6 +11,9 @@ namespace UncannyValet.Cars
         /// <summary>Tightest radius that swings a car from the aisle centre into a perpendicular bay: aisle / 2 + margin.</summary>
         public static float RMin(float aisleWidth, float margin) => aisleWidth * 0.5f + margin;
 
+        /// <summary>True when a car with this tightest radius can still swing into a bay from the aisle (radius at most aisle / 2 + margin).</summary>
+        public static bool CanEnterBay(float aisleWidth, float rMin, float margin) => rMin <= RMin(aisleWidth, margin) + 1e-4f;
+
         /// <summary>Turn rate (rad/s) that gives <paramref name="rMin"/> at <paramref name="turnFullSpeed"/>.</summary>
         public static float MaxTurnRate(float turnFullSpeed, float rMin) => turnFullSpeed / Mathf.Max(0.01f, rMin);
 

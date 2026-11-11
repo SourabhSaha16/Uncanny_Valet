@@ -54,12 +54,29 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
-        public void Config_DefaultsDeriveRMinAndMaxTurnRate()
+        public void Config_TightestRadiusIsDirectAndDrivesTheMaxTurnRate()
         {
             var config = ScriptableObject.CreateInstance<CarHandlingConfig>();
-            Assert.AreEqual(3.3f, config.RMin, 1e-4f);
-            Assert.AreEqual(4f / 3.3f, config.MaxTurnRate, 1e-4f);
+            Assert.AreEqual(2.2f, config.RMin, 1e-4f);
+            Assert.AreEqual(4f / 2.2f, config.MaxTurnRate, 1e-4f);
+            Assert.AreEqual(104f, config.MaxTurnRate * Mathf.Rad2Deg, 0.5f);
             Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void CanEnterBay_TightRadiusFitsAndAWideOneDoesNot()
+        {
+            Assert.IsTrue(TurningRadius.CanEnterBay(Aisle, 2.2f, 1f));
+            Assert.IsTrue(TurningRadius.CanEnterBay(Aisle, 3.3f, 1f), "exactly aisle / 2 + margin");
+            Assert.IsFalse(TurningRadius.CanEnterBay(Aisle, 4f, 1f));
+        }
+
+        [Test]
+        public void SharperRadius_StillOpensUpAtSpeed()
+        {
+            var rate = TurningRadius.MaxTurnRate(4f, 2.2f);
+            Assert.AreEqual(2.2f, TurningRadius.RadiusAtSpeed(3f, 2.2f, rate), 1e-4f);
+            Assert.AreEqual(4.4f, TurningRadius.RadiusAtSpeed(8f, 2.2f, rate), 1e-3f);
         }
     }
 }

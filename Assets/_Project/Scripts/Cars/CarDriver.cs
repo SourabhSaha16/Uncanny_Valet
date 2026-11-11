@@ -101,8 +101,9 @@ namespace UncannyValet.Cars
             Observe(_body.linearVelocity, up, input);
             var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime);
             var forward = Vector2.Dot(velocity, up);
-            var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, _definition.Acceleration,
-                _definition.Braking, _definition.CoastDrag, _definition.TopSpeed, _definition.ReverseFactor, Time.fixedDeltaTime);
+            var drive = _handling.DriveFor(_definition);
+            var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, drive.Acceleration,
+                drive.Braking, drive.CoastDrag, drive.TopSpeed, drive.ReverseFactor, Time.fixedDeltaTime);
             _body.linearVelocity = PreSolveVelocity = velocity + up * (next - forward);
             _body.angularVelocity = Mathf.Rad2Deg
                 * SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed);

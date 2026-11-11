@@ -46,6 +46,84 @@ namespace UncannyValet.Tests.Audio
             Assert.LessOrEqual(seam, worstInside, "the step across the wrap is no bigger than any step inside the loop");
         }
 
+        // Mean absolute change per sample over mean absolute level: about the pitch of the sound times a constant.
+        private static float Brightness(float[] s)
+        {
+            double diff = 0, level = 0;
+            for (var i = 1; i < s.Length; i++) { diff += Math.Abs(s[i] - s[i - 1]); level += Math.Abs(s[i]); }
+            return (float)(diff / Math.Max(level, 1e-6));
+        }
+
+        private static float CrossingsPerSecond(float[] s)
+        {
+            var n = 0;
+            for (var i = 1; i < s.Length; i++) if (s[i - 1] < 0f != s[i] < 0f) n++;
+            return n / ((float)s.Length / Rate);
+        }
+
+        [Test]
+        public void SquealLoop_IsLowAndDull()
+        {
+            var loop = SquealLoop.Build(Rate);
+            Assert.Less(CrossingsPerSecond(loop), 2000f, "fundamental 500 Hz = about 1000 crossings a second, not 2000+");
+            Assert.Less(Brightness(loop), 0.35f);
+        }
+
+        [Test]
+        public void Sharpness_MakesTheSquealAndTheOneShotsBrighter()
+        {
+            Assert.Less(Brightness(SquealLoop.Build(Rate, 0f)), Brightness(SquealLoop.Build(Rate, 1f)));
+            Assert.Less(Brightness(SfxTyres.Chirp(Rate, 0f)), Brightness(SfxTyres.Chirp(Rate, 1f)));
+            Assert.Less(Brightness(SfxTyres.Screech(Rate, 0f)), Brightness(SfxTyres.Screech(Rate, 1f)));
+        }
+
+        [Test]
+        public void SquealLoop_StaysSeamlessAtEverySharpness()
+        {
+            foreach (var sharp in new[] { 0f, 0.35f, 1f })
+            {
+                var loop = SquealLoop.Build(Rate, sharp);
+                var worst = 0f;
+                for (var i = 1; i < loop.Length; i++) worst = Math.Max(worst, Math.Abs(loop[i] - loop[i - 1]));
+                Assert.LessOrEqual(Math.Abs(loop[0] - loop[loop.Length - 1]), worst * 1.2f, "sharpness " + sharp);
+            }
+        }
+
+        [Test]
+        public void OneShotsAndBumps_AreSoftAtTheDefault()
+        {
+            Assert.Less(Brightness(SfxRecipeBook.Render(SfxId.TyreChirp, Rate)), 0.25f);
+            Assert.Less(Brightness(SfxRecipeBook.Render(SfxId.TyreScreech, Rate)), 0.25f);
+            Assert.Less(Brightness(SfxRecipeBook.Render(SfxId.CarBump, Rate)), 0.2f);
+            Assert.Less(Brightness(SfxRecipeBook.Render(SfxId.PedestrianBump, Rate)), 0.2f);
+        }
+
+        [Test]
+        public void SoftenFilter_CutoffRunsFromDullToBright()
+        {
+            Assert.AreEqual(SoftenFilter.MinCutoffHz, SoftenFilter.CutoffFor(0f));
+            Assert.AreEqual(SoftenFilter.MaxCutoffHz, SoftenFilter.CutoffFor(1f));
+            Assert.AreEqual(SoftenFilter.MinCutoffHz, SoftenFilter.CutoffFor(-3f));
+        }
+
+        [Test]
+        public void TyreSoundTuning_StartsWithTheGivenValuesAndFollowsTheKeys()
+        {
+            var bus = new EventBus();
+            var changes = 0;
+            var tuning = new TyreSoundTuning(bus, 1f, 0.35f, () => changes++);
+            tuning.Subscribe();
+            bus.Publish(new TuningChanged(TuningKey.TyreSoundSharpness, 0.8f));
+            bus.Publish(new TuningChanged(TuningKey.TyreSoundVolume, 0.5f));
+            bus.Publish(new TuningChanged(TuningKey.BaseTip, 3f));
+            Assert.AreEqual(0.8f, tuning.Sharpness, 1e-5f);
+            Assert.AreEqual(0.5f, tuning.Volume, 1e-5f);
+            Assert.AreEqual(2, changes);
+            tuning.Unsubscribe();
+            bus.Publish(new TuningChanged(TuningKey.TyreSoundVolume, 0.1f));
+            Assert.AreEqual(0.5f, tuning.Volume, 1e-5f);
+        }
+
         [Test]
         public void Mix_VolumeAndPitchRiseWithSlipIntensity()
         {

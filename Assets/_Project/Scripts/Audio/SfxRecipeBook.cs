@@ -6,7 +6,10 @@ namespace UncannyValet.Audio
     public static class SfxRecipeBook
     {
         /// <summary>Renders the effect to mono samples in [-1, 1].</summary>
-        public static float[] Render(SfxId id, int sampleRate)
+        public static float[] Render(SfxId id, int sampleRate) => Render(id, sampleRate, SfxTyres.DefaultSharpness);
+
+        /// <summary>Renders the effect; <paramref name="tyreSharpness"/> (0..1) only changes the tyre sounds.</summary>
+        public static float[] Render(SfxId id, int sampleRate, float tyreSharpness)
         {
             switch (id)
             {
@@ -24,8 +27,8 @@ namespace UncannyValet.Audio
                 case SfxId.StationStart: return SfxStations.StationStart(sampleRate);
                 case SfxId.PedestrianBump: return SfxAlerts.PedestrianBump(sampleRate);
                 case SfxId.CarBump: return SfxAlerts.CarBump(sampleRate);
-                case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate);
-                case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate);
+                case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate, tyreSharpness);
+                case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate, tyreSharpness);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");
             }
         }

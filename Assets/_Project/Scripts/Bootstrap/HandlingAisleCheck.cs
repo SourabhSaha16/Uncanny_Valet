@@ -5,8 +5,8 @@ using UnityEngine;
 namespace UncannyValet.Bootstrap
 {
     /// <summary>
-    /// Fails loudly when the handling config's measured aisle width no longer equals the lot's aisle width (the turning
-    /// radius is derived from it). The editor setup copies the value; Cars cannot reference Lot, so this is the guard.
+    /// Warns when the handling config's measured aisle width no longer equals the lot's, or when the tightest turn
+    /// radius (set directly) is too wide to enter a bay from the aisle. The editor setup copies the width; Cars cannot reference Lot.
     /// </summary>
     public sealed class HandlingAisleCheck : MonoBehaviour
     {
@@ -27,8 +27,11 @@ namespace UncannyValet.Bootstrap
                 return;
             }
             if (Differs(_lot.AisleWidth, _handling.MeasuredAisleWidth))
-                Debug.LogError("HandlingAisleCheck on " + name + ": CarHandlingConfig.MeasuredAisleWidth " + _handling.MeasuredAisleWidth
-                    + " differs from LotConfig.AisleWidth " + _lot.AisleWidth + ". Rebuild with Setup/Build Everything to resync the turning radius.", this);
+                Debug.LogWarning("HandlingAisleCheck on " + name + ": CarHandlingConfig.MeasuredAisleWidth " + _handling.MeasuredAisleWidth
+                    + " differs from LotConfig.AisleWidth " + _lot.AisleWidth + ". Rebuild with Setup/Build Everything to resync it.", this);
+            if (!TurningRadius.CanEnterBay(_lot.AisleWidth, _handling.RMin, _handling.RadiusMargin))
+                Debug.LogWarning("HandlingAisleCheck on " + name + ": the tightest turn radius " + _handling.RMin
+                    + " is too wide to swing from the aisle (" + _lot.AisleWidth + ") into a bay.", this);
         }
     }
 }

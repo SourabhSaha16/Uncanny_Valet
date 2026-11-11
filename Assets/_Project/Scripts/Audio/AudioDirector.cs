@@ -1,4 +1,5 @@
 using UncannyValet.Core;
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,12 +15,17 @@ namespace UncannyValet.Audio
     {
         [SerializeField] private AudioConfig _config;
 
+        /// <summary>The assigned config (seeds the tyre sound F2 keys); null if none is assigned.</summary>
+        public AudioConfig Config => _config;
+
         private readonly MuteState _mute = new MuteState();
         private SfxEventRouter _router;
         private PendingCarTracker _pending;
         private UrgencyRule _urgency;
         private SfxBank _bank;
         private TyreAudio _tyres;
+        private TyreSoundTuning _tyreTuning;
+        private float _sfxGain;
         private AudioSource _music;
         private AudioSource[] _voices;
         private int _nextVoice;
@@ -36,26 +42,31 @@ namespace UncannyValet.Audio
                 Debug.LogWarning("AudioDirector: no AudioConfig assigned; using defaults.", this);
                 _config = ScriptableObject.CreateInstance<AudioConfig>();
             }
+            _tyreTuning = new TyreSoundTuning(bus, _config.TyreVolume, _config.TyreSharpness, OnTyreTuned);
+            if (Services.TryGet<ITuning>(out var tuning)) _tyreTuning.Load(tuning);
             BuildAudio();
-            _router = new SfxEventRouter(bus, Play, () => Time.unscaledTime);
+            _router =new SfxEventRouter(bus, Play, () => Time.unscaledTime);
             _pending = new PendingCarTracker(bus);
             _urgency = new UrgencyRule(_config.MinTempoMultiplier, _config.MaxTempoMultiplier,
                 _config.PendingForMaxTempo, _config.TempoSmoothingSeconds);
             if (!isActiveAndEnabled) return;
             _router.Subscribe();
             _pending.Subscribe();
+            _tyreTuning.Subscribe();
         }
 
         private void OnEnable()
         {
             _router?.Subscribe();
             _pending?.Subscribe();
+            _tyreTuning?.Subscribe();
         }
 
         private void OnDisable()
         {
             _router?.Unsubscribe();
             _pending?.Unsubscribe();
+            _tyreTuning?.Unsubscribe();
         }
 
         private void Update()
@@ -77,7 +88,7 @@ namespace UncannyValet.Audio
             _music.clip = ClipFactory.Create("FunkLoop", loop, settings.SampleRate, false);
             _music.loop = true;
             _music.playOnAwake = false;
-            _bank = new SfxBank(settings.SampleRate);
+            _bank = new SfxBank(settings.SampleRate, _tyreTuning.Sharpness);
             _voices = new AudioSource[_config.SfxVoices];
             for (int i = 0; i < _voices.Length; i++)
             {
@@ -86,24 +97,38 @@ namespace UncannyValet.Audio
             }
             var squeal = new SquealMix(_config.SquealMinVolume, _config.SquealMaxVolume, _config.SquealMinPitch,
                 _config.SquealMaxPitch, _config.SquealFadeSeconds, _config.SquealAttackSeconds);
-            var squealClip = ClipFactory.Create("SquealLoop", SquealLoop.Build(settings.SampleRate), settings.SampleRate, false);
-            _tyres = new TyreAudio(gameObject.AddComponent<AudioSource>(), squealClip, squeal);
+            _tyres = new TyreAudio(gameObject.AddComponent<AudioSource>(), SquealClip(), squeal);
             ApplyVolumes();
             _music.Play();
+        }
+
+        private AudioClip SquealClip()
+            => ClipFactory.Create("SquealLoop", SquealLoop.Build(_config.SampleRate, _tyreTuning.Sharpness), _config.SampleRate, false);
+
+        // The panel moved a tyre sound key: re-render the tyre clips with the new sharpness and apply the volume.
+        private void OnTyreTuned()
+        {
+            if (_bank == null) return;
+            _bank.SetTyreSharpness(_tyreTuning.Sharpness);
+            _tyres.SetLoop(SquealClip());
+            ApplyVolumes();
         }
 
         private void ApplyVolumes()
         {
             float master = _mute.Apply(_config.MasterVolume);
             _music.volume = master * _config.MusicVolume;
-            for (int i = 0; i < _voices.Length; i++) _voices[i].volume = master * _config.SfxVolume;
-            _tyres.SetGain(master * _config.SfxVolume);
+            _sfxGain = master * _config.SfxVolume;
+            for (int i = 0; i < _voices.Length; i++) _voices[i].volume = _sfxGain;
+            _tyres.SetGain(_sfxGain * _tyreTuning.Volume);
         }
 
         private void Play(SfxId id)
         {
             var source = _voices[_nextVoice];
             _nextVoice = (_nextVoice + 1) % _voices.Length;
+            var tyre = id == SfxId.TyreChirp || id == SfxId.TyreScreech;
+            source.volume = tyre ? _sfxGain * _tyreTuning.Volume * _config.TyreOneShotVolume : _sfxGain;
             source.clip = _bank.Get(id);
             source.Play();
         }

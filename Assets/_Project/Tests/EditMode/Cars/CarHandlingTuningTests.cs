@@ -26,8 +26,43 @@ namespace UncannyValet.Tests.Cars
             Assert.AreEqual(0.55f, d.GripAtSpeed);
             Assert.AreEqual(0.25f, d.DriftGripScale);
             Assert.AreEqual(4f, live.TurnFullSpeed);
-            Assert.AreEqual(3.3f, live.RMin, 1e-4f);
-            Assert.AreEqual(1.212f, live.MaxTurnRate, 1e-3f);
+            Assert.AreEqual(2.2f, live.RMin, 1e-4f);
+            Assert.AreEqual(1.818f, live.MaxTurnRate, 1e-3f);
+        }
+
+        [Test]
+        public void DriveScales_DefaultToTheCarsOwnValuesAndMultiplyWhenChanged()
+        {
+            var car = ScriptableObject.CreateInstance<CarDefinition>();
+            var live = new CarHandlingLive(_config);
+            var d = live.DriveFor(car);
+            Assert.AreEqual(car.TopSpeed, d.TopSpeed);
+            Assert.AreEqual(car.Acceleration, d.Acceleration);
+            Assert.AreEqual(car.Braking, d.Braking);
+            Assert.AreEqual(car.CoastDrag, d.CoastDrag);
+            Assert.AreEqual(car.ReverseFactor, d.ReverseFactor);
+            live.TrySet(TuningKey.HandlingTopSpeedScale, 1.5f);
+            live.TrySet(TuningKey.HandlingAccelerationScale, 2f);
+            live.TrySet(TuningKey.HandlingBrakingScale, 0.5f);
+            live.TrySet(TuningKey.HandlingCoastDragScale, 3f);
+            live.TrySet(TuningKey.HandlingReverseScale, 10f);
+            d = live.DriveFor(car);
+            Assert.AreEqual(car.TopSpeed * 1.5f, d.TopSpeed, 1e-4f);
+            Assert.AreEqual(car.Acceleration * 2f, d.Acceleration, 1e-4f);
+            Assert.AreEqual(car.Braking * 0.5f, d.Braking, 1e-4f);
+            Assert.AreEqual(car.CoastDrag * 3f, d.CoastDrag, 1e-4f);
+            Assert.AreEqual(1f, d.ReverseFactor, "reverse is capped at the top speed");
+            Object.DestroyImmediate(car);
+        }
+
+        [Test]
+        public void DriveScales_ArePerCar_SoDifferentCarsKeepTheirDifference()
+        {
+            var a = ScriptableObject.CreateInstance<CarDefinition>();
+            var live = new CarHandlingLive(_config);
+            live.TrySet(TuningKey.HandlingTopSpeedScale, 2f);
+            Assert.AreEqual(a.TopSpeed * 2f, live.DriveFor(a).TopSpeed, 1e-4f);
+            Object.DestroyImmediate(a);
         }
 
         [Test]

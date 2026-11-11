@@ -175,5 +175,19 @@ namespace UncannyValet.Core.Events
         HandlingMarkOpacity,
         /// <summary>Seconds a skid mark takes to fade out.</summary>
         HandlingMarkFadeSeconds,
+        /// <summary>Multiplier on every car's top speed (1 = the car's own value).</summary>
+        HandlingTopSpeedScale,
+        /// <summary>Multiplier on every car's acceleration.</summary>
+        HandlingAccelerationScale,
+        /// <summary>Multiplier on every car's braking strength.</summary>
+        HandlingBrakingScale,
+        /// <summary>Multiplier on every car's coasting slow-down (no throttle).</summary>
+        HandlingCoastDragScale,
+        /// <summary>Multiplier on every car's reverse top speed.</summary>
+        HandlingReverseScale,
+        /// <summary>Volume of the tyre sounds (chirp, squeal, screech), 0..1 (Audio owns).</summary>
+        TyreSoundVolume,
+        /// <summary>How bright the tyre sounds are, 0 = dull and round, 1 = sharp (Audio owns).</summary>
+        TyreSoundSharpness,
     }
 }
