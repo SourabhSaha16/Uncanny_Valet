@@ -18,6 +18,7 @@ namespace UncannyValet.Tests.Traffic
         private LotConfig _lot;
         private RoadLayout _road;
         private LanePath _east;
+        private LanePath _top;
         private LaneOccupancy _occupancy;
         private TripRouter _router;
         private FollowSettings _follow;
@@ -29,11 +30,13 @@ namespace UncannyValet.Tests.Traffic
             _road = new RoadLayout(new LotGeometry(_lot), _lot.Site, Vector2.zero);
             _east = new LanePath();
             _east.Rebuild(_road.EastLane);
+            _top = new LanePath();
+            _top.Rebuild(_road.TopLane);
             _occupancy = new LaneOccupancy(16);
             _follow = new FollowSettings(5f, 0.6f, 0.8f, 3f, 6f);
             var merge = new MergeGapRule(2.5f, 2.5f, 0.8f);
             var tuning = new TripTuning(CarLength, 2f, 2.5f, 2f, 0.02f);
-            _router = new TripRouter(new TripContext(_road, _east, _occupancy, _follow, merge, tuning, new TripSpeeds(5f, 2.5f)), 4);
+            _router = new TripRouter(new TripContext(_road, _east, _top, _occupancy, _follow, merge, tuning, new TripSpeeds(5f, 2.5f)), 4);
         }
 
         [TearDown]
@@ -71,20 +74,20 @@ namespace UncannyValet.Tests.Traffic
         [Test]
         public void AmbientCarArrivingWhileACarLeavesTheCurb_NeverOverlapsIt()
         {
-            float mergeX = _road.EastLane[0].x + _road.CurbMergeDistance;
+            float mergeX = _road.TopLane[0].x + _road.CurbMergeDistance;
             for (float offset = 0f; offset < 14f; offset += 1f)
             {
                 SetUp();
                 int trip = _router.BeginExit();
                 float start = Mathf.Max(0f, _road.CurbMergeDistance - offset - 10f);
-                int id = _occupancy.Add(TrafficLane.East, start, AmbientSpeed, CarLength);
-                var ambient = new LaneState { Id = id, Lane = TrafficLane.East, Distance = start, Speed = AmbientSpeed };
+                int id = _occupancy.Add(TrafficLane.Top, start, AmbientSpeed, CarLength);
+                var ambient = new LaneState { Id = id, Lane = TrafficLane.Top, Distance = start, Speed = AmbientSpeed };
                 for (int i = 0; i < MaxSteps; i++)
                 {
                     bool running = _router.Step(trip, Dt, out TripPose pose);
                     LaneMotion.Step(ref ambient, CarLength, AmbientSpeed, float.PositiveInfinity, _occupancy, _follow, Dt);
                     if (!running || pose.Phase == TripPhase.Finished || ambient.Distance > mergeX + 30f) break;
-                    Vector2 ambientPos = _east.PositionAt(ambient.Distance);
+                    Vector2 ambientPos = _top.PositionAt(ambient.Distance);
                     Assert.IsFalse(Overlaps(ambientPos, pose.Position), $"offset {offset}: ambient {ambientPos} overlaps leaving car {pose.Position} ({pose.Phase}, step {i})");
                 }
                 TearDown();

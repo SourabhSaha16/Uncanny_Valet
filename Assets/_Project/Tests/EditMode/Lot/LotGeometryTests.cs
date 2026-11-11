@@ -131,12 +131,9 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void ExitCarAndCrosswalkFitInTheCorridorWithoutTouching()
+        public void TheCrosswalkStartsEastOfTheCurb()
         {
-            var half = _config.QueueCarSize.x * 0.5f;
             var walkwayHalf = _config.Site.WalkwayWidth * 0.5f;
-            Assert.GreaterOrEqual(_geo.ExitX - half, _geo.CrossingX + walkwayHalf, "exit car clear of the crosswalk");
-            Assert.LessOrEqual(_geo.ExitX + half, _geo.Corridor.xMax + 1e-4f, "exit car clear of the first bay column");
             Assert.GreaterOrEqual(_geo.CrossingX - walkwayHalf, _geo.Curb.xMax, "crosswalk starts east of the curb");
         }
 
@@ -159,15 +156,28 @@ namespace UncannyValet.Tests.Lot
             foreach (var spot in _geo.Spots) Assert.GreaterOrEqual(spot.xMin, _geo.Corridor.xMax - 1e-4f);
             Assert.GreaterOrEqual(_geo.Wash.xMin, _geo.Corridor.xMax - 1e-4f);
             Assert.Greater(_geo.CrossingX, _geo.Curb.xMax);
-            Assert.Greater(_geo.ExitX, _geo.CrossingX);
-            Assert.Less(_geo.ExitX, _geo.Corridor.xMax);
         }
 
         [Test]
-        public void TheSouthWallOpeningCoversTheQueueColumnAndTheExit()
+        public void TheSouthWallOpeningCoversTheQueueColumn()
         {
             Assert.LessOrEqual(_geo.EntryGap.x, _geo.QueueCars[0].xMin);
-            Assert.GreaterOrEqual(_geo.EntryGap.y, _geo.ExitX + _config.QueueCarSize.x * 0.5f);
+            Assert.GreaterOrEqual(_geo.EntryGap.y, _geo.QueueCars[0].xMax);
+        }
+
+        [Test]
+        public void TheTopWallOpeningSitsDirectlyAboveTheCurbAndFitsACar()
+        {
+            Assert.AreEqual(_geo.Curb.center.x, (_geo.ExitGap.x + _geo.ExitGap.y) * 0.5f, 1e-4f);
+            Assert.GreaterOrEqual(_geo.ExitGap.y - _geo.ExitGap.x, _config.QueueCarSize.x);
+            Assert.GreaterOrEqual(_geo.ExitGap.x, _geo.CurbGap.xMin, "the gap is not over the diner");
+        }
+
+        [Test]
+        public void TheLotIsTallerByTheExitRunway()
+        {
+            var sideTop = _geo.SideDoor.yMax;
+            Assert.GreaterOrEqual(_geo.Bounds.yMax - sideTop, _config.Margin + _config.Site.ExitRunway - 1e-4f);
         }
 
         [Test]
@@ -185,10 +195,10 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void TheRoadLiesBelowTheLotWithTheEastLaneNextToIt()
+        public void TheEntryRoadLiesBelowTheLotAndTheExitRoadAboveIt()
         {
             Assert.Less(_geo.EastLaneY + _geo.LaneWidth * 0.5f, _geo.Bounds.yMin - _config.WallThickness + 1e-4f);
-            Assert.AreEqual(_geo.LaneWidth, _geo.EastLaneY - _geo.WestLaneY, 1e-4f);
+            Assert.Greater(_geo.TopLaneY - _geo.LaneWidth * 0.5f, _geo.Bounds.yMax + _config.WallThickness - 1e-4f);
             Assert.Less(_geo.RoadSpan.x, _geo.Bounds.xMin);
             Assert.Greater(_geo.RoadSpan.y, _geo.Bounds.xMax);
         }

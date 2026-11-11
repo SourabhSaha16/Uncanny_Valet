@@ -23,27 +23,36 @@ namespace UncannyValet.Tests.Lot
         public void TearDown() => Object.DestroyImmediate(_config);
 
         [Test]
-        public void TheRoadIsTwoLanesBelowTheSouthWallThenAFarSidewalk()
+        public void TheEntryRoadIsOneLaneBelowTheSouthWallThenASidewalk()
         {
             Assert.AreEqual(_geo.Bounds.yMin - _config.WallThickness, _layout.EastLane.yMax, 1e-4f);
-            Assert.AreEqual(_layout.EastLane.yMin, _layout.WestLane.yMax, 1e-4f);
-            Assert.AreEqual(_layout.WestLane.yMin, _layout.FarSidewalk.yMax, 1e-4f);
+            Assert.AreEqual(_layout.EastLane.yMin, _layout.FarSidewalk.yMax, 1e-4f);
             Assert.AreEqual(_geo.LaneWidth, _layout.EastLane.height, 1e-4f);
-            Assert.AreEqual(2f * _geo.LaneWidth, _layout.Road.height, 1e-4f);
         }
 
         [Test]
-        public void TheRoadReachesPastTheLotOnBothSides()
+        public void TheExitRoadIsOneLaneAboveTheTopWallThenASidewalk()
         {
-            Assert.Less(_layout.Road.xMin, _geo.Bounds.xMin);
-            Assert.Greater(_layout.Road.xMax, _geo.Bounds.xMax);
+            Assert.AreEqual(_geo.Bounds.yMax + _config.WallThickness, _layout.TopLane.yMin, 1e-4f);
+            Assert.AreEqual(_layout.TopLane.yMax, _layout.TopSidewalk.yMin, 1e-4f);
+            Assert.AreEqual(_layout.EastLane.height, _layout.TopLane.height, 1e-4f, "same style as the entry road");
+            Assert.AreEqual(_layout.EastLane.width, _layout.TopLane.width, 1e-4f);
+        }
+
+        [Test]
+        public void BothRoadsReachPastTheLotOnBothSides()
+        {
+            Assert.Less(_layout.EastLane.xMin, _geo.Bounds.xMin);
+            Assert.Less(_layout.TopLane.xMin, _geo.Bounds.xMin);
+            Assert.Greater(_layout.EastLane.xMax, _geo.Bounds.xMax);
+            Assert.Greater(_layout.TopLane.xMax, _geo.Bounds.xMax);
         }
 
         [Test]
         public void TheLaneCentresMatchTheGeometryLaneHeights()
         {
             Assert.AreEqual(_geo.EastLaneY, _layout.EastLane.center.y, 1e-4f);
-            Assert.AreEqual(_geo.WestLaneY, _layout.WestLane.center.y, 1e-4f);
+            Assert.AreEqual(_geo.TopLaneY, _layout.TopLane.center.y, 1e-4f);
         }
 
         [Test]
@@ -58,9 +67,10 @@ namespace UncannyValet.Tests.Lot
         {
             Assert.IsTrue(_layout.Outside.Contains(_geo.Bounds.min));
             Assert.IsTrue(_layout.Outside.Contains(_geo.Bounds.max));
-            Assert.IsTrue(_layout.Outside.Contains(_layout.Road.min));
-            Assert.IsTrue(_layout.Outside.Contains(_layout.Road.max));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.EastLane.min));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.TopLane.max));
             Assert.IsTrue(_layout.Outside.Contains(_layout.FarSidewalk.min));
+            Assert.IsTrue(_layout.Outside.Contains(_layout.TopSidewalk.max));
         }
 
         [Test]

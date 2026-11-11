@@ -26,37 +26,37 @@ namespace UncannyValet.Tests.Lot
         public void TearDown() => Object.DestroyImmediate(_config);
 
         [Test]
-        public void EastLaneRunsLeftToRightAndWestLaneRightToLeft()
+        public void BothRoadsAreOneWayLeftToRight()
         {
             Assert.Less(_road.EastLane[0].x, _road.EastLane[1].x);
-            Assert.Greater(_road.WestLane[0].x, _road.WestLane[1].x);
+            Assert.Less(_road.TopLane[0].x, _road.TopLane[1].x);
             Assert.AreEqual(_road.EastLane[0].y, _road.EastLane[1].y, 1e-4f);
-            Assert.AreEqual(_road.WestLane[0].y, _road.WestLane[1].y, 1e-4f);
+            Assert.AreEqual(_road.TopLane[0].y, _road.TopLane[1].y, 1e-4f);
         }
 
         [Test]
-        public void EastLaneIsNextToTheLotAndWestLaneBelowIt()
+        public void TheEntryLaneIsBelowTheLotAndTheTopLaneAboveIt()
         {
-            Assert.Greater(_road.EastLane[0].y, _road.WestLane[0].y);
             Assert.Less(_road.EastLane[0].y, _geo.Bounds.yMin + Origin.y);
+            Assert.Greater(_road.TopLane[0].y, _geo.Bounds.yMax + Origin.y);
         }
 
         [Test]
         public void LanesStartAndEndWellOutsideTheLotWalls()
         {
-            Assert.Less(_road.EastLane[0].x, _geo.Bounds.xMin + Origin.x);
-            Assert.Greater(_road.EastLane[1].x, _geo.Bounds.xMax + Origin.x);
-            Assert.Greater(_road.WestLane[0].x, _geo.Bounds.xMax + Origin.x);
-            Assert.Less(_road.WestLane[1].x, _geo.Bounds.xMin + Origin.x);
+            foreach (var lane in new[] { _road.EastLane, _road.TopLane })
+            {
+                Assert.Less(lane[0].x, _geo.Bounds.xMin + Origin.x);
+                Assert.Greater(lane[1].x, _geo.Bounds.xMax + Origin.x);
+            }
         }
 
         [Test]
-        public void TheQueueTurnComesBeforeTheQueueColumnAndTheCurbMergeAfterTheExit()
+        public void TheQueueTurnComesBeforeTheQueueColumnAndTheCurbMergeAfterTheCurb()
         {
             var start = _road.EastLane[0].x;
             Assert.Less(start + _road.QueueTurnDistance, _geo.QueueSlots[0].x + Origin.x);
-            Assert.Greater(start + _road.CurbMergeDistance, _geo.ExitX + Origin.x);
-            Assert.Less(_road.QueueTurnDistance, _road.CurbMergeDistance, "cars turn into the queue before the point where leavers merge");
+            Assert.Greater(_road.TopLane[0].x + _road.CurbMergeDistance, _geo.Curb.center.x + Origin.x);
         }
 
         [Test]
@@ -83,27 +83,46 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void CurbExitStartsAtTheCurbAndMergesIntoTheEastLaneMovingRightAndDown()
+        public void CurbExitStartsAtTheCurbAndMergesIntoTheTopLaneMovingRightAndUp()
         {
             _road.CurbExitRoute(_route);
             Assert.AreEqual(_geo.Curb.center + Origin, _route[0]);
             var last = _route[_route.Count - 1];
-            Assert.AreEqual(_road.EastLane[0].y, last.y, 1e-4f);
-            Assert.AreEqual(_road.EastLane[0].x + _road.CurbMergeDistance, last.x, 1e-3f);
+            Assert.AreEqual(_road.TopLane[0].y, last.y, 1e-4f);
+            Assert.AreEqual(_road.TopLane[0].x + _road.CurbMergeDistance, last.x, 1e-3f);
             for (var i = 1; i < _route.Count; i++)
             {
                 Assert.GreaterOrEqual(_route[i].x, _route[i - 1].x - 1e-4f);
-                Assert.LessOrEqual(_route[i].y, _route[i - 1].y + 1e-4f);
+                Assert.GreaterOrEqual(_route[i].y, _route[i - 1].y - 1e-4f);
             }
         }
 
         [Test]
-        public void CurbExitPassesBesideTheQueueColumnNotThroughIt()
+        public void CurbExitGoesStraightUpThroughTheTopWallGapThenHeadsRightOntoTheTopRoad()
         {
             _road.CurbExitRoute(_route);
-            var queueRight = _geo.QueueCars[0].xMax + Origin.x;
-            for (var i = 2; i < _route.Count; i++)
-                Assert.Greater(_route[i].x, queueRight, "point " + i + " clears the queue cars");
+            var wallTop = _geo.Bounds.yMax + Origin.y;
+            var curbX = _geo.Curb.center.x + Origin.x;
+            foreach (var p in _route)
+            {
+                if (p.y > _geo.Curb.yMax + Origin.y && p.y <= wallTop + _config.WallThickness)
+                {
+                    Assert.AreEqual(curbX, p.x, 1e-3f, "straight up while crossing the wall line");
+                    Assert.GreaterOrEqual(p.x, _geo.ExitGap.x + Origin.x);
+                    Assert.LessOrEqual(p.x, _geo.ExitGap.y + Origin.x);
+                }
+            }
+            var end = _route[_route.Count - 1] - _route[_route.Count - 2];
+            Assert.Greater(end.x, 0f, "the last leg heads right");
+            Assert.Greater(end.x, end.y, "mostly right by the time it reaches the top road");
+            Assert.AreEqual(_road.TopLane[0].y, _route[_route.Count - 1].y, 1e-3f, "and ends on the top lane");
+        }
+
+        [Test]
+        public void CurbExitNeverGoesDownIntoTheEntryRoad()
+        {
+            _road.CurbExitRoute(_route);
+            foreach (var p in _route) Assert.Greater(p.y, _geo.Bounds.yMin + Origin.y, "no exit point below the lot");
         }
     }
 }

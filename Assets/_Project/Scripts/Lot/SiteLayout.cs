@@ -33,17 +33,17 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0.5f), Tooltip("Width of a walkway band (the crosswalks and the aisle crossing).")]
         private float _walkwayWidth = 1.4f;
 
-        [Header("Road below the lot")]
-        [SerializeField, Range(0.1f, 0.95f), Tooltip("Where cars leaving the curb run down the corridor (0 = curb side, 1 = bay side).")]
-        private float _exitShare = 0.75f;
+        [Header("Roads below and above the lot")]
         [SerializeField, Min(0.5f), Tooltip("Width of one road lane.")]
         private float _laneWidth = 3.2f;
         [SerializeField, Min(5f), Tooltip("How far the road and its lane routes reach past the lot walls, to either side, so cars start off screen.")]
         private float _roadReach = 30f;
-        [SerializeField, Min(0.5f), Tooltip("Radius of the turn from the road into the queue, and from the curb exit into the road.")]
+        [SerializeField, Min(0.5f), Tooltip("Radius of the turn from the entry road into the queue, and from the curb exit up in the top road.")]
         private float _turnRadius = 2.4f;
-        [SerializeField, Min(0f), Tooltip("Opening kept in the south wall beside the queue column and the exit corridor.")]
+        [SerializeField, Min(0f), Tooltip("Opening kept beside the queue column in the south wall and beside the curb car in the top wall.")]
         private float _entryPadding = 0.3f;
+        [SerializeField, Min(0f), Tooltip("Extra lot height above the side door, so a delivered car has room to straighten before the top wall gap (the lot grows taller by this much).")]
+        private float _exitRunway = 1.5f;
 
         public float CurbGap => _curbGap;
         public float DinerWidth => _dinerWidth;
@@ -55,10 +55,10 @@ namespace UncannyValet.Lot
         public float StripGap => _stripGap;
         public float CrossingShare => _crossingShare;
         public float WalkwayWidth => _walkwayWidth;
-        public float ExitShare => _exitShare;
         public float LaneWidth => _laneWidth;
         public float RoadReach => _roadReach;
         public float TurnRadius => _turnRadius;
         public float EntryPadding => _entryPadding;
+        public float ExitRunway => _exitRunway;
     }
 }

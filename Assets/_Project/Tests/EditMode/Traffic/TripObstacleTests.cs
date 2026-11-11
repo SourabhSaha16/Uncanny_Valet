@@ -68,11 +68,11 @@ namespace UncannyValet.Tests.Traffic
         private sealed class Road : IRoadLayout
         {
             public IReadOnlyList<Vector2> EastLane { get; } = new[] { new Vector2(-10f, 0f), new Vector2(30f, 0f) };
-            public IReadOnlyList<Vector2> WestLane { get; } = new[] { new Vector2(30f, -2f), new Vector2(-10f, -2f) };
+            public IReadOnlyList<Vector2> TopLane { get; } = new[] { new Vector2(-10f, 10f), new Vector2(30f, 10f) };
             public float QueueTurnDistance => 20f;
             public float CurbMergeDistance => 20f;
             public void QueueEntryRoute(int slot, List<Vector2> into) { into.Clear(); into.Add(new Vector2(10f, 0f)); into.Add(new Vector2(10f, 5f)); }
-            public void CurbExitRoute(List<Vector2> into) { into.Clear(); into.Add(new Vector2(10f, 5f)); into.Add(new Vector2(10f, 0f)); }
+            public void CurbExitRoute(List<Vector2> into) { into.Clear(); into.Add(new Vector2(10f, 5f)); into.Add(new Vector2(10f, 10f)); }
         }
 
         private static TripRouter MakeRouter(TripTuning tuning)
@@ -80,8 +80,10 @@ namespace UncannyValet.Tests.Traffic
             var road = new Road();
             var east = new LanePath();
             east.Rebuild(road.EastLane);
+            var top = new LanePath();
+            top.Rebuild(road.TopLane);
             var merge = new MergeGapRule(2.5f, 2.5f, 0.8f);
-            return new TripRouter(new TripContext(road, east, new LaneOccupancy(16), Follow, merge, tuning, new TripSpeeds(5f, 2.5f)), 2);
+            return new TripRouter(new TripContext(road, east, top, new LaneOccupancy(16), Follow, merge, tuning, new TripSpeeds(5f, 2.5f)), 2);
         }
 
         [Test]

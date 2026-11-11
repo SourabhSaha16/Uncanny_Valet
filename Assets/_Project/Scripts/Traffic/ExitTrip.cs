@@ -4,8 +4,8 @@ using UnityEngine;
 namespace UncannyValet.Traffic
 {
     /// <summary>
-    /// A delivered car leaving: drives the curb exit route, yields at the merge point until the east lane has a gap,
-    /// merges, and drives to the right end of the lane where the trip finishes.
+    /// A delivered car leaving: drives the curb exit route, yields at the merge point until the exit road above the lot has a gap,
+    /// merges, and drives to the right end of the top lane where the trip finishes.
     /// </summary>
     public sealed class ExitTrip : ITrip
     {
@@ -57,19 +57,19 @@ namespace UncannyValet.Traffic
         private TripPose StepRoute(float dt)
         {
             float mergeAt = _ctx.Road.CurbMergeDistance;
-            bool open = _ctx.CanJoinEast(mergeAt);
+            bool open = _ctx.CanJoin(TrafficLane.Top, mergeAt);
             bool yielding = _route.Remaining <= _ctx.Tuning.YieldDistance && !open;
             _route.Step(Mathf.Min(_ctx.Tuning.RouteSpeed * _ctx.Speeds.ExitScale, ObstacleCap(dt)), yielding, _ctx.Follow.Acceleration, _ctx.Follow.Brake, dt);
             if (!_route.AtEnd(_ctx.Tuning.ArriveTolerance)) return _route.Pose(TripPhase.OnRoute, _route.Speed);
             if (!open) return _route.Pose(TripPhase.Yielding, 0f);
-            _lane = _ctx.JoinEast(mergeAt, _route.Speed);
+            _lane = _ctx.Join(TrafficLane.Top, mergeAt, _route.Speed);
             _phase = TripPhase.OnLane;
             return _route.Pose(TripPhase.OnLane, _route.Speed);
         }
 
         private TripPose StepLane(float dt)
         {
-            LanePath path = _ctx.EastPath;
+            LanePath path = _ctx.TopPath;
             LaneMotion.Step(ref _lane, _ctx.Tuning.CarLength, _ctx.Follow.DesiredSpeed * _ctx.Speeds.ExitScale, ObstacleCap(dt),
                 _ctx.Occupancy, _ctx.Follow, dt);
             TripPhase phase = _lane.Distance >= path.Length ? TripPhase.Finished : TripPhase.OnLane;

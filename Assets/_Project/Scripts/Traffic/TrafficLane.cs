@@ -1,11 +1,11 @@
 namespace UncannyValet.Traffic
 {
-    /// <summary>The two lanes of the road below the lot.</summary>
+    /// <summary>The two one-way roads, both left to right.</summary>
     public enum TrafficLane
     {
-        /// <summary>Next to the lot, left to right. Carries patron cars and ambient cars.</summary>
+        /// <summary>The entry road below the lot. Carries arriving patron cars and ambient cars.</summary>
         East,
-        /// <summary>The far lane, right to left. Ambient cars only.</summary>
-        West,
+        /// <summary>The exit road above the lot. Carries delivered cars leaving and ambient cars.</summary>
+        Top,
     }
 }

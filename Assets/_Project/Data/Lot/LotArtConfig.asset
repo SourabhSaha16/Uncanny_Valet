@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: LotArtConfig
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotArtConfig
   _sidewalkTile: {fileID: -4748896761462124804, guid: 7522bd738b6136d45bd77703a47178cb, type: 3}
-  _roadDashTile: {fileID: -2288154472176348966, guid: 9ac52e6aa1293d9499f42d2038fbbcd9, type: 3}
   _outsideColor: {r: 0.36, g: 0.36, b: 0.38, a: 1}
   _asphaltColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
   _hedgeColor: {r: 0.2, g: 0.42, b: 0.22, a: 1}
@@ -22,9 +21,13 @@ MonoBehaviour:
   _curbPlateColor: {r: 0, g: 0, b: 0, a: 0.45}
   _sidewalkDepth: 1.5
   _outsideReach: 40
-  _dashTileShift: 0.27
   _curbEdgeWidth: 0.15
   _curbPlateShare: {x: 0.7, y: 0.92}
+  _entryWord: ENTRY
+  _exitWord: EXIT
+  _roadLabelPixel: 0.14
+  _roadLabelShare: 0.72
+  _roadLabelColor: {r: 0.97, g: 0.97, b: 0.94, a: 0.9}
   _dinerBuilding: {fileID: 21300000, guid: 56ec550e22011b44ca503077f87c93bd, type: 3}
   _dinerRoofPixels:
     x: 52
@@ -51,18 +54,9 @@ MonoBehaviour:
     _zebraBar: 0.3
     _zebraGap: 0.3
     _zebraMargin: 0.05
-    _arrowHeadDegrees: 35
-    _routeArrowLength: 0.9
-    _routeArrowThickness: 0.1
-    _routeArrowHead: 0.3
-    _routeArrowSpacing: 5.5
-    _routeArrowStart: 2.4
-    _markOutline: 0.05
     _slotLine: 0.1
     _slotDash: 0.4
     _slotGap: 0.25
     _slotInset: 0.12
-    _markColor: {r: 1, g: 1, b: 0.96, a: 1}
-    _markOutlineColor: {r: 0.1, g: 0.09, b: 0.15, a: 1}
     _waitSpacing: 1.6
     _waitSlots: 3

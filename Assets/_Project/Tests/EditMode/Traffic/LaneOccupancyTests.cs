@@ -40,7 +40,7 @@ namespace UncannyValet.Tests.Traffic
         public void OtherLane_IsIgnored()
         {
             var occupancy = new LaneOccupancy(4);
-            occupancy.Add(TrafficLane.West, 10f, 3f, Length);
+            occupancy.Add(TrafficLane.Top, 10f, 3f, Length);
             Assert.IsTrue(float.IsPositiveInfinity(occupancy.GapAhead(TrafficLane.East, 5f, Length, 0, out _)));
         }
 

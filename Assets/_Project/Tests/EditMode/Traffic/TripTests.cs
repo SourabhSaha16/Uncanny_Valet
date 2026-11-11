@@ -15,7 +15,7 @@ namespace UncannyValet.Tests.Traffic
         private sealed class FakeRoad : IRoadLayout
         {
             public IReadOnlyList<Vector2> EastLane { get; } = new[] { new Vector2(-10f, 0f), new Vector2(30f, 0f) };
-            public IReadOnlyList<Vector2> WestLane { get; } = new[] { new Vector2(30f, -2f), new Vector2(-10f, -2f) };
+            public IReadOnlyList<Vector2> TopLane { get; } = new[] { new Vector2(-10f, 10f), new Vector2(30f, 10f) };
             public float QueueTurnDistance => 20f;
             public float CurbMergeDistance => 20f;
 
@@ -30,7 +30,7 @@ namespace UncannyValet.Tests.Traffic
             {
                 into.Clear();
                 into.Add(new Vector2(10f, 5f));
-                into.Add(new Vector2(10f, 0f));
+                into.Add(new Vector2(10f, 10f));
             }
         }
 
@@ -44,12 +44,14 @@ namespace UncannyValet.Tests.Traffic
             var road = new FakeRoad();
             var east = new LanePath();
             east.Rebuild(road.EastLane);
+            var top = new LanePath();
+            top.Rebuild(road.TopLane);
             _occupancy = new LaneOccupancy(16);
             var follow = new FollowSettings(5f, 0.6f, 0.8f, 3f, 6f);
             var merge = new MergeGapRule(2.5f, 2.5f, 0.8f);
             var tuning = new TripTuning(CarLength, 2f, 2.5f, 2f, 0.02f);
             _speeds = new TripSpeeds(5f, 2.5f);
-            _router = new TripRouter(new TripContext(road, east, _occupancy, follow, merge, tuning, _speeds), 4);
+            _router = new TripRouter(new TripContext(road, east, top, _occupancy, follow, merge, tuning, _speeds), 4);
         }
 
         private TripPose RunUntilFinished(int trip, out int steps)
@@ -112,15 +114,40 @@ namespace UncannyValet.Tests.Traffic
         }
 
         [Test]
+        public void Exit_GoesUpFromTheCurbThenRightAlongTheTopRoad()
+        {
+            int trip = _router.BeginExit();
+            float lastY = float.NegativeInfinity;
+            TripPose pose = default;
+            for (int i = 0; i < MaxSteps; i++)
+            {
+                _router.Step(trip, Dt, out pose);
+                Assert.GreaterOrEqual(pose.Position.y, lastY - 0.001f, "never heads down");
+                lastY = pose.Position.y;
+                if (pose.Phase == TripPhase.Finished) break;
+            }
+            Assert.AreEqual(10f, pose.Position.y, 0.05f, "ends on the top road");
+            Assert.AreEqual(0f, Mathf.DeltaAngle(-90f, pose.HeadingDegrees), 0.5f, "heading right");
+        }
+
+        [Test]
+        public void Exit_IgnoresTrafficOnTheEntryRoad()
+        {
+            _occupancy.Add(TrafficLane.East, 21f, 0f, CarLength);
+            int trip = _router.BeginExit();
+            Assert.AreEqual(TripPhase.Finished, RunUntilFinished(trip, out _).Phase);
+        }
+
+        [Test]
         public void Exit_YieldsWhileTheMergePointIsBlocked_ThenGoes()
         {
-            int blocker = _occupancy.Add(TrafficLane.East, 21f, 0f, CarLength);
+            int blocker = _occupancy.Add(TrafficLane.Top, 21f, 0f, CarLength);
             int trip = _router.BeginExit();
             TripPose pose = default;
             for (int i = 0; i < 1000; i++) _router.Step(trip, Dt, out pose);
             Assert.AreEqual(TripPhase.Yielding, pose.Phase);
             Assert.AreEqual(0f, pose.Speed, 0.001f);
-            Assert.AreEqual(0f, pose.Position.y, 0.1f);
+            Assert.AreEqual(10f, pose.Position.y, 0.1f);
 
             _occupancy.Remove(blocker);
             Assert.AreEqual(TripPhase.Finished, RunUntilFinished(trip, out _).Phase);
@@ -129,7 +156,7 @@ namespace UncannyValet.Tests.Traffic
         [Test]
         public void Exit_DoesNotMergeIntoAFastCarClosingFromBehind()
         {
-            _occupancy.Add(TrafficLane.East, 14f, 5f, CarLength);
+            _occupancy.Add(TrafficLane.Top, 14f, 5f, CarLength);
             int trip = _router.BeginExit();
             bool mergedWhileBlocked = false;
             for (int i = 0; i < 400; i++)

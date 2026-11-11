@@ -13,15 +13,15 @@ namespace UncannyValet.Tests.Lot
         [SetUp]
         public void SetUp() => _tuning = new PerfectTuning(new PerfectSettings());
 
-        [TestCase(180f, true, 0f, true)]
-        [TestCase(195f, true, 0.49f, true)]
-        [TestCase(165f, true, 0.2f, true)]
-        [TestCase(-180f, true, 0f, true)]
-        [TestCase(200f, true, 0.2f, false)]
-        [TestCase(180f, false, 0.2f, false)]
-        [TestCase(180f, true, 0.5f, false)]
-        [TestCase(180f, true, 1f, false)]
-        [TestCase(110f, true, 0f, false)]
+        [TestCase(0f, true, 0f, true)]
+        [TestCase(14f, true, 0.49f, true)]
+        [TestCase(-14f, true, 0.2f, true)]
+        [TestCase(-0f, true, 0f, true)]
+        [TestCase(20f, true, 0.2f, false)]
+        [TestCase(0f, false, 0.2f, false)]
+        [TestCase(0f, true, 0.5f, false)]
+        [TestCase(0f, true, 1f, false)]
+        [TestCase(70f, true, 0f, false)]
         public void DropOffNeedsAngleZoneAndEarlyArrival(float rotation, bool inside, float elapsed, bool expected) =>
             Assert.AreEqual(expected, new DropOffJudge(_tuning).IsPerfect(rotation, inside, elapsed));
 
@@ -30,7 +30,7 @@ namespace UncannyValet.Tests.Lot
         {
             _tuning.TrySet(TuningKey.PerfectDropOffAngle, 40f);
             _tuning.TrySet(TuningKey.PerfectDropOffTimerShare, 0.8f);
-            Assert.IsTrue(new DropOffJudge(_tuning).IsPerfect(210f, true, 0.7f));
+            Assert.IsTrue(new DropOffJudge(_tuning).IsPerfect(30f, true, 0.7f));
         }
 
         [TestCase(0f, 0f, 0f, false, ParkVerdict.Perfect)]

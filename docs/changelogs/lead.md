@@ -657,3 +657,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a95488145e96040e2 (PerfectRows, PerfectSettings, PerfectJudgeTests, DifficultyDialsTests), docs/changelogs/lead.md
 Why: issue 69. Perfect rows have plain-language labels; the three judging rows and the bonus show without Advanced; defaults loosened (angle 12 degrees, side 0.35, lengthwise 0.7; lengthwise slider max 1.2 = bay end slack).
 Tests: 1088 of 1088 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/lot exit delivered cars through the top wall (#68) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-abc3d4111115c7d90 (Lot geometry, frame, road art, curb facing up, PixelFont; Traffic ExitTrip, TripContext, AmbientSpawner; IRoadLayout WestLane renamed TopLane; LotArtConfig asset; tests), conflict in docs/changelogs/lot.md (kept both entries), docs/changelogs/lead.md
+Why: issue 68. The drop-off faces up, delivered cars leave straight up through a gap above the curb onto a new one-way EXIT road; the bottom road is a one-way ENTRY road; ambient cars split evenly over both. Camera framing unchanged. Not seen in play.
+Tests: 1098 of 1098 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn 563 of 563 lines reverted).

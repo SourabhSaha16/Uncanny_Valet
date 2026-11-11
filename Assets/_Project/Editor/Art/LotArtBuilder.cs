@@ -22,7 +22,6 @@ namespace UncannyValet.EditorTools.Art
             var config = ArtAssetUtil.LoadOrCreate<LotArtConfig>(AssetPath);
             var so = new SerializedObject(config);
             ArtAssetUtil.SetObject(so, "_sidewalkTile", ArtSprites.AtPoint(Tiles, CleanCobble.x, CleanCobble.y));
-            ArtAssetUtil.SetObject(so, "_roadDashTile", ArtSprites.Named(Road, "Road_r6_c0"));
             ArtAssetUtil.SetObject(so, "_dinerBuilding", ArtSprites.AtPoint(DinerBuilding, DinerPoint.x, DinerPoint.y));
             ArtAssetUtil.SetColor(so, "_asphaltColor", ArtSprites.PixelColor(Road, PlainAsphalt.x, PlainAsphalt.y));
             ArtAssetUtil.Save(so);

@@ -3,12 +3,13 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// The ground and the walls. The south wall has an opening (the entry gap) where cars drive in from the road to the
-    /// queue column and out of the corridor. <see cref="Apply"/> sizes everything without creating objects.
+    /// The ground and the walls. The south wall has an opening (the entry gap) where cars drive in from the entry road to
+    /// the queue column; the top wall has an opening (the exit gap) above the curb where delivered cars leave.
+    /// <see cref="Apply"/> sizes everything without creating objects.
     /// </summary>
     public sealed class LotFrame
     {
-        private static readonly string[] WallNames = { "Wall N", "Wall SW", "Wall SE", "Wall W", "Wall E" };
+        private static readonly string[] WallNames = { "Wall NW", "Wall NE", "Wall SW", "Wall SE", "Wall W", "Wall E" };
 
         private readonly Transform _ground;
         private readonly Transform[] _walls = new Transform[WallNames.Length];
@@ -26,19 +27,31 @@ namespace UncannyValet.Lot
             }
         }
 
-        /// <summary>Puts the walls just outside <paramref name="b"/>, leaves the south wall open between the gap's x values and stretches the ground over it.</summary>
-        public void Apply(Rect b, Vector2 entryGap)
+        /// <summary>
+        /// Puts the walls just outside <paramref name="b"/>, leaves the south wall open between the entry gap's x values and the
+        /// top wall open between the exit gap's x values, and stretches the ground over both.
+        /// </summary>
+        public void Apply(Rect b, Vector2 entryGap, Vector2 exitGap)
         {
             var t = _thickness;
             var southY = b.yMin - t * 0.5f;
-            var gapLeft = Mathf.Clamp(entryGap.x, b.xMin - t, b.xMax + t);
-            var gapRight = Mathf.Clamp(entryGap.y, gapLeft, b.xMax + t);
+            var northY = b.yMax + t * 0.5f;
+            var left = b.xMin - t;
+            var right = b.xMax + t;
             Place(_ground, b.center, b.size);
-            Place(_walls[0], new Vector2(b.center.x, b.yMax + t * 0.5f), new Vector2(b.width + t * 2f, t));
-            PlaceSpan(_walls[1], b.xMin - t, gapLeft, southY, t);
-            PlaceSpan(_walls[2], gapRight, b.xMax + t, southY, t);
-            Place(_walls[3], new Vector2(b.xMin - t * 0.5f, b.center.y), new Vector2(t, b.height));
-            Place(_walls[4], new Vector2(b.xMax + t * 0.5f, b.center.y), new Vector2(t, b.height));
+            PlaceSplit(_walls[0], _walls[1], left, right, exitGap, northY, t);
+            PlaceSplit(_walls[2], _walls[3], left, right, entryGap, southY, t);
+            Place(_walls[4], new Vector2(b.xMin - t * 0.5f, b.center.y), new Vector2(t, b.height));
+            Place(_walls[5], new Vector2(b.xMax + t * 0.5f, b.center.y), new Vector2(t, b.height));
+        }
+
+        // A horizontal wall from left to right with an opening between gap.x and gap.y, in two pieces.
+        private static void PlaceSplit(Transform first, Transform second, float left, float right, Vector2 gap, float y, float thickness)
+        {
+            var gapLeft = Mathf.Clamp(gap.x, left, right);
+            var gapRight = Mathf.Clamp(gap.y, gapLeft, right);
+            PlaceSpan(first, left, gapLeft, y, thickness);
+            PlaceSpan(second, gapRight, right, y, thickness);
         }
 
         private static void PlaceSpan(Transform wall, float xMin, float xMax, float y, float thickness)

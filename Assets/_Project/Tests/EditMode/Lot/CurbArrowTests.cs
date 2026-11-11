@@ -16,11 +16,11 @@ namespace UncannyValet.Tests.Lot
         public void AnyRightCarIsRight() => Assert.AreEqual(CurbArrowState.Right, CurbArrowRule.Evaluate(1, 1));
 
         [Test]
-        public void RequiredDirectionPointsDownTheScreen()
+        public void RequiredDirectionPointsUpTheScreen()
         {
             var d = CurbFacingRule.RequiredDirection;
             Assert.AreEqual(0f, d.x, 1e-4f);
-            Assert.AreEqual(-1f, d.y, 1e-4f);
+            Assert.AreEqual(1f, d.y, 1e-4f);
         }
 
         [Test]

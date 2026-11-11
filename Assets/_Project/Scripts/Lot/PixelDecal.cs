@@ -18,29 +18,29 @@ namespace UncannyValet.Lot
         /// <summary>Maps a bitmap key to its colour; false for a clear key.</summary>
         public delegate bool KeyColor(char key, out Color32 color);
 
-        /// <summary>Builds the decal centred on <paramref name="center"/>; one rectangle per horizontal run of one colour.</summary>
-        public static void Build(RectFactory rects, Transform parent, Vector2 center, string[] bitmap, KeyColor colors)
+        /// <summary>Builds the decal centred on <paramref name="center"/>; one rectangle per horizontal run of one colour, each pixel <paramref name="pixelSize"/> square.</summary>
+        public static void Build(RectFactory rects, Transform parent, Vector2 center, string[] bitmap, KeyColor colors, float pixelSize = PixelSize)
         {
             var width = bitmap[0].Length;
-            var left = center.x - width * PixelSize * 0.5f;
-            var top = center.y + bitmap.Length * PixelSize * 0.5f;
+            var left = center.x - width * pixelSize * 0.5f;
+            var top = center.y + bitmap.Length * pixelSize * 0.5f;
             for (var row = 0; row < bitmap.Length; row++)
             {
                 var x = 0;
-                while (x < width) x += Run(rects, parent, bitmap[row], x, row, left, top, colors);
+                while (x < width) x += Run(rects, parent, bitmap[row], x, row, left, top, colors, pixelSize);
             }
         }
 
         // Draws the run of equal keys starting at x and returns its length.
         private static int Run(RectFactory rects, Transform parent, string line, int x, int row, float left, float top,
-            KeyColor colors)
+            KeyColor colors, float pixelSize)
         {
             var end = x;
             while (end < line.Length && line[end] == line[x]) end++;
             var length = end - x;
             if (!colors(line[x], out var color)) return length;
-            var size = new Vector2(length * PixelSize, PixelSize);
-            var at = new Vector2(left + (x + length * 0.5f) * PixelSize, top - (row + 0.5f) * PixelSize);
+            var size = new Vector2(length * pixelSize, pixelSize);
+            var at = new Vector2(left + (x + length * 0.5f) * pixelSize, top - (row + 0.5f) * pixelSize);
             rects.Make(parent, "Icon " + row + "." + x, at, size, color, Order);
             return length;
         }
