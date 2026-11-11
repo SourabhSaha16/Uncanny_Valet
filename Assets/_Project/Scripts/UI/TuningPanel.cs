@@ -19,6 +19,9 @@ namespace UncannyValet.UI
         /// <summary>Text for the overlay to show.</summary>
         public const string Hint = "F2: tuning panel";
         private const float FooterHeight = 24f;
+        private const float CopiedSeconds = 1.5f;
+        private const string CopyLabel = "Copy all values";
+        private const string CopiedLabel = "Copied!";
 
         [SerializeField, Min(8)] private int _fontSize = 14;
         [SerializeField, Min(300f)] private float _width = 820f;
@@ -32,6 +35,7 @@ namespace UncannyValet.UI
         private bool _open;
         private bool _advanced;
         private bool _closeRequested;
+        private float _copiedUntil;
         private GUIStyle _label;
         private GUIStyle _header;
         private GUIStyle _field;
@@ -88,7 +92,9 @@ namespace UncannyValet.UI
             GUI.Box(panel, GUIContent.none, _panelBox);
             GUI.Label(new Rect(panel.x + 8f, panel.y + 4f, 300f, 26f), "Tuning (F2 closes)", _title);
             if (GUI.Button(new Rect(panel.xMax - 108f, panel.y + 4f, 100f, 24f), "Reset all")) ResetAll();
-            var advanced = GUI.Toggle(new Rect(panel.xMax - 308f, panel.y + 4f, 190f, 24f), _advanced, "Advanced (all numbers)");
+            var copyLabel = Time.unscaledTime < _copiedUntil ? CopiedLabel : CopyLabel;
+            if (GUI.Button(new Rect(panel.xMax - 268f, panel.y + 4f, 154f, 24f), copyLabel)) CopyAll();
+            var advanced = GUI.Toggle(new Rect(panel.xMax - 468f, panel.y + 4f, 190f, 24f), _advanced, "Advanced (all numbers)");
             if (advanced != _advanced) { _advanced = advanced; RebuildVisible(); }
             DrawRows(new Rect(panel.x + 6f, panel.y + 34f, panel.width - 12f, panel.height - 40f - FooterHeight));
             GUI.Label(new Rect(panel.x + 8f, panel.yMax - FooterHeight - 4f, panel.width - 16f, FooterHeight), GUI.tooltip, _label);
@@ -106,6 +112,12 @@ namespace UncannyValet.UI
                 _visible[i].Draw(row, _tuning, focused, _label, _header, _field);
             }
             GUI.EndScrollView();
+        }
+
+        private void CopyAll()
+        {
+            GUIUtility.systemCopyBuffer = TuningSnapshotJson.Build(TuningCatalog.All, info => _tuning.Get(info.Key));
+            _copiedUntil = Time.unscaledTime + CopiedSeconds;
         }
 
         private void ResetAll()

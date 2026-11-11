@@ -700,3 +700,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-ac64f4e85aaac1f29 (AmbientDensity, AmbientTraffic, YieldZone, SpawnGate, ViewWindow, TrafficModule, LotRoadArt, DecorLayout, RoadLayout, IRoadLayout, TrafficConfig and LotArtConfig assets, traffic tuning keys, tests), docs/changelogs/lead.md
 Why: issue 75. Both roads carry ambient traffic both ways (an extra right-to-left lane per road), 3 to 4 cars kept on screen, ambient cars brake through a YieldZone so an exiting delivered car can merge. Camera framing untouched, so mostly the entry road shows. TrafficAmbientPerMinute removed.
 Tests: 1159 of 1159 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).
+
+## lead: merge agent/integration F2 Copy all values button (#76) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a88b0b826cfe28c36 (TuningPanel, TuningSnapshotJson, TuningSnapshotJsonTests), docs/changelogs/lead.md
+Why: issue 76. A Copy all values button in the F2 panel header copies every tuning value, Advanced ones included, as flat JSON via GUIUtility.systemCopyBuffer, with a 1.5 s Copied! confirmation. Not checked in a browser.
+Tests: 1165 of 1165 EditMode after the merge (agent: 16 of 16 PlayMode).
