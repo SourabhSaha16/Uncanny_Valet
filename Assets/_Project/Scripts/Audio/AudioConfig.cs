@@ -39,6 +39,25 @@ namespace UncannyValet.Audio
         [SerializeField, Range(0f, 10f), Tooltip("Seconds for the tempo to close about two thirds of the gap to its target.")]
         private float _tempoSmoothingSeconds = 2.5f;
 
+        [Header("Tyres")]
+        [SerializeField, Range(0f, 1f), Tooltip("Squeal loop volume at the gentlest slide, as a share of the effect volume.")]
+        private float _squealMinVolume = 0.25f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Squeal loop volume at a full drift, as a share of the effect volume.")]
+        private float _squealMaxVolume = 0.8f;
+
+        [SerializeField, Range(0.5f, 2f), Tooltip("Squeal pitch multiplier at the gentlest slide.")]
+        private float _squealMinPitch = 0.9f;
+
+        [SerializeField, Range(0.5f, 2.5f), Tooltip("Squeal pitch multiplier at a full drift.")]
+        private float _squealMaxPitch = 1.5f;
+
+        [SerializeField, Range(0.01f, 1f), Tooltip("Seconds the squeal takes to fade out when grip returns.")]
+        private float _squealFadeSeconds = 0.15f;
+
+        [SerializeField, Range(0.005f, 0.5f), Tooltip("Seconds the squeal takes to come in when a slide starts.")]
+        private float _squealAttackSeconds = 0.03f;
+
         [Header("Synthesis")]
         [SerializeField, Range(11025, 44100), Tooltip("Sample rate of generated clips. 22050 keeps Web generation cheap.")]
         private int _sampleRate = 22050;
@@ -56,6 +75,12 @@ namespace UncannyValet.Audio
         public float MaxTempoMultiplier => _maxTempoMultiplier;
         public int PendingForMaxTempo => _pendingForMaxTempo;
         public float TempoSmoothingSeconds => _tempoSmoothingSeconds;
+        public float SquealMinVolume => _squealMinVolume;
+        public float SquealMaxVolume => _squealMaxVolume;
+        public float SquealMinPitch => _squealMinPitch;
+        public float SquealMaxPitch => _squealMaxPitch;
+        public float SquealFadeSeconds => _squealFadeSeconds;
+        public float SquealAttackSeconds => _squealAttackSeconds;
         public int SampleRate => _sampleRate;
         public int SfxVoices => _sfxVoices;
     }

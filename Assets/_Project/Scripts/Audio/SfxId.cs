@@ -16,6 +16,8 @@ namespace UncannyValet.Audio
         Washed,
         StationStart,
         PedestrianBump,
-        CarBump
+        CarBump,
+        TyreChirp,
+        TyreScreech
     }
 }

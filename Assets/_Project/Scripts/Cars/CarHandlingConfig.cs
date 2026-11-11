@@ -1,3 +1,4 @@
+using UncannyValet.Cars.Fx;
 using UnityEngine;
 
 namespace UncannyValet.Cars
@@ -47,6 +48,11 @@ namespace UncannyValet.Cars
         [SerializeField, Min(0f), Tooltip("Seconds before the same pair of cars can report another bump.")]
         private float _bumpPairInterval = 0.25f;
 
+        [Header("Skid marks and tyre sound (section 6)")]
+        [SerializeField] private SkidConfig _skid = new SkidConfig();
+
+        /// <summary>Skid mark and slide numbers.</summary>
+        public SkidConfig Skid => _skid;
         /// <summary>Restitution between two cars, 0..1.</summary>
         public float Bounciness => _bounciness;
         /// <summary>Approach speed below which a car-on-car touch is ignored, units per second.</summary>

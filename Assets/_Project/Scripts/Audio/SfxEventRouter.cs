@@ -11,6 +11,8 @@ namespace UncannyValet.Audio
         private readonly Func<float> _clock;
         private readonly SfxRateLimiter _bumpLimit = new SfxRateLimiter(BumpMinInterval);
         private readonly SfxRateLimiter _carBumpLimit = new SfxRateLimiter(CarBumpMinInterval);
+        private readonly SfxRateLimiter _chirpLimit = new SfxRateLimiter(ChirpMinInterval);
+        private readonly SfxRateLimiter _screechLimit = new SfxRateLimiter(ScreechMinInterval);
         private bool _active;
 
         /// <summary>Fewest seconds between two pedestrian bump sounds.</summary>
@@ -18,6 +20,12 @@ namespace UncannyValet.Audio
 
         /// <summary>Fewest seconds between two car-on-car bump sounds (the Cars module already limits each pair).</summary>
         public const float CarBumpMinInterval = 0.1f;
+
+        /// <summary>Fewest seconds between two slide chirps.</summary>
+        public const float ChirpMinInterval = 0.25f;
+
+        /// <summary>Fewest seconds between two hard-braking screeches.</summary>
+        public const float ScreechMinInterval = 0.6f;
 
         /// <param name="clock">Seconds clock used to rate-limit repeated sounds; without one nothing is limited.</param>
         public SfxEventRouter(IEventBus bus, Action<SfxId> play, Func<float> clock = null)
@@ -45,6 +53,8 @@ namespace UncannyValet.Audio
             _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Subscribe<PedestrianBumped>(OnPedestrianBumped);
             _bus.Subscribe<CarsCollided>(OnCarsCollided);
+            _bus.Subscribe<CarSlideStarted>(OnSlideStarted);
+            _bus.Subscribe<CarHardBraked>(OnHardBraked);
         }
 
         public void Unsubscribe()
@@ -65,6 +75,8 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Unsubscribe<PedestrianBumped>(OnPedestrianBumped);
             _bus.Unsubscribe<CarsCollided>(OnCarsCollided);
+            _bus.Unsubscribe<CarSlideStarted>(OnSlideStarted);
+            _bus.Unsubscribe<CarHardBraked>(OnHardBraked);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -79,6 +91,16 @@ namespace UncannyValet.Audio
         private void OnCarFullyCharged(CarFullyCharged e) => _play(SfxId.Charged);
         private void OnCarCleaned(CarCleaned e) => _play(SfxId.Washed);
         private void OnCarEnteredStation(CarEnteredStation e) => _play(SfxId.StationStart);
+
+        private void OnSlideStarted(CarSlideStarted e)
+        {
+            if (_clock == null || _chirpLimit.TryPass(_clock())) _play(SfxId.TyreChirp);
+        }
+
+        private void OnHardBraked(CarHardBraked e)
+        {
+            if (_clock == null || _screechLimit.TryPass(_clock())) _play(SfxId.TyreScreech);
+        }
 
         private void OnCarsCollided(CarsCollided e)
         {

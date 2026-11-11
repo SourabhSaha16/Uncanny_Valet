@@ -28,6 +28,9 @@ namespace UncannyValet.Cars
         /// <summary>The velocity set in the last FixedUpdate, i.e. before the physics step (collisions read the pre-impact speed from it).</summary>
         public Vector2 PreSolveVelocity { get; private set; }
 
+        /// <summary>Forward and sideways speed, throttle and handbrake of the last FixedUpdate (read-only, no allocation).</summary>
+        public SlipReading Reading { get; private set; }
+
         /// <summary>Input editors read before the handling model; faults add themselves here.</summary>
         public DriveModifierStack Modifiers { get; } = new DriveModifierStack();
 
@@ -95,6 +98,7 @@ namespace UncannyValet.Cars
             if (_handling == null) _handling = FallbackHandling();
             var input = HasDriver ? Modifiers.Apply(new DriveInput(_throttle, _steer, _drift)) : default;
             Vector2 up = transform.up;
+            Observe(_body.linearVelocity, up, input);
             var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime);
             var forward = Vector2.Dot(velocity, up);
             var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, _definition.Acceleration,
@@ -102,6 +106,13 @@ namespace UncannyValet.Cars
             _body.linearVelocity = PreSolveVelocity = velocity + up * (next - forward);
             _body.angularVelocity = Mathf.Rad2Deg
                 * SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed);
+        }
+
+        // The slide the player sees: velocity against the facing before this step's damping (skid marks and tyre sound read it).
+        private void Observe(Vector2 velocity, Vector2 up, in DriveInput input)
+        {
+            Reading = new SlipReading(Vector2.Dot(velocity, up), Vector2.Dot(velocity, new Vector2(up.y, -up.x)),
+                input.Throttle, input.Drift);
         }
 
         private CarHandlingLive FallbackHandling()

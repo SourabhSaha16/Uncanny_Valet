@@ -1,3 +1,4 @@
+using UncannyValet.Cars.Fx;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 
@@ -9,8 +10,10 @@ namespace UncannyValet.Cars
     /// </summary>
     public sealed class CarHandlingLive
     {
+        private readonly SkidConfig _skid;
         private float _lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed, _gripAtSpeed, _driftGripScale;
         private float _driftMinSpeed, _turnFullSpeed, _rMin;
+        private float _slideThreshold, _shiftSlideSpeed, _markOpacity, _markFadeSeconds;
 
         public CarHandlingLive(CarHandlingConfig config)
         {
@@ -23,12 +26,23 @@ namespace UncannyValet.Cars
             _driftMinSpeed = config.DriftMinSpeed;
             _turnFullSpeed = config.TurnFullSpeed;
             _rMin = config.RMin;
+            _skid = config.Skid;
+            _slideThreshold = _skid.SlideThreshold;
+            _shiftSlideSpeed = _skid.ShiftSlideSpeed;
+            _markOpacity = _skid.MarkOpacity;
+            _markFadeSeconds = _skid.MarkFadeSeconds;
         }
 
         /// <summary>The drift model's numbers.</summary>
         public DriftSettings Drift => new DriftSettings(_lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed,
             _gripAtSpeed, _driftGripScale, _driftMinSpeed);
 
+        /// <summary>The skid rule's numbers.</summary>
+        public SkidSettings Skid => new SkidSettings(_slideThreshold, _shiftSlideSpeed, _markOpacity, _skid.ExitShare,
+            _skid.FullDriftDegrees, _skid.FaintShare, _skid.HardBrakeSpeed);
+
+        /// <summary>Seconds a skid mark takes to fade out.</summary>
+        public float MarkFadeSeconds => _markFadeSeconds;
         /// <summary>Speed at which steering reaches full effect.</summary>
         public float TurnFullSpeed => _turnFullSpeed;
         /// <summary>Tightest radius at low speed.</summary>
@@ -47,6 +61,10 @@ namespace UncannyValet.Cars
             tuning.Seed(TuningKey.HandlingDriftGripScale, _driftGripScale);
             tuning.Seed(TuningKey.HandlingTurnFullSpeed, _turnFullSpeed);
             tuning.Seed(TuningKey.HandlingMinTurnRadius, _rMin);
+            tuning.Seed(TuningKey.HandlingSlideThreshold, _slideThreshold);
+            tuning.Seed(TuningKey.HandlingShiftSlideSpeed, _shiftSlideSpeed);
+            tuning.Seed(TuningKey.HandlingMarkOpacity, _markOpacity);
+            tuning.Seed(TuningKey.HandlingMarkFadeSeconds, _markFadeSeconds);
         }
 
         /// <summary>Applies a tuning change; false when the key is not a handling key.</summary>
@@ -62,6 +80,10 @@ namespace UncannyValet.Cars
                 case TuningKey.HandlingDriftGripScale: _driftGripScale = value; return true;
                 case TuningKey.HandlingTurnFullSpeed: _turnFullSpeed = value; return true;
                 case TuningKey.HandlingMinTurnRadius: _rMin = value; return true;
+                case TuningKey.HandlingSlideThreshold: _slideThreshold = value; return true;
+                case TuningKey.HandlingShiftSlideSpeed: _shiftSlideSpeed = value; return true;
+                case TuningKey.HandlingMarkOpacity: _markOpacity = value; return true;
+                case TuningKey.HandlingMarkFadeSeconds: _markFadeSeconds = value; return true;
                 default: return false;
             }
         }

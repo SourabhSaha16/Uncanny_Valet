@@ -167,5 +167,13 @@ namespace UncannyValet.Core.Events
         HandlingTurnFullSpeed,
         /// <summary>Tightest turning radius at low speed; sets the maximum turn rate.</summary>
         HandlingMinTurnRadius,
+        /// <summary>Sideways speed above which a car counts as sliding (skid marks and tyre sound).</summary>
+        HandlingSlideThreshold,
+        /// <summary>Speed above which holding the drift button alone counts as sliding.</summary>
+        HandlingShiftSlideSpeed,
+        /// <summary>Darkest skid mark opacity (a full drift), 0..1.</summary>
+        HandlingMarkOpacity,
+        /// <summary>Seconds a skid mark takes to fade out.</summary>
+        HandlingMarkFadeSeconds,
     }
 }

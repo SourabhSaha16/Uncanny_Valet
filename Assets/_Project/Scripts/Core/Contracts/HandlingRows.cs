@@ -25,6 +25,14 @@ namespace UncannyValet.Core.Contracts
                 "Below this speed the steering is eased down so a stopped car cannot spin on the spot."),
             new TuningInfo(TuningKey.HandlingMinTurnRadius, Group, "Tightest turn (units)", 1f, 8f, 0.1f,
                 "Radius of the tightest slow turn. Smaller = sharper turns."),
+            new TuningInfo(TuningKey.HandlingSlideThreshold, Group, "Skid starts at (sideways speed)", 0.2f, 5f, 0.1f,
+                "How fast the car must be moving sideways before it leaves skid marks and squeals."),
+            new TuningInfo(TuningKey.HandlingShiftSlideSpeed, Group, "Shift skid from (speed)", 0.5f, 8f, 0.1f,
+                "Holding Shift above this speed leaves skid marks even when the car is not sliding much."),
+            new TuningInfo(TuningKey.HandlingMarkOpacity, Group, "Skid mark darkness", 0.1f, 1f, 0.05f,
+                "How dark the marks of a full drift are. Gentle slides are fainter."),
+            new TuningInfo(TuningKey.HandlingMarkFadeSeconds, Group, "Skid mark fade time (s)", 1f, 20f, 0.5f,
+                "Seconds a skid mark takes to fade away."),
         };
     }
 }

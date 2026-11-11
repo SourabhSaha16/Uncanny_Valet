@@ -28,3 +28,19 @@ MonoBehaviour:
   _fullImpactSpeed: 6
   _parkedMassScale: 8
   _bumpPairInterval: 0.25
+  _skid:
+    _slideThreshold: 1.2
+    _shiftSlideSpeed: 2
+    _markOpacity: 0.8
+    _markFadeSeconds: 6
+    _exitShare: 0.75
+    _fullDriftDegrees: 40
+    _faintShare: 0.3
+    _hardBrakeSpeed: 4
+    _markSpacing: 1
+    _markThickness: 0.07
+    _tyreSideShare: 0.38
+    _tyreRearShare: 0.32
+    _markColor: {r: 0.06, g: 0.06, b: 0.07, a: 1}
+    _decalCap: 40
+    _decalSortingOrder: -3
