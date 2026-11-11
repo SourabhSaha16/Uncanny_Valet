@@ -34,6 +34,9 @@ MonoBehaviour:
   _bounceCooldown: 0.6
   _bounceMinSpeed: 0.4
   _bounceFullSpeed: 5
+  _stumbleSeconds: 0.4
+  _stumbleDistance: 0.7
+  _stumbleSpins: 1
   _columns: 24
   _framesPerGroup: 6
   _framesPerSecond: 10

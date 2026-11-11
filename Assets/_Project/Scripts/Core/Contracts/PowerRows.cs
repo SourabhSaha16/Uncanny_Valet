@@ -31,6 +31,10 @@ namespace UncannyValet.Core.Contracts
                 "How long the world stands still."),
             new TuningInfo(TuningKey.PowerFreezeTimeScale, Group, "Freeze time speed (x)", 0f, 1f, 0.05f,
                 "World speed during freeze time. 0 = completely stopped, 0.3 = slow motion."),
+            new TuningInfo(TuningKey.PowerStumbleSeconds, Group, "Boost: how long people stumble (s)", 0.1f, 2f, 0.05f,
+                "How long a pedestrian stumbles when the boosted valet runs through them."),
+            new TuningInfo(TuningKey.PowerTrailPerSecond, Group, "Boost: sparkles per second", 0f, 60f, 1f,
+                "How many sparkles the boosted valet leaves behind each second. 0 = no trail."),
         };
     }
 }

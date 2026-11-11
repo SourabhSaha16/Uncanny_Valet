@@ -33,6 +33,9 @@ namespace UncannyValet.EditorTools
             var mover = go.AddComponent<OnFootMover>();
             var interactor = go.AddComponent<Interactor>();
             var seat = go.AddComponent<SeatController>();
+            var fx = new SerializedObject(go.AddComponent<ValetBoostFx>());
+            fx.FindProperty("_shape").objectReferenceValue = layers[1]; // the outfit layer is the outlined shape
+            fx.ApplyModifiedPropertiesWithoutUndo();
 
             var so = new SerializedObject(seat);
             so.FindProperty("_mover").objectReferenceValue = mover;

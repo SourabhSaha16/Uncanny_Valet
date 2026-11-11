@@ -19,6 +19,7 @@ namespace UncannyValet.Audio
         CarBump,
         TyreChirp,
         TyreScreech,
-        PerfectDing
+        PerfectDing,
+        SpeedBoost
     }
 }

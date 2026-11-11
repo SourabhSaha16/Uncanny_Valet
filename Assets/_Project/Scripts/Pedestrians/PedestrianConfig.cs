@@ -64,6 +64,14 @@ namespace UncannyValet.Pedestrians
         [SerializeField, Min(0.1f), Tooltip("Impact speed that gives a full-strength bump (bigger distance, louder sound).")]
         private float _bounceFullSpeed = 5f;
 
+        [Header("Stumble (the boosted valet runs through a person)")]
+        [SerializeField, Min(0.1f), Tooltip("Seconds of the stumble when the F2 value is missing.")]
+        private float _stumbleSeconds = 0.4f;
+        [SerializeField, Range(0f, 2f), Tooltip("Peak push away from the valet, world units.")]
+        private float _stumbleDistance = 0.7f;
+        [SerializeField, Range(0f, 3f), Tooltip("Full turns the person spins during the stumble.")]
+        private float _stumbleSpins = 1f;
+
         [Header("Animation")]
         [SerializeField, Min(1)] private int _columns = 24;
         [SerializeField, Min(1)] private int _framesPerGroup = 6;
@@ -101,6 +109,9 @@ namespace UncannyValet.Pedestrians
         public float BounceCooldown => _bounceCooldown;
         public float BounceMinSpeed => _bounceMinSpeed;
         public float BounceFullSpeed => _bounceFullSpeed;
+        public float StumbleSeconds => _stumbleSeconds;
+        public float StumbleDistance => _stumbleDistance;
+        public float StumbleSpins => _stumbleSpins;
 
         /// <summary>Seconds a person waits when blocked; <paramref name="patience01"/> (0..1) picks a value in the configured range.</summary>
         public float WaitFor(float patience01)
