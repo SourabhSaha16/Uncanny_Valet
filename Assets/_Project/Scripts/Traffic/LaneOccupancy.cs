@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UncannyValet.Traffic
 {
@@ -56,6 +57,17 @@ namespace UncannyValet.Traffic
 
         /// <summary>Forgets every car.</summary>
         public void Clear() => _entries.Clear();
+
+        /// <summary>True when a car of <paramref name="length"/> centred at <paramref name="distance"/> would overlap a registered car on <paramref name="lane"/>.</summary>
+        public bool Overlaps(TrafficLane lane, float distance, float length)
+        {
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                Entry e = _entries[i];
+                if (e.Lane == lane && Mathf.Abs(e.Distance - distance) < (e.Length + length) * 0.5f) return true;
+            }
+            return false;
+        }
 
         /// <summary>Bumper gap to the nearest car ahead of a car at <paramref name="distance"/> (infinity if none). May be negative on overlap.</summary>
         public float GapAhead(TrafficLane lane, float distance, float length, int excludeId, out float leaderSpeed)

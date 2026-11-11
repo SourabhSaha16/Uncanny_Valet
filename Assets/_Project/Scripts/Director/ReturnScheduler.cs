@@ -5,8 +5,8 @@ namespace UncannyValet.Director
 {
     /// <summary>
     /// Pure return scheduling (spec section 5, issue 73). It only ever looks at cars whose patron is still
-    /// inside the diner and only calls a patron back early when the car sits in a regular spot, so it can never
-    /// summon a patron whose car is not parked or who already left (a car in a station is only ever held back).
+    /// inside the diner (dropped off, stay not over, not yet summoned), wherever the car is, so it can never
+    /// move the return of a patron who already left or asked for the car.
     /// Before the late-shift phase it keeps every return inside its window (the planned stay +/- the window share),
     /// keeps patrons at least the pickup spacing apart (waived in a wave peak), brings one return forward when the lot
     /// is tight or the player is under target, and holds one back when over target or in relief, at most once per
@@ -79,7 +79,7 @@ namespace UncannyValet.Director
         {
             var c = _cars[index];
             var earliest = System.Math.Max(c.Lo, beforeAt + _settings.SpacingSeconds);
-            if (c.Forward && System.Math.Max(to, earliest) < c.At) _cars.Move(index, System.Math.Max(to, earliest));
+            if (System.Math.Max(to, earliest) < c.At) _cars.Move(index, System.Math.Max(to, earliest));
         }
 
         // Brings the earliest return that has room as far forward as the window and the spacing allow.
@@ -90,7 +90,7 @@ namespace UncannyValet.Director
             {
                 var c = _cars[i];
                 var to = System.Math.Max(c.Lo, prev + _settings.SpacingSeconds);
-                if (c.Forward && c.At - to >= _settings.MinMoveSeconds) { _cars.Move(i, to); return true; }
+                if (c.At - to >= _settings.MinMoveSeconds) { _cars.Move(i, to); return true; }
                 prev = System.Math.Max(prev, c.At);
             }
             return false;

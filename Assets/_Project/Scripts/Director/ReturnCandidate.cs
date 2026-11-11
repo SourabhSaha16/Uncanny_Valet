@@ -14,7 +14,5 @@ namespace UncannyValet.Director
         public float Lo;
         /// <summary>Latest return inside the window.</summary>
         public float Hi;
-        /// <summary>True when the car is parked in a regular spot, so its patron may be called earlier. A car in a station may only be held back.</summary>
-        public bool Forward;
     }
 }

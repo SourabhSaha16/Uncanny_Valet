@@ -52,7 +52,8 @@ namespace UncannyValet.Tests.Integration
                 Assert.AreEqual(traffic.ExitSpeed, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
                 Assert.AreEqual(7.3f, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
                 Assert.AreEqual(5f, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
-                Assert.AreEqual(13f, tuning.Get(TuningKey.TrafficAmbientPerMinute), 0.0001f);
+                Assert.AreEqual(3f, tuning.Get(TuningKey.TrafficMinOnScreen), 0.0001f);
+                Assert.AreEqual(4f, tuning.Get(TuningKey.TrafficTargetOnScreen), 0.0001f);
                 Assert.AreEqual(1.25f, tuning.Get(TuningKey.TrafficSpeedScale), 0.0001f);
             }
             finally

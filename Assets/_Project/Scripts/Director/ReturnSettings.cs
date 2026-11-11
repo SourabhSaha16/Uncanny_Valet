@@ -13,7 +13,7 @@ namespace UncannyValet.Director
         private float _windowPercent = 25f;
         [SerializeField, Min(0f), Tooltip("Fewest seconds between two patrons reaching the curb, except in a wave peak.")]
         private float _spacingSeconds = 4f;
-        [SerializeField, Min(0f), Tooltip("From this many seconds before the end every parked car's return is brought forward, outside the window. 0 = never.")]
+        [SerializeField, Min(0f), Tooltip("From this many seconds before the end every open ticket's return is brought forward, outside the window. 0 = never.")]
         private float _lateStartSeconds = 60f;
         [SerializeField, Min(0f), Tooltip("The last late-shift pickup is requested this many seconds before the end.")]
         private float _lastLeadSeconds = 20f;

@@ -4,9 +4,9 @@ using UncannyValet.Core.Contracts;
 namespace UncannyValet.Director
 {
     /// <summary>
-    /// The cars whose patron is still inside the diner (stay not over), sorted by return time, as a reusable working list for
-    /// one scheduler tick. A car in a regular spot may be moved either way; a car in a station only later (held back);
-    /// a car being driven, already asked for, or whose patron is on the way to the curb is left out.
+    /// The open tickets whose patron is still inside the diner (stay not over), sorted by return time, as a reusable working list for
+    /// one scheduler tick. The car may be anywhere (the stay clock runs from the drop-off); only a ticket
+    /// that already asked for the car, or whose patron is on the way to the curb, is left out.
     /// </summary>
     internal sealed class ReturnCandidates
     {
@@ -31,7 +31,7 @@ namespace UncannyValet.Director
             for (var i = 0; i < lot.Cars.Count; i++)
             {
                 var car = lot.Cars[i];
-                if (car.State != CarLotState.Parked && car.State != CarLotState.InStation) continue;
+                if (car.State == CarLotState.PickupRequested) continue;
                 if (!(car.SecondsToPickup > 0f)) continue;
                 if (float.IsInfinity(car.SecondsToPickup)) continue;
                 Insert(Make(car, lot.NowSeconds, settings));
@@ -62,7 +62,7 @@ namespace UncannyValet.Director
             var earliest = now + settings.MinLeadSeconds;
             return new ReturnCandidate
             {
-                Car = car.Car, At = at, Start = at, Forward = car.State == CarLotState.Parked,
+                Car = car.Car, At = at, Start = at,
                 Lo = System.Math.Max(original - room, earliest),
                 Hi = System.Math.Max(original + room, at),
             };

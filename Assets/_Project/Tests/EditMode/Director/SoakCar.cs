@@ -26,7 +26,7 @@ namespace UncannyValet.Tests.Director
         /// <summary>The stay as first planned, and what the director moved it by (negative = earlier).</summary>
         public float PlannedStay;
         public float Shifted;
-        /// <summary>Shift seconds at which it was first parked.</summary>
+        /// <summary>Shift seconds at which it arrived (the stay clock starts there).</summary>
         public float ParkedAt;
         /// <summary>Order in which the pickup was requested (lower is older).</summary>
         public int RequestOrder;

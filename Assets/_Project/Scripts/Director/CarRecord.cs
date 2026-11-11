@@ -26,7 +26,7 @@ namespace UncannyValet.Director
         public float StayMinutes;
         /// <summary>Game minutes the director has moved the return by (negative = earlier).</summary>
         public float ShiftedMinutes;
-        public float ParkedAtMinute = float.NaN;
+        public float ArrivedAtMinute = float.NaN;
 
         /// <summary>The single state the car is in; earlier rules win (a requested pickup beats everything).</summary>
         public CarLotState State

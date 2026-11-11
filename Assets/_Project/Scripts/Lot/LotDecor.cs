@@ -33,11 +33,11 @@ namespace UncannyValet.Lot
             }
         }
 
-        /// <summary>Stretches <paramref name="rect"/> down just enough for the entry road and its sidewalk to be in view (the exit road above the lot may be partly out of view).</summary>
+        /// <summary>Stretches <paramref name="rect"/> down just enough for the entry lane and a sidewalk strip to be in view (the opposite lanes and the exit road above the lot may be partly out of view).</summary>
         public Rect ExtendView(Rect rect)
         {
             if (_config == null || _art == null) return rect;
-            var bottom = Layout.FarSidewalk.yMin + transform.position.y;
+            var bottom = Layout.ViewBottom + transform.position.y;
             return Rect.MinMaxRect(rect.xMin, Mathf.Min(rect.yMin, bottom), rect.xMax, rect.yMax);
         }
 

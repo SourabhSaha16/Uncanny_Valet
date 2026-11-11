@@ -84,10 +84,22 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void ACarThatIsNotParkedIsNeverCalledBack()
+        public void EveryOpenTicketIsCalledBackWhereverItsCarIs()
         {
-            foreach (var state in new[] { CarLotState.InStation, CarLotState.Driven, CarLotState.WaitingToPark, CarLotState.Arriving })
-                Assert.AreEqual(0, _scheduler.Plan(Lot(ToPickup, state), In(), _out), state.ToString());
+            foreach (var state in new[] { CarLotState.InStation, CarLotState.Driven, CarLotState.WaitingToPark })
+            {
+                _scheduler = new ReturnScheduler(_settings);
+                Assert.AreEqual(5, _scheduler.Plan(Lot(ToPickup, state), In(), _out), state.ToString());
+                _out.Clear();
+            }
+        }
+
+        [Test]
+        public void ARequestedPickupOrACarThatHasNotArrivedIsNeverMoved()
+        {
+            var gone = new[] { float.PositiveInfinity, float.PositiveInfinity };
+            Assert.AreEqual(0, _scheduler.Plan(Lot(gone, CarLotState.PickupRequested), In(), _out));
+            Assert.AreEqual(0, _scheduler.Plan(Lot(gone, CarLotState.Arriving), In(), _out));
         }
 
         [Test]

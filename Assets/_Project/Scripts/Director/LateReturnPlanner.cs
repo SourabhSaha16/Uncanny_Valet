@@ -8,7 +8,7 @@ namespace UncannyValet.Director
     /// so the player can still collect tips (tips are paid only for pickups). The first batch is spread evenly from now
     /// to the last useful moment; a car that parks later takes the first free slot. No two returns are closer than the
     /// pickup spacing. A car is planned once; later ticks only keep the spacing, so the spread does not collapse into a
-    /// rush as time passes. A car in a station is never called early, but the others keep their distance from it.
+    /// rush as time passes. A car counts wherever it is: queued, parked, driven, washing or charging.
     /// </summary>
     internal sealed class LateReturnPlanner
     {
@@ -33,7 +33,7 @@ namespace UncannyValet.Director
             for (var i = 0; i < cars.Count; i++)
             {
                 var c = cars[i];
-                if (!c.Forward || IsPlanned(c.Car)) continue;
+                if (IsPlanned(c.Car)) continue;
                 var wanted = System.Math.Min(c.At, firstBatch ? earliest + k * step : earliest);
                 var floor = System.Math.Min(c.At, earliest);
                 var at = FirstFree(cars, i, System.Math.Max(wanted, floor), input.LastSummonedSeconds);
@@ -43,14 +43,14 @@ namespace UncannyValet.Director
             }
         }
 
-        // Cars that stay where they are (in a station, or planned earlier) are only pushed later to keep the spacing.
+        // Cars planned earlier stay where they are and are only pushed later to keep the spacing.
         private void KeepFixedSpacing(ReturnCandidates cars, float lastSummoned)
         {
             var prev = lastSummoned;
             for (var i = 0; i < cars.Count; i++)
             {
                 var c = cars[i];
-                if (!c.Forward || IsPlanned(c.Car))
+                if (IsPlanned(c.Car))
                 {
                     var at = System.Math.Max(c.At, prev + _settings.SpacingSeconds);
                     cars.Move(i, at);
@@ -68,7 +68,7 @@ namespace UncannyValet.Director
                 var moved = false;
                 for (var j = 0; j < cars.Count; j++)
                 {
-                    if (j == self || cars[j].Forward && !IsPlanned(cars[j].Car)) continue;
+                    if (j == self || !IsPlanned(cars[j].Car)) continue;
                     var gap = t - cars[j].At;
                     if (gap >= spacing || gap <= -spacing) continue;
                     t = cars[j].At + spacing;
@@ -82,7 +82,7 @@ namespace UncannyValet.Director
         private int CountUnplanned(ReturnCandidates cars)
         {
             var n = 0;
-            for (var i = 0; i < cars.Count; i++) if (cars[i].Forward && !IsPlanned(cars[i].Car)) n++;
+            for (var i = 0; i < cars.Count; i++) if (!IsPlanned(cars[i].Car)) n++;
             return n;
         }
 

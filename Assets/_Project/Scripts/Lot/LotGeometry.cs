@@ -44,6 +44,10 @@ namespace UncannyValet.Lot
         public float EastLaneY { get; }
         /// <summary>Centre line height of the exit road lane (above the top wall, left to right).</summary>
         public float TopLaneY { get; }
+        /// <summary>Centre line height of the entry road's opposite lane (right to left), one lane below <see cref="EastLaneY"/>.</summary>
+        public float EastBackLaneY { get; }
+        /// <summary>Centre line height of the exit road's opposite lane (right to left), one lane above <see cref="TopLaneY"/>.</summary>
+        public float TopBackLaneY { get; }
         /// <summary>X range (min, max) the road is drawn and routed over.</summary>
         public Vector2 RoadSpan { get; }
         public float LaneWidth { get; }
@@ -84,6 +88,8 @@ namespace UncannyValet.Lot
             LaneWidth = s.LaneWidth;
             EastLaneY = bottom - c.WallThickness - s.LaneWidth * 0.5f;
             TopLaneY = Bounds.yMax + c.WallThickness + s.LaneWidth * 0.5f;
+            EastBackLaneY = EastLaneY - s.LaneWidth;
+            TopBackLaneY = TopLaneY + s.LaneWidth;
             RoadSpan = new Vector2(Bounds.xMin - c.WallThickness - s.RoadReach, Bounds.xMax + c.WallThickness + s.RoadReach);
         }
 

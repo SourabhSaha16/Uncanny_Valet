@@ -122,10 +122,11 @@ namespace UncannyValet.Bootstrap
         private static void SeedTraffic(ITuning t, TrafficConfig traffic)
         {
             var config = traffic != null ? traffic : ScriptableObject.CreateInstance<TrafficConfig>();
-            t.Seed(TuningKey.TrafficAmbientPerMinute, config.AmbientPerMinute);
             t.Seed(TuningKey.TrafficSpeedScale, config.SpeedScale);
             t.Seed(TuningKey.TrafficEntrySpeed, config.EntrySpeed);
             t.Seed(TuningKey.TrafficExitSpeed, config.ExitSpeed);
+            t.Seed(TuningKey.TrafficMinOnScreen, config.MinOnScreen);
+            t.Seed(TuningKey.TrafficTargetOnScreen, config.TargetOnScreen);
             if (traffic == null) Object.DestroyImmediate(config);
         }
     }

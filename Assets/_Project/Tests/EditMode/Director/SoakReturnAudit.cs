@@ -22,16 +22,15 @@ namespace UncannyValet.Tests.Director
             }
         }
 
-        /// <summary>Counts cars still waiting at the end. Parked within the last pickup lead plus the minimum lead and two spacings of the end there is hardly room left for a pickup, so those do not count as missed.</summary>
+        /// <summary>Counts cars still waiting at the end (any place). Arrived within the last pickup lead plus the minimum lead and two spacings of the end there is hardly room left for a pickup, so those do not count as missed.</summary>
         public static void CountUnrequested(SoakSim sim, float shiftSeconds, float lastLead, float lead, SoakResult r)
         {
             r.PickupsRequested = sim.RequestTimes.Count;
             foreach (var car in sim.Cars)
             {
-                var parked = car.State == CarLotState.Parked;
-                if (!parked && car.State != CarLotState.InStation) continue;
+                if (car.State == CarLotState.PickupRequested || car.State == CarLotState.Arriving) continue;
                 if (car.ParkedAt > shiftSeconds - lastLead - lead) { r.ParkedTooLate++; continue; }
-                if (parked) r.UnrequestedInSpot++;
+                if (car.State != CarLotState.InStation) r.UnrequestedInSpot++;
                 else r.UnrequestedInStation++;
             }
         }

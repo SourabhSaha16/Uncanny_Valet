@@ -24,7 +24,7 @@ namespace UncannyValet.Tests.Director
         public int SpacingViolationsAll;
         public int SpacingViolations;
         public int PickupsRequested;
-        /// <summary>Cars still waiting at the end that were parked in time to be picked up: in a regular spot, or in a station.</summary>
+        /// <summary>Cars still waiting at the end that arrived in time to be picked up: outside a station, or in one.</summary>
         public int UnrequestedInSpot;
         public int UnrequestedInStation;
         /// <summary>Cars still waiting at the end that were parked after the last useful pickup moment.</summary>

@@ -27,6 +27,10 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0.02f), Tooltip("Size of one pixel of a road label, world units.")] private float _roadLabelPixel = 0.14f;
         [SerializeField, Range(0f, 1f), Tooltip("Where along the lot width a road label sits (0 = left wall, 1 = right wall).")] private float _roadLabelShare = 0.72f;
         [SerializeField] private Color _roadLabelColor = new Color(0.97f, 0.97f, 0.94f, 0.9f);
+        [Header("Road lane markings")]
+        [SerializeField, Min(0.1f), Tooltip("Length of one dash of the centre line between the two lanes of a road, world units.")] private float _laneDashLength = 1f;
+        [SerializeField, Min(0.1f), Tooltip("Gap between two dashes of the centre line, world units.")] private float _laneDashGap = 0.8f;
+        [SerializeField, Min(0.02f), Tooltip("Thickness of the centre line, world units.")] private float _laneDashWidth = 0.1f;
         [Header("Diner and bus stop")]
         [SerializeField, Tooltip("The tall MetroCity building the diner's roof and facade are cut from (set by the editor builder).")]
         private Sprite _dinerBuilding;
@@ -80,6 +84,9 @@ namespace UncannyValet.Lot
         public float RoadLabelPixel => _roadLabelPixel;
         public float RoadLabelShare => _roadLabelShare;
         public Color RoadLabelColor => _roadLabelColor;
+        public float LaneDashLength => _laneDashLength;
+        public float LaneDashGap => _laneDashGap;
+        public float LaneDashWidth => _laneDashWidth;
         public float SidewalkDepth => _sidewalkDepth;
         public float OutsideReach => _outsideReach;
         public float CurbEdgeWidth => _curbEdgeWidth;

@@ -4,7 +4,7 @@ namespace UncannyValet.Lot
 {
     /// <summary>
     /// Pure placement of the scenery around the lot (lot v3): the dark asphalt ground everywhere outside the lot, the
-    /// one-way entry road below the south wall (with a sidewalk below it), the one-way exit road above the top wall (with a
+    /// entry road below the south wall (two lanes, a sidewalk below it), the exit road above the top wall (two lanes, a
     /// sidewalk above it), and the bus stop on the right strip. Lot-local coordinates.
     /// </summary>
     public readonly struct DecorLayout
@@ -12,10 +12,16 @@ namespace UncannyValet.Lot
         public readonly Rect Lot;
         /// <summary>The ground outside the lot walls, behind the roads and everything else.</summary>
         public readonly Rect Outside;
-        /// <summary>The entry road below the lot: one lane, left to right.</summary>
+        /// <summary>The entry road's lot-side lane (patron cars, left to right).</summary>
         public readonly Rect EastLane;
-        /// <summary>The exit road above the lot: one lane, left to right.</summary>
+        /// <summary>The exit road's lot-side lane (delivered cars, left to right).</summary>
         public readonly Rect TopLane;
+        /// <summary>The entry road's opposite lane, below <see cref="EastLane"/> (ambient cars, right to left).</summary>
+        public readonly Rect EastBackLane;
+        /// <summary>The exit road's opposite lane, above <see cref="TopLane"/> (ambient cars, right to left).</summary>
+        public readonly Rect TopBackLane;
+        /// <summary>The lowest point the camera must show: the bottom of the sidewalk as it was with a single entry lane (the framing did not change when the second lane was added).</summary>
+        public readonly float ViewBottom;
         /// <summary>The sidewalk below the entry road.</summary>
         public readonly Rect FarSidewalk;
         /// <summary>The sidewalk above the exit road.</summary>
@@ -30,8 +36,11 @@ namespace UncannyValet.Lot
             var w = g.RoadSpan.y - g.RoadSpan.x;
             EastLane = new Rect(x0, g.EastLaneY - g.LaneWidth * 0.5f, w, g.LaneWidth);
             TopLane = new Rect(x0, g.TopLaneY - g.LaneWidth * 0.5f, w, g.LaneWidth);
-            FarSidewalk = new Rect(x0, EastLane.yMin - sidewalk, w, sidewalk);
-            TopSidewalk = new Rect(x0, TopLane.yMax, w, sidewalk);
+            EastBackLane = new Rect(x0, EastLane.yMin - g.LaneWidth, w, g.LaneWidth);
+            TopBackLane = new Rect(x0, TopLane.yMax, w, g.LaneWidth);
+            ViewBottom = EastLane.yMin - sidewalk;
+            FarSidewalk = new Rect(x0, EastBackLane.yMin - sidewalk, w, sidewalk);
+            TopSidewalk = new Rect(x0, TopBackLane.yMax, w, sidewalk);
             Outside = Rect.MinMaxRect(x0 - outsideReach, FarSidewalk.yMin - outsideReach, g.RoadSpan.y + outsideReach, TopSidewalk.yMax + outsideReach);
             var shelter = new Vector2(g.Strip.center.x, g.Strip.yMin + busStopFromBottom + busStopSize.y * 0.5f);
             BusStop = LotGeometry.Box(shelter, busStopSize);

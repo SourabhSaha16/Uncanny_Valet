@@ -46,6 +46,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<PatronSummoned>(e => _summoned++);
             new FakeCarFactory(_bus).Spawn(_car, UnityEngine.Vector2.zero, 0f);
             _registry.Open(_car, new PatronRequest(Stay, 20, false, 60f));
+            _bus.Publish(new CarArrived(_car));
             _bus.Publish(new CarParked(_car, 1));
         }
 

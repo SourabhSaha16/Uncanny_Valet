@@ -34,6 +34,6 @@ namespace UncannyValet.Patrons
         }
 
         /// <summary>True when a patron reaching the curb turns into a pickup request for this ticket.</summary>
-        public static bool AcceptsArrival(Ticket t) => t.Summoned && t.State == TicketState.Parked;
+        public static bool AcceptsArrival(Ticket t) => t.Summoned && t.IsBeforePickup;
     }
 }

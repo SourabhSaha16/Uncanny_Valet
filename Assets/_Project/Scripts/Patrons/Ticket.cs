@@ -16,7 +16,15 @@ namespace UncannyValet.Patrons
         public string Plate { get; }
 
         public TicketState State { get; private set; } = TicketState.AwaitingPark;
-        public float ParkedMinute { get; private set; }
+
+        /// <summary>Game minute the stay clock started: ticket creation, moved to the drop-off by <see cref="MarkDroppedOff"/>.</summary>
+        public float StayStartMinute { get; private set; }
+
+        /// <summary>Game minute the stay ends and the patron wants the car, wherever it is.</summary>
+        public float ReturnMinute => StayStartMinute + StayMinutes + StayShiftMinutes;
+
+        /// <summary>True once the car arrived and the patron went into the diner (the stay clock restarted then).</summary>
+        public bool DroppedOff { get; private set; }
         public float PickupRequestMinute { get; private set; }
         public TicketTimer PickupTimer { get; }
 
@@ -59,28 +67,40 @@ namespace UncannyValet.Patrons
         /// <summary>Game minutes the director has moved the end of the stay by; negative means earlier.</summary>
         public float StayShiftMinutes { get; private set; }
 
-        public bool StayEnded(float minute)
-            => State == TicketState.Parked && minute >= ParkedMinute + StayMinutes + StayShiftMinutes;
+        /// <summary>True for any open ticket that has not asked for the car yet (queued, parked, washing or charging) once the stay is over.</summary>
+        public bool StayEnded(float minute) => IsBeforePickup && minute >= ReturnMinute;
 
         /// <summary>
         /// Moves the end of the stay (the director's return nudge). Only a patron still inside the diner can be moved:
-        /// parked, not summoned, stay not over. The new end is never before <paramref name="nowMinute"/>.
-        /// Returns the delta really applied, or 0 when nothing was moved.
+        /// dropped off, not yet asked for the car, not summoned, stay not over, whatever the car is doing. The new end
+        /// is never before <paramref name="nowMinute"/>. Returns the delta really applied, or 0 when nothing was moved.
         /// </summary>
         public float ShiftStay(float deltaMinutes, float nowMinute)
         {
-            if (State != TicketState.Parked || Summoned || StayEnded(nowMinute)) return 0f;
-            var end = ParkedMinute + StayMinutes + StayShiftMinutes;
+            if (!DroppedOff || !IsBeforePickup || Summoned || StayEnded(nowMinute)) return 0f;
+            var end = ReturnMinute;
             var applied = System.Math.Max(end + deltaMinutes, nowMinute) - end;
             StayShiftMinutes += applied;
             return applied;
         }
 
-        public void MarkParked(float minute)
+        /// <summary>The patron has not asked for the car yet.</summary>
+        public bool IsBeforePickup => State == TicketState.AwaitingPark || State == TicketState.Parked;
+
+        /// <summary>Starts the stay clock at ticket creation; the first drop-off then moves it (see <see cref="MarkDroppedOff"/>).</summary>
+        public void StartStay(float minute) => StayStartMinute = minute;
+
+        /// <summary>The car arrived and the patron went into the diner: the fixed stay counts from now, wherever the car ends up.</summary>
+        public void MarkDroppedOff(float minute)
         {
-            if (State != TicketState.AwaitingPark) return;
-            State = TicketState.Parked;
-            ParkedMinute = minute;
+            if (DroppedOff || !IsBeforePickup) return;
+            DroppedOff = true;
+            StayStartMinute = minute;
+        }
+
+        public void MarkParked()
+        {
+            if (State == TicketState.AwaitingPark) State = TicketState.Parked;
         }
 
         public void MarkSummoned(float minute)
@@ -92,7 +112,7 @@ namespace UncannyValet.Patrons
 
         public void MarkPickupRequested(float minute)
         {
-            if (State != TicketState.Parked) return;
+            if (!IsBeforePickup) return;
             State = TicketState.PickupRequested;
             PickupRequestMinute = minute;
         }

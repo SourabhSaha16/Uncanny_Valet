@@ -693,3 +693,22 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last beta build: issues 70 (a car always within 2 s when the queue is empty), 71 (pickup arrows green only when the patron will accept) and 72 (how-to-play screen after the first title press). Beta site only; main stays on the earlier build.
 Tests: 1121 of 1121 EditMode, 16 of 16 PlayMode; browser smoke test at 1280x800: title, how-to-play screen (renders, text fits, gold highlights), shift starts on the second key at 3:56, no console errors. The arrows, idle guard and earlier items were not seen in play.
+
+
+## lead: merge agent/traffic two-way busier ambient roads (#75) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-ac64f4e85aaac1f29 (AmbientDensity, AmbientTraffic, YieldZone, SpawnGate, ViewWindow, TrafficModule, LotRoadArt, DecorLayout, RoadLayout, IRoadLayout, TrafficConfig and LotArtConfig assets, traffic tuning keys, tests), docs/changelogs/lead.md
+Why: issue 75. Both roads carry ambient traffic both ways (an extra right-to-left lane per road), 3 to 4 cars kept on screen, ambient cars brake through a YieldZone so an exiting delivered car can merge. Camera framing untouched, so mostly the entry road shows. TrafficAmbientPerMinute removed.
+Tests: 1159 of 1159 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).
+
+## lead: merge agent/integration F2 Copy all values button (#76) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a88b0b826cfe28c36 (TuningPanel, TuningSnapshotJson, TuningSnapshotJsonTests), docs/changelogs/lead.md
+Why: issue 76. A Copy all values button in the F2 panel header copies every tuning value, Advanced ones included, as flat JSON via GUIUtility.systemCopyBuffer, with a 1.5 s Copied! confirmation. Not checked in a browser.
+Tests: 1165 of 1165 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/patrons stay from drop-off, patron asks wherever the car is (#77) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-aafeaa8e9141bbe3f (Ticket, CurbCall, TicketRegistry, Director CarBook/CarRecord/LotStateTracker/SnapshotBuilder/WorkloadEstimator, tests), docs/changelogs/lead.md
+Why: issue 77. The stay clock starts at drop-off (CarArrived) instead of when a car settles in a bay, and a patron whose stay ends asks for the car from any open state (queue, wash, charge, aisle, bay); Director return time = arrival + stay. Open follow-ups: dirty unwashed car zeroes the tip (existing NotCleaned rule); queued car whose patron asked is not on the key board until Placed.
+Tests: 1175 of 1175 EditMode, 16 of 16 PlayMode after the merge.

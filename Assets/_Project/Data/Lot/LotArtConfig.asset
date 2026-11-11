@@ -28,6 +28,9 @@ MonoBehaviour:
   _roadLabelPixel: 0.14
   _roadLabelShare: 0.72
   _roadLabelColor: {r: 0.97, g: 0.97, b: 0.94, a: 0.9}
+  _laneDashLength: 1
+  _laneDashGap: 0.8
+  _laneDashWidth: 0.1
   _dinerBuilding: {fileID: 21300000, guid: 56ec550e22011b44ca503077f87c93bd, type: 3}
   _dinerRoofPixels:
     x: 52

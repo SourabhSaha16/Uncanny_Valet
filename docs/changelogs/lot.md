@@ -109,3 +109,9 @@ Date: 2026-11-11
 Files: Core/Contracts/IPickupAcceptance.cs (new); Scripts/Lot/{CurbArrowTracker (new),CurbArrowRule,CurbZone}.cs; Scripts/Patrons/{PickupAcceptance (new),PatronSpawner}.cs; Tests/EditMode/Lot/CurbArrowTests.cs
 Why: Issue #71. Green now means a correctly facing car whose ticket is PickupRequested (patron waiting; wash or charge not done still counts). Facing right but not asked yet is neutral, wrong facing stays red. CurbZone re-evaluates on PickupRequested so the arrows flip live; Patrons registers IPickupAcceptance in PatronSpawner.
 Tests: 4 new EditMode cases (not-accepted idle, wrong stays wrong, live flip then idle on leave, mixed cars). EditMode 1115/1115, PlayMode 16/16.
+
+## traffic: two-way ambient roads, density and merge yielding [Claude]
+Date: 2026-11-11
+Files: Scripts/Lot/{DecorLayout,LotArtConfig,LotDecor,LotGeometry,LotRoadArt,RoadLayout}.cs; Data/Lot/LotArtConfig.asset; Tests/EditMode/Lot/{DecorLayoutTests,RoadLayoutTests}.cs
+Why: Issue #75 (Refs #75), traffic agent. Each road gets a second lane for right-to-left ambient traffic, next to the patron lane and away from the lot: geometry (EastBackLaneY, TopBackLaneY), IRoadLayout lanes, wider asphalt with a dashed centre line (LotArtConfig lane dash fields), sidewalks pushed out. DecorLayout.ViewBottom keeps the camera framing exactly as before (the opposite lanes are partly out of view).
+Tests: DecorLayoutTests and RoadLayoutTests updated and extended (opposite lanes, framing unchanged). EditMode 1159/1159, PlayMode 16/16.

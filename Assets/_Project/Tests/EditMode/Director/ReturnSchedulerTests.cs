@@ -105,23 +105,17 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void NeverTouchesACarThatIsNotParked()
+        public void ACarCountsWhereverItIsButARequestedOrNotYetArrivedOneDoesNot()
         {
-            var lot = Lot((CarLotState.InStation, 30f, 0f), (CarLotState.Driven, 30f, 0f),
-                (CarLotState.PickupRequested, float.PositiveInfinity, 0f), (CarLotState.WaitingToPark, 30f, 0f));
-            Assert.AreEqual(0, Plan(lot, In(gap: -0.5f, tight: true)));
-            Assert.AreEqual(0, Plan(lot, In(left: 30f)));
-        }
-
-        [Test]
-        public void ACarInAStationIsOnlyEverHeldBackNeverCalledEarly()
-        {
-            var lot = Lot((CarLotState.InStation, 30f, 0f));
-            Assert.AreEqual(0, Plan(lot, In(gap: -0.5f, tight: true)));
-            Assert.AreEqual(0, Plan(lot, In(left: 30f)), "not even in the late phase");
-            _scheduler = new ReturnScheduler(_settings);
-            Plan(lot, In(gap: 0.5f));
-            Assert.AreEqual(Room, _out[0].DeltaSeconds, 0.001f);
+            foreach (var state in new[] { CarLotState.InStation, CarLotState.Driven, CarLotState.WaitingToPark, CarLotState.Parked })
+            {
+                _scheduler = new ReturnScheduler(_settings);
+                Assert.AreEqual(1, Plan(Lot((state, 30f, 0f)), In(gap: -0.5f)), state.ToString());
+            }
+            var gone = Lot((CarLotState.PickupRequested, float.PositiveInfinity, 0f),
+                (CarLotState.Arriving, float.PositiveInfinity, 0f));
+            Assert.AreEqual(0, Plan(gone, In(gap: -0.5f, tight: true)));
+            Assert.AreEqual(0, Plan(gone, In(left: 30f)));
         }
 
         [Test]

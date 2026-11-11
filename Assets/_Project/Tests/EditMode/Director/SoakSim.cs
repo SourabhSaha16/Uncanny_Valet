@@ -120,10 +120,14 @@ namespace UncannyValet.Tests.Director
             {
                 case CarLotState.Arriving:
                     car.ArriveLeft -= dt;
-                    if (car.ArriveLeft <= 0f) car.State = CarLotState.WaitingToPark;
+                    if (car.ArriveLeft > 0f) break;
+                    car.State = CarLotState.WaitingToPark;
+                    car.ParkedAt = Now;
                     break;
+                case CarLotState.WaitingToPark:
                 case CarLotState.Parked:
                 case CarLotState.InStation:
+                    // The stay runs from the drop-off, wherever the car sits; unfinished services just earn nothing.
                     Serve(car, dt);
                     car.StayLeft -= dt;
                     if (car.StayLeft <= 0f) RequestPickup(car);
