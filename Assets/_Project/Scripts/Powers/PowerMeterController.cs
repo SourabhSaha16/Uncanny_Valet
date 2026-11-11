@@ -54,9 +54,6 @@ namespace UncannyValet.Powers
             Fill(_drift.Tick(Time.deltaTime));
         }
 
-        /// <summary>Adds the Perfect Park amount. SEAM: the lot agent's PerfectPark event (issue 16) is not in Core yet; when it lands, subscribe to it here and call this.</summary>
-        public void AddPerfectPark() => Fill(Settings.FillPerfectPark);
-
         /// <summary>Spends the meter if a level is reached: empties it and returns the level. False when nothing is unlocked.</summary>
         public bool TrySpend(out int level)
         {
@@ -74,6 +71,7 @@ namespace UncannyValet.Powers
 
         private void Publish() => _bus.Publish(new PowerMeterChanged(Meter.Level, Meter.Fill01));
 
+        private void OnPerfectPark(PerfectPark e) => Fill(Settings.FillPerfectPark);
         private void OnPerfectDropOff(PerfectDropOff e) => Fill(Settings.FillPerfectDropOff);
         private void OnSlideStarted(CarSlideStarted e) => _drift.Begin(e.Car);
         private void OnSlideEnded(CarSlideEnded e) => _drift.End(e.Car);
@@ -90,6 +88,7 @@ namespace UncannyValet.Powers
         {
             if (_subscribed) return;
             _subscribed = true;
+            _bus.Subscribe<PerfectPark>(OnPerfectPark);
             _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Subscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Subscribe<CarSlideEnded>(OnSlideEnded);
@@ -101,6 +100,7 @@ namespace UncannyValet.Powers
         {
             if (!_subscribed) return;
             _subscribed = false;
+            _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
             _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Unsubscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Unsubscribe<CarSlideEnded>(OnSlideEnded);

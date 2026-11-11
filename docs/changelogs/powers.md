@@ -17,3 +17,9 @@ Open seams and deviations:
 - Activate input lives in the Powers module (`IPowerInput`) so the Valet module and `IInputSource` are untouched.
 - Manager (`PowerStack`) publishes PowerActivated for every power, including Park Smash; the effects themselves stay free of events.
 - Edited Bootstrap `TuningSeeder` and its asmdef (one optional parameter) because `TuningSeederTests` requires every catalog key to be seeded.
+
+## powers: fill the meter from PerfectPark
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Powers/PowerMeterController.cs, Assets/_Project/Tests/EditMode/Powers/PowerMeterControllerTests.cs
+Why: PerfectPark now exists in Core (ParkEvents.cs); it replaces the AddPerfectPark seam (design.md A11, issue #38).
+Tests: 4 new controller tests (park and drop-off fill, shift reset, unsubscribe on disable); full EditMode suite run.
