@@ -80,6 +80,12 @@ Files: Scripts/Lot/{CurbArrow,CurbArrowLayout,CurbArrowRule,CurbArrowState,CurbA
 Why: Human note: tell the player which way to face the car at VALET PICKUP (design.md A4 delivery rule). Two outlined arrows flank the vertical text, pointing along CurbFacingRule.RequiredDirection; fill is white idle, yellow wrong facing, green right facing (CurbFacingChanged only reports wrong, so CurbZone drives the tint itself).
 Tests: 7 new EditMode tests (arrow state rule, required direction, layout); full suite 870 passed, 0 failed.
 
+## lot: judge Perfect Drop-off and Perfect Park
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Lot/{PerfectSettings,PerfectTuning,DropOffJudge,ParkJudge,ParkVerdict,PerfectParkGate,CarTicketMap,PerfectRunner}.cs (new), Lot/{LotConfig,LotLayoutBuilder,ParkingSpot,SpotBuilder,CurbZone}.cs, Core/Events/{ParkEvents (new),TuningKey}.cs, Core/Contracts/{PerfectRows (new),TuningCatalog}.cs, Bootstrap/{TuningSeeder,GameBootstrap}.cs (one-line seeding), Tests/EditMode/Lot/PerfectJudgeTests.cs
+Why: issues 36 and 16; valet_powers.md Q1 and car_handling_spec.md section 4. PerfectRunner publishes PerfectDropOff when Patrons accepts a delivery (CarDelivered) that was within 15 degrees of down, settled in the curb zone, before half the pickup timer; and PerfectPark (new Core event) when a car rests in a bay within 5 degrees, 0.15 side, 0.3 length, touching nothing, moved 3 units since last rest, 10 s per car. Thresholds live in LotConfig.Perfect and F2 Advanced rows. The +$2 ticket bonus is not wired (TipInput has no bonus field); key PerfectParkBonus carries the amount.
+Tests: 31 new EditMode cases; EditMode 1020/1020, PlayMode 16/16.
+
 ## lot: widen drive aisle to 6.0 and add east asphalt
 Date: 2026-11-10
 Files: Assets/_Project/Scripts/Lot/LotConfig.cs, Assets/_Project/Scripts/Lot/SiteLayout.cs, Assets/_Project/Data/Lot/LotConfig.asset, Assets/_Project/Data/Cars/CarHandlingConfig.asset (resynced by setup), Assets/_Project/Tests/EditMode/Lot/LotGeometryTests.cs, Assets/_Project/Tests/EditMode/Integration/HandlingAisleCheckTests.cs, Assets/_Project/Tests/PlayMode/BayEntryTests.cs

@@ -217,5 +217,22 @@ namespace UncannyValet.Core.Events
         PowerFreezeSeconds,
         /// <summary>World time scale during freeze time: 0 = stopped, 0.3 = slow.</summary>
         PowerFreezeTimeScale,
+        // Perfect Park and Perfect drop-off judging (Lot owns). docs/redesign/car_handling_spec.md section 4, valet_powers.md Q1.
+        /// <summary>Largest angle off straight down, in degrees, for a perfect drop-off at the curb.</summary>
+        PerfectDropOffAngle,
+        /// <summary>A perfect drop-off must come before this share (0..1) of the pickup timer is gone.</summary>
+        PerfectDropOffTimerShare,
+        /// <summary>Largest angle off the bay's long axis, in degrees, for a Perfect Park.</summary>
+        PerfectParkAngle,
+        /// <summary>Largest side-to-side offset from the bay centre line for a Perfect Park, in units.</summary>
+        PerfectParkSideOffset,
+        /// <summary>Largest lengthwise offset from the bay centre for a Perfect Park, in units.</summary>
+        PerfectParkLengthOffset,
+        /// <summary>Seconds before the same car can earn another Perfect Park.</summary>
+        PerfectParkCooldown,
+        /// <summary>Units a car must have moved since it last stopped for a Perfect Park to count again.</summary>
+        PerfectParkMinTravel,
+        /// <summary>Dollars a Perfect Park adds to the car's ticket (before the combo multiplier).</summary>
+        PerfectParkBonus,
     }
 }

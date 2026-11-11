@@ -615,3 +615,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a1617d9ae486b4055 (Scripts/Powers/, PowerRows, TuningKey, TuningSeeder, asmdefs, tests), UI/Hud/PowerMeterSettings.cs, docs/changelogs/lead.md
 Why: valet powers issues 37, 40, 44 and the listener part of 38 (design A11). HUD notch defaults changed to 0.25 and 0.55 to match the 25/55/100 level thresholds. PerfectPark listener is a seam until issue 16 lands; the Powers objects are not yet in the scene (wiring pending).
 Tests: 1027 of 1027 EditMode (including the HUD merge).
+
+## lead: merge agent/lot perfect drop-off and Perfect Park (#36, #16 part)
+Date: 2026-11-11
+Files: merge of worktree-agent-a4901f8ee332749de (Lot judges and runner, Core ParkEvents and PerfectRows, tuning keys), conflict resolution in TuningKey, TuningCatalog, TuningSeeder (kept both agents' keys; Seed call in GameBootstrap now passes perfect by name), docs/changelogs/lead.md
+Why: valet powers issue 36 and the judging part of issue 16 (design A11, car handling spec section 4). Still open: the +$2 tip bonus (Patrons/Economy), the PERFECT! pop, ding and camera kick, the results stat, and the PowerMeterController PerfectPark listener.
+Tests: 1055 of 1055 EditMode after merging HUD, Powers and Lot (lot agent reported 16 of 16 PlayMode before the merge).
