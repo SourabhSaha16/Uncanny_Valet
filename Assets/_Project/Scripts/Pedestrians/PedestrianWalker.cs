@@ -30,6 +30,7 @@ namespace UncannyValet.Pedestrians
         private bool _hasLookAt;
         private bool _moving;
         private float _speed;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
         private float _walkSeconds;
         private int _shownColumn = -1;
         private bool _shownFlip;
@@ -149,7 +150,7 @@ namespace UncannyValet.Pedestrians
         private void Update()
         {
             if (!_moving) return;
-            _walkSeconds += Time.deltaTime;
+            _walkSeconds += Time.deltaTime * _world.Scale; // freeze time stops the stride too
             Show();
         }
 
@@ -165,9 +166,10 @@ namespace UncannyValet.Pedestrians
             }
             _bounce.Step(dt);
             if (!_path.Walking) return;
-            var step = _speed * dt;
+            var walkDt = _world.Scaled(dt); // bumps and stumbles stay real time: the player can still push people
+            var step = _speed * walkDt;
             var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlocked(_path.Heading, step + _config.LookAhead, Car);
-            var state = _block.Evaluate(dt, blocked);
+            var state = _block.Evaluate(walkDt, blocked);
             _body.SetSolid(state != PedestrianBlockState.Passing);
             _moving = state != PedestrianBlockState.Waiting;
             if (!_moving) { Show(); return; }

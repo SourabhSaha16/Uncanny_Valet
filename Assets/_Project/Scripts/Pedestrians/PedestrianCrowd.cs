@@ -23,6 +23,7 @@ namespace UncannyValet.Pedestrians
         private ITuning _tuning;
         private IEventBus _bus;
         private PatronWalkers _patrons;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
         private int _serial;
 
         /// <summary>How many ambient pedestrians exist.</summary>
@@ -64,7 +65,7 @@ namespace UncannyValet.Pedestrians
         private void Update()
         {
             if (_patrons == null) return;
-            var delta = Time.deltaTime;
+            var delta = _world.Scaled(Time.deltaTime);
             var active = ActiveAmbient();
             for (var i = 0; i < _ambient.Count; i++) StepAmbient(_ambient[i], delta, i < active);
             _patrons.Sync();

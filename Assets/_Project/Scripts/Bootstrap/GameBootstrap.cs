@@ -91,6 +91,7 @@ namespace UncannyValet.Bootstrap
             Services.Register<IGameClock>(_clock);
             Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
             Services.Register<IShiftScoreView>(_score);
+            Services.Register<IPlayerFocus>(new TransformPlayerFocus(_valet.transform));
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);

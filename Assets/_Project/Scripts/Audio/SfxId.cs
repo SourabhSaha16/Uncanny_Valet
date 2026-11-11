@@ -20,6 +20,8 @@ namespace UncannyValet.Audio
         TyreChirp,
         TyreScreech,
         PerfectDing,
-        SpeedBoost
+        SpeedBoost,
+        TimeStop,
+        TimeResume
     }
 }

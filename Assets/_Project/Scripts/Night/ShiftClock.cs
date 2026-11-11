@@ -18,6 +18,7 @@ namespace UncannyValet.Night
         private ShiftConfig _config;
         private ShiftPlanSource _source;
         private ShiftTimer _timer;
+        private readonly WorldTimeReader _world = new WorldTimeReader();
         private bool _subscribed;
         private int _lastTick;
 
@@ -85,9 +86,10 @@ namespace UncannyValet.Night
             _bus.Publish(new ShiftStarted());
         }
 
-        private void Update() => Advance(Time.deltaTime);
+        // World time: frozen (or slowed) by the freeze time power through IWorldTime.
+        private void Update() => Advance(_world.Scaled(Time.deltaTime));
 
-        /// <summary>Moves time forward by real seconds. Public so tests can drive it.</summary>
+        /// <summary>Moves time forward by world seconds (real seconds times the world time scale). Public so tests can drive it.</summary>
         public void Advance(float realSeconds)
         {
             if (!IsRunning) return;

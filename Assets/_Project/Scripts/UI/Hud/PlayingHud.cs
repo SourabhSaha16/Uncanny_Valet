@@ -30,12 +30,16 @@ namespace UncannyValet.UI.Hud
         private readonly OccupiedHintPainter _occupiedPainter;
         private readonly PowerMeterTracker _powerTracker;
         private readonly PowerMeterPainter _power;
+        private readonly FreezeTracker _freezeTracker;
+        private readonly FreezeVeilPainter _freezeVeil;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftScoreView score, ICarFactory cars, EmotionStyle style,
             TipPopSettings tipPop, PowerMeterSettings powerMeter)
         {
             _powerTracker = new PowerMeterTracker(bus, powerMeter);
             _power = new PowerMeterPainter(canvas, _powerTracker, powerMeter);
+            _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
+            _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
             _board = new TicketBoard(bus);
             _hud = new HudPainter(canvas, clock, score);
             _keyBoard = new KeyBoardPainter(canvas, style);
@@ -55,6 +59,8 @@ namespace UncannyValet.UI.Hud
 
         public void Draw(Camera camera, float time, string prompt)
         {
+            _freezeTracker.Tick(time);
+            _freezeVeil.Draw(camera); // first, so every plate and the HUD sit on top of the cold wash
             _board.CollectRows(_rows);
             _world.Draw(_rows, camera, time);
             _mood.Draw(_rows, camera);
@@ -73,6 +79,7 @@ namespace UncannyValet.UI.Hud
             _board.Dispose();
             _tipPopTracker.Dispose();
             _powerTracker.Dispose();
+            _freezeTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
         }

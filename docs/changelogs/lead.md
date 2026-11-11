@@ -754,3 +754,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a9a4911bde6bb31bc (QueueClearRule/Runner/Settings, StayStarter, Ticket, TicketRegistry, CarClearedQueue/StayStarted events, QueueRows and two tuning keys, Director CarRecord/CarBook/LotStateTracker/SnapshotBuilder, tests), docs/changelogs/lead.md
 Why: issue 78 closes the loophole of holding a car in the queue and returning it fast. The stay starts the first time the car rests 6 units clear of the queue (F2 Queue clear distance), or when a bay parks it, or after 3 game minutes in the queue (F2 Longest wait in the queue). Replaces the stay-from-drop-off start of issue 77; a ticket whose stay has not started has no return time and is left alone by the ReturnScheduler.
 Tests: 1242 of 1242 EditMode, 21 of 21 PlayMode after resolving the TuningKey conflict (kept both appended groups) and RunBatch (Bootstrap.unity churn reverted).
+
+## lead: merge agent/powers Power 2 freeze time (#42) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a5b2d81be881146ca (WorldTimeReader, IPlayerFocus/TransformPlayerFocus, DirectorTicker, ShiftClock, PatronDirector, TrafficModule, PedestrianCrowd/Walker, CarAutoDrive scaling, FreezeFade/Tracker/Look/VeilPainter, SfxFreeze TimeStop/TimeResume, tests), docs/changelogs/lead.md
+Why: issue 42 (valet powers level 2). For the freeze duration (6 s, F2) the shift clock, Director (no arrivals), traffic, trip cars, pedestrians and all clock-driven timers stop; the valet and the player's car keep moving; a cold blue wash with a clear bubble around the valet or driven car, frost edges and a whoosh show it. Skipped: ice outlines on frozen things, music filter. Files near the 200-line limit: PedestrianWalker 199, CarAutoDrive 199, GameBootstrap 199.
+Tests: 1260 of 1260 EditMode, 23 of 23 PlayMode after the merge.
