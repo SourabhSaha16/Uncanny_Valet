@@ -567,3 +567,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-abb8c4e2d97e0350f (docs/redesign/test_review.md, PlateTests.cs, PlayMode/FastTimeFixture.cs), docs/pending_tasks.md
 Why: the human asked whether all tests are needed to cut build time. Result: none removed; two slow tests fixed (EditMode test time 6.1 s to 1.9 s, PlayMode 72 s to 32 s wall). Web build (497 s) and Unity start-up dominate. No runtime change, so site/ was not rebuilt.
 Tests: 974 of 974 EditMode, 16 of 16 PlayMode after the merge.
+
+## lead: adopt the faster release routine in CLAUDE.md
+Date: 2026-11-11
+Files: CLAUDE.md
+Why: the human approved the proposals in docs/redesign/test_review.md: EditMode every merge; RunBatch, PlayMode and the web build only when needed; batch deploys. The one-Unity-launch idea is untried and not part of the routine. No runtime change.
+Tests: none (docs only).

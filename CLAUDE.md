@@ -129,3 +129,13 @@ the human once, records the answer in `docs/decisions.md`, and updates design.md
 
 **Human checkpoints:** (1) GitHub Pages source set to "GitHub Actions", before the first push;
 (2) play the P1 build in the browser and say what feels wrong.
+
+## Release routine (adopted 2026-11-11, from `docs/redesign/test_review.md`)
+
+The slow parts are Unity itself (start-up 13 to 30 s per launch, web build about 500 s), not the tests. So:
+
+- **Every merge:** run the EditMode suite (about 25 s). Always.
+- **RunBatch** (`ProjectSetup.RunBatch`) only when something under `Assets/_Project/Editor/`, `Data/` or `Scenes/` changed, or an agent added a ScriptableObject field or wiring.
+- **PlayMode** only before a site deploy, when Cars, Lot, Traffic, Valet or Pedestrians physics code changed, or on request. Module agents run PlayMode for their own area.
+- **Web build and `site/`** only when something player-visible changed (runtime code, art, audio, scenes or data), and then once for a batch of merges, not per merge. Docs-only, tests-only and tooling-only merges never rebuild `site/`; pushing them redeploys the committed `site/`.
+- **Changelog:** every commit that touches `Assets/`, `Packages/`, `ProjectSettings/`, `.github/` or `tools/` carries a `docs/changelogs/` entry, including the lead's own regenerate-and-rebuild commits (CI failed once on this).
