@@ -5,7 +5,7 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Economy
 {
     /// <summary>
-    /// Base, speed bonus or wait penalty, patience, charge and clean bonuses, then less damage, then times the
+    /// Base, speed bonus or wait penalty, patience, charge, clean and Perfect Park bonuses, then less damage, then times the
     /// combo. $0 when forced. Never below 0.
     /// </summary>
     public sealed class TipCalculator : ITipCalculator
@@ -31,11 +31,12 @@ namespace UncannyValet.Economy
             var charge = input.ChargedEv ? Live(TuningKey.ChargeBonus, _config.ChargeBonus) : 0;
             var clean = input.CleanedDirty ? Live(TuningKey.CleanBonus, _config.CleanBonus) : 0;
             var patience = PatienceBonus(input);
-            var subtotal = Math.Max(0, baseTip + speed + charge + clean + patience);
+            var perfect = input.PerfectParks * Live(TuningKey.PerfectParkBonus, _config.PerfectParkBonus);
+            var subtotal = Math.Max(0, baseTip + speed + charge + clean + patience + perfect);
             var damage = DamageAdjust(input, subtotal);
             var combo = Math.Max(1, input.ComboMultiplier);
             var total = Math.Max(0, subtotal + damage) * combo;
-            return new TipBreakdown(baseTip, speed, charge, clean, total, TipZeroReason.None, patience, damage, combo);
+            return new TipBreakdown(baseTip, speed, charge, clean, total, TipZeroReason.None, patience, damage, combo, perfect);
         }
 
         private int Live(TuningKey key, int configured)

@@ -79,3 +79,9 @@ Date: 2026-11-10
 Files: Scripts/Patrons/{PatronRequest,PatronConfig,PatronTuning,PatronRequestRoller,LiveTicketTuning}.cs, Data/Patrons/PatronConfig.asset, Scripts/Core/Events/TuningKey.cs, Scripts/Core/Contracts/GameRows.cs, Scripts/Bootstrap/TuningSeeder.cs, Tests/EditMode/Patrons/LiveTuningTests.cs, Tests/EditMode/Integration/{DifficultyDialsTests,PhysicsAndTipTests}.cs
 Why: Play-test: patrons should lose patience sooner (design.md A4). Default window 60 -> 45 game min; impatient patrons wait 0.6x of it (was a tip flag only). New key ImpatientWindowScale; both rows visible in the Clock block; changes reach waiting tickets.
 Tests: 4 new in LiveTuningTests; dial-catalog visible count 11 -> 13; PhysicsAndTipTests pins a long window so complaint penalties do not skew its sum check. Full EditMode passes (978).
+
+## patrons: pay the Perfect Park bonus on the ticket's tip
+Date: 2026-11-11
+Files: Scripts/Patrons/{PerfectBonusLedger,TicketSettler,TicketRegistry}.cs, Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Core/Contracts/TipInput.cs, Scripts/Core/Events/TipBreakdown.cs, Tests/EditMode/Patrons/PerfectBonusTests.cs
+Why: Issue #16 (money part). PerfectBonusLedger counts PerfectPark events per ticket, the settler takes the count on payout and clears it on void; the calculator adds count x PerfectParkBonus (live tuning, default $2) to the subtotal so damage and combo apply, and TipBreakdown.PerfectBonus shows it.
+Tests: 6 new in PerfectBonusTests (bonus, combo, per-ticket survival to pickup, one per event, ticketless/void, zero tip). Full EditMode 1061/1061 passed.
