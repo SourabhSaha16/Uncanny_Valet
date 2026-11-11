@@ -56,12 +56,12 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarParked(_car, 3));
             Assert.AreEqual(TicketState.Parked, ticket.State);
 
-            Tick(39f);
+            Tick(29f);
             Assert.AreEqual(TicketState.Parked, ticket.State);
-            Tick(40f);
+            Tick(30f);
             Assert.AreEqual(TicketState.PickupRequested, ticket.State);
 
-            _clock.ElapsedMinutes = 46f;
+            _clock.ElapsedMinutes = 36f;
             _bus.Publish(new CarAtCurb(_car));
 
             Assert.AreEqual(TicketState.Closed, ticket.State);
@@ -124,12 +124,14 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ShiftTick_BeforePark_DoesNotRequestPickup()
+        public void ShiftTick_BeforePark_StillRequestsPickupWhenTheStayEnds()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));
-            Tick(10f);
+            Tick(4f);
             Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
-            Assert.AreEqual(0, _log.Count);
+            Tick(10f);
+            Assert.AreEqual(TicketState.PickupRequested, ticket.State);
+            Assert.IsInstanceOf<PickupRequested>(_log[0]);
         }
 
         [Test]

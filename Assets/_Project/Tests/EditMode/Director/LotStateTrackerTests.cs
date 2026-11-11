@@ -105,8 +105,8 @@ namespace UncannyValet.Tests.Director
             Clock.SetElapsed(10f);
             Bus.Publish(new CarParked(Car, 1));
             Clock.SetElapsed(20f);
-            Assert.AreEqual(20f, Tracker.Capture().SecondsToNextPickup, 0.01f);
-            Assert.AreEqual(20f, Only().SecondsToPickup, 0.01f);
+            Assert.AreEqual(10f, Tracker.Capture().SecondsToNextPickup, 0.01f, "the stay counts from the drop-off");
+            Assert.AreEqual(10f, Only().SecondsToPickup, 0.01f);
         }
 
         [Test]

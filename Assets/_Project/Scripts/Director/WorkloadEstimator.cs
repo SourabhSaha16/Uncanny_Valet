@@ -32,7 +32,7 @@ namespace UncannyValet.Director
         {
             if (c.State == CarLotState.PickupRequested) return s.PickupCost;
             if (c.AwaitingPark) return s.ParkCost;
-            var soon = c.State == CarLotState.Parked && c.SecondsToPickup <= s.PickupSoonSeconds;
+            var soon = c.State != CarLotState.Arriving && c.SecondsToPickup <= s.PickupSoonSeconds;
             return soon ? s.PickupSoonCost : 0f;
         }
 

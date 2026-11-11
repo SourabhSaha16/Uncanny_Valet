@@ -706,3 +706,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a88b0b826cfe28c36 (TuningPanel, TuningSnapshotJson, TuningSnapshotJsonTests), docs/changelogs/lead.md
 Why: issue 76. A Copy all values button in the F2 panel header copies every tuning value, Advanced ones included, as flat JSON via GUIUtility.systemCopyBuffer, with a 1.5 s Copied! confirmation. Not checked in a browser.
 Tests: 1165 of 1165 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/patrons stay from drop-off, patron asks wherever the car is (#77) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-aafeaa8e9141bbe3f (Ticket, CurbCall, TicketRegistry, Director CarBook/CarRecord/LotStateTracker/SnapshotBuilder/WorkloadEstimator, tests), docs/changelogs/lead.md
+Why: issue 77. The stay clock starts at drop-off (CarArrived) instead of when a car settles in a bay, and a patron whose stay ends asks for the car from any open state (queue, wash, charge, aisle, bay); Director return time = arrival + stay. Open follow-ups: dirty unwashed car zeroes the tip (existing NotCleaned rule); queued car whose patron asked is not on the key board until Placed.
+Tests: 1175 of 1175 EditMode, 16 of 16 PlayMode after the merge.
