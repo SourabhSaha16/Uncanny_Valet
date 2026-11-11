@@ -67,3 +67,9 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketNeedsTracker.cs, Status/WashedStatusRule.cs, Status/ChargedStatusRule.cs, Assets/_Project/Scripts/Bootstrap/CameraFollow.cs, Assets/_Project/Scenes/Bootstrap.unity, Tests/EditMode/UI/CarStatusTests.cs, Tests/EditMode/UI/TicketBoardTests.cs, Tests/EditMode/Integration/CameraFitTests.cs
 Why: A washed or charged car kept Washed/Charged after being parked (design Part A, CAR SLOTS). They are now flags set by CarCleaned/CarFullyCharged and cleared by CarParked. Camera fit tightness 0.87 -> 0.78; play-area floor unchanged.
 Tests: wash and charge event replays, mid-wash drive-out, pickup priority; EditMode suite run.
+
+## integration: patience 25 min and tip pop over a boarding patron
+Date: 2026-11-10
+Files: Scripts/Patrons/PatronRequest.cs, Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/LiveTuningTests.cs, Scripts/UI/Hud/{TipPopSettings,PendingTipPops,TipPopKind,TipPopText,TipPops,TipPopTracker,TipPopPainter,PlayingHud}.cs, Scripts/UI/GameUi.cs, Scripts/UI/Mood/HudEmotionConfig.cs, Tests/EditMode/UI/TipPopTests.cs
+Why: Play-test notes: pickup patience default 45 -> 25 game minutes (impatient 15; patrons module one-off edit), and a floating "+$N" over the car when the patron boards (design.md A4 tips and pickup).
+Tests: 14 new EditMode (PendingTipPops pairing, text/look/curves, pool); LiveTuningTests updated to 25/15. EditMode 992 pass, 0 fail.

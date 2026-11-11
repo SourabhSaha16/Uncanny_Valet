@@ -7,7 +7,7 @@ namespace UncannyValet.Patrons
     public readonly struct PatronRequest
     {
         /// <summary>Default pickup window in game minutes (also the PatronConfig default). Impatient patrons get it scaled down.</summary>
-        public const float DefaultPickupWindowMinutes = 45f;
+        public const float DefaultPickupWindowMinutes = 25f;
 
         public readonly float StayMinutes;
         public readonly int BaseTip;
