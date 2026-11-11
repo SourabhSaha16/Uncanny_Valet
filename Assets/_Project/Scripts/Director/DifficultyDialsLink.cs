@@ -16,12 +16,12 @@ namespace UncannyValet.Director
         private readonly DifficultyDials _dials;
         private bool _applying;
 
-        /// <summary>Captures the starting values (the keys must already be seeded) and applies the dials once.</summary>
+        /// <summary>Captures the authored values (the keys must already be seeded), then seeds every driven key at the baseline dial positions.</summary>
         public DifficultyDialsLink(IEventBus bus, ITuning tuning, DifficultyDials dials)
         {
             _bus = bus; _tuning = tuning; _dials = dials;
             _dials.CaptureBaselines(tuning);
-            Apply();
+            _dials.SeedDerived(tuning);
             _bus.Subscribe<TuningChanged>(OnChanged);
         }
 

@@ -21,7 +21,9 @@ namespace UncannyValet.Tests.Integration
         public int Changes;
 
         /// <param name="linked">False seeds only (no dial link), giving the authored values to compare against.</param>
-        public DialRig(bool linked = true)
+        /// <param name="anchorDefaults">True moves every dial to the anchor-default position (5) after seeding, so every key
+        /// holds its authored value; false leaves the dials at the seeded baseline.</param>
+        public DialRig(bool linked = true, bool anchorDefaults = true)
         {
             Tuning = new TuningStore(Bus);
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
@@ -31,8 +33,13 @@ namespace UncannyValet.Tests.Integration
             Profile = ScriptableObject.CreateInstance<DirectorProfile>();
             _assets = new ScriptableObject[] { shift, patrons, tips, director, Profile };
             Link = TuningSeeder.Seed(Tuning, shift, patrons, tips, 6, director, Profile, bus: linked ? Bus : null);
+            if (linked && anchorDefaults)
+                foreach (var key in DifficultyDials.DialKeys) Tuning.Set(key, AnchorDefault);
             Bus.Subscribe<TuningChanged>(OnChanged);
         }
+
+        /// <summary>The dial position at which every anchor is neutral.</summary>
+        public const float AnchorDefault = 5f;
 
         public float this[TuningKey key] => Tuning.Get(key);
 

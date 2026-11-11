@@ -22,6 +22,7 @@ namespace UncannyValet.Director
         private readonly float _min;
         private readonly float _default;
         private readonly float _max;
+        private readonly Dictionary<TuningKey, float> _start = new Dictionary<TuningKey, float>();
         private readonly Dictionary<TuningKey, List<DialLink>> _byKey = new Dictionary<TuningKey, List<DialLink>>();
         private readonly Dictionary<TuningKey, float> _baseline = new Dictionary<TuningKey, float>();
         private readonly Dictionary<TuningKey, float> _positions = new Dictionary<TuningKey, float>();
@@ -36,16 +37,27 @@ namespace UncannyValet.Director
                 if (!_byKey.TryGetValue(link.Key, out var list)) _byKey[link.Key] = list = new List<DialLink>();
                 list.Add(link);
             }
+            foreach (var dial in DialKeys) _start[dial] = config.StartOf(dial);
             foreach (var info in TuningCatalog.All) _info[info.Key] = info;
         }
 
         /// <summary>True for the dial keys.</summary>
         public static bool IsDial(TuningKey key) => System.Array.IndexOf(DialKeys, key) >= 0;
 
-        /// <summary>Seeds every dial at the default position. Bootstrap only.</summary>
+        /// <summary>Seeds every dial at its starting (baseline) position. Bootstrap only.</summary>
         public void SeedDials(ITuning tuning)
         {
-            for (var i = 0; i < DialKeys.Length; i++) tuning.Seed(DialKeys[i], _default);
+            for (var i = 0; i < DialKeys.Length; i++) tuning.Seed(DialKeys[i], _start[DialKeys[i]]);
+        }
+
+        /// <summary>
+        /// Seeds every driven key at the value its dial positions derive, so Reset returns to the baseline. Call after
+        /// <see cref="CaptureBaselines"/>; the starting values stay the authored ones.
+        /// </summary>
+        public void SeedDerived(ITuning tuning)
+        {
+            ReadPositions(tuning);
+            foreach (var pair in _baseline) tuning.Seed(pair.Key, Derive(pair.Key, pair.Value));
         }
 
         /// <summary>Remembers each driven key's current value as its starting value. Call after seeding, before any edit.</summary>
@@ -59,13 +71,18 @@ namespace UncannyValet.Director
         /// <summary>Re-derives every driven key from the current dial values and writes the changed ones.</summary>
         public void Apply(ITuning tuning)
         {
-            for (var i = 0; i < DialKeys.Length; i++)
-                _positions[DialKeys[i]] = tuning.TryGet(DialKeys[i], out var v) ? Mathf.Clamp(v, _min, _max) : _default;
+            ReadPositions(tuning);
             foreach (var pair in _baseline)
             {
                 var derived = Derive(pair.Key, pair.Value);
                 if (!tuning.TryGet(pair.Key, out var current) || !Mathf.Approximately(current, derived)) tuning.Set(pair.Key, derived);
             }
+        }
+
+        private void ReadPositions(ITuning tuning)
+        {
+            for (var i = 0; i < DialKeys.Length; i++)
+                _positions[DialKeys[i]] = tuning.TryGet(DialKeys[i], out var v) ? Mathf.Clamp(v, _min, _max) : _default;
         }
 
         /// <summary>The value a key takes at the dial positions last read by <see cref="Apply"/>.</summary>

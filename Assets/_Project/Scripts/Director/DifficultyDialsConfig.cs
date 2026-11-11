@@ -20,6 +20,17 @@ namespace UncannyValet.Director
         [SerializeField, Tooltip("Every dial-to-key link. See docs/redesign/difficulty_dials.md.")]
         private List<DialLink> _links = DialAnchors.All();
 
+        [SerializeField, Tooltip("Where each dial starts in a fresh game and what its reset returns to (the designer baseline). A dial not listed starts at the default position.")]
+        private List<DialStart> _startPositions = DialStart.Baseline();
+
+        /// <summary>The dial's starting position: its baseline entry, or the default position when none is listed.</summary>
+        public float StartOf(UncannyValet.Core.Events.TuningKey dial)
+        {
+            for (var i = 0; i < _startPositions.Count; i++)
+                if (_startPositions[i].Dial == dial) return Mathf.Clamp(_startPositions[i].Position, _minPosition, _maxPosition);
+            return _defaultPosition;
+        }
+
         public float MinPosition => _minPosition;
         public float DefaultPosition => _defaultPosition;
         public float MaxPosition => _maxPosition;

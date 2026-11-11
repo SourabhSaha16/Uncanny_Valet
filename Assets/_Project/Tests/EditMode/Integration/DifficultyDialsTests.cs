@@ -14,12 +14,13 @@ namespace UncannyValet.Tests.Integration
         private const float DialMax = 10f;
 
         [Test]
-        public void DefaultDialPositions_ReproduceEveryAuthoredValueExactly()
+        public void AnchorDefaultPositions_ReproduceEveryAuthoredValueExactly()
         {
             using (var authored = new DialRig(linked: false))
             using (var dialed = new DialRig())
             {
                 foreach (var info in TuningCatalog.All)
+                    if (!DifficultyDials.IsDial(info.Key))
                     Assert.AreEqual(authored[info.Key], dialed[info.Key], info.Key + " moved at the default dial position");
                 Assert.AreEqual(14f, dialed[TuningKey.DirArrivalBudget]);
                 Assert.AreEqual(1.4f, dialed[TuningKey.DirReliefWorkload]);
@@ -28,7 +29,7 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void EveryDialStartsAtTheDefaultPosition()
+        public void AnchorRigSitsEveryDialAtTheDefaultPosition()
         {
             using (var rig = new DialRig())
                 foreach (var key in DifficultyDials.DialKeys) Assert.AreEqual(Mid, rig[key], key.ToString());
@@ -199,6 +200,69 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(TuningKey.DialIntensity, TuningCatalog.All[0].Key);
             foreach (var key in DifficultyDials.DialKeys) Assert.IsNotEmpty(Find(key).Tooltip, key + " needs a tooltip");
             Assert.AreEqual(TuningKey.DirSeed, TuningCatalog.All[8].Key);
+        }
+
+        [Test]
+        public void TheSeederStartsEveryDialAtTheBaselineAndDerivesTheKeysForIt()
+        {
+            using (var rig = new DialRig(anchorDefaults: false))
+            {
+                Assert.AreEqual(8f, rig[TuningKey.DialIntensity]);
+                Assert.AreEqual(8f, rig[TuningKey.DialRamp]);
+                Assert.AreEqual(6f, rig[TuningKey.DialLateRush]);
+                Assert.AreEqual(5f, rig[TuningKey.DialDirtyCars]);
+                Assert.AreEqual(5f, rig[TuningKey.DialEvCars]);
+                Assert.AreEqual(6.5f, rig[TuningKey.DialDilemmas]);
+                Assert.AreEqual(4f, rig[TuningKey.DialMercy]);
+                Assert.AreEqual(5.5f, rig[TuningKey.DialSkillReward]);
+                Assert.AreEqual(0f, rig[TuningKey.DirSeed]);
+                Assert.AreEqual(1f, rig[TuningKey.GameMinutesPerSecond]);
+                Assert.AreEqual(240f, rig[TuningKey.ShiftLengthSeconds]);
+                Assert.AreEqual(1.24f, rig[TuningKey.DirTargetScale], 0.0001f);
+                Assert.AreEqual(1.36f, rig[TuningKey.DirRampShape], 0.0001f);
+                Assert.AreEqual(17f, rig[TuningKey.DirArrivalBudget]);
+                Assert.AreEqual(3f, rig[TuningKey.DirBudgetSlack]);
+                Assert.AreEqual(1.68f, rig[TuningKey.DirReliefWorkload], 0.0001f);
+                Assert.AreEqual(0.168f, rig[TuningKey.DirFormInfluence], 0.0001f);
+                foreach (var info in TuningCatalog.All)
+                {
+                    Assert.GreaterOrEqual(rig[info.Key], info.Min - 0.0001f, info.Key + " below its range");
+                    Assert.LessOrEqual(rig[info.Key], info.Max + 0.0001f, info.Key + " above its range");
+                }
+            }
+        }
+
+        [Test]
+        public void Reset_ReturnsDialsAndDerivedKeysToTheBaseline()
+        {
+            using (var rig = new DialRig(anchorDefaults: false))
+            {
+                var baseline = Snapshot(rig);
+                rig.Dial(TuningKey.DialIntensity, 2f);
+                rig.Dial(TuningKey.DialMercy, 9f);
+                rig.Tuning.Set(TuningKey.DirBudgetSlack, 9f);
+                foreach (var info in TuningCatalog.All) rig.Tuning.Reset(info.Key);
+                CollectionAssert.AreEqual(baseline, Snapshot(rig), "Reset all must land on the baseline");
+                rig.Dial(TuningKey.DialMercy, 9f);
+                rig.Tuning.Reset(TuningKey.DialMercy);
+                Assert.AreEqual(4f, rig[TuningKey.DialMercy]);
+                Assert.AreEqual(baseline[IndexOf(TuningKey.DirReliefWorkload)], rig[TuningKey.DirReliefWorkload]);
+            }
+        }
+
+        [Test]
+        public void TheShippedConfigAssetCarriesTheBaseline()
+        {
+            var config = UnityEditor.AssetDatabase.LoadAssetAtPath<DifficultyDialsConfig>("Assets/_Project/Data/Director/DifficultyDialsConfig.asset");
+            Assert.IsNotNull(config);
+            Assert.AreEqual(8f, config.StartOf(TuningKey.DialIntensity));
+            Assert.AreEqual(6.5f, config.StartOf(TuningKey.DialDilemmas));
+        }
+
+        private static int IndexOf(TuningKey key)
+        {
+            for (var i = 0; i < TuningCatalog.All.Count; i++) if (TuningCatalog.All[i].Key == key) return i;
+            return -1;
         }
 
         private static TuningInfo Find(TuningKey key)

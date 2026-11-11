@@ -6,8 +6,8 @@ only the underlying keys, exactly as before.
 
 ## How the mapping works
 
-- Each dial is 0..10 in 0.5 steps and starts at **5**, where every underlying number keeps the value its config asset
-  authors. So the game plays exactly as before until a dial moves.
+- Each dial is 0..10 in 0.5 steps. The anchors are neutral at **5**, where every underlying number keeps the value its config asset
+  authors. A fresh game starts at the **baseline** below (`DifficultyDialsConfig` start positions); Reset returns a dial, and the keys it drives, to the baseline.
 - Each row below is an anchor table (`DifficultyDialsConfig`, defaults in `DialAnchors`): the effect at dial 0, at
   dial 5 (always "no change") and at dial 10. Between anchors the value is linear (piecewise linear overall).
 - **Scale** anchors multiply the key's authored value (a boost multiplier is scaled around 1, so 1 stays "no boost").
@@ -19,6 +19,41 @@ only the underlying keys, exactly as before.
   harder; higher **Mercy** is easier (more relief). Tests check each key moves monotonically the stated way.
 
 Values below are for the default authored numbers: dial 0 / dial 5 / dial 10.
+
+## Baseline (2026-11-10)
+
+Tuned by hand in the F2 panel and adopted as the starting position. Clock rows are unchanged (1 game minute per second, 240 s shift).
+
+| Dial | Baseline |
+| --- | --- |
+| Overall Intensity | 8 |
+| Ramp Over the Shift | 8 |
+| Late-Shift Rush | 6 |
+| Car Mix: Dirty Cars % | 5 |
+| Car Mix: EV Cars % | 5 |
+| Dilemma Frequency | 6.5 |
+| Mercy | 4 |
+| Skill Reward | 5.5 |
+| Randomness Seed | 0 |
+
+Derived underlying values at the baseline (authored value in brackets):
+
+| Keys | Value |
+| --- | --- |
+| DirTargetScale / DirRampShape / DirLateTargetBoost | 1.24 / 1.36 / +0.08 |
+| DirUnderFactor / DirOverFactor | 0.474 (0.6) / 1.32 (1.5) |
+| DirMinInterval / DirMaxInterval (s) | 3.8 (5) / 34 (40) |
+| DirArrivalBudget / DirBudgetSlack / PlanMaxWaitingCars | 17 (14) / 3 (2) / 3 |
+| PlanLateEvChance / PlanLateEvStart | 0.56 (0.5) / 0.564 (0.6) |
+| PlanDirtyChance, PlanEvChance, car-mix weights, streak limit | authored (0.3, 0.3, 20/20/10, 2) |
+| Dilemma boosts: WashBlocked / WashBusy / BaysBlocked / BaySquatted / LastBay / LotTight / Chain | 3.42 / 1.605 / 3.42 / 2.815 / 1.605 / 1.605 / 2.21 |
+| DirLotTightSpots / DirDilemmaCooldown / DirDilemmaBlackout / DirHeadroomGap | 1 / 20 (rounded from 20.5) / 16 / 0.195 |
+| DirReliefWorkload / DirReliefPressure | 1.68 (1.4) / 0.8755 (0.85) |
+| DirReliefAngryCount / DirReliefAngryWindow / DirReliefHold | 2 / 27 / 9 |
+| DirReliefPlainCars / DirReliefCooldown | 2 / 28 |
+| DirAssistDilemmaScale / DirAssist | 0.56 / 0 |
+| DirFormInfluence / TipWeight / AngryWeight / ComboWeight | 0.168 / 0.636 / 1.05 / 0.44 |
+| DirFormWindow / DirFormWarmup / DirFormMaxStep | 58 / 28 / 0.275 |
 
 ## 1. Overall Intensity (higher = harder)
 
