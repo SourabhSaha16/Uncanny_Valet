@@ -129,7 +129,8 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void ExhaustedPoolFallsBackToAValidPlateWithoutThrowing()
         {
-            var pool = new PlatePool(new FixedRandom(0.3f));
+            // A seeded source, not a fixed one: a constant draw makes every acquire probe past all held plates (about 6.5M string builds, 2.6 s).
+            var pool = new PlatePool(new SeededPatronRandom(3));
             for (var i = 0; i < PlateFormat.Total; i++) pool.Acquire();
             Assert.AreEqual(PlateFormat.Total, pool.Count);
             string extra = null;
