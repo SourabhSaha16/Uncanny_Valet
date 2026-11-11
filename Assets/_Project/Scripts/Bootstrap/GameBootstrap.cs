@@ -118,7 +118,8 @@ namespace UncannyValet.Bootstrap
             _dialsLink?.Dispose();
             _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
-                _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig);
+                _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
+                _audio != null ? _audio.Config : null);
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.

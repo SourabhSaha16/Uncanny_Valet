@@ -1,6 +1,7 @@
 using UncannyValet.Cars.Fx;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UnityEngine;
 
 namespace UncannyValet.Cars
 {
@@ -14,6 +15,7 @@ namespace UncannyValet.Cars
         private float _lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed, _gripAtSpeed, _driftGripScale;
         private float _driftMinSpeed, _turnFullSpeed, _rMin;
         private float _slideThreshold, _shiftSlideSpeed, _markOpacity, _markFadeSeconds;
+        private float _topSpeedScale, _accelerationScale, _brakingScale, _coastDragScale, _reverseScale;
 
         public CarHandlingLive(CarHandlingConfig config)
         {
@@ -31,7 +33,17 @@ namespace UncannyValet.Cars
             _shiftSlideSpeed = _skid.ShiftSlideSpeed;
             _markOpacity = _skid.MarkOpacity;
             _markFadeSeconds = _skid.MarkFadeSeconds;
+            _topSpeedScale = config.TopSpeedScale;
+            _accelerationScale = config.AccelerationScale;
+            _brakingScale = config.BrakingScale;
+            _coastDragScale = config.CoastDragScale;
+            _reverseScale = config.ReverseScale;
         }
+
+        /// <summary>One car's longitudinal numbers: its own values times the live scales.</summary>
+        public DriveSettings DriveFor(CarDefinition car) => new DriveSettings(car.TopSpeed * _topSpeedScale,
+            car.Acceleration * _accelerationScale, car.Braking * _brakingScale, car.CoastDrag * _coastDragScale,
+            Mathf.Clamp(car.ReverseFactor * _reverseScale, 0.01f, 1f));
 
         /// <summary>The drift model's numbers.</summary>
         public DriftSettings Drift => new DriftSettings(_lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed,
@@ -65,6 +77,11 @@ namespace UncannyValet.Cars
             tuning.Seed(TuningKey.HandlingShiftSlideSpeed, _shiftSlideSpeed);
             tuning.Seed(TuningKey.HandlingMarkOpacity, _markOpacity);
             tuning.Seed(TuningKey.HandlingMarkFadeSeconds, _markFadeSeconds);
+            tuning.Seed(TuningKey.HandlingTopSpeedScale, _topSpeedScale);
+            tuning.Seed(TuningKey.HandlingAccelerationScale, _accelerationScale);
+            tuning.Seed(TuningKey.HandlingBrakingScale, _brakingScale);
+            tuning.Seed(TuningKey.HandlingCoastDragScale, _coastDragScale);
+            tuning.Seed(TuningKey.HandlingReverseScale, _reverseScale);
         }
 
         /// <summary>Applies a tuning change; false when the key is not a handling key.</summary>
@@ -84,6 +101,11 @@ namespace UncannyValet.Cars
                 case TuningKey.HandlingShiftSlideSpeed: _shiftSlideSpeed = value; return true;
                 case TuningKey.HandlingMarkOpacity: _markOpacity = value; return true;
                 case TuningKey.HandlingMarkFadeSeconds: _markFadeSeconds = value; return true;
+                case TuningKey.HandlingTopSpeedScale: _topSpeedScale = value; return true;
+                case TuningKey.HandlingAccelerationScale: _accelerationScale = value; return true;
+                case TuningKey.HandlingBrakingScale: _brakingScale = value; return true;
+                case TuningKey.HandlingCoastDragScale: _coastDragScale = value; return true;
+                case TuningKey.HandlingReverseScale: _reverseScale = value; return true;
                 default: return false;
             }
         }

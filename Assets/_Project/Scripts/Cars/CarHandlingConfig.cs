@@ -29,12 +29,26 @@ namespace UncannyValet.Cars
         [Header("Turning radius (section 3)")]
         [SerializeField, Min(0.1f), Tooltip("Speed (units/s) at and above which steering has full effect; below it the turn rate scales down.")]
         private float _turnFullSpeed = 4f;
-        [SerializeField, Min(0.1f), Tooltip("Clear gap (units) between the two bay rows. Copied from LotConfig's aisle width by the editor setup; a mismatch is reported at start.")]
-        private float _measuredAisleWidth = 4.6f;
-        [SerializeField, Range(0f, 3f), Tooltip("Units added to half the aisle to get R_min.")]
+        [SerializeField, Min(0.5f), Tooltip("Radius (units) of the tightest slow turn. MaxTurnRate = TurnFullSpeed / this; above TurnFullSpeed the radius grows with speed.")]
+        private float _tightestRadius = 2.2f;
+        [SerializeField, Min(0.1f), Tooltip("Clear gap (units) between the two bay rows. Copied from LotConfig's aisle width by the editor setup; a mismatch is only warned about at start.")]
+        private float _measuredAisleWidth = 6f;
+        [SerializeField, Range(0f, 3f), Tooltip("Validation only: the largest radius that still swings into a bay is half the aisle plus this.")]
         private float _radiusMargin = 1f;
         [SerializeField, Range(0f, 1f), Tooltip("Units of space kept between a reversing car and the opposite bay row.")]
         private float _pullOutClearance = 0.3f;
+
+        [Header("Driving scales (multiply each CarDefinition value; 1 = unchanged)")]
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's top speed.")]
+        private float _topSpeedScale = 1f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's acceleration.")]
+        private float _accelerationScale = 1f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's braking.")]
+        private float _brakingScale = 1f;
+        [SerializeField, Range(0.25f, 3f), Tooltip("Multiplier on each car's coasting slow-down.")]
+        private float _coastDragScale = 1f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's reverse top speed.")]
+        private float _reverseScale = 1f;
 
         [Header("Car-on-car bounce")]
         [SerializeField, Range(0f, 1f), Tooltip("Restitution between two cars: 0 = dead stop, 1 = perfect rubber. Walls and the valet are unchanged.")]
@@ -83,8 +97,20 @@ namespace UncannyValet.Cars
         public float MeasuredAisleWidth => _measuredAisleWidth;
         /// <summary>Clearance kept when pulling out, units.</summary>
         public float PullOutClearance => _pullOutClearance;
-        /// <summary>Tightest radius at low speed, units (derived from the aisle).</summary>
-        public float RMin => TurningRadius.RMin(_measuredAisleWidth, _radiusMargin);
+        /// <summary>Units added to half the aisle for the largest radius that still makes a bay entry (validation only).</summary>
+        public float RadiusMargin => _radiusMargin;
+        /// <summary>Multiplier on each car's top speed.</summary>
+        public float TopSpeedScale => _topSpeedScale;
+        /// <summary>Multiplier on each car's acceleration.</summary>
+        public float AccelerationScale => _accelerationScale;
+        /// <summary>Multiplier on each car's braking.</summary>
+        public float BrakingScale => _brakingScale;
+        /// <summary>Multiplier on each car's coasting drag.</summary>
+        public float CoastDragScale => _coastDragScale;
+        /// <summary>Multiplier on each car's reverse speed.</summary>
+        public float ReverseScale => _reverseScale;
+        /// <summary>Tightest radius at low speed, units (set directly).</summary>
+        public float RMin => _tightestRadius;
         /// <summary>Turn rate at full steering and full speed, radians per second (derived).</summary>
         public float MaxTurnRate => TurningRadius.MaxTurnRate(_turnFullSpeed, RMin);
     }

@@ -25,6 +25,17 @@ namespace UncannyValet.Audio
             _source.volume = 0f;
         }
 
+        /// <summary>Swaps the loop clip (new sharpness), keeping it playing if it was, and frees the old clip.</summary>
+        public void SetLoop(AudioClip clip)
+        {
+            var old = _source.clip;
+            var wasPlaying = _source.isPlaying;
+            _source.Stop();
+            _source.clip = clip;
+            if (wasPlaying) _source.Play();
+            if (old != null) Object.Destroy(old);
+        }
+
         /// <summary>The overall effect volume (master x effects, 0 when muted) the loop volume is scaled by.</summary>
         public void SetGain(float gain) => _gain = gain;
 

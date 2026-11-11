@@ -41,10 +41,10 @@ namespace UncannyValet.Audio
 
         [Header("Tyres")]
         [SerializeField, Range(0f, 1f), Tooltip("Squeal loop volume at the gentlest slide, as a share of the effect volume.")]
-        private float _squealMinVolume = 0.25f;
+        private float _squealMinVolume = 0.12f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Squeal loop volume at a full drift, as a share of the effect volume.")]
-        private float _squealMaxVolume = 0.8f;
+        private float _squealMaxVolume = 0.4f;
 
         [SerializeField, Range(0.5f, 2f), Tooltip("Squeal pitch multiplier at the gentlest slide.")]
         private float _squealMinPitch = 0.9f;
@@ -57,6 +57,15 @@ namespace UncannyValet.Audio
 
         [SerializeField, Range(0.005f, 0.5f), Tooltip("Seconds the squeal takes to come in when a slide starts.")]
         private float _squealAttackSeconds = 0.03f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Starting value of the 'Tyre sound volume' F2 key: scales every tyre sound.")]
+        private float _tyreVolume = 1f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Starting value of the 'Tyre sound sharpness' F2 key: 0 dull and round, 1 bright.")]
+        private float _tyreSharpness = SfxTyres.DefaultSharpness;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Volume of the tyre chirp and braking screech as a share of the effect volume.")]
+        private float _tyreOneShotVolume = 0.6f;
 
         [Header("Synthesis")]
         [SerializeField, Range(11025, 44100), Tooltip("Sample rate of generated clips. 22050 keeps Web generation cheap.")]
@@ -75,6 +84,9 @@ namespace UncannyValet.Audio
         public float MaxTempoMultiplier => _maxTempoMultiplier;
         public int PendingForMaxTempo => _pendingForMaxTempo;
         public float TempoSmoothingSeconds => _tempoSmoothingSeconds;
+        public float TyreVolume => _tyreVolume;
+        public float TyreSharpness => _tyreSharpness;
+        public float TyreOneShotVolume => _tyreOneShotVolume;
         public float SquealMinVolume => _squealMinVolume;
         public float SquealMaxVolume => _squealMaxVolume;
         public float SquealMinPitch => _squealMinPitch;

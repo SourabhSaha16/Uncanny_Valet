@@ -20,9 +20,15 @@ MonoBehaviour:
   _driftGripScale: 0.25
   _driftMinSpeed: 1
   _turnFullSpeed: 4
-  _measuredAisleWidth: 6
+  _tightestRadius: 2.2
+  _measuredAisleWidth: 4.6
   _radiusMargin: 1
   _pullOutClearance: 0.3
+  _topSpeedScale: 1
+  _accelerationScale: 1
+  _brakingScale: 1
+  _coastDragScale: 1
+  _reverseScale: 1
   _bounciness: 0.4
   _minImpactSpeed: 0.5
   _fullImpactSpeed: 6

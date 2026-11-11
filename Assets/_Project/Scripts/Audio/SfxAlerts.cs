@@ -20,8 +20,8 @@ namespace UncannyValet.Audio
         private const float ClickSeconds = 0.03f;
         private const float ClickHighPassHz = 3000f;
         private const float ClickToneHz = 880f;
-        private const float BumpStartHz = 170f;
-        private const float BumpEndHz = 340f;
+        private const float BumpStartHz = 130f;
+        private const float BumpEndHz = 230f;
         private const float BumpSeconds = 0.14f;
         private const float BumpGain = 0.5f;
         private const float ThudStartHz = 150f;
@@ -31,7 +31,9 @@ namespace UncannyValet.Audio
         private const float KnockHz = 95f;
         private const float KnockSeconds = 0.05f;
         private const float KnockGain = 0.3f;
-        private const float KnockFilterHz = 700f;
+        private const float KnockFilterHz = 400f;
+        private const float BumpSoftenHz = 1100f;
+        private const float BumpAttack = 0.012f;
         private static readonly int[] JingleMidi = { 72, 76, 79, 84 };
 
         public static float[] PickupRequested(int rate)
@@ -85,8 +87,9 @@ namespace UncannyValet.Audio
         {
             var b = new MixBuffer(rate * 25 / 100, rate, false);
             var boing = VoiceSpec.Tone(Waveform.Sine, BumpStartHz, BumpSeconds, BumpGain).Gliding(BumpEndHz)
-                .WithEnvelope(new Adsr(0.003f, BumpSeconds, 0f, 0.05f));
+                .WithEnvelope(new Adsr(BumpAttack, BumpSeconds, 0f, 0.05f));
             b.AddVoice(0f, boing);
+            SoftenFilter.LowPass(b.Samples, rate, BumpSoftenHz);
             return SfxActions.Finish(b);
         }
 
@@ -95,9 +98,10 @@ namespace UncannyValet.Audio
         {
             var b = new MixBuffer(rate * 25 / 100, rate, false);
             b.AddVoice(0f, VoiceSpec.Tone(Waveform.Sine, ThudStartHz, ThudSeconds, ThudGain).Gliding(ThudEndHz)
-                .WithEnvelope(new Adsr(0.002f, ThudSeconds, 0f, 0.06f)));
-            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Square, KnockHz, KnockSeconds, KnockGain).Filtered(KnockFilterHz, KnockFilterHz, 1f)
-                .WithEnvelope(new Adsr(0.001f, KnockSeconds, 0f, 0.02f)));
+                .WithEnvelope(new Adsr(BumpAttack, ThudSeconds, 0f, 0.06f)));
+            b.AddVoice(0f, VoiceSpec.Tone(Waveform.Triangle, KnockHz, KnockSeconds, KnockGain).Filtered(KnockFilterHz, KnockFilterHz, 1f)
+                .WithEnvelope(new Adsr(0.004f, KnockSeconds, 0f, 0.02f)));
+            SoftenFilter.LowPass(b.Samples, rate, BumpSoftenHz);
             return SfxActions.Finish(b);
         }
 

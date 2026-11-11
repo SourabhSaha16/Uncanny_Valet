@@ -1,3 +1,4 @@
+using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
@@ -20,13 +21,15 @@ namespace UncannyValet.Bootstrap
         /// <param name="pedestrians">How many ambient pedestrians start active (the F2 panel can change it).</param>
         /// <param name="bus">When given, the returned link re-derives the director numbers whenever a dial moves.</param>
         /// <param name="handling">The car handling config; null seeds the config defaults.</param>
+        /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null, CarHandlingConfig handling = null)
+            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null)
         {
             SeedTraffic(t, traffic);
             SeedHandling(t, handling);
+            SeedTyreSound(t, audio);
             t.Seed(TuningKey.PedestrianCount, pedestrians);
             if (director != null && profile != null) director.SeedInto(t, profile);
 
@@ -80,6 +83,14 @@ namespace UncannyValet.Bootstrap
             var config = handling != null ? handling : ScriptableObject.CreateInstance<CarHandlingConfig>();
             new CarHandlingLive(config).Seed(t);
             if (handling == null) Object.DestroyImmediate(config);
+        }
+
+        private static void SeedTyreSound(ITuning t, AudioConfig audio)
+        {
+            var config = audio != null ? audio : ScriptableObject.CreateInstance<AudioConfig>();
+            t.Seed(TuningKey.TyreSoundVolume, config.TyreVolume);
+            t.Seed(TuningKey.TyreSoundSharpness, config.TyreSharpness);
+            if (audio == null) Object.DestroyImmediate(config);
         }
 
         private static void SeedTraffic(ITuning t, TrafficConfig traffic)
