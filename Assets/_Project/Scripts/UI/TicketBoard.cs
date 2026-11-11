@@ -157,6 +157,8 @@ namespace UncannyValet.UI
             Version++;
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
             row.State = TicketRowState.PickupRequested;
+            _placed.Add(e.Car.Value);
+            row.Placed = true; // asked for: listed wherever the car is, even still in the queue
             row.HasTimer = false;
             row.Expired = false;
         }

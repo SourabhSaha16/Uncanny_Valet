@@ -62,6 +62,17 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
+        public void KeyBoard_ListsAnUnplacedCarAsSoonAsItsPatronAsks()
+        {
+            _bus.Publish(new TicketOpened(T, C, 60f));
+            _bus.Publish(new CarArrived(C));
+            Assert.AreEqual(0, KeyRows().Count);
+            _bus.Publish(new PickupRequested(T, C));
+            Assert.AreEqual(1, KeyRows().Count);
+            Assert.IsTrue(Only().Placed);
+        }
+
+        [Test]
         public void KeyBoard_ListsACarOnlyOnceParked_AndKeepsItUntilDelivered()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
