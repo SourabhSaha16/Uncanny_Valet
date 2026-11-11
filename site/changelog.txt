@@ -1,4 +1,12 @@
 === Last 50 commits ===
+fe1dccf  2026-11-10  lead: merge agent/patience-tuning
+7e2ee6b  2026-11-10  patrons: lower pickup patience, impatient patrons wait less
+b69bb93  2026-11-10  lead: adopt faster release routine in CLAUDE.md
+e154852  2026-11-10  lead: merge qa test review, update pending tasks
+189bdba  2026-11-10  lead: merge agent/qa test review
+a24daf8  2026-11-10  qa: cut test time, add test review
+4a0ee22  2026-11-10  lead: record missing changelog for 38e3723, redeploy site
+9a8f5f2  2026-11-10  lead: merge play-test round 3, update docs, rebuild site
 99a15db  2026-11-10  lead: merge agent/incoming-collision
 38e3723  2026-11-10  lead: regenerate assets, rebuild site after dial baseline merge
 368277d  2026-11-10  cars: make road trip cars solid and let them yield
@@ -41,14 +49,6 @@ b879d90  2026-11-10  integration: Washed/Charged status clears on park; closer c
 00d1e74  2026-11-10  audio: play car-arrives sound on CarArrived, not at spawn
 edcb101  2026-11-10  lead: merge queue-director-fix, update docs, rebuild site
 dcc59fa  2026-11-10  lead: merge agent/queue-director-fix
-fe1657a  2026-11-10  patrons: fix stalled arrivals, queue slot re-evaluation, late stays
-1e5ac34  2026-11-10  lead: merge ui-status, update docs, rebuild site
-c669f27  2026-11-10  ui-status: split TicketBoard and GameUi under 200 lines
-1f35e62  2026-11-10  ui-status: pickup emotions on patron bubble, plate and row
-5be8e76  2026-11-10  ui-status: plate shows only once the car is parked
-3102d0a  2026-11-10  ui-status: CAR SLOTS rows show a status word
-8149a0a  2026-11-10  lead: merge lot-v4, update design doc, rebuild site
-5914f39  2026-11-10  lot-v4: shift the pickup zone right, patrons wait in the gap
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -868,6 +868,30 @@ Files: docs/redesign/valet_powers.md, docs/design.md, docs/pending_tasks.md
 Why: the human's note on a power meter with three stackable powers (speed boost, freeze time, Park Smash). Draft with open questions; no code.
 Tests: none (docs only).
 
+## lead: merge play-test round 3 (handling, sounds, solid trip cars, wider lot, dial baseline); update docs; rebuild site
+Date: 2026-11-10
+Files: merges of worktree-agent-a649e5206949c972d, -a0f26c5db645b6d0e, -a3ee1dcf52afb7383, -ad23a3ed458e2fe98; docs, regenerated assets and scene, site/
+Why: the human's notes (sharper turning and tunable driving values, softer sound, collision for incoming cars, wider lot) and the hand-tuned dial values as the baseline. Approved Core ITripObstacles. Set CarHandlingConfig code default aisle to 6.
+Tests: 974 of 974 EditMode, 16 of 16 PlayMode; browser smoke test shows the wider lot, no console errors. Not played.
+
+## lead: record missing changelog for 38e3723 so CI deploys the current site
+Date: 2026-11-11
+Files: docs/changelogs/lead.md
+Why: commit 38e3723 ("lead: regenerate assets, rebuild site after dial baseline merge", Assets/ and site/ only) had no changelog entry, so the changelog check failed for the push ending at 9a8f5f2 and the deploy was skipped. History is not rewritten; the check only inspects the commits of each push, so this commit lets the next deploy run. 38e3723 regenerated the Bootstrap scene and CarHandlingConfig asset and rebuilt site/ after merging the dial baseline.
+Tests: none (docs only); EditMode 974 of 974 and PlayMode 16 of 16 at 9a8f5f2.
+
+## lead: merge qa test review
+Date: 2026-11-11
+Files: merge of worktree-agent-abb8c4e2d97e0350f (docs/redesign/test_review.md, PlateTests.cs, PlayMode/FastTimeFixture.cs), docs/pending_tasks.md
+Why: the human asked whether all tests are needed to cut build time. Result: none removed; two slow tests fixed (EditMode test time 6.1 s to 1.9 s, PlayMode 72 s to 32 s wall). Web build (497 s) and Unity start-up dominate. No runtime change, so site/ was not rebuilt.
+Tests: 974 of 974 EditMode, 16 of 16 PlayMode after the merge.
+
+## lead: adopt the faster release routine in CLAUDE.md
+Date: 2026-11-11
+Files: CLAUDE.md
+Why: the human approved the proposals in docs/redesign/test_review.md: EditMode every merge; RunBatch, PlayMode and the web build only when needed; batch deploys. The one-Unity-launch idea is untried and not part of the routine. No runtime change.
+Tests: none (docs only).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1165,6 +1189,12 @@ Files: Assets/_Project/Scripts/Director/{DialStart,DifficultyDialsConfig,Difficu
 Why: The human tuned the F2 panel (Intensity 8, Ramp 8, Late Rush 6, Dirty 5, EV 5, Dilemmas 6.5, Mercy 4, Skill 5.5, Seed 0) and wants it as the baseline. Dials now seed at configurable start positions and the derived keys are seeded at their derived values, so Reset and Reset all return to the baseline. Clock stays 1 min/s and 240 s (already the config values).
 Tests: anchor-default test kept (dials moved to 5 reproduce authored values); new tests for the seeded baseline and in-range derived keys, Reset semantics, and the shipped asset carrying the baseline. Full EditMode suite 953/953 passed.
 
+## patrons: lower pickup patience, impatient patrons wait less, visible tuning
+Date: 2026-11-10
+Files: Scripts/Patrons/{PatronRequest,PatronConfig,PatronTuning,PatronRequestRoller,LiveTicketTuning}.cs, Data/Patrons/PatronConfig.asset, Scripts/Core/Events/TuningKey.cs, Scripts/Core/Contracts/GameRows.cs, Scripts/Bootstrap/TuningSeeder.cs, Tests/EditMode/Patrons/LiveTuningTests.cs, Tests/EditMode/Integration/{DifficultyDialsTests,PhysicsAndTipTests}.cs
+Why: Play-test: patrons should lose patience sooner (design.md A4). Default window 60 -> 45 game min; impatient patrons wait 0.6x of it (was a tip flag only). New key ImpatientWindowScale; both rows visible in the Clock block; changes reach waiting tickets.
+Tests: 4 new in LiveTuningTests; dial-catalog visible count 11 -> 13; PhysicsAndTipTests pins a long window so complaint penalties do not skew its sum check. Full EditMode passes (978).
+
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog
 
@@ -1408,6 +1438,12 @@ Date: 2026-11-06
 Files: tools/sim/{params,rules,geometry,policies,car,valet,tasks,night,stats,grid,runs,schedule,lot_sim,selftest}.py, tools/sim/.gitignore, tools/sim/results/{report.md,grid.csv}, docs/balance.md
 Why: design.md section 10 (pressure rules, night length, challenge schedule): a seeded Monte Carlo of one night with one valet to find how many spots, cars and what arrival pace keep nights 1-7 moderately challenging, and whether the $1500 debt is reachable. Analysis only; no game code, scene or Data asset changed.
 Tests: python tools/sim/selftest.py passes (tip rules mirror TipCalculatorTests, LotConfig geometry, motion maths, seeded reproducibility and bookkeeping invariants). Full run (500 nights per cell, 441 grid cells plus schedule search) completed with seed 20261106.
+
+## qa: cut test time, add test review
+Date: 2026-11-10
+Files: Assets/_Project/Tests/EditMode/Patrons/PlateTests.cs, Assets/_Project/Tests/PlayMode/FastTimeFixture.cs(.meta), docs/redesign/test_review.md
+Why: human request to cut build time. PlateTests exhaustion case used a constant random source (2.6 s, same assertions now 0.04 s); PlayMode runs at timeScale 4 with the fixed 0.02 s physics step unchanged (54 s -> 13.7 s of tests, 72 s -> 32 s wall). Review and ranked savings in docs/redesign/test_review.md.
+Tests: EditMode 974/974 pass (test time 6.1 s -> 1.9 s); PlayMode 16/16 pass, twice. No test removed.
 
 === docs/changelogs/traffic-wire.md ===
 # traffic-wire changelog

@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  99a15db
-Subject: lead: merge agent/incoming-collision
-Date:    2026-11-10 21:11:12 -0800
+Commit:  fe1dccf
+Subject: lead: merge agent/patience-tuning
+Date:    2026-11-10 21:56:46 -0800

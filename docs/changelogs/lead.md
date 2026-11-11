@@ -573,3 +573,9 @@ Date: 2026-11-11
 Files: CLAUDE.md
 Why: the human approved the proposals in docs/redesign/test_review.md: EditMode every merge; RunBatch, PlayMode and the web build only when needed; batch deploys. The one-Unity-launch idea is untried and not part of the routine. No runtime change.
 Tests: none (docs only).
+
+## lead: merge patience-tuning, update docs, rebuild site
+Date: 2026-11-11
+Files: merge of worktree-agent-a8c773291166eb506, docs/design.md, regenerated Bootstrap.unity, site/
+Why: the human's note: pickup patrons should lose patience sooner and the timers should be tunable (docs/changelogs/patrons.md).
+Tests: 978 of 978 EditMode, 16 of 16 PlayMode; browser smoke test shows the two new rows (45 and 0.6), no console errors. Not played.
