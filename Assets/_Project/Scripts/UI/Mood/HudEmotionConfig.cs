@@ -32,7 +32,11 @@ namespace UncannyValet.UI.Mood
         [Header("Tip pop over a boarding patron")]
         [SerializeField] private TipPopSettings _tipPop = new TipPopSettings();
 
+        [Header("Power meter (right edge)")]
+        [SerializeField] private PowerMeterSettings _powerMeter = new PowerMeterSettings();
+
         public TipPopSettings TipPop => _tipPop;
+        public PowerMeterSettings PowerMeter => _powerMeter;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
         public float HappyHz => _happyHz;

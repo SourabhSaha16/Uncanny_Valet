@@ -603,3 +603,9 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/Core/Events/PowerKind.cs, PowerEvents.cs, Contracts/IWorldTime.cs (+ metas), docs/redesign/valet_powers.md, docs/design.md, docs/decisions.md, docs/changelogs/lead.md
 Why: the human answered the seven valet powers questions (valet_powers.md section 6, design A11); issue 35 adds the shared events and the freeze time-scale contract that every power module builds on.
 Tests: 992 of 992 EditMode (Core compiles; no new logic yet).
+
+## lead: merge agent/integration power meter HUD (#39)
+Date: 2026-11-11
+Files: merge of worktree-agent-ad38424284dae36c8 (UI/Hud power meter files, HudEmotionConfig, PowerMeterTests), docs/changelogs/lead.md
+Why: valet powers issue 39 (design A11). The HUD listens only to PowerMeterChanged, PowerActivated and PowerEnded; nothing publishes them yet, so it is invisible until the Powers module merges. Notch positions and ring durations in PowerMeterSettings are placeholders to match PowerMeterConfig.
+Tests: 1004 of 1004 EditMode (12 new).
