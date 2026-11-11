@@ -15,16 +15,22 @@ namespace UncannyValet.Lot
         private readonly HashSet<CarId> _wrong = new HashSet<CarId>();
         private ICurbFacing _facing;
 
-        public void Init(LotConfig config)
+        private readonly Dictionary<CarId, bool> _facingByCar = new Dictionary<CarId, bool>();
+        private CurbArrow _arrow;
+
+        /// <summary>Sets the zone up; <paramref name="arrow"/> (optional) is tinted by how the cars inside face.</summary>
+        public void Init(LotConfig config, CurbArrow arrow = null)
         {
             Setup(config, config.CurbSize);
             _facing = new CurbFacingRule(config.CurbFacingToleranceDegrees);
+            _arrow = arrow;
         }
 
         protected override bool Accepts(IDrivable car, bool resting)
         {
             var facing = _facing.IsAcceptable(car.Transform.eulerAngles.z);
             SetWrong(car.Id, resting && !facing);
+            TrackFacing(car.Id, facing);
             return facing;
         }
 
@@ -32,7 +38,26 @@ namespace UncannyValet.Lot
 
         protected override void OnLeft(CarId car) { }
 
-        protected override void OnForget(CarId car) => SetWrong(car, false);
+        protected override void OnForget(CarId car)
+        {
+            SetWrong(car, false);
+            if (_facingByCar.Remove(car)) ShowArrow();
+        }
+
+        private void TrackFacing(CarId car, bool facing)
+        {
+            if (_facingByCar.TryGetValue(car, out var known) && known == facing) return;
+            _facingByCar[car] = facing;
+            ShowArrow();
+        }
+
+        private void ShowArrow()
+        {
+            if (_arrow == null) return;
+            var right = 0;
+            foreach (var facing in _facingByCar.Values) if (facing) right++;
+            _arrow.Show(CurbArrowRule.Evaluate(right, _facingByCar.Count - right));
+        }
 
         private void SetWrong(CarId car, bool wrong)
         {
