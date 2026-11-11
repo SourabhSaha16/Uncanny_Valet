@@ -10,5 +10,8 @@ namespace UncannyValet.Core.Contracts
 
         /// <summary>True only on the frame the interact key was pressed.</summary>
         bool InteractPressed { get; }
+
+        /// <summary>True while the shared Dash/Handbrake button is held (Left Shift, gamepad right shoulder). Driving: handbrake drift; on foot: dash.</summary>
+        bool Drift { get; }
     }
 }

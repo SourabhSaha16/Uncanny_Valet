@@ -18,9 +18,33 @@ namespace UncannyValet.Cars
         [SerializeField, Tooltip("Body tint and pickup flash tunables.")]
         private CarFlashConfig _flash;
 
+        [SerializeField, Tooltip("Drift, grip and steering numbers shared by every car; the F2 panel edits a live copy.")]
+        private CarHandlingConfig _handling;
+
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
         private Sprite _sprite;
         private CarFlashConfig _fallbackFlash;
+        private CarHandlingLive _live;
+        private CarHandlingTuningLink _handlingLink;
+
+        /// <summary>The handling config asset (read-only); seeds the tuning store. Null when none is assigned.</summary>
+        public CarHandlingConfig HandlingConfig => _handling;
+
+        private void Start()
+        {
+            if (Services.TryGet<IEventBus>(out var bus))
+                _handlingLink = new CarHandlingTuningLink(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null, Live);
+        }
+
+        private void OnDestroy() => _handlingLink?.Dispose();
+
+        private CarHandlingLive Live => _live ?? (_live = CreateLive());
+
+        private CarHandlingLive CreateLive()
+        {
+            if (_handling == null) Debug.LogError("CarFactory has no CarHandlingConfig; using defaults. Rebuild with Setup/Build Everything.", this);
+            return new CarHandlingLive(_handling != null ? _handling : ScriptableObject.CreateInstance<CarHandlingConfig>());
+        }
 
         /// <summary>Optional bus for the publishSpawned overload. Set by the bootstrap.</summary>
         public IEventBus Bus { get; set; }
@@ -105,7 +129,7 @@ namespace UncannyValet.Cars
             go.AddComponent<BoxCollider2D>().size = Vector2.one;
 
             var driver = go.AddComponent<CarDriver>();
-            driver.Initialize(id, def);
+            driver.Initialize(id, def, Live);
             go.AddComponent<CarInteraction>();
             go.AddComponent<CarAutoDrive>();
             var art = AttachBodyArt(go, id, def, renderer);

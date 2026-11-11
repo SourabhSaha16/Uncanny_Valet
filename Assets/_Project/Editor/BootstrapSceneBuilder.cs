@@ -63,6 +63,7 @@ namespace UncannyValet.EditorTools
             Set(lot, "_art", lotArt);
             Set(factory, "_art", carArt);
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
+            AddHandling(root, factory, Load<LotConfig>(ProjectSetup.LotConfigPath));
             Set(ui, "_emotions", ArtAssetUtil.LoadOrCreate<HudEmotionConfig>(HudEmotionConfigPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
@@ -176,6 +177,16 @@ namespace UncannyValet.EditorTools
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.07f, 0.07f, 0.09f);
             return go.AddComponent<CameraFollow>();
+        }
+
+        // The handling config follows the lot's aisle; the check component reports a later mismatch at start.
+        private static void AddHandling(GameObject root, CarFactory factory, LotConfig lot)
+        {
+            var handling = HandlingAssetSetup.LoadAndSync(lot);
+            Set(factory, "_handling", handling);
+            var check = root.AddComponent<HandlingAisleCheck>();
+            Set(check, "_lot", lot);
+            Set(check, "_handling", handling);
         }
 
         private static void SetArray(SerializedProperty array, params Object[] items)

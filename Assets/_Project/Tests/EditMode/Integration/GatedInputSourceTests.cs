@@ -11,6 +11,7 @@ namespace UncannyValet.Tests.Integration
         {
             public Vector2 Move => Vector2.right;
             public bool InteractPressed => true;
+            public bool Drift => true;
         }
 
         [Test]
@@ -19,6 +20,7 @@ namespace UncannyValet.Tests.Integration
             var gate = new GatedInputSource(new Fake(), () => false);
             Assert.AreEqual(Vector2.right, gate.Move);
             Assert.IsTrue(gate.InteractPressed);
+            Assert.IsTrue(gate.Drift);
         }
 
         [Test]
@@ -27,6 +29,7 @@ namespace UncannyValet.Tests.Integration
             var gate = new GatedInputSource(new Fake(), () => true);
             Assert.AreEqual(Vector2.zero, gate.Move);
             Assert.IsFalse(gate.InteractPressed);
+            Assert.IsFalse(gate.Drift);
         }
     }
 }

@@ -18,6 +18,9 @@ namespace UncannyValet.Core.Contracts
         /// <summary>Throttle and steer in -1..1. Called every frame while driven.</summary>
         void SetInput(float throttle, float steer);
 
+        /// <summary>True while the handbrake (Drift) button is held. Called every frame while driven.</summary>
+        void SetDrift(bool drift);
+
         void SetDriver(bool hasDriver);
     }
 }

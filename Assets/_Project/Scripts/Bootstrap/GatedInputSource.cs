@@ -19,5 +19,7 @@ namespace UncannyValet.Bootstrap
         public Vector2 Move => _blocked() ? Vector2.zero : _inner.Move;
 
         public bool InteractPressed => !_blocked() && _inner.InteractPressed;
+
+        public bool Drift => !_blocked() && _inner.Drift;
     }
 }

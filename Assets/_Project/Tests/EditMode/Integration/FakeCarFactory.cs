@@ -18,6 +18,7 @@ namespace UncannyValet.Tests.Integration
             public float Speed { get; set; }
             public bool HasDriver { get; private set; }
             public void SetInput(float throttle, float steer) { }
+            public void SetDrift(bool drift) { }
 
             public void SetDriver(bool hasDriver)
             {

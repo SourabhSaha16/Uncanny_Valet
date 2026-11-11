@@ -1,3 +1,4 @@
+using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
@@ -18,12 +19,14 @@ namespace UncannyValet.Bootstrap
         /// <param name="traffic">The road traffic config; null seeds the config defaults.</param>
         /// <param name="pedestrians">How many ambient pedestrians start active (the F2 panel can change it).</param>
         /// <param name="bus">When given, the returned link re-derives the director numbers whenever a dial moves.</param>
+        /// <param name="handling">The car handling config; null seeds the config defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null)
+            IEventBus bus = null, CarHandlingConfig handling = null)
         {
             SeedTraffic(t, traffic);
+            SeedHandling(t, handling);
             t.Seed(TuningKey.PedestrianCount, pedestrians);
             if (director != null && profile != null) director.SeedInto(t, profile);
 
@@ -70,6 +73,13 @@ namespace UncannyValet.Bootstrap
             dials.SeedDials(t);
             if (temporary) Object.DestroyImmediate(config);
             return bus != null ? new DifficultyDialsLink(bus, t, dials) : null;
+        }
+
+        private static void SeedHandling(ITuning t, CarHandlingConfig handling)
+        {
+            var config = handling != null ? handling : ScriptableObject.CreateInstance<CarHandlingConfig>();
+            new CarHandlingLive(config).Seed(t);
+            if (handling == null) Object.DestroyImmediate(config);
         }
 
         private static void SeedTraffic(ITuning t, TrafficConfig traffic)

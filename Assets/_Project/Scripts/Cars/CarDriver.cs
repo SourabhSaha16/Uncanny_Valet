@@ -16,6 +16,8 @@ namespace UncannyValet.Cars
         private CarId _id;
         private float _throttle;
         private float _steer;
+        private bool _drift;
+        private CarHandlingLive _handling;
 
         public CarId Id => _id;
         public Transform Transform => transform;
@@ -23,10 +25,15 @@ namespace UncannyValet.Cars
         public bool HasDriver { get; private set; }
         public CarDefinition Definition => _definition;
 
-        public void Initialize(CarId id, CarDefinition definition)
+        /// <summary>Input editors read before the handling model; faults add themselves here.</summary>
+        public DriveModifierStack Modifiers { get; } = new DriveModifierStack();
+
+        /// <param name="handling">Live handling numbers shared by all cars of the factory.</param>
+        public void Initialize(CarId id, CarDefinition definition, CarHandlingLive handling = null)
         {
             _id = id;
             _definition = definition;
+            _handling = handling;
             EnsureBody();
         }
 
@@ -36,11 +43,13 @@ namespace UncannyValet.Cars
             _steer = Mathf.Clamp(steer, -1f, 1f);
         }
 
+        public void SetDrift(bool drift) => _drift = drift;
+
         public void SetDriver(bool hasDriver)
         {
             if (HasDriver == hasDriver) return;
             HasDriver = hasDriver;
-            if (!hasDriver) { _throttle = 0f; _steer = 0f; }
+            if (!hasDriver) { _throttle = 0f; _steer = 0f; _drift = false; }
             ApplyDrag();
             if (!Services.TryGet<IEventBus>(out var bus)) return;
             if (hasDriver) bus.Publish(new CarEntered(_id));
@@ -76,25 +85,26 @@ namespace UncannyValet.Cars
             _body.angularDamping = HasDriver ? 0f : _definition.ParkedAngularDrag;
         }
 
+        // Order: input modifiers, drift model (velocity lags the facing), throttle/brake along the facing, steering.
         private void FixedUpdate()
         {
             if (_definition == null) return;
-            float dt = Time.fixedDeltaTime;
-            Vector2 up = transform.up, right = transform.right;
-            Vector2 velocity = _body.linearVelocity;
-            float forward = Vector2.Dot(velocity, up);
-            float side = Vector2.Dot(velocity, right);
+            if (_handling == null) _handling = FallbackHandling();
+            var input = HasDriver ? Modifiers.Apply(new DriveInput(_throttle, _steer, _drift)) : default;
+            Vector2 up = transform.up;
+            var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime);
+            var forward = Vector2.Dot(velocity, up);
+            var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, _definition.Acceleration,
+                _definition.Braking, _definition.CoastDrag, _definition.TopSpeed, _definition.ReverseFactor, Time.fixedDeltaTime);
+            _body.linearVelocity = velocity + up * (next - forward);
+            _body.angularVelocity = Mathf.Rad2Deg
+                * SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed);
+        }
 
-            float throttle = HasDriver ? _throttle : 0f;
-            float steer = HasDriver ? _steer : 0f;
-            forward = CarPhysicsMath.NextForwardSpeed(forward, throttle, _definition.Acceleration,
-                _definition.Braking, _definition.CoastDrag, _definition.TopSpeed,
-                _definition.ReverseFactor, dt);
-            side = CarPhysicsMath.DampSideways(side, _definition.Grip, dt);
-
-            _body.linearVelocity = up * forward + right * side;
-            _body.angularVelocity = CarPhysicsMath.TurnDegreesPerSecond(
-                steer, forward, _definition.TurnRate, _definition.TopSpeed);
+        private CarHandlingLive FallbackHandling()
+        {
+            Debug.LogError("Car " + name + " has no handling config; using defaults. Rebuild with Setup/Build Everything.", this);
+            return new CarHandlingLive(ScriptableObject.CreateInstance<CarHandlingConfig>());
         }
     }
 }

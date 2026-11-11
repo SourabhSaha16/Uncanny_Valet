@@ -23,6 +23,7 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(DirectorPlayerRows.SkillRows);
             all.AddRange(DirectorPacingRows.CostRows);
             all.AddRange(GameRows.Rest);
+            all.AddRange(HandlingRows.Rows);
             return all;
         }
     }
