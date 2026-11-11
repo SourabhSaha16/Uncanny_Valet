@@ -1,4 +1,20 @@
 === Last 50 commits ===
+11c51b2  2026-11-11  lead: merge start-up crash fix, TuningKey append-only rule [Claude]
+7a6071a  2026-11-11  integration: fix start-up crash, add Bootstrap smoke test [Claude]
+c93aefe  2026-11-11  lead: fix conflict markers in Traffic meta files [Claude]
+1152f7b  2026-11-11  lead: merge agent/director return scheduler and late-shift pickups [Claude]
+f809fd8  2026-11-11  director: soak limits and changelog for the return scheduler [Claude]
+767af8c  2026-11-11  lead: merge agent/patrons dirty-car tip and key board follow-ups [Claude]
+91f7204  2026-11-11  director: merge pivot/chaos, build scheduler on drop-off stay clock [Claude]
+cc3da77  2026-11-11  patrons: unwashed dirty car still tips, asked-for car joins key board [Claude]
+df3c8ff  2026-11-11  director: return scheduler, late-shift pickups, arrival cutoff [Claude]
+fa4c2a9  2026-11-11  lead: merge agent/patrons stay from drop-off, ask anywhere [Claude]
+e2ea64c  2026-11-11  lead: merge agent/integration F2 copy all values [Claude]
+e867907  2026-11-11  patrons: stay runs from drop-off, patron asks wherever the car is [Claude]
+6afebe9  2026-11-11  integration: F2 panel Copy all values button [Claude]
+d86cfc9  2026-11-11  lead: merge agent/traffic two-way busier ambient roads [Claude]
+c6992c0  2026-11-11  traffic: two-way ambient roads, density and merge yielding [Claude]
+79aca20  2026-11-11  lead: rebuild beta site (idle guard, accept arrows, how-to-play) [Claude]
 8899f3a  2026-11-11  lead: merge agent/integration how-to-play screen [Claude]
 25a7370  2026-11-11  lead: merge agent/lot arrows green only when patron accepts [Claude]
 f480048  2026-11-11  integration: how-to-play screen after the first title press [Claude]
@@ -33,22 +49,6 @@ b16e601  2026-11-11  powers: add Powers module, meter, stacking and F2 keys
 501f5ca  2026-11-11  lead: merge agent/integration power meter HUD
 c3a5505  2026-11-11  integration: vertical power meter HUD (#39)
 45399fd  2026-11-11  lead: valet powers decisions, Core power events and IWorldTime
-bbc1a65  2026-11-11  lead: remove Kev from docs, plain issue titles rule
-6449cbc  2026-11-10  lead: merge tip-pop, move pending work to GitHub issues, rebuild site
-edadc81  2026-11-10  lead: merge agent/tip-pop (patience 25, tip pop)
-c976667  2026-11-10  integration: patience 25 min and tip pop over boarding patron
-c01ac70  2026-11-10  lead: stable and beta Pages sites, changelog exemption list
-f6cff8f  2026-11-10  lead: merge patience-tuning, update docs, rebuild site
-fe1dccf  2026-11-10  lead: merge agent/patience-tuning
-7e2ee6b  2026-11-10  patrons: lower pickup patience, impatient patrons wait less
-b69bb93  2026-11-10  lead: adopt faster release routine in CLAUDE.md
-e154852  2026-11-10  lead: merge qa test review, update pending tasks
-189bdba  2026-11-10  lead: merge agent/qa test review
-a24daf8  2026-11-10  qa: cut test time, add test review
-4a0ee22  2026-11-10  lead: record missing changelog for 38e3723, redeploy site
-9a8f5f2  2026-11-10  lead: merge play-test round 3, update docs, rebuild site
-99a15db  2026-11-10  lead: merge agent/incoming-collision
-38e3723  2026-11-10  lead: regenerate assets, rebuild site after dial baseline merge
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -211,6 +211,12 @@ Files: Scripts/Director/{IdleGuard,ArrivalPacer,PacerInput,PacingSettings,Direct
 Why: Issue #70, no more than about 2 s with an empty arrival queue. New pure IdleGuard counts seconds with no car awaiting park; at the limit the pacer sends one regardless of its countdown or relief hold (a relief send is plain). A queued car resets it, so normal pacing, mercy and the queue cap are untouched. It stands down when the arrival budget is spent or fewer than ArrivalIdleCutoff (20 s) remain. The first car of a shift is due after one limit. A lost send is retried within the limit while the queue is empty. Keys ArrivalIdleLimit (2 s, visible) and ArrivalIdleCutoff (advanced) are seeded by PacingSettings, not by a dial. F3 "next in" shows the guard countdown.
 Tests: 11 new in IdleGuardTests, 1 in DirectorBrainTests; soak asserts the empty-queue gap and first car within limit + 1 s over 200 shifts (longest observed 1.5 s). EditMode 1111/1111, PlayMode 16/16 passed. RunBatch run; Bootstrap.unity churn reverted.
 
+## director: return scheduler, late-shift pickups, arrival cutoff [Claude]
+Date: 2026-11-11
+Files: Scripts/Director/{ReturnScheduler,LateReturnPlanner,ReturnCandidates,ReturnCandidate,ReturnDirector,ReturnInput,ReturnShift,ReturnSettings,DirectorBrain,DirectorConfig,DirectorSettings,PatronDirector,ArrivalPacer,HoldReason,PacingSettings,CarBook,CarRecord,SnapshotBuilder,LotStateTracker}.cs, Scripts/Patrons/{ReturnShifter,Ticket,TicketRegistry}.cs, Scripts/Core/{Events/DirectorEvents,Events/TuningKey,Contracts/ReturnRows,Contracts/TuningCatalog,Contracts/ArrivalRows,Contracts/CarSnapshot}.cs, Data/Director/DirectorConfig.asset, Tests/EditMode/{Director,Patrons}/*
+Why: Issues #12, #13, #73, #15; spec section 5. Pure ReturnScheduler keeps returns in the +/-25% window, spaces pickups 4 s, nudges one return forward or back per cooldown, and from 60 s before the end pulls every return forward outside the window. Director asks via ReturnShiftRequested, Patrons executes (ReturnShifter, Ticket.ShiftStay) and answers PatronReturnShifted. ArrivalIdleCutoff (now 45 s) also holds paced arrivals. New keys ReturnWindowPercent, PickupSpacingSeconds, LatePickupStart, LastPickupLead.
+Tests: EditMode 1214/1214, PlayMode 16/16 after merging pivot/chaos (#77 stay clock from drop-off: the scheduler counts every open ticket wherever its car is). RunBatch run; Bootstrap.unity churn reverted. Soak over 200 shifts: 2325 arrivals, 2314 pickups requested, 0 moves outside the window.
+
 === docs/changelogs/economy-night.md ===
 # Economy and Night changelog
 
@@ -359,6 +365,18 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/UI/GameUi.cs, Scripts/UI/Screens/{UiPhase,UiInput,HowToPlayGate,HowToPlayText,HowToPlayPainter,WordWrap,HighlightMask}.cs, Tests/EditMode/UI/HowToPlayTests.cs
 Why: Refs #72. Flow is Title -> any key -> HowToPlay (first time per page load only) -> any key -> Playing; retry goes straight to Playing. HowToPlayGate is an in-memory flag. The shift starts (TitleDismissed) only when how-to-play is dismissed; the press that changes a phase is consumed that frame. Key words are drawn gold per character; text is wrapped once at construction. Key polling moved to UiInput to keep GameUi under 200 lines.
 Tests: 6 new EditMode (gate, wrap, highlight mask, text fits and has glyphs). EditMode 1117 pass, PlayMode 16 pass. No scene or asset change, so no RunBatch.
+
+## integration: F2 panel Copy all values button [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/UI/{TuningPanel,TuningSnapshotJson}.cs, Assets/_Project/Tests/EditMode/UI/TuningSnapshotJsonTests.cs
+Why: Refs #76. A "Copy all values" button next to Advanced and Reset all puts a flat JSON object of every catalog key (Advanced ones too, ordered by enum value, invariant culture) on the clipboard via GUIUtility.systemCopyBuffer, and shows "Copied!" for 1.5 s of unscaled time. JSON is built only on press by the pure TuningSnapshotJson.
+Tests: 6 new EditMode (object shape, every key, no duplicates, enum order, dot decimals under de-DE, null for non-finite). EditMode 1165 pass, PlayMode 16 pass. No scene or asset change, so no RunBatch.
+
+## integration: fix start-up crash, add Bootstrap smoke test [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Data/Director/DifficultyDialsConfig.asset, Assets/_Project/Tests/PlayMode/BootstrapSceneSmokeTests.cs, Assets/_Project/Tests/PlayMode/UncannyValet.Tests.PlayMode.asmdef
+Why: Refs #77, #73. Commit c6992c0 (traffic) removed TrafficAmbientPerMinute from the middle of the TuningKey enum, shifting every later value down by one. DifficultyDialsConfig.asset stores TuningKey as raw ints, so every dial link pointed at the wrong key and DifficultyDials.Derive threw KeyNotFoundException in GameBootstrap.Awake, aborting start-up (lot never built). Asset ints above the removed slot remapped by minus one. New PlayMode smoke test loads the real Bootstrap scene, starts the shift and fails on any logged error or exception.
+Tests: smoke test failed with the exact KeyNotFoundException before the fix and passes after (about 5 s). EditMode 1215 pass, PlayMode 17 pass. No scene change, so no RunBatch.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1051,6 +1069,55 @@ Files: merge of worktree-agent-a8e38eff03cfeb80c (HowToPlayGate, HowToPlayText, 
 Why: issue 72. After the first press-any-key on the title a how-to-play screen (the owner's five lines and the controls) shows once per page load; any key starts the shift; retry skips it. Not seen in a browser by the agent.
 Tests: 1117 of 1117 EditMode, 16 of 16 PlayMode after both merges.
 
+## lead: rebuild beta site (idle guard, arrows green on accept, how-to-play screen) [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last beta build: issues 70 (a car always within 2 s when the queue is empty), 71 (pickup arrows green only when the patron will accept) and 72 (how-to-play screen after the first title press). Beta site only; main stays on the earlier build.
+Tests: 1121 of 1121 EditMode, 16 of 16 PlayMode; browser smoke test at 1280x800: title, how-to-play screen (renders, text fits, gold highlights), shift starts on the second key at 3:56, no console errors. The arrows, idle guard and earlier items were not seen in play.
+
+
+## lead: merge agent/traffic two-way busier ambient roads (#75) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-ac64f4e85aaac1f29 (AmbientDensity, AmbientTraffic, YieldZone, SpawnGate, ViewWindow, TrafficModule, LotRoadArt, DecorLayout, RoadLayout, IRoadLayout, TrafficConfig and LotArtConfig assets, traffic tuning keys, tests), docs/changelogs/lead.md
+Why: issue 75. Both roads carry ambient traffic both ways (an extra right-to-left lane per road), 3 to 4 cars kept on screen, ambient cars brake through a YieldZone so an exiting delivered car can merge. Camera framing untouched, so mostly the entry road shows. TrafficAmbientPerMinute removed.
+Tests: 1159 of 1159 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).
+
+## lead: merge agent/integration F2 Copy all values button (#76) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a88b0b826cfe28c36 (TuningPanel, TuningSnapshotJson, TuningSnapshotJsonTests), docs/changelogs/lead.md
+Why: issue 76. A Copy all values button in the F2 panel header copies every tuning value, Advanced ones included, as flat JSON via GUIUtility.systemCopyBuffer, with a 1.5 s Copied! confirmation. Not checked in a browser.
+Tests: 1165 of 1165 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/patrons stay from drop-off, patron asks wherever the car is (#77) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-aafeaa8e9141bbe3f (Ticket, CurbCall, TicketRegistry, Director CarBook/CarRecord/LotStateTracker/SnapshotBuilder/WorkloadEstimator, tests), docs/changelogs/lead.md
+Why: issue 77. The stay clock starts at drop-off (CarArrived) instead of when a car settles in a bay, and a patron whose stay ends asks for the car from any open state (queue, wash, charge, aisle, bay); Director return time = arrival + stay. Open follow-ups: dirty unwashed car zeroes the tip (existing NotCleaned rule); queued car whose patron asked is not on the key board until Placed.
+Tests: 1175 of 1175 EditMode, 16 of 16 PlayMode after the merge.
+
+## lead: merge agent/patrons unwashed dirty car tips, asked-for car joins key board (#77) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-aafeaa8e9141bbe3f follow-up (TipCalculator, TipZeroReason, TicketBoard, tests), docs/changelogs/lead.md
+Why: issue 77 follow-ups decided by the owner: an unwashed dirty car now only loses the clean bonus (TipZeroReason.NotCleaned removed); a queued car appears on the key board and ticket list as soon as its patron asks.
+Tests: 1176 of 1176 EditMode after the merge (agent: 16 of 16 PlayMode).
+
+## lead: merge agent/director return scheduler, late-shift pickups, arrival cutoff (#12, #13, #73, #15) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a5e29e2d80f8fe89f (Director ReturnScheduler, LateReturnPlanner, ReturnCandidates, ReturnDirector, ReturnShifter in Patrons, ReturnRows, tuning keys, DirectorConfig asset, tests), docs/changelogs/lead.md
+Why: issues 12, 13, 73, 15 (patron director spec step 4 and the owner's end-of-shift request), built on the stay-from-drop-off definition (issue 77). Returns stay inside planned stay +/-25% before the late phase and 4 s spacing; in the last 60 s every open ticket is pulled forward; no new cars in the last 45 s (ArrivalIdleCutoff default 20 -> 45). New Advanced F2 rows: return window, pickup spacing, late-shift start, last late pickup lead. Soak (200 shifts): 13 of 2314 pickups violate spacing outside wave peaks, 11 cars arriving late still waiting at the end.
+Tests: 1215 of 1215 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted).
+
+## lead: fix merge conflict markers in Traffic .meta files [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Traffic/*.cs.meta, Traffic.meta, UncannyValet.Traffic.asmdef.meta, Assets/_Project/Tests/EditMode/Traffic/*.cs.meta (29 files), docs/changelogs/lead.md
+Why: commit 7dea408 (Nov 10 lead merge of traffic-wire) left unresolved conflict markers in 29 .meta files. Kept the guid already referenced by the scene (TrafficModule, TrafficConfig) / the HEAD guid for the rest; no other file referenced either guid.
+Tests: 1215 of 1215 EditMode after the fix.
+
+## lead: merge agent/integration fix start-up crash from shifted TuningKey numbers [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a1737e27686b092a4 (DifficultyDialsConfig.asset, BootstrapSceneSmokeTests, PlayMode asmdef), CLAUDE.md (TuningKey is append-only), docs/changelogs/lead.md
+Why: the web build threw KeyNotFoundException 'DirTargetScale' at start-up. Commit c6992c0 (two-way traffic) deleted TrafficAmbientPerMinute from the middle of TuningKey, shifting every later key while DifficultyDialsConfig.asset stores raw key numbers, so each dial pointed at the wrong key. The asset was corrected and a PlayMode smoke test now loads the real Bootstrap scene and fails on any logged error. I missed it in the merge review: the traffic report said the key was removed.
+Tests: 1215 of 1215 EditMode, 17 of 17 PlayMode (including the new Bootstrap scene smoke test).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1278,6 +1345,12 @@ Files: Core/Contracts/IPickupAcceptance.cs (new); Scripts/Lot/{CurbArrowTracker 
 Why: Issue #71. Green now means a correctly facing car whose ticket is PickupRequested (patron waiting; wash or charge not done still counts). Facing right but not asked yet is neutral, wrong facing stays red. CurbZone re-evaluates on PickupRequested so the arrows flip live; Patrons registers IPickupAcceptance in PatronSpawner.
 Tests: 4 new EditMode cases (not-accepted idle, wrong stays wrong, live flip then idle on leave, mixed cars). EditMode 1115/1115, PlayMode 16/16.
 
+## traffic: two-way ambient roads, density and merge yielding [Claude]
+Date: 2026-11-11
+Files: Scripts/Lot/{DecorLayout,LotArtConfig,LotDecor,LotGeometry,LotRoadArt,RoadLayout}.cs; Data/Lot/LotArtConfig.asset; Tests/EditMode/Lot/{DecorLayoutTests,RoadLayoutTests}.cs
+Why: Issue #75 (Refs #75), traffic agent. Each road gets a second lane for right-to-left ambient traffic, next to the patron lane and away from the lot: geometry (EastBackLaneY, TopBackLaneY), IRoadLayout lanes, wider asphalt with a dashed centre line (LotArtConfig lane dash fields), sidewalks pushed out. DecorLayout.ViewBottom keeps the camera framing exactly as before (the opposite lanes are partly out of view).
+Tests: DecorLayoutTests and RoadLayoutTests updated and extended (opposite lanes, framing unchanged). EditMode 1159/1159, PlayMode 16/16.
+
 === docs/changelogs/orders.md ===
 # Orders changelog
 
@@ -1383,6 +1456,18 @@ Date: 2026-11-11
 Files: Scripts/Patrons/{PerfectBonusLedger,TicketSettler,TicketRegistry}.cs, Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Core/Contracts/TipInput.cs, Scripts/Core/Events/TipBreakdown.cs, Tests/EditMode/Patrons/PerfectBonusTests.cs
 Why: Issue #16 (money part). PerfectBonusLedger counts PerfectPark events per ticket, the settler takes the count on payout and clears it on void; the calculator adds count x PerfectParkBonus (live tuning, default $2) to the subtotal so damage and combo apply, and TipBreakdown.PerfectBonus shows it.
 Tests: 6 new in PerfectBonusTests (bonus, combo, per-ticket survival to pickup, one per event, ticketless/void, zero tip). Full EditMode 1061/1061 passed.
+
+## patrons: stay runs from drop-off, patron asks wherever the car is [Claude]
+Date: 2026-11-11
+Files: Scripts/Patrons/{Ticket,CurbCall,TicketRegistry}.cs, Scripts/Director/{CarBook,CarRecord,LotStateTracker,SnapshotBuilder,WorkloadEstimator}.cs, Tests/EditMode/Patrons/{TicketReturnTests,TicketRegistryTests,TicketRegistryServiceTests,TicketRegistryTimerTests}.cs, Tests/EditMode/Director/{LotStateTrackerTests,SoakSim}.cs, Tests/EditMode/Integration/FullShiftTests.cs
+Why: Issue #77. The stay clock started only on CarParked (numbered bays), so cars left in the queue, wash or aisle never got their patron back. Now the clock starts at ticket creation and restarts once at CarArrived (drop-off); StayEnded and MarkPickupRequested work from AwaitingPark and Parked (wash and charge have no state of their own); CurbCall.AcceptsArrival accepts any pre-pickup state. Director return time is arrival minute + stay (CarRecord.ArrivedAtMinute) and the "pickup soon" cost applies to any dropped-off car.
+Tests: 10 new in TicketReturnTests (every state reaches PickupRequested, registry with the real EventBus, delivery from queue and station, no stuck tickets); 6 old tests updated to the new clock; SoakSim stay now runs from arrival. EditMode all pass, PlayMode 16/16.
+
+## patrons: unwashed dirty car still tips, asked-for car joins key board [Claude]
+Date: 2026-11-11
+Files: Scripts/Economy/TipCalculator.cs, Scripts/Core/Events/TipZeroReason.cs, Scripts/UI/TicketBoard.cs, Tests/EditMode/Economy/TipCalculatorTests.cs, Tests/EditMode/UI/TicketBoardTests.cs
+Why: Issue #77 owner decisions. An unwashed dirty car no longer zeroes the tip: it pays base and speed and just misses the clean bonus (the NotCleaned zero reason is removed, the breakdown shows CleanBonus 0). A car whose patron asked is marked Placed on PickupRequested, so it is listed on the key board and shows its plate even while still in the queue.
+Tests: replaced Explain_UncleanedZeroes with a no-clean-bonus test; new KeyBoard_ListsAnUnplacedCarAsSoonAsItsPatronAsks. EditMode all pass, PlayMode 16/16.
 
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog
@@ -1690,6 +1775,12 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/Traffic/{TrafficLane,AmbientSpawner,TrafficModule,TripContext,EntryTrip,ExitTrip,TrafficConfig}.cs, Assets/_Project/Tests/EditMode/Traffic/{AmbientSpawnerTests,LaneOccupancyTests,TripTests,TripObstacleTests,EntryRetargetTests,TurnIntoQueueTests}.cs
 Why: Issue #68. TrafficLane.West became Top (the one-way exit road above the lot); ambient cars split evenly over the entry and exit roads, both left to right at the same speed; ExitTrip merges into the top lane and yields to top-road traffic only (TripContext.CanJoin/Join take the lane). EastShare tooltip updated.
 Tests: new exit tests (goes up then right onto the top lane, ignores entry-road traffic, yields to top-road traffic), spawner share test. EditMode and PlayMode pass.
+
+## traffic: two-way ambient roads, density and merge yielding [Claude]
+Date: 2026-11-11
+Files: Scripts/Traffic/{AmbientDensity,AmbientTraffic,LaneNetwork,LaneSet,SpawnGate,TrafficLanes,ViewWindow,YieldZone}.cs (new); Scripts/Traffic/{AmbientVehicle,ExitTrip,LaneMotion,LaneOccupancy,MergeGapRule,TrafficConfig,TrafficLane,TrafficModule,TripContext,TripTuning}.cs; removed Scripts/Traffic/AmbientSpawner.cs; Core/Contracts/{IRoadLayout,GameRows}.cs; Core/Events/TuningKey.cs; Bootstrap/{TrafficTuningLink,TuningSeeder,GameBootstrap}.cs (traffic wiring only); Data/Traffic/TrafficConfig.asset; Tests/EditMode/Traffic/{AmbientDensityTests,AmbientTrafficTests,PatronAmongAmbientTests,SpawnGateTests,ViewWindowTests,YieldZoneTests}.cs (new), {EntryRetargetTests,TripObstacleTests,TripTests}.cs, Tests/EditMode/Integration/{TrafficTuningLinkTests,TuningSeederTests}.cs; removed AmbientSpawnerTests.cs
+Why: Issue #75 (Refs #75). Both roads now carry ambient cars both ways (two new right-to-left lanes, TrafficLane.EastBack/TopBack; the patron lanes and routes are unchanged). The random-rate spawner is replaced by AmbientDensity: 3 to 4 ambient cars on screen (counted against the camera's visible rectangle, ViewWindow, cached camera), spawned just beyond the screen edge they drive in from, only into a free gap (SpawnGate), removed once off screen, random speeds, gaps, looks and lanes. F2 rows: fewest and target cars on screen replace cars per minute (TuningKey.TrafficAmbientPerMinute removed, TrafficMinOnScreen and TrafficTargetOnScreen appended); speed scale key unchanged. A delivered car waiting to merge asks the exit lane to yield (YieldZone, a virtual stopped car one merge gap before the merge point): ambient cars that can still stop brake smoothly through the existing car-following, so the gap opens.
+Tests: new density, spawn gate, view window, yield zone (dense stream merges in under 12 s with yielding, never without; no overlap), ambient system (3 to 4 on screen for 10 minutes, all four lanes used, directions, off-screen spawn and despawn, no overlap) and patrons among full traffic tests. RunBatch ran (Bootstrap.unity fileID churn reverted). EditMode 1159/1159 and PlayMode 16/16 pass.
 
 === docs/changelogs/ui-status.md ===
 # ui-status changelog

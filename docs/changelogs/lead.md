@@ -736,3 +736,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a1737e27686b092a4 (DifficultyDialsConfig.asset, BootstrapSceneSmokeTests, PlayMode asmdef), CLAUDE.md (TuningKey is append-only), docs/changelogs/lead.md
 Why: the web build threw KeyNotFoundException 'DirTargetScale' at start-up. Commit c6992c0 (two-way traffic) deleted TrafficAmbientPerMinute from the middle of TuningKey, shifting every later key while DifficultyDialsConfig.asset stores raw key numbers, so each dial pointed at the wrong key. The asset was corrected and a PlayMode smoke test now loads the real Bootstrap scene and fails on any logged error. I missed it in the merge review: the traffic report said the key was removed.
 Tests: 1215 of 1215 EditMode, 17 of 17 PlayMode (including the new Bootstrap scene smoke test).
+
+## lead: rebuild beta site (two-way traffic, copy values, stay from drop-off, return scheduler) [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last beta build: issues 75 (two-way busier ambient roads), 76 (F2 Copy all values), 77 (stay clock from drop-off, patron asks wherever the car is, unwashed dirty car tips, queued asked-for car on the key board), 73/12/13/15 (return scheduler, late-shift pickups, no new cars in the last 45 s) and the start-up crash fix (shifted TuningKey numbers). Beta site only; main stays on the earlier build.
+Tests: 1215 of 1215 EditMode, 17 of 17 PlayMode (incl. the new Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:53), no console errors. The earlier broken build (KeyNotFoundException DirTargetScale) was never deployed. The new features were not seen in play.
