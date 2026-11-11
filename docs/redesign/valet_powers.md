@@ -1,6 +1,6 @@
-# Valet Powers (draft, not binding until the open questions are answered)
+# Valet Powers (binding since 2026-11-11; questions answered in section 6)
 
-Source: the human's note of 2026-11-10. Status: planned, not built. The lead turns this into a binding spec when the open questions in section 6 are answered.
+Source: the human's note of 2026-11-10. Status: planned, not built. The human answered all questions on 2026-11-11 (section 6); this is now the binding spec.
 
 ## 1. The idea
 
@@ -41,14 +41,14 @@ Each power has its own art and sound (section 4).
 - Money: Park Smash pays tips (see Q5); no other power gives money.
 - Architecture (per CLAUDE.md): `PowerMeter` pure rule class (add, level thresholds, reset) with EditMode tests; `PowerMeterConfig` ScriptableObject; `PowerMeterModule` assembly `UncannyValet.Powers` referencing only Core; Core events `PowerMeterChanged(level, fill01)`, `PowerActivated(power)`, `PowerEnded(power)`, `PerfectDropOff(carId, ticketId)`; each power is a class behind `IPowerEffect` (open for extension); other modules react to `PowerActivated`/`PowerEnded` (clock freezes itself, Director pauses itself, audio/HUD/art listen). Freeze time needs a Core `ITimeScale`-style contract so modules scale their own time without static state. Park Smash needs the Lot and Patrons modules to complete their own pending work when they hear `PowerActivated(ParkSmash)` (no module reaches into another).
 
-## 6. Open questions (answers needed before building)
+## 6. Decisions (answered by the human, 2026-11-11)
 
-| # | Question | Lead's suggestion |
+| # | Question | Decision |
 | --- | --- | --- |
-| Q1 | What counts as a "perfect drop-off"? | Delivered at the curb facing within a tight angle (for example 15 degrees, far inside the 80 degree rule), stopped inside the pickup zone, and delivered before the patron's pickup timer is half gone. |
-| Q2 | Your list says "freeze time" for level 2 but your stacking example says "slow time". Which? | Freeze (as in your power list) for 6 s; make the time scale a tunable (0 = freeze, 0.3 = slow) so both can be tried. |
-| Q3 | How is a power fired when the meter is above a level? | One key fires the highest level reached. Alternative: number keys 1 to 3 choose any unlocked level. |
-| Q4 | The car handling spec already has an automatic Golden Valet speed boost after every Perfect Park. Keep both, or replace the automatic boost with the meter's level 1 power? | Replace: Perfect Park fills the meter instead of auto-boosting. One mechanism, and the boost becomes a choice. The Golden Valet streak step (+60%) becomes an option of the level 1 power or is dropped. |
-| Q5 | How much money does Park Smash pay? | The normal tip for each cleared patron at base value plus the combo multiplier, no speed bonus, and the shift combo is not reset. This is a scoring change: needs your approval. |
-| Q6 | Does the Patron Director react? | Park Smash empties the lot, so the Director's workload drops and it sends more cars, as intended. During freeze time it sends none. |
-| Q7 | Can the meter carry over between shifts? | No: it starts each shift empty. |
+| Q1 | What counts as a perfect drop-off? | Delivered at the curb facing within about 15 degrees (far inside the 80 degree rule), stopped inside the pickup zone, and delivered before the patron's pickup timer is half gone. All three numbers are tuning values. |
+| Q2 | Freeze or slow? | Freeze for 6 s. The time scale is a tunable (0 = freeze, 0.3 = slow) so both can be tried. |
+| Q3 | How is a power fired? | One key (Q, gamepad left shoulder) fires the highest level reached. |
+| Q4 | Golden Valet overlap | Replaced: the human closed the Golden Valet dash (issue 17) because the level 1 speed boost power replaces it. Perfect Park fills the meter instead of auto-boosting. |
+| Q5 | Park Smash pay | Every cleared patron pays a full tip including the speed bonus, as if delivered perfectly fast, times the combo multiplier. The shift combo is not reset. (Scoring change, approved.) |
+| Q6 | Does the Director react? | Yes. Park Smash empties the lot so workload drops and the Director sends more cars; during freeze time it sends none. |
+| Q7 | Carry-over between shifts | No: the meter starts every shift empty. |

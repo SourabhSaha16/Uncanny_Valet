@@ -597,3 +597,9 @@ Date: 2026-11-11
 Files: CLAUDE.md, docs/design.md, docs/redesign/chaos_redesign.md, docs/redesign/ui_style_guide.md, docs/changelogs/lead.md
 Why: the human dropped Kev, the task board and the swap button, and asked for plain issue titles with a two-line description and one acceptance line. GitHub issues were retitled, rewritten and given priority:1 to priority:4 labels; Kev issues closed as not planned.
 Tests: docs only, none run.
+
+## lead: valet powers decisions and Core events (PowerKind, power events, IWorldTime)
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/Core/Events/PowerKind.cs, PowerEvents.cs, Contracts/IWorldTime.cs (+ metas), docs/redesign/valet_powers.md, docs/design.md, docs/decisions.md, docs/changelogs/lead.md
+Why: the human answered the seven valet powers questions (valet_powers.md section 6, design A11); issue 35 adds the shared events and the freeze time-scale contract that every power module builds on.
+Tests: 992 of 992 EditMode (Core compiles; no new logic yet).
