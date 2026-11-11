@@ -140,7 +140,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
   `CarPlateAssigned`, `TitleDismissed`. The night events became shift events.
 - Art pipeline: `Editor/Import/ArtPostprocessor` sets Point filter, no compression, PPU 32 and slices the
   sheets (`docs/changelogs/pivot-art.md` has the layout). Sources are the `.rar` files in `art-src/MetroCity/`.
-- Tests: EditMode suite (817 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
+- Tests: EditMode suite (853 at the last full run). New Core contracts: `IPedestrianPaths`, `IPatronLocator`, `ICurbFacing`; events `PatronSummoned`, `PatronReachedCurb`, `PatronBoarded`, `CurbFacingChanged`.
 
 ## A8. Build state and next steps
 
@@ -150,7 +150,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Title screen, pixel HUD, key board, floating info boxes | done |
 | Diner lot art, car sprites and tint, valet animation, crosswalks, ambient pedestrians | done |
 | Plates (2+1), headlights, face-down delivery rule, patron walk flow, bell on key board, audio mix, more zoom | done, first browser check only (curb arrows and headlights hard to see; full flow not played) |
-| Car controller upgrade: handbrake drift, grip, speed-scaled steering, forgiving parking, Perfect Park | planned (P1 scope in the redesign) |
+| Car controller upgrade: drift (vectored inertia, speed-dependent grip, Shift handbrake), turning radius from the lot, Perfect Park (+$2), Golden Valet boost, skid marks and tyre audio, heavy EVs | spec written and binding: `docs/redesign/car_handling_spec.md` (lead corrections in its section 0); not started; build order in its section 8 |
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Kev the rookie AI valet, task board, swap button | planned (P2) |
@@ -198,6 +198,8 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 - Queue changes now in: cap 4 (PlanMaxWaitingCars), no park timer so snapshot patience and pressure P use pickup
   tickets only; waiting cars still add park work to W.
 
+**Difficulty dials.** The F2 panel shows nine designer dials (0 to 10, default 5): Overall Intensity, Ramp Over the Shift, Late-Shift Rush, Car Mix Dirty %, Car Mix EV %, Dilemma Frequency, Mercy, Skill Reward and Randomness Seed. They derive every underlying Director and plan value (`Director/DifficultyDials`, anchors in `DifficultyDialsConfig`; tables in `docs/redesign/difficulty_dials.md`). The default position reproduces the old defaults exactly. All other rows sit behind the panel's Advanced toggle (off by default) with plain-language names. A dial move re-derives all driven rows, overwriting hand edits.
+
 ## A9. Design log
 
 | Date | Change |
@@ -220,6 +222,8 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 | 2026-11-10 | Queue and Director fixes: an arriving patron car re-checks its queue slot every 0.2 s and always takes the first free slot (it moves up when a car ahead leaves; never two cars in one slot; slot reservations are per car and released on arrival, ticket close and shift change; Core `IQueueSlotSource`). The Director pacer re-sends an arrival that was never acknowledged after 8 s, so a failed spawn can no longer stall arrivals (it showed as 'next in 0.0 s' with RELIEF stuck). Late arrivals get a shorter stay (`StayFit`) so every patron can ask for the car before the shift ends. Cause of the failed spawn not confirmed; slot scan now ignores trigger colliders; 772 tests |
 | 2026-11-10 | Play-test round: CAR SLOTS Washed and Charged are short-lived flags set on `CarCleaned` / `CarFullyCharged` and cleared on `CarParked` (a washed car now reads Parked once parked; a full EV never charged here reads Parked); the car-arrived sound plays on `CarArrived` (car stopped in its queue slot), not at spawn; camera fit tightness 0.87 to 0.78 (play area never cropped); the big world box over cars is gone: the wash slot and charging bays light up while serving (aqua for wash, lime for charge, brighter with progress, flash then 1.5 s fade when done) and a small droplet or plug icon sits beside the plate; pedestrians are solid (kinematic body, circle collider on physics layer Pedestrian, wait 1.5-3 s then walk through for 1.5 s, never freezes a route, standing patrons not solid), a car or the valet bumping one gives a tiny rubber bounce (0.2 units, 0.25 s) and a quiet boing (`PedestrianBumped`, rate-limited); 811 tests |
 | 2026-11-10 | Play-test fixes: a patron on foot ignores its own car (no collision, bounce, bump sound or waiting; other cars and the valet unchanged); the droplet (needs wash) and plug (needs charge) icons now appear as soon as the car has arrived in its queue slot (patron steps out) and stay until the service finishes or the ticket closes, beside the plate when it shows, otherwise just under the car; 817 tests |
+| 2026-11-10 | Difficulty dials: nine designer dials in F2 drive every Director and plan value; the old rows are behind an Advanced toggle with plain names; F3 overlay in plain words; 7 new tuning keys (curve scale, ramp, late boost, car-mix weights); default position unchanged; 853 tests |
+| 2026-11-10 | Car handling and Perfect Park spec adopted as `docs/redesign/car_handling_spec.md`, with lead corrections: EV bay id is 7 not 13/14; aisle is 4.6 (R_min about 3.3); no `IDriveModifier`, dash, `DecalPool` or PlayMode tests exist yet and are built as part of the rollout; barge-through uses the pedestrian collision layer; $2 Perfect Park is the only scoring change |
 
 ---
 

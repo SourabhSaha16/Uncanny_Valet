@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  34797e3
-Subject: lead: merge agent/slot-tint service icons at arrival
-Date:    2026-11-10 18:01:20 -0800
+Commit:  1df4b7f
+Subject: lead: merge agent/difficulty-dials
+Date:    2026-11-10 18:41:48 -0800

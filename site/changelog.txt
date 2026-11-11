@@ -1,4 +1,7 @@
 === Last 50 commits ===
+1df4b7f  2026-11-10  lead: merge agent/difficulty-dials
+33e985f  2026-11-10  patrons: nine difficulty dials, Advanced toggle, plain director rows
+46dd883  2026-11-10  lead: merge own-car fix and service icons, update docs, rebuild site
 34797e3  2026-11-10  lead: merge agent/slot-tint service icons at arrival
 971e598  2026-11-10  lead: merge agent/ped-collision own-car fix
 5bd29c2  2026-11-10  pedestrians: patrons ignore their own car (no push, wait or bounce)
@@ -46,9 +49,6 @@ ed1ab49  2026-11-10  lead: rebuild site for lot v2 and traffic
 d5f0bdc  2026-11-10  Merge branch 'worktree-agent-ad7a2343048ede8aa' into pivot/chaos
 8c1fe75  2026-11-10  lot-v2: rebuild lot to the sketch, road below, new routes
 2baa4b5  2026-11-10  traffic: add road traffic module with car following and patron trips
-fb6af92  2026-11-10  lead: lot v2 spec, IRoadLayout contract, design doc updates
-6cc1cfc  2026-11-10  lead: add pedestrian count to F2 panel, start at 3
-b45677a  2026-11-09  lead: merge director-2, rebuild site
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -797,6 +797,12 @@ Files: merges of worktree-agent-a7bab8b9a3bcd29a6, -af222a4dbf298956c, -af78fe44
 Why: the human's play-test notes (status after wash, arrival sound on stop, camera zoom, big box replaced by slot tint, pedestrian collision with bounce and sound). Approved new Core files PhysicsLayers and PedestrianEvents and the ArrivalSlotScanner layer filter.
 Tests: 811 of 811 EditMode; browser smoke test with no console errors. Not played.
 
+## lead: merge ped-collision own-car fix and slot-tint service icons; update docs; rebuild site
+Date: 2026-11-10
+Files: merges of worktree-agent-a3350361302357c08 and worktree-agent-af78fe44b6f7ba760, docs/design.md, regenerated Bootstrap.unity, site/
+Why: the human's notes: patrons pushed their own car on exit; need icons from queue arrival.
+Tests: 817 of 817 EditMode; browser smoke test with no console errors. Not played. Icon trigger is CarArrived (no patron-exited event exists in Core).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1069,6 +1075,12 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Core/Contracts/IQueueSlotSource.cs, Assets/_Project/Scripts/Director/ArrivalPacer.cs, Assets/_Project/Scripts/Director/PacingSettings.cs, Assets/_Project/Scripts/Patrons/{ArrivalReservations,ArrivalSlotScanner,IArrivalScan,QueueSlotAllocator,QueueSlotChooser,StayFit,PatronRequest,PatronConfig,PatronTuning,PatronSpawner,TicketRegistry}.cs, Assets/_Project/Scripts/Traffic/{EntryTrip,RouteRunner,TripContext,TripTuning}.cs, Assets/_Project/Scripts/Cars/CarAutoDrive.cs, Assets/_Project/Tests/EditMode/{Director/ArrivalPacerStuckTests,Patrons/QueueSlotChooserTests,Patrons/QueueSlotAllocatorTests,Patrons/StayFitTests,Patrons/ArrivalReservationsTests,Traffic/EntryRetargetTests}.cs
 Why: Bug 1: a Spawn decision the spawner could not execute left the pacer waiting for a CarSpawned forever (overlay "next in 0.0 s", RELIEF stuck); it now times out and re-sends. Late arrivals could get a stay running past the shift end, so their patron never came back; stays are now cut to fit (StayFit). The slot scan ignores trigger colliders. Bug 2: arrival slots were fixed at spawn and reservations lived until the car parked, so a freed slot stayed "full"; reservations now end on CarArrived and arriving cars re-ask IQueueSlotSource (QueueSlotAllocator) and move up to the first free slot. design.md sections 5, 9, 10.
 Tests: new QueueSlotChooser, QueueSlotAllocator, StayFit, ArrivalPacerStuck and EntryRetarget tests; ArrivalReservations tests rewritten. Unity run: full EditMode suite 772/772 passed.
+
+## patrons: nine difficulty dials, Advanced toggle, plain-language director rows
+Date: 2026-11-10
+Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Core/Contracts/{TuningInfo,TuningCatalog,DifficultyRows,GameRows,DirectorPacingRows,DirectorMixRows,DirectorPlayerRows}.cs, Assets/_Project/Scripts/Director/{DialLink,DialEffect,DialAnchors,DialDilemmaAnchors,DialPlayerAnchors,DifficultyDialsConfig,DifficultyDials,DifficultyDialsLink,ShapeSettings,TunedIntensityProfile,DirectorConfig,DirectorProfile,DirectorSettings,PatronDirector}.cs, Assets/_Project/Scripts/Bootstrap/{TuningSeeder,GameBootstrap}.cs, Assets/_Project/Scripts/UI/{TuningPanel,TuningRowView,DirectorOverlay,DirectorOverlayText}.cs, Assets/_Project/Editor/ProjectSetup.cs, Assets/_Project/Data/Director/{DifficultyDialsConfig,DirectorConfig}.asset, regenerated Bootstrap scene, Assets/_Project/Tests/EditMode/{Integration/DialRig,Integration/DifficultyDialsTests,Director/TunedIntensityProfileTests}.cs, docs/redesign/difficulty_dials.md
+Why: The human wants fewer tunables. Eight new dials (plus the existing seed) drive about 70 underlying director, plan and mix keys through piecewise-linear anchors, and the default position reproduces every authored value exactly. Everything but the dials and the clock rows sits behind an Advanced toggle in F2; director rows were renamed into plain designer language and regrouped (Pacing, Car mix, Dilemmas, Mercy, Skill reward, Workload costs). Seven director values that had no tuning key (target curve scale, ramp shape, late boost, four base weights) became keys so dials can reach them; the director reads them through TunedIntensityProfile. design.md A10.
+Tests: new DifficultyDialsTests (defaults reproduce all values, round trips, monotone direction per dial, no feedback loop, hand-edit rule, catalog layout) and TunedIntensityProfileTests. Unity run: see the report.
 
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog

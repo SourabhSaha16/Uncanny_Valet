@@ -41,10 +41,14 @@ Nothing below has been played end to end; only browser smoke tests were done.
 
 ## D. Redesign backlog (planned in `docs/design.md` A8)
 
-Car controller:
-- [ ] D1. Handbrake drift input and slide model.
-- [ ] D2. Grip and speed-scaled steering.
-- [ ] D3. Forgiving parking and Perfect Park detection.
+Car controller (spec: `docs/redesign/car_handling_spec.md`, build order in its section 8; one step at a time per file set):
+- [ ] D1. Step 1 (cars): measure the aisle width and car collider size, set R_min and MaxTurnRate, add the PlayMode test assembly and the bay-entry PlayMode test.
+- [ ] D2. Step 2 (cars + Core input): `DriftModel`, `SteeringModel`, `IDriveModifier` seam, Drift input (Shift, right shoulder), `CarHandlingConfig` and its F2 keys.
+- [ ] D3. Step 3 (cars/fx + audio): minimal `DecalPool`, skid marks, tyre chirp and squeal.
+- [ ] D3a. Step 4 (lot): `ParkJudge`, `ParkJudgeRunner`, `PerfectPark` event, pop, ding, camera kick, +$2 on the ticket, results stat.
+- [ ] D3b. Step 5 (valet): dash on foot, `BoostRules`, `ValetBoost`, barge-through, boost feedback, results stat.
+- [ ] D3c. Step 6 (cars): EV stat overrides in `CarDefinition`.
+- [ ] D3d. Human decision: is the 4.6 aisle enough (pull-out rule), or widen it?
 
 Damage:
 - [ ] D4. Impact damage rule (pure class, tests).
@@ -84,6 +88,10 @@ Later content:
 - [ ] F4. Local co-op input.
 
 ## G. Housekeeping
+
+- [ ] G8. Play-test the nine difficulty dials at extreme positions (Intensity 10, Mercy 0, Dirty or EV 0, Ramp 0); the anchors are first guesses and the soak test was not rerun at non-default dials.
+- [ ] G9. Decide which rows stay visible without Advanced (now only the dials plus Game minutes per second and Shift length); Traffic and Pedestrians are Advanced-only.
+- [ ] G10. Optional: mark derived versus hand-edited Advanced rows in the F2 panel.
 
 - [ ] G3. Split `Tests/EditMode/UI/TicketBoardTests.cs` (314 lines, limit 200). Owner: integration.
 - [ ] G4. Remove unused `TicketRow.ShowsInfoBox`, `ShowsDirtMeter`, `ShowsChargeMeter`, `ChargeShown`, `Dirt01` and their tests. Owner: integration.

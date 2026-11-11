@@ -519,3 +519,9 @@ Date: 2026-11-10
 Files: merges of worktree-agent-a3350361302357c08 and worktree-agent-af78fe44b6f7ba760, docs/design.md, regenerated Bootstrap.unity, site/
 Why: the human's notes: patrons pushed their own car on exit; need icons from queue arrival.
 Tests: 817 of 817 EditMode; browser smoke test with no console errors. Not played. Icon trigger is CarArrived (no patron-exited event exists in Core).
+
+## lead: merge difficulty-dials, adopt car handling spec, update docs, rebuild site
+Date: 2026-11-10
+Files: merge of worktree-agent-a3ee1dcf52afb7383, docs/redesign/car_handling_spec.md, docs/design.md, docs/pending_tasks.md, regenerated Bootstrap.unity and Director assets, site/
+Why: the human asked for fewer tunables with designer names, and handed over the car handling spec (checked against the code; corrections in the spec's section 0).
+Tests: 853 of 853 EditMode; browser smoke test with F2 open (dials show, no console errors). Not played.
