@@ -103,3 +103,9 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/UI/GameUi.cs, Scripts/UI/Screens/{UiPhase,UiInput,HowToPlayGate,HowToPlayText,HowToPlayPainter,WordWrap,HighlightMask}.cs, Tests/EditMode/UI/HowToPlayTests.cs
 Why: Refs #72. Flow is Title -> any key -> HowToPlay (first time per page load only) -> any key -> Playing; retry goes straight to Playing. HowToPlayGate is an in-memory flag. The shift starts (TitleDismissed) only when how-to-play is dismissed; the press that changes a phase is consumed that frame. Key words are drawn gold per character; text is wrapped once at construction. Key polling moved to UiInput to keep GameUi under 200 lines.
 Tests: 6 new EditMode (gate, wrap, highlight mask, text fits and has glyphs). EditMode 1117 pass, PlayMode 16 pass. No scene or asset change, so no RunBatch.
+
+## integration: F2 panel Copy all values button [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Scripts/UI/{TuningPanel,TuningSnapshotJson}.cs, Assets/_Project/Tests/EditMode/UI/TuningSnapshotJsonTests.cs
+Why: Refs #76. A "Copy all values" button next to Advanced and Reset all puts a flat JSON object of every catalog key (Advanced ones too, ordered by enum value, invariant culture) on the clipboard via GUIUtility.systemCopyBuffer, and shows "Copied!" for 1.5 s of unscaled time. JSON is built only on press by the pure TuningSnapshotJson.
+Tests: 6 new EditMode (object shape, every key, no duplicates, enum order, dot decimals under de-DE, null for non-finite). EditMode 1165 pass, PlayMode 16 pass. No scene or asset change, so no RunBatch.
