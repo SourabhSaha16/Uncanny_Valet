@@ -17,10 +17,12 @@ namespace UncannyValet.UI
             return (total / SecondsPerMinute) + ":" + (total % SecondsPerMinute).ToString("00");
         }
 
+        /// <summary>Two lines in plain words: the director state and phase, then workload against target, patience pressure and form.</summary>
         public static string Header(IDirectorView v)
-            => (v.Active ? "Director ON" : "Director OFF (old timer)") + "   phase " + v.Phase
-               + "   W " + v.Workload.ToString("0.00") + "  T " + v.Target.ToString("0.00")
-               + "  P " + v.Pressure.ToString("0.00") + "  F " + v.Form.ToString("+0.00;-0.00;0.00");
+            => (v.Active ? "Director ON" : "Director OFF (old timer)") + "   Phase: " + v.Phase
+               + "\nWorkload " + v.Workload.ToString("0.00") + " (target " + v.Target.ToString("0.00")
+               + ")   Patience pressure " + v.Pressure.ToString("0.00") + "   Player form " + v.Form.ToString("+0.00;-0.00;0.00")
+               + " (-1 struggling, +1 flying)";
 
         public static string Arrivals(IDirectorView v)
             => "Arrivals " + v.ArrivalsUsed + "/" + v.ArrivalBudget + " (cap " + v.ArrivalBudgetMax + ")   next in "
@@ -62,8 +64,8 @@ namespace UncannyValet.UI
                 default:
                     sb.Append("sent ").Append(d.ArchetypeChosen ? d.Archetype.ToString() : "any").Append(" (");
                     if (d.HasRule) sb.Append(d.Rule).Append(" x").Append(d.Boost.ToString("0.#")).Append(", ");
-                    sb.Append(d.Reason).Append("), ").Append(d.ArrivalsUsed).Append(" used, W ")
-                      .Append(d.Workload.ToString("0.00")).Append(" T ").Append(d.Target.ToString("0.00"));
+                    sb.Append(d.Reason).Append("), ").Append(d.ArrivalsUsed).Append(" used, workload ")
+                      .Append(d.Workload.ToString("0.00")).Append(" target ").Append(d.Target.ToString("0.00"));
                     break;
             }
             return sb.ToString();

@@ -16,6 +16,7 @@ namespace UncannyValet.Director
         public DilemmaRuleSettings Rules { get; } = new DilemmaRuleSettings();
         public GateSettings Gate { get; } = new GateSettings();
         public PickerSettings Picker { get; } = new PickerSettings();
+        public ShapeSettings Shape { get; } = new ShapeSettings();
 
         /// <summary>False means the old fixed arrival timer runs and the director stays idle.</summary>
         public bool Enabled { get; private set; } = true;
@@ -37,6 +38,7 @@ namespace UncannyValet.Director
             Rules.Read(t);
             Gate.Read(t);
             Picker.Read(t);
+            Shape.Read(t);
         }
     }
 }

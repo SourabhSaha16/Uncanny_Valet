@@ -33,7 +33,14 @@ namespace UncannyValet.Director
         [Header("Archetype picker and assist hook")]
         [SerializeField] private PickerSettings _picker = new PickerSettings();
 
+        [Header("Difficulty dials")]
+        [SerializeField, Tooltip("Anchor tables of the nine top-level dials (the F2 panel's Difficulty rows).")]
+        private DifficultyDialsConfig _dials;
+
         public bool Enabled => _enabled;
+
+        /// <summary>The difficulty dial anchors; null until the project setup step has wired the asset.</summary>
+        public DifficultyDialsConfig Dials => _dials;
 
         /// <summary>Copies every number into the live tuning. The profile supplies the lot's arrival budget.</summary>
         public void SeedInto(ITuning tuning, DirectorProfile profile)
@@ -48,6 +55,7 @@ namespace UncannyValet.Director
             _rules.Seed(tuning);
             _gate.Seed(tuning);
             _picker.Seed(tuning);
+            ShapeSettings.Seed(tuning, profile.Weights);
         }
     }
 }

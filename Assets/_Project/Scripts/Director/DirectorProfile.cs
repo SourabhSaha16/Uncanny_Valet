@@ -39,6 +39,9 @@ namespace UncannyValet.Director
         [SerializeField, Min(0), Tooltip("Extra cars allowed beyond the budget; budget + slack is a hard cap.")]
         private int _budgetSlack = DefaultBudgetSlack;
 
+        /// <summary>Fraction of the shift looked ahead to decide whether the curve is rising.</summary>
+        public float RisingLookahead => _risingLookahead;
+
         public int ArrivalBudget => _arrivalBudget;
         public int BudgetSlack => _budgetSlack;
 

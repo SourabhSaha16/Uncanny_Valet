@@ -94,13 +94,13 @@ namespace UncannyValet.UI
             if (_tuningPanel != null && _tuningPanel.IsOpen) return;
             EnsureStyles();
             var line = _fontSize + 6f;
-            var rows = 7 + _slots.Count + _decisions.Count;
+            var rows = 8 + _slots.Count + _decisions.Count;
             var panel = new Rect(_margin, _margin, _width, line * rows + 16f);
             GUI.Box(panel, GUIContent.none, _box);
             var y = panel.y + 6f;
             GUI.Label(new Rect(panel.x + 8f, y, _width - 16f, line), "Director (F3 closes)", _title);
             y += line;
-            y = Line(panel, y, line, _header);
+            y = Line(panel, y, line * 2f, _header);
             y = Line(panel, y, line, _arrivals);
             y = Line(panel, y, line, _dilemma);
             y = Line(panel, y, line, _dilemmaCounters);

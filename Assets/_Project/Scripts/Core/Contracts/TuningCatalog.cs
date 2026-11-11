@@ -3,94 +3,27 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Core.Contracts
 {
-    /// <summary>What the debug panel shows: every key, grouped, with a sensible range.</summary>
+    /// <summary>
+    /// What the debug panel shows: every key, grouped, with a sensible range. The difficulty dials and the clock
+    /// come first and are always visible; every other row is advanced. Rows of one group stay together.
+    /// </summary>
     public static class TuningCatalog
     {
-        public static readonly IReadOnlyList<TuningInfo> All = new[]
+        public static readonly IReadOnlyList<TuningInfo> All = Build();
+
+        private static List<TuningInfo> Build()
         {
-            new TuningInfo(TuningKey.PlanMaxWaitingCars, "Shift plan", "Max cars waiting", 1, 3, 1),
-            new TuningInfo(TuningKey.PlanArrivalGapScale, "Shift plan", "Arrival gap scale (lower = busier)", 0.2f, 6f, 0.05f),
-            new TuningInfo(TuningKey.PlanActiveSpots, "Shift plan", "Open parking spots", 2, 6, 1),
-            new TuningInfo(TuningKey.PlanEvChance, "Shift plan", "EV chance", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.PlanDirtyChance, "Shift plan", "Dirty car chance", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.PlanLateEvChance, "Shift plan", "EV chance at shift end", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.PlanLateEvStart, "Shift plan", "EV surge starts at (fraction of shift)", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.PickupWindowMinutes, "Patrons", "Pickup window (game min)", 5, 120, 1),
-            new TuningInfo(TuningKey.StayMinMinutes, "Patrons", "Stay min (game min)", 5, 120, 1),
-            new TuningInfo(TuningKey.StayMaxMinutes, "Patrons", "Stay max (game min)", 5, 180, 1),
-            new TuningInfo(TuningKey.ArrivalGapMinMinutes, "Patrons", "Arrival gap min (game min)", 1, 60, 1),
-            new TuningInfo(TuningKey.ArrivalGapMaxMinutes, "Patrons", "Arrival gap max (game min)", 1, 90, 1),
-            new TuningInfo(TuningKey.ImpatientChance, "Patrons", "Impatient chance", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.ChargeMinutes, "Patrons", "EV charge time (game min)", 2, 60, 1),
-            new TuningInfo(TuningKey.WashMinutes, "Patrons", "Wash time (game min)", 2, 60, 1),
-            new TuningInfo(TuningKey.GameMinutesPerSecond, "Clock", "Game minutes per second", 0.5f, 6f, 0.1f),
-            new TuningInfo(TuningKey.ShiftLengthSeconds, "Clock", "Shift length (s, next shift)", 60, 600, 10),
-            new TuningInfo(TuningKey.BaseTip, "Tips", "Base tip", 1, 200, 1),
-            new TuningInfo(TuningKey.ChargeBonus, "Tips", "Charge bonus", 0, 200, 1),
-            new TuningInfo(TuningKey.CleanBonus, "Tips", "Clean bonus", 0, 200, 1),
-            new TuningInfo(TuningKey.SpeedWindowMinutes, "Tips", "Speed bonus window (game min)", 1, 60, 1),
-            new TuningInfo(TuningKey.PedestrianCount, "Pedestrians", "Ambient pedestrians (walking in/out)", 0, 10, 1),
-            new TuningInfo(TuningKey.TrafficAmbientPerMinute, "Traffic", "Ambient cars per minute (0 = off)", 0, 40, 1),
-            new TuningInfo(TuningKey.TrafficSpeedScale, "Traffic", "Ambient car speed scale", 0.2f, 2f, 0.05f),
-            new TuningInfo(TuningKey.TrafficEntrySpeed, "Traffic", "Entry car speed (units/s)", 0.5f, 12f, 0.1f),
-            new TuningInfo(TuningKey.TrafficExitSpeed, "Traffic", "Exit car speed (units/s)", 0.5f, 12f, 0.1f),
-            new TuningInfo(TuningKey.DirEnabled, "Director", "Director on (0 = old fixed timer)", 0, 1, 1),
-            new TuningInfo(TuningKey.DirTickSeconds, "Director", "Tick every (s)", 0.1f, 2f, 0.1f),
-            new TuningInfo(TuningKey.DirSeed, "Director", "Seed (0 = random each shift)", 0, 9999, 1),
-            new TuningInfo(TuningKey.DirHorizonSeconds, "Director", "Workload horizon (s)", 10, 90, 1),
-            new TuningInfo(TuningKey.DirCostPark, "Director", "Cost: park a car (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirCostPickup, "Director", "Cost: deliver a pickup (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirCostWash, "Director", "Cost: wash trip, plus wash left (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirCostCharge, "Director", "Cost: charge trip (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirCostEvict, "Director", "Cost: evict a car (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirCostPickupSoon, "Director", "Cost: pickup due soon (s)", 0, 30, 0.5f),
-            new TuningInfo(TuningKey.DirPickupSoonSeconds, "Director", "Pickup counts as soon within (s)", 0, 60, 1),
-            new TuningInfo(TuningKey.DirBand, "Director", "On-target band (+/-)", 0.02f, 0.6f, 0.01f),
-            new TuningInfo(TuningKey.DirFormInfluence, "Director", "Form influence on target", 0f, 0.5f, 0.01f),
-            new TuningInfo(TuningKey.DirIdleWorkload, "Director", "Idle below workload", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.DirIdleSeconds, "Director", "Idle for (s) then send a car", 1, 30, 1),
-            new TuningInfo(TuningKey.DirUnderFactor, "Director", "Interval factor under target", 0.2f, 1f, 0.05f),
-            new TuningInfo(TuningKey.DirOverFactor, "Director", "Interval factor over target", 1f, 3f, 0.05f),
-            new TuningInfo(TuningKey.DirFactorSlew, "Director", "Factor change per second", 0.05f, 3f, 0.05f),
-            new TuningInfo(TuningKey.DirBudgetBlend, "Director", "Budget pull on the interval", 0f, 1f, 0.05f),
-            new TuningInfo(TuningKey.DirMinInterval, "Director", "Shortest interval (s)", 1, 30, 1),
-            new TuningInfo(TuningKey.DirMaxInterval, "Director", "Longest interval (s)", 10, 90, 1),
-            new TuningInfo(TuningKey.DirArrivalBudget, "Director", "Arrival budget (cars)", 1, 40, 1),
-            new TuningInfo(TuningKey.DirBudgetSlack, "Director", "Budget slack (+ cars, hard cap)", 0, 10, 1),
-            new TuningInfo(TuningKey.DirReliefWorkload, "Director", "Relief: workload above", 0.5f, 3f, 0.05f),
-            new TuningInfo(TuningKey.DirReliefPressure, "Director", "Relief: pressure above", 0.3f, 1f, 0.01f),
-            new TuningInfo(TuningKey.DirReliefAngryCount, "Director", "Relief: angry patrons", 1, 6, 1),
-            new TuningInfo(TuningKey.DirReliefAngryWindow, "Director", "Relief: angry window (s)", 5, 120, 1),
-            new TuningInfo(TuningKey.DirReliefHold, "Director", "Relief: hold arrivals (s)", 1, 40, 1),
-            new TuningInfo(TuningKey.DirReliefPlainCars, "Director", "Relief: plain cars after", 0, 6, 1),
-            new TuningInfo(TuningKey.DirReliefCooldown, "Director", "Relief: cooldown (s)", 0, 120, 1),
-            new TuningInfo(TuningKey.DirFormUpdate, "Director", "Form: update every (s)", 1, 60, 1),
-            new TuningInfo(TuningKey.DirFormMaxStep, "Director", "Form: max step per update", 0.05f, 1f, 0.05f),
-            new TuningInfo(TuningKey.DirFormWindow, "Director", "Form: tip and anger window (s)", 10, 180, 1),
-            new TuningInfo(TuningKey.DirFormWarmup, "Director", "Form: warm-up (s)", 0, 120, 1),
-            new TuningInfo(TuningKey.DirFormTipWeight, "Director", "Form: tip pace weight", 0f, 1.5f, 0.05f),
-            new TuningInfo(TuningKey.DirFormAngryWeight, "Director", "Form: angry weight", 0f, 1.5f, 0.05f),
-            new TuningInfo(TuningKey.DirFormComboWeight, "Director", "Form: combo weight", 0f, 1.5f, 0.05f),
-            new TuningInfo(TuningKey.DirFormAngryFull, "Director", "Form: angry patrons for full penalty", 1, 6, 1),
-            new TuningInfo(TuningKey.DirDilemmaWashBlocked, "Director", "Dilemma: wash blocked, Dirty x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaWashBusy, "Director", "Dilemma: wash busy, Dirty x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaBaysBlocked, "Director", "Dilemma: bays blocked, EV x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaBaySquatted, "Director", "Dilemma: bay squatted, EV x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaLastBay, "Director", "Dilemma: last bay, EV x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaLotTight, "Director", "Dilemma: lot tight, Plain x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirDilemmaChain, "Director", "Dilemma: chain, Dirty EV x", 1, 6, 0.1f),
-            new TuningInfo(TuningKey.DirLotTightSpots, "Director", "Lot tight at free spots <=", 0, 9, 1),
-            new TuningInfo(TuningKey.DirSolvablePickupSeconds, "Director", "Solvable if a pickup is due within (s)", 0, 60, 1),
-            new TuningInfo(TuningKey.DirDilemmaCooldown, "Director", "Dilemma cooldown (s)", 0, 120, 1),
-            new TuningInfo(TuningKey.DirDilemmaBlackout, "Director", "No dilemma after an angry patron (s)", 0, 120, 1),
-            new TuningInfo(TuningKey.DirHeadroomGap, "Director", "Dilemma headroom: gap <=", 0f, 1f, 0.01f),
-            new TuningInfo(TuningKey.DirLoadUnderHeavy, "Director", "Under target: Dirty weights x", 0.1f, 4f, 0.1f),
-            new TuningInfo(TuningKey.DirLoadOverHeavy, "Director", "Over target: Dirty weights x", 0.1f, 4f, 0.1f),
-            new TuningInfo(TuningKey.DirLoadOverPlain, "Director", "Over target: Plain weight x", 0.1f, 4f, 0.1f),
-            new TuningInfo(TuningKey.DirStreakLimit, "Director", "Max Dirty or EV in a row", 1, 6, 1),
-            new TuningInfo(TuningKey.DirMixTolerance, "Director", "Mix tolerance (share, 0.1 = 10 points)", 0.02f, 0.5f, 0.01f),
-            new TuningInfo(TuningKey.DirAssist, "Director", "Assist mode (form <= 0, softer dilemmas)", 0, 1, 1),
-            new TuningInfo(TuningKey.DirAssistDilemmaScale, "Director", "Assist: dilemma boost strength", 0f, 1f, 0.05f),
-        };
+            var all = new List<TuningInfo>();
+            all.AddRange(DifficultyRows.Rows);
+            all.AddRange(GameRows.Clock);
+            all.AddRange(DirectorPacingRows.PacingRows);
+            all.AddRange(DirectorMixRows.MixRows);
+            all.AddRange(DirectorMixRows.DilemmaRows);
+            all.AddRange(DirectorPlayerRows.MercyRows);
+            all.AddRange(DirectorPlayerRows.SkillRows);
+            all.AddRange(DirectorPacingRows.CostRows);
+            all.AddRange(GameRows.Rest);
+            return all;
+        }
     }
 }

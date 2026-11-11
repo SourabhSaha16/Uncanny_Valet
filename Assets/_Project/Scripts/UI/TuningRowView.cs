@@ -11,7 +11,7 @@ namespace UncannyValet.UI
     public sealed class TuningRowView
     {
         public const float RowHeight = 26f;
-        private const float LabelWidth = 250f;
+        private const float LabelWidth = 400f;
         private const float FieldWidth = 64f;
         private const float ResetWidth = 52f;
         private const float Gap = 6f;
@@ -19,6 +19,7 @@ namespace UncannyValet.UI
         private readonly TuningInfo _info;
         private readonly bool _isHeader;
         private readonly string _fieldName;
+        private readonly GUIContent _content;
         private readonly string _format;
         private string _text = string.Empty;
         private float _shown = float.NaN;
@@ -30,7 +31,11 @@ namespace UncannyValet.UI
             _isHeader = isHeader;
             _fieldName = fieldName;
             _format = info.Step < 1f ? "0.##" : "0";
+            _content = new GUIContent(info.Label, info.Tooltip);
         }
+
+        /// <summary>True when the row only shows with the panel's Advanced toggle on.</summary>
+        public bool IsAdvanced => _info.Advanced;
 
         /// <summary>The control name of this row's number field; empty for headers.</summary>
         public string FieldName => _fieldName;
@@ -46,7 +51,7 @@ namespace UncannyValet.UI
             if (_isHeader) { GUI.Label(rect, _info.Group, header); return; }
             if (!tuning.TryGet(_info.Key, out var value)) return;
 
-            GUI.Label(new Rect(rect.x, rect.y, LabelWidth, rect.height), _info.Label, label);
+            GUI.Label(new Rect(rect.x, rect.y, LabelWidth, rect.height), _content, label);
             var sliderX = rect.x + LabelWidth + Gap;
             var fieldX = rect.xMax - ResetWidth - Gap - FieldWidth;
             var slider = new Rect(sliderX, rect.y + 6f, fieldX - sliderX - Gap, rect.height - 6f);
