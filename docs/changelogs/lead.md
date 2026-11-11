@@ -766,3 +766,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-af13c3c140575434b (Lot SmashRunner and ParkingSpot.Place, Patrons SmashSettler/SmashTally and TicketSettler.PaySmash, TipInput.MaxSpeedBonus, SmashEvents, UI/Hud Smash flash/ring/coins/pop, ShiftStats SmashTips, Audio SfxSmash, tests), docs/changelogs/lead.md
 Why: issue 43 (valet powers level 3). Instantly parks every waiting arrived car in a free bay (EVs charged, dirty cars washed), pays every waiting pickup patron a full tip (speed bonus maxed, one combo multiplier, combo not reset), with flash, ring, coins, boom, chimes and an SMASH! +$N pop. Cars with no free bay stay queued; expired patrons still pay $0; parking is a teleport; patrons vanish and the car drives straight off.
 Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode after the merge (incl. Bootstrap scene smoke test).
+
+## lead: rebuild beta site (speed boost, freeze time, Park Smash, return timer after the queue) [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last build: issues 78 (stay starts when the car rests clear of the queue), 41 (speed boost), 42 (freeze time), 43 (Park Smash). Beta site only; main stays on the previous build.
+Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. The powers and the new return timer were not seen in play.

@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  11c51b2
-Subject: lead: merge start-up crash fix, TuningKey append-only rule [Claude]
-Date:    2026-11-11 12:43:54 -0800
+Commit:  43c30b4
+Subject: lead: merge agent/powers Park Smash power [Claude]
+Date:    2026-11-11 14:51:29 -0800
