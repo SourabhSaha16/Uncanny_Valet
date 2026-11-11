@@ -77,4 +77,12 @@ MonoBehaviour:
     _mixTolerance: 0.1
     _assist: 0
     _assistDilemmaScale: 0.5
+  _returns:
+    _windowPercent: 25
+    _spacingSeconds: 4
+    _lateStartSeconds: 60
+    _lastLeadSeconds: 20
+    _minLeadSeconds: 3
+    _minMoveSeconds: 0.25
+    _cooldownSeconds: 10
   _dials: {fileID: 11400000, guid: 7d1e58fd5421bc943aabf6547e1e2eb1, type: 2}

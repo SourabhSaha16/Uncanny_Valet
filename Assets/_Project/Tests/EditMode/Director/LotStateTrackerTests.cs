@@ -113,8 +113,8 @@ namespace UncannyValet.Tests.Director
         public void AMovedReturnShowsInTheCountdownAndTheShiftedAmount()
         {
             Spawn(stay: 30f);
-            Bus.Publish(new CarArrived(Car));
             Clock.SetElapsed(10f);
+            Bus.Publish(new CarArrived(Car));
             Bus.Publish(new CarParked(Car, 1));
             Bus.Publish(new PatronReturnShifted(Ticket, Car, -6f));
             Clock.SetElapsed(20f);
