@@ -75,6 +75,21 @@ Later content:
 - [ ] D17. ParkCorp showdowns.
 - [ ] D18. World map.
 
+## D2. Valet powers (draft: `docs/redesign/valet_powers.md`; blocked on the human's answers to Q1 to Q7)
+
+- [ ] H0. Human answers Q1 to Q7 (perfect drop-off definition, freeze vs slow, fire key, Golden Valet overlap, Park Smash pay, Director reaction, carry-over).
+- [ ] H1. Core: `PerfectDropOff`, `PowerMeterChanged`, `PowerActivated`, `PowerEnded` events and a time-scale contract for freeze.
+- [ ] H2. Lot or Patrons: judge and publish `PerfectDropOff`.
+- [ ] H3. Pure `PowerMeter` rule (add, levels, reset) and `PowerMeterConfig` with F2 keys, with EditMode tests.
+- [ ] H4. Meter listens to `PerfectPark`, `PerfectDropOff` and drift events (needs car handling step 4 for `PerfectPark`).
+- [ ] H5. Vertical meter HUD in the pixel style (three notches, three colours, pulses).
+- [ ] H6. Activate key and level choice; `IPowerEffect` seam.
+- [ ] H7. Power 1: speed boost (shares the Golden Valet barge-through; after Q4).
+- [ ] H8. Power 2: freeze time (clock, timers, wash and charge progress, Director, ambient traffic and pedestrians) with its art and sound.
+- [ ] H9. Power 3: Park Smash (Lot parks and washes and charges, Patrons completes pickups and pays tips) with its art and sound.
+- [ ] H10. Stacking rules and tests (refresh, overlap, reset on use).
+- [ ] H11. Results screen stats for powers used.
+
 ## E. Content and polish
 
 - [ ] E1. Title screen: add the valet, Kev and the key-tag dot on the i.
@@ -90,6 +105,8 @@ Later content:
 - [ ] F4. Local co-op input.
 
 ## G. Housekeeping
+
+- [ ] G16. Rate limit hit during the play-test round of 2026-11-10: three agents (sharper turning and tunables and softer tyre sound; incoming cars solid; wider lot) stopped before finishing. Resume them with SendMessage after 10:50pm PT; their worktrees keep the partial work.
 
 - [ ] G14. Play-test skid marks (0.07 wide, visible at zoom 0.78? chord angularity?) and the tyre chirp, squeal loop (clicks in WebGL?) and screech balance. Tune through F2 > Advanced > Car handling. If marks are too faint, raise `_markThickness` in `SkidConfig`.
 - [ ] G15. `CarFactory` registers `ISlipSource` in Services (small deviation from 'only Bootstrap registers'); move it to Bootstrap if wanted.
