@@ -109,3 +109,9 @@ Date: 2026-11-11
 Files: Assets/_Project/Scripts/UI/{TuningPanel,TuningSnapshotJson}.cs, Assets/_Project/Tests/EditMode/UI/TuningSnapshotJsonTests.cs
 Why: Refs #76. A "Copy all values" button next to Advanced and Reset all puts a flat JSON object of every catalog key (Advanced ones too, ordered by enum value, invariant culture) on the clipboard via GUIUtility.systemCopyBuffer, and shows "Copied!" for 1.5 s of unscaled time. JSON is built only on press by the pure TuningSnapshotJson.
 Tests: 6 new EditMode (object shape, every key, no duplicates, enum order, dot decimals under de-DE, null for non-finite). EditMode 1165 pass, PlayMode 16 pass. No scene or asset change, so no RunBatch.
+
+## integration: fix start-up crash, add Bootstrap smoke test [Claude]
+Date: 2026-11-11
+Files: Assets/_Project/Data/Director/DifficultyDialsConfig.asset, Assets/_Project/Tests/PlayMode/BootstrapSceneSmokeTests.cs, Assets/_Project/Tests/PlayMode/UncannyValet.Tests.PlayMode.asmdef
+Why: Refs #77, #73. Commit c6992c0 (traffic) removed TrafficAmbientPerMinute from the middle of the TuningKey enum, shifting every later value down by one. DifficultyDialsConfig.asset stores TuningKey as raw ints, so every dial link pointed at the wrong key and DifficultyDials.Derive threw KeyNotFoundException in GameBootstrap.Awake, aborting start-up (lot never built). Asset ints above the removed slot remapped by minus one. New PlayMode smoke test loads the real Bootstrap scene, starts the shift and fails on any logged error or exception.
+Tests: smoke test failed with the exact KeyNotFoundException before the fix and passes after (about 5 s). EditMode 1215 pass, PlayMode 17 pass. No scene change, so no RunBatch.

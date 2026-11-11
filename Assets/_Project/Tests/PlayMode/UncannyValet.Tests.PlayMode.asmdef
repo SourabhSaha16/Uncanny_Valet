@@ -5,6 +5,8 @@
         "UncannyValet.Core",
         "UncannyValet.Cars",
         "UncannyValet.Lot",
+        "UncannyValet.UI",
+        "UncannyValet.Bootstrap",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
