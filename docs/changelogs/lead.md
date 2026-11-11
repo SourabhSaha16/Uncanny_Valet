@@ -675,3 +675,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-abc606cd9b17808d8 (IdleGuard, ArrivalRows, ArrivalPacer, PacerInput, PacingSettings, DirectorBrain, TuningKey, TuningCatalog, DirectorConfig asset, tests, docs/changelogs/director.md), docs/changelogs/lead.md
 Why: issue 70. When no car is waiting in the arrival queue the Director sends one within ArrivalIdleLimit (2 s, F2, visible); the first car of a shift too; the guard stops near the end of the shift (ArrivalIdleCutoff 20 s, Advanced) and at the hard arrival cap; queued cars leave the old pacing, mercy and queue-full holds in force. Fast parkers use the arrival budget sooner (no schedule check).
 Tests: 1111 of 1111 EditMode, 16 of 16 PlayMode after RunBatch (Bootstrap.unity churn reverted). Soak: longest empty-queue gap 1.5 s over 200 shifts.
+
+## lead: merge agent/lot pickup arrows green only when the patron accepts (#71) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a2e5e86efc6289fb1 (IPickupAcceptance, PickupAcceptance, CurbArrowTracker, CurbArrowRule, CurbZone, PatronSpawner registration line, tests), docs/changelogs/lead.md
+Why: issue 71. The curb arrows are green only when the car faces right and its ticket is PickupRequested (the patron will accept it); neutral when facing right but the patron has not asked; red for wrong facing; they flip live when the patron asks.
+Tests: 1115 of 1115 EditMode after the merge (agent: 16 of 16 PlayMode).
