@@ -784,3 +784,9 @@ Date: 2026-11-12
 Files: merge of worktree-agent-af9f622ef53ea7698 (CameraShake, ShakeLink, ShakeRows, CameraFollow, PerfectFeedback, TuningSeeder, TuningKey/TuningCatalog, tests), docs/changelogs/lead.md
 Why: issue 20. The camera shakes on any hard impact of the car the player drives (CarImpact with IsPlayerCar); strength scales with the impact force from the damage threshold to a full-force value; three Advanced F2 rows (strength 0.35, length 0.35 s, full force 8); uses unscaled time so it works in freeze time.
 Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode after the merge.
+
+## lead: rebuild beta site (impact damage, screen shake) [Claude]
+Date: 2026-11-12
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last build: issues 19 (impact damage lowers the tip, DMG % on the key board) and 20 (screen shake on hard impacts of the car you drive). Beta site only; main stays on the earlier build.
+Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. Damage and shake were not seen in play.

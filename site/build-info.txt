@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  43c30b4
-Subject: lead: merge agent/powers Park Smash power [Claude]
-Date:    2026-11-11 14:51:29 -0800
+Commit:  29412a9
+Subject: lead: merge agent/integration screen shake on impact [Claude]
+Date:    2026-11-12 15:28:18 -0800

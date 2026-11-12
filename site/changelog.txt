@@ -1,4 +1,9 @@
 === Last 50 commits ===
+29412a9  2026-11-12  lead: merge agent/integration screen shake on impact [Claude]
+a3b7461  2026-11-12  integration: screen shake on hard impacts [Claude]
+66f3a30  2026-11-12  lead: merge agent/cars impact damage lowers the tip [Claude]
+dac492b  2026-11-12  cars: hard impacts damage cars and lower the tip [Claude]
+d6473c8  2026-11-11  lead: rebuild beta site (powers, return timer after queue) [Claude]
 43c30b4  2026-11-11  lead: merge agent/powers Park Smash power [Claude]
 6d93757  2026-11-11  powers: Park Smash parks waiting cars, pays waiting patrons, with flash, ring, coins and boom [Claude]
 e37077d  2026-11-11  lead: merge agent/powers freeze time power [Claude]
@@ -44,11 +49,6 @@ bc2cc92  2026-11-11  traffic: keep a turning patron car visible to lane traffic 
 75c0ceb  2026-11-11  lead: Ready queue workflow and [Claude] tagging rule [Claude]
 87ab6e0  2026-11-11  lead: make Uncanny_Valet_Kanban the main tracking project
 4d6ad7b  2026-11-11  lead: merge agent/integration tip pop fix
-7cc6875  2026-11-11  integration: fix tip pop never showing after boarding
-c43c6ca  2026-11-11  lead: merge powers wiring, Perfect Park bonus, update design
-2b83023  2026-11-11  Merge branch 'worktree-agent-a7dac40ca1c52e782' into pivot/chaos
-e77dca7  2026-11-11  Merge branch 'worktree-agent-ae6387393fc8291b2' into pivot/chaos
-09037ab  2026-11-11  Merge branch 'worktree-agent-a1617d9ae486b4055' into pivot/chaos
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -166,6 +166,12 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Cars/{CarAutoDrive,CarAutoDriveMath,CarAutoDriveStyle,CarBounceRule,CarCollisionResponse,CarFactory,CarTrip}.cs, Assets/_Project/Scripts/Cars/TripProbe.cs (new), Assets/_Project/Scripts/Core/Contracts/ITripObstacles.cs (new, additive), Assets/_Project/Scripts/Traffic/{TripObstacle (new),ITrip,EntryTrip,ExitTrip,TripRouter,TripTuning,TrafficConfig,TrafficModule}.cs, tests (EditMode Traffic/TripObstacleTests, Cars/CarBounceRuleTests; PlayMode/TripCarSolidTests)
 Why: play-test note "no collision when a car is incoming into the queue". One-off cross-module edit (Cars + Traffic) approved by the lead. A road trip car (entry or exit) now keeps its collider on while the body stays Kinematic and pose driven, so the player's car, the valet and other cars cannot pass through it and it is never shoved. Straight arrive/depart (no road) still run with the collider off. CarCollisionResponse treats a kinematic trip car as an immovable car (CarBounceRule.ImmovableMass): the live car reflects off it (restitution), the live car publishes CarsCollided and the bump sound. Yielding: CarAutoDrive casts its own collider along its heading every FixedUpdate (TripProbe, Rigidbody2D.Cast into a reused buffer; distance 3 + 0.9 s * speed, CarAutoDriveStyle LookAheadBase/LookAheadSeconds) and reports the bumper gap to the nearest non-trigger body that has a rigidbody (cars, valet; pedestrians are masked out, static scenery ignored, only surfaces facing the heading count) through a new additive Core contract ITripObstacles (implemented by TripRouter beside ITripDriver). The trips cap their speed with TripObstacle: CarFollowing.TargetSpeed against a stationary leader, so the car brakes to MinGap behind it at the follow Brake rate and the cap lifts as soon as the way is clear. Timeout rule: once held stopped for TripTuning.BlockedTimeout (6 s, TrafficConfig range 1..30) the cap becomes CreepSpeed (0.8 u/s, range 0.1..3) until the way is clear, so it never waits forever (the creep nudges a dynamic obstacle on). Entry lane and exit lane cars use the same cap and lane occupancy is updated with their real speed (LaneMotion), so ambient traffic behind a stopped patron car follows it normally. Queue slot re-targeting, the single CarArrived at the route end and the exit merge yield are unchanged. Factory order fix: CarAutoDrive is added before CarCollisionResponse (which looks it up).
 Tests: EditMode 959/959 passed (11 new: obstacle cap, timeout creep, reset, blocked entry holds and resumes, permanently blocked entry still arrives, blocked exit stops, immovable bounce, look-ahead); PlayMode 16/16 passed (2 new: driven car pushed into a trip car rebounds and the trip car's position is unchanged; trip car stops behind a parked car, resumes when it is removed and arrives exactly once). Not verified by hand in play: feel of the stop distances, creep after timeout in the real lot, interaction with the real slot scan.
+
+## cars: hard impacts damage cars and lower the tip [Claude]
+Date: 2026-11-12
+Files: Cars/{DamageRule,CarDamage}.cs (new), Cars/{CarFactory,CarHandlingConfig,CarHandlingLive,CarHandlingTuningLink}.cs, Core/Events/{DamageEvents (new),TuningKey}.cs, Core/Contracts/{DamageRows (new),TuningCatalog}.cs, Patrons/{DamageLedger (new),TicketSettler,TicketRegistry}.cs, UI/{TicketRow,TicketNeedsTracker}.cs, UI/Hud/{DamageTag (new),KeyBoardPainter}.cs, tests (EditMode Cars/DamageRuleTests, Patrons/DamageTipTests, UI/DamageTagTests; PlayMode/CarDamageTests)
+Why: design.md A8 tip section and the chaos redesign damage meter (issue 19). Pure DamageRule: impact force (contact impulse over the car's mass, a speed change in units/s) gives damage 0 up to the threshold, then percent per unit, capped at 1. CarDamage (added by CarFactory) reads OnCollisionEnter2D normalImpulse without allocating: walls and station edges and other cars count (both cars of a crash, parked and queued cars too); the pedestrian layer and any other body never do. It publishes CarImpact(car, force, isPlayerCar) for each counted hit (for screen shake) and CarDamaged(car, total01, delta01), and resets on ShiftStarted. Patrons' DamageLedger keeps damage per car, feeds TipInput.Damage01 at payout (25% off per 25% damage, $0 Wrecked at 100%) and clears on pay, void and shift start. The key board shows "DMG nn%" in its own column only when a listed car has damage (panel 54 px wider only then). New appended F2 Advanced keys DamageMinForce (1.5) and DamagePercentPerForce (8) live in CarHandlingConfig and seed through CarHandlingLive.Seed (no seeder or scene change).
+Tests: EditMode 1314/1314 passed; PlayMode 29/29 passed (3 new: two cars at speed damage both, a wall damages, a tap and the pedestrian layer do not; BootstrapSceneSmokeTests passes).
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -383,6 +389,12 @@ Date: 2026-11-11
 Files: Assets/_Project/Data/Director/DifficultyDialsConfig.asset, Assets/_Project/Tests/PlayMode/BootstrapSceneSmokeTests.cs, Assets/_Project/Tests/PlayMode/UncannyValet.Tests.PlayMode.asmdef
 Why: Refs #77, #73. Commit c6992c0 (traffic) removed TrafficAmbientPerMinute from the middle of the TuningKey enum, shifting every later value down by one. DifficultyDialsConfig.asset stores TuningKey as raw ints, so every dial link pointed at the wrong key and DifficultyDials.Derive threw KeyNotFoundException in GameBootstrap.Awake, aborting start-up (lot never built). Asset ints above the removed slot remapped by minus one. New PlayMode smoke test loads the real Bootstrap scene, starts the shift and fails on any logged error or exception.
 Tests: smoke test failed with the exact KeyNotFoundException before the fix and passes after (about 5 s). EditMode 1215 pass, PlayMode 17 pass. No scene change, so no RunBatch.
+
+## integration: screen shake on hard impacts [Claude]
+Date: 2026-11-12
+Files: Assets/_Project/Scripts/Bootstrap/{CameraShake,ShakeLink,CameraFollow,PerfectFeedback,TuningSeeder}.cs, Assets/_Project/Scripts/Core/Contracts/{ShakeRows,TuningCatalog}.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Tests/EditMode/Integration/CameraShakeTests.cs
+Why: Refs #20. The camera shakes when the car the player drives has a counted hard hit (CarImpact with IsPlayerCar). Pure CameraShake (decaying two-sine offset, unscaled time, no allocation, weaker hits never replace a stronger running shake) is fed by ShakeLink, created from PerfectFeedback.Start; CameraFollow adds the offset beside the Perfect Park kick so smoothing never chases it. Three F2 Advanced rows (strength, length, full-strength force) with TuningKeys appended at the end; defaults seeded in TuningSeeder.
+Tests: 10 new EditMode (zero below limit, scales, cap, decay to zero, deterministic, no stacking, link player/non-player/below-limit). EditMode 1324 pass, PlayMode 29 pass (incl. BootstrapSceneSmokeTests). No scene or asset change, so no RunBatch.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1153,6 +1165,24 @@ Date: 2026-11-11
 Files: merge of worktree-agent-af13c3c140575434b (Lot SmashRunner and ParkingSpot.Place, Patrons SmashSettler/SmashTally and TicketSettler.PaySmash, TipInput.MaxSpeedBonus, SmashEvents, UI/Hud Smash flash/ring/coins/pop, ShiftStats SmashTips, Audio SfxSmash, tests), docs/changelogs/lead.md
 Why: issue 43 (valet powers level 3). Instantly parks every waiting arrived car in a free bay (EVs charged, dirty cars washed), pays every waiting pickup patron a full tip (speed bonus maxed, one combo multiplier, combo not reset), with flash, ring, coins, boom, chimes and an SMASH! +$N pop. Cars with no free bay stay queued; expired patrons still pay $0; parking is a teleport; patrons vanish and the car drives straight off.
 Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode after the merge (incl. Bootstrap scene smoke test).
+
+## lead: rebuild beta site (speed boost, freeze time, Park Smash, return timer after the queue) [Claude]
+Date: 2026-11-11
+Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: player-visible changes since the last build: issues 78 (stay starts when the car rests clear of the queue), 41 (speed boost), 42 (freeze time), 43 (Park Smash). Beta site only; main stays on the previous build.
+Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. The powers and the new return timer were not seen in play.
+
+## lead: merge agent/cars impact damage lowers the tip (#19) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a1b42c739aefef56f (DamageRule, CarDamage, DamageLedger, DamageTag, DamageEvents CarDamaged/CarImpact, DamageRows, TuningKeys DamageMinForce/DamagePercentPerForce, CarFactory/CarHandling*, TicketSettler/TicketRegistry, TicketRow/TicketNeedsTracker/KeyBoardPainter, tests), docs/changelogs/lead.md
+Why: issue 19. Hard impacts with walls, station edges and other cars (not pedestrians) add damage to the cars involved; the existing tip stages apply at payout (25% off per 25%, $0 wrecked); the key board shows DMG nn%. CarImpact(CarId, Force, IsPlayerCar) is published for issue 20 (screen shake). Defaults are feel guesses: smallest hit 1.5, 8% per unit of force (a full-speed wall hit is about 52%).
+Tests: 1314 of 1314 EditMode, 29 of 29 PlayMode after the merge.
+
+## lead: merge agent/integration screen shake on impact (#20) [Claude]
+Date: 2026-11-12
+Files: merge of worktree-agent-af9f622ef53ea7698 (CameraShake, ShakeLink, ShakeRows, CameraFollow, PerfectFeedback, TuningSeeder, TuningKey/TuningCatalog, tests), docs/changelogs/lead.md
+Why: issue 20. The camera shakes on any hard impact of the car the player drives (CarImpact with IsPlayerCar); strength scales with the impact force from the damage threshold to a full-force value; three Advanced F2 rows (strength 0.35, length 0.35 s, full force 8); uses unscaled time so it works in freeze time.
+Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode after the merge.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
