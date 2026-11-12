@@ -15,6 +15,7 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private CameraFollow _camera;
 
         private PerfectKickLink _link;
+        private ShakeLink _shakeLink;
 
         private void Start()
         {
@@ -24,8 +25,13 @@ namespace UncannyValet.Bootstrap
                 return;
             }
             _link = new PerfectKickLink(Services.Get<IEventBus>(), Services.Get<ICarFactory>(), _camera.Kick);
+            _shakeLink = new ShakeLink(Services.Get<IEventBus>(), Services.Get<ITuning>(), _camera.Shake);
         }
 
-        private void OnDestroy() => _link?.Dispose();
+        private void OnDestroy()
+        {
+            _link?.Dispose();
+            _shakeLink?.Dispose();
+        }
     }
 }

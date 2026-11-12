@@ -36,6 +36,7 @@ namespace UncannyValet.Bootstrap
             PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null)
         {
             SeedEmotions(t, emotions);
+            CameraShake.SeedDefaults(t);
             new PerfectTuning(perfect ?? new PerfectSettings()).Seed(t);
             SeedTraffic(t, traffic);
             SeedHandling(t, handling);
