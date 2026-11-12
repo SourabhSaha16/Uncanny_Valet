@@ -778,3 +778,9 @@ Date: 2026-11-11
 Files: merge of worktree-agent-a1b42c739aefef56f (DamageRule, CarDamage, DamageLedger, DamageTag, DamageEvents CarDamaged/CarImpact, DamageRows, TuningKeys DamageMinForce/DamagePercentPerForce, CarFactory/CarHandling*, TicketSettler/TicketRegistry, TicketRow/TicketNeedsTracker/KeyBoardPainter, tests), docs/changelogs/lead.md
 Why: issue 19. Hard impacts with walls, station edges and other cars (not pedestrians) add damage to the cars involved; the existing tip stages apply at payout (25% off per 25%, $0 wrecked); the key board shows DMG nn%. CarImpact(CarId, Force, IsPlayerCar) is published for issue 20 (screen shake). Defaults are feel guesses: smallest hit 1.5, 8% per unit of force (a full-speed wall hit is about 52%).
 Tests: 1314 of 1314 EditMode, 29 of 29 PlayMode after the merge.
+
+## lead: merge agent/integration screen shake on impact (#20) [Claude]
+Date: 2026-11-12
+Files: merge of worktree-agent-af9f622ef53ea7698 (CameraShake, ShakeLink, ShakeRows, CameraFollow, PerfectFeedback, TuningSeeder, TuningKey/TuningCatalog, tests), docs/changelogs/lead.md
+Why: issue 20. The camera shakes on any hard impact of the car the player drives (CarImpact with IsPlayerCar); strength scales with the impact force from the damage threshold to a full-force value; three Advanced F2 rows (strength 0.35, length 0.35 s, full force 8); uses unscaled time so it works in freeze time.
+Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode after the merge.

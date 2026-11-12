@@ -49,6 +49,7 @@ namespace UncannyValet.Bootstrap
         private float _aspect;
         private Vector2 _basePosition;
         private CameraKick _kick;
+        private CameraShake _shake;
 
         /// <summary>Follows this transform; snaps to it immediately.</summary>
         public void SetTarget(Transform target)
@@ -59,6 +60,9 @@ namespace UncannyValet.Bootstrap
 
         /// <summary>Nudges the view along a direction for a moment (the Perfect Park kick). Length and time are serialized.</summary>
         public void Kick(Vector2 direction) => _kick.Start(direction, _kickUnits, _kickSeconds, Time.unscaledTime);
+
+        /// <summary>Starts a screen shake of this size (world units) and length (seconds); a bigger running shake is kept.</summary>
+        public void Shake(float amplitude, float seconds) => _shake.Start(amplitude, seconds, Time.unscaledTime);
 
         /// <summary>Sets the world rectangle of the lot (walls included) and refits the zoom.</summary>
         public void SetWorldBounds(Rect bounds) => SetWorldBounds(bounds, bounds);
@@ -97,7 +101,7 @@ namespace UncannyValet.Bootstrap
         // The follow position is kept apart from the kick, so the smoothing never chases the nudge.
         private void Place()
         {
-            var at = _basePosition + _kick.Offset(Time.unscaledTime);
+            var at = _basePosition + _kick.Offset(Time.unscaledTime) + _shake.Offset(Time.unscaledTime);
             transform.position = new Vector3(at.x, at.y, transform.position.z);
         }
 

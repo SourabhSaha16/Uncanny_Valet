@@ -272,5 +272,12 @@ namespace UncannyValet.Core.Events
         DamageMinForce,
         /// <summary>Damage percent added per unit of impact force above the smallest hit.</summary>
         DamagePercentPerForce,
+        // Screen shake on a hard hit (Bootstrap owns). Issue 20.
+        /// <summary>World units the camera shakes at the biggest hit.</summary>
+        ShakeStrength,
+        /// <summary>Seconds a shake lasts.</summary>
+        ShakeSeconds,
+        /// <summary>Impact force at which the shake reaches its full strength.</summary>
+        ShakeFullForce,
     }
 }
