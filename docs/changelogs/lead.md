@@ -772,3 +772,9 @@ Date: 2026-11-11
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last build: issues 78 (stay starts when the car rests clear of the queue), 41 (speed boost), 42 (freeze time), 43 (Park Smash). Beta site only; main stays on the previous build.
 Tests: 1296 of 1296 EditMode, 26 of 26 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. The powers and the new return timer were not seen in play.
+
+## lead: merge agent/cars impact damage lowers the tip (#19) [Claude]
+Date: 2026-11-11
+Files: merge of worktree-agent-a1b42c739aefef56f (DamageRule, CarDamage, DamageLedger, DamageTag, DamageEvents CarDamaged/CarImpact, DamageRows, TuningKeys DamageMinForce/DamagePercentPerForce, CarFactory/CarHandling*, TicketSettler/TicketRegistry, TicketRow/TicketNeedsTracker/KeyBoardPainter, tests), docs/changelogs/lead.md
+Why: issue 19. Hard impacts with walls, station edges and other cars (not pedestrians) add damage to the cars involved; the existing tip stages apply at payout (25% off per 25%, $0 wrecked); the key board shows DMG nn%. CarImpact(CarId, Force, IsPlayerCar) is published for issue 20 (screen shake). Defaults are feel guesses: smallest hit 1.5, 8% per unit of force (a full-speed wall hit is about 52%).
+Tests: 1314 of 1314 EditMode, 29 of 29 PlayMode after the merge.

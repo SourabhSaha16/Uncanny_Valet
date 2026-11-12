@@ -15,13 +15,14 @@ namespace UncannyValet.Patrons
         private readonly TicketBook _book;
         private readonly IShiftScoreView _score;
         private readonly PerfectBonusLedger _perfect;
+        private readonly DamageLedger _damage;
 
         /// <param name="score">Supplies the combo multiplier; null means no combo (1x).</param>
         public TicketSettler(IEventBus bus, IGameClock clock, ITipCalculator tips, TicketTimerPublisher timers,
             TicketBook book, IShiftScoreView score = null,
-            PerfectBonusLedger perfect = null)
+            PerfectBonusLedger perfect = null, DamageLedger damage = null)
         {
-            _perfect = perfect; _bus = bus; _clock = clock; _tips = tips; _timers = timers; _book = book; _score = score;
+            _perfect = perfect; _damage = damage; _bus = bus; _clock = clock; _tips = tips; _timers = timers; _book = book; _score = score;
         }
 
         /// <summary>The car was handed back: announce the delivery, explain and pay the tip, then close.</summary>
@@ -44,6 +45,7 @@ namespace UncannyValet.Patrons
             var patience = t.PickupExpired ? 0f : 1f - t.PickupTimer.Elapsed01;
             var input = new TipInput(t.Request.BaseTip, wait, t.Request.Impatient, t.PickupExpired,
                 t.ChargedEv, t.CleanedDirty, t.UncleanedDirty, patienceRemaining01: patience, comboMultiplier: combo,
+                damage01: _damage?.Take(t.CarId) ?? 0f,
                 perfectParks: _perfect?.Take(t.TicketId) ?? 0, maxSpeedBonus: maxSpeed);
             var breakdown = _tips.Explain(input);
             t.MarkClosed();
@@ -61,6 +63,7 @@ namespace UncannyValet.Patrons
         {
             _book.Remove(t);
             _perfect?.Clear(t.TicketId);
+            _damage?.Clear(t.CarId);
             var none = new TipBreakdown(0, 0, 0, 0, 0, TipZeroReason.None);
             _bus.Publish(new TipExplained(t.TicketId, t.CarId, none));
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));

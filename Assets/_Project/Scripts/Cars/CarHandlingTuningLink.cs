@@ -28,6 +28,8 @@ namespace UncannyValet.Cars
         {
             foreach (var row in HandlingRows.Rows)
                 if (tuning.TryGet(row.Key, out var value)) _live.TrySet(row.Key, value);
+            foreach (var row in DamageRows.Rows)
+                if (tuning.TryGet(row.Key, out var value)) _live.TrySet(row.Key, value);
         }
     }
 }

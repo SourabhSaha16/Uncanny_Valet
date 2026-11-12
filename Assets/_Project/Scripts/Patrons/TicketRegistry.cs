@@ -17,6 +17,7 @@ namespace UncannyValet.Patrons
         private readonly CurbCall _call;
         private readonly LiveTicketTuning _live;
         private readonly PerfectBonusLedger _perfect;
+        private readonly DamageLedger _damage;
         private readonly ReturnShifter _returns;
         private readonly StayStarter _stays;
         private readonly SmashSettler _smash;
@@ -48,7 +49,8 @@ namespace UncannyValet.Patrons
             _timers = new TicketTimerPublisher(bus);
             _book = new TicketBook(tuning, plates);
             _perfect = new PerfectBonusLedger(bus);
-            _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect);
+            _damage = new DamageLedger(bus);
+            _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect, _damage);
             _stations = new StationService(bus, _book);
             _returns = new ReturnShifter(bus, clock, _book);
             _stays = new StayStarter(bus, clock, _book);
@@ -71,6 +73,7 @@ namespace UncannyValet.Patrons
             _stays.Dispose();
             _smash.Dispose();
             _perfect.Dispose();
+            _damage.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
