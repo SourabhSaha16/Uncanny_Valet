@@ -267,5 +267,10 @@ namespace UncannyValet.Core.Events
         QueueClearDistance,
         /// <summary>Game minutes after arrival at which a car still in the queue gets its stay started anyway.</summary>
         QueueMaxWaitMinutes,
+        // Car damage (Cars owns). Issue 19.
+        /// <summary>Smallest impact force (speed change, units per second) that damages a car.</summary>
+        DamageMinForce,
+        /// <summary>Damage percent added per unit of impact force above the smallest hit.</summary>
+        DamagePercentPerForce,
     }
 }

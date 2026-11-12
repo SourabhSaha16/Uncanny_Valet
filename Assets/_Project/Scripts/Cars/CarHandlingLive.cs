@@ -17,8 +17,15 @@ namespace UncannyValet.Cars
         private float _slideThreshold, _shiftSlideSpeed, _markOpacity, _markFadeSeconds;
         private float _topSpeedScale, _accelerationScale, _brakingScale, _coastDragScale, _reverseScale;
 
+        /// <summary>Smallest impact force (units per second) that damages a car.</summary>
+        public float DamageMinForce { get; private set; }
+        /// <summary>Damage percent per unit of force above the smallest hit.</summary>
+        public float DamagePercentPerForce { get; private set; }
+
         public CarHandlingLive(CarHandlingConfig config)
         {
+            DamageMinForce = config.DamageMinForce;
+            DamagePercentPerForce = config.DamagePercentPerForce;
             _lateralFriction = config.LateralFriction;
             _forwardGrip = config.ForwardGrip;
             _gripLowSpeed = config.GripLowSpeed;
@@ -82,6 +89,8 @@ namespace UncannyValet.Cars
             tuning.Seed(TuningKey.HandlingBrakingScale, _brakingScale);
             tuning.Seed(TuningKey.HandlingCoastDragScale, _coastDragScale);
             tuning.Seed(TuningKey.HandlingReverseScale, _reverseScale);
+            tuning.Seed(TuningKey.DamageMinForce, DamageMinForce);
+            tuning.Seed(TuningKey.DamagePercentPerForce, DamagePercentPerForce);
         }
 
         /// <summary>Applies a tuning change; false when the key is not a handling key.</summary>
@@ -106,6 +115,8 @@ namespace UncannyValet.Cars
                 case TuningKey.HandlingBrakingScale: _brakingScale = value; return true;
                 case TuningKey.HandlingCoastDragScale: _coastDragScale = value; return true;
                 case TuningKey.HandlingReverseScale: _reverseScale = value; return true;
+                case TuningKey.DamageMinForce: DamageMinForce = value; return true;
+                case TuningKey.DamagePercentPerForce: DamagePercentPerForce = value; return true;
                 default: return false;
             }
         }

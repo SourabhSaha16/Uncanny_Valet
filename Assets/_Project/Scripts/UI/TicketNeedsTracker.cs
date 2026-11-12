@@ -20,6 +20,7 @@ namespace UncannyValet.UI
             _bus.Subscribe<CarFullyCharged>(OnFullyCharged);
             _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
+            _bus.Subscribe<CarDamaged>(OnDamaged);
         }
 
         public void Dispose()
@@ -30,7 +31,10 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<CarFullyCharged>(OnFullyCharged);
             _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
+            _bus.Unsubscribe<CarDamaged>(OnDamaged);
         }
+
+        private void OnDamaged(CarDamaged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Damage01 = e.Damage01; }
 
         /// <summary>The open row of a car, or null.</summary>
         public static TicketRow FindByCar(SortedDictionary<int, TicketRow> rows, int car)

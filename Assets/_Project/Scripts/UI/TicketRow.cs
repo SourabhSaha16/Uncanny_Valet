@@ -13,6 +13,8 @@ namespace UncannyValet.UI
         public int Tag = NoTag;
         /// <summary>The car's licence plate text (for example "KT 4"); empty until it is known.</summary>
         public string Plate = string.Empty;
+        /// <summary>The car's damage 0..1 (set by CarDamaged); the key board shows it only when above 0.</summary>
+        public float Damage01;
         public TicketRowState State = TicketRowState.AwaitingPark;
         public int Spot;
         public bool HasTimer;

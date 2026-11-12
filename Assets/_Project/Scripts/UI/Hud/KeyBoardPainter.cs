@@ -24,6 +24,7 @@ namespace UncannyValet.UI.Hud
         private const int SpotOffset = 42;
         private const int StatusOffset = 56;
         private const int BellOffset = 122;
+        private const int DamageOffset = 132;
         private const float LitGlow = 0.4f;
         private const float DimGlow = 0.12f;
 
@@ -31,6 +32,7 @@ namespace UncannyValet.UI.Hud
         private readonly PlatePainter _plates;
         private readonly CarStatusResolver _status;
         private readonly EmotionStyle _style;
+        private int _width = Width;
 
         public KeyBoardPainter(PixelCanvas canvas, EmotionStyle style)
         {
@@ -47,11 +49,19 @@ namespace UncannyValet.UI.Hud
             var height = Border * 2 + HeaderHeight + shown * RowHeight;
             var x = Margin;
             var y = PixelGrid.Height - Margin - height;
-            _canvas.Panel(x, y, Width, height, PixelPalette.PanelDark);
+            _width = Width + (AnyDamage(rows, shown) ? DamageTag.ExtraWidth : 0);
+            _canvas.Panel(x, y, _width, height, PixelPalette.PanelDark);
             _canvas.Text("CAR SLOTS", x + 5, y + 4, PixelPalette.Gold);
-            if (rows.Count > shown) DrawOverflow(rows.Count - shown, x + Width - 22, y + 4);
+            if (rows.Count > shown) DrawOverflow(rows.Count - shown, x + _width - 22, y + 4);
             for (var i = 0; i < shown; i++)
                 DrawRow(rows[i], x + Border, y + Border + HeaderHeight + i * RowHeight, time);
+        }
+
+        private static bool AnyDamage(List<TicketRow> rows, int shown)
+        {
+            for (var i = 0; i < shown; i++)
+                if (DamageTag.IsShown(rows[i])) return true;
+            return false;
         }
 
         private void DrawOverflow(int hidden, int x, int y)
@@ -67,6 +77,7 @@ namespace UncannyValet.UI.Hud
             if (row.HasPlate) _plates.Draw(row.Plate, x + PlateOffset, y + 1, PixelPalette.Ink);
             if (row.Spot > 0) DrawSpot(row.Spot, x + SpotOffset, y + 3);
             DrawStatus(row, x + StatusOffset, y + 3);
+            if (DamageTag.IsShown(row)) DamageTag.Draw(_canvas, row, x + DamageOffset, y + 3);
         }
 
         // Emotion-coloured row highlight and a bell, both flashing like the plate.
@@ -75,7 +86,7 @@ namespace UncannyValet.UI.Hud
             var lit = PickupMark.IsLit(row, time, _style);
             var glow = PickupMark.Tint(row, _style);
             glow.a = lit ? LitGlow : DimGlow;
-            _canvas.Fill(x, y, Width - Border * 2, RowHeight - 1, glow);
+            _canvas.Fill(x, y, _width - Border * 2, RowHeight - 1, glow);
             if (lit) _canvas.Icon(PixelIcon.Bell, x + BellOffset, y + 2, 1, Color.white);
         }
 

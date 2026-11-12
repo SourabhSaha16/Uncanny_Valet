@@ -62,8 +62,19 @@ namespace UncannyValet.Cars
         [SerializeField, Min(0f), Tooltip("Seconds before the same pair of cars can report another bump.")]
         private float _bumpPairInterval = 0.25f;
 
+        [Header("Damage (issue 19)")]
+        [SerializeField, Min(0f), Tooltip("Smallest impact force (speed change forced on the car, units per second) that damages it. Gentle taps below it are free.")]
+        private float _damageMinForce = 1.5f;
+        [SerializeField, Min(0f), Tooltip("Damage percent added per unit of impact force above the smallest hit. 100% damage wrecks the car.")]
+        private float _damagePercentPerForce = 8f;
+
         [Header("Skid marks and tyre sound (section 6)")]
         [SerializeField] private SkidConfig _skid = new SkidConfig();
+
+        /// <summary>Smallest impact force (units per second) that damages a car.</summary>
+        public float DamageMinForce => _damageMinForce;
+        /// <summary>Damage percent per unit of force above the smallest hit.</summary>
+        public float DamagePercentPerForce => _damagePercentPerForce;
 
         /// <summary>Skid mark and slide numbers.</summary>
         public SkidConfig Skid => _skid;
