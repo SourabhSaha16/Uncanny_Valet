@@ -9,7 +9,11 @@ namespace UncannyValet.Core.Events
     {
         public readonly TicketId Ticket;
         public readonly int Amount;
-        public BlessingEarned(TicketId ticket, int amount) { Ticket = ticket; Amount = amount; }
+
+        /// <summary>True when the amount was halved for a missed service: a positive amount then leaves the favour where it is.</summary>
+        public readonly bool ServiceMissed;
+        public BlessingEarned(TicketId ticket, int amount, bool serviceMissed = false)
+        { Ticket = ticket; Amount = amount; ServiceMissed = serviceMissed; }
     }
 
     /// <summary>The shift's blessings, favour multiplier or curse count changed.</summary>

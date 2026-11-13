@@ -820,3 +820,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a957196a70b64ac89 (full rename Tip to Blessing across Core/Economy/Patrons/UI/Audio/Bootstrap/Director/Tests, FavourTracker, CurseApplied, ShiftBlessings, ILotGoal and LotGoal, LotCleared/LotFailed at shift end, results screen, bolt icon and blessing bar with threshold marker, stars removed, Perfect Park bonus removed, tests), Run/LotDefinition default threshold, RunAssetSetup thresholds, Midgard lot assets, docs/changelogs/lead.md
 Why: story epic 79, task 81. Blessings keep the tip numbers with a lightning-bolt symbol; favour keeps the combo rules; an angry patron is a curse of 15 subtracting blessings (never below 0); a lot is cleared if blessings reach the lot's threshold at shift end. The lead raised the placeholder thresholds from 3 and 5 to 150 (training) and 300 (crazy), the old one- and two-star scores, because 3 and 5 would clear every lot in the first handback.
 Tests: 1348 of 1348 EditMode, 30 of 30 PlayMode after the merge, the threshold change and RunBatch (scene fileID churn reverted).
+
+## lead: merge agent/blessings half a blessing when a needed service is missed (#82) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a75cdc1e4d3976704 (BlessingCalculator halving, BlessingBreakdown.ServiceMissed, BlessingEarned.serviceMissed, ShiftBlessings favour handling, TicketSettler, ServiceMissedTests), docs/changelogs/lead.md
+Why: story epic 79, task 82. A handback with any open service modifier pays half of its final total (after damage and favour), rounded to the nearest whole blessing with ties up, once; a missed-service handback neither adds nor resets favour; no on-screen feedback.
+Tests: 1364 of 1364 EditMode, 30 of 30 PlayMode after the merge.

@@ -93,8 +93,8 @@ namespace UncannyValet.Tests.Economy
             var unclean = Explain(new BlessingInput(10, 5f, false, openModifiers: Washed));
             Assert.AreEqual(BlessingZeroReason.None, unclean.ZeroReason);
             Assert.AreEqual(0, unclean.ModifierBonus);
-            Assert.AreEqual(10 + unclean.SpeedAdjust, unclean.Total);
-            Assert.Greater(unclean.Total, 0);
+            Assert.AreEqual((10 + unclean.SpeedAdjust + 1) / 2, unclean.Total, "an open service pays half of the normal total");
+            Assert.IsTrue(unclean.ServiceMissed);
             Assert.Less(unclean.Total, clean.Total);
         }
 

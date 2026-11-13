@@ -8,7 +8,7 @@ namespace UncannyValet.Economy
 {
     /// <summary>
     /// Owns the shift's blessings, favour and curses (the run state owner that replaces the debt ledger). A blessing
-    /// adds its amount and raises the favour; a zero blessing resets the favour; a curse (an angry patron: the pickup
+    /// adds its amount and raises the favour; a blessing halved for a missed service leaves the favour where it is; a zero blessing resets it; a curse (an angry patron: the pickup
     /// timer ran out) takes blessings off, never below 0, and resets the favour. Everything starts clean on
     /// ShiftStarted. At ShiftEnded the lot is judged against its threshold: ShiftResultReady goes out, then
     /// LotCleared or LotFailed.
@@ -90,14 +90,19 @@ namespace UncannyValet.Economy
             if (e.Amount > 0)
             {
                 Blessings += e.Amount;
-                _favour.RecordHappy();
-                PeakFavour = Math.Max(PeakFavour, _favour.Multiplier);
+                if (!e.ServiceMissed) RaiseFavour();
             }
             else
             {
                 _favour.Reset();
             }
             Publish();
+        }
+
+        private void RaiseFavour()
+        {
+            _favour.RecordHappy();
+            PeakFavour = Math.Max(PeakFavour, _favour.Multiplier);
         }
 
         // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.

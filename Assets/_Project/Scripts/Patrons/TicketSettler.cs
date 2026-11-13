@@ -45,7 +45,7 @@ namespace UncannyValet.Patrons
             _bus.Publish(new BlessingExplained(t.TicketId, t.CarId, breakdown));
             _bus.Publish(new CarDelivered(t.TicketId, t.CarId));
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, wait, breakdown.Total));
-            _bus.Publish(new BlessingEarned(t.TicketId, breakdown.Total));
+            _bus.Publish(new BlessingEarned(t.TicketId, breakdown.Total, breakdown.ServiceMissed));
         }
 
         /// <summary>The ticket ends without a delivery (patron left, shift over): blessing 0, not a penalty.</summary>
