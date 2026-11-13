@@ -8,6 +8,7 @@ using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Patrons;
 using UncannyValet.Powers;
+using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI.Mood;
 using UnityEngine;
@@ -29,11 +30,14 @@ namespace UncannyValet.Bootstrap
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
         /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
         /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
+        /// <param name="lot">The lot's overrides (shift length, arrival pacing, dial positions); null keeps the shared defaults.</param>
+        /// <param name="queueSlots">Slots the layout has for waiting cars; the lot's waiting cap never exceeds it.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null,
-            PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null)
+            PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
+            LotDefinition lot = null, int queueSlots = int.MaxValue)
         {
             SeedEmotions(t, emotions);
             CameraShake.SeedDefaults(t);
@@ -74,11 +78,12 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
-            return SeedDials(t, director, bus);
+            lot?.SeedPacing(t, shift.GameMinutesPerSecond, queueSlots); // the lot's numbers win over the shared defaults
+            return SeedDials(t, director, bus, lot);
         }
 
         // Dials start at their default position and the mapper runs once, so every derived number is consistent at startup.
-        private static DifficultyDialsLink SeedDials(ITuning t, DirectorConfig director, IEventBus bus)
+        private static DifficultyDialsLink SeedDials(ITuning t, DirectorConfig director, IEventBus bus, LotDefinition lot)
         {
             var config = director != null ? director.Dials : null;
             var temporary = config == null;
@@ -89,6 +94,7 @@ namespace UncannyValet.Bootstrap
             }
             var dials = new DifficultyDials(config);
             dials.SeedDials(t);
+            lot?.SeedDialPositions(t);
             if (temporary) Object.DestroyImmediate(config);
             return bus != null ? new DifficultyDialsLink(bus, t, dials) : null;
         }

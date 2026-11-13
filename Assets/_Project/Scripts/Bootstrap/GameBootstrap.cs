@@ -11,6 +11,7 @@ using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
 using UncannyValet.Powers;
+using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
@@ -57,6 +58,11 @@ namespace UncannyValet.Bootstrap
         [SerializeField, Tooltip("Seeds the power keys of the F2 panel.")]
         private PowerMeterConfig _powerConfig;
 
+        [SerializeField, Tooltip("This scene's lot: shift length, pacing, dial positions, layout and blessing threshold.")]
+        private LotDefinition _lotDefinition;
+        [SerializeField, Tooltip("Every lot of the run, in play order; feeds the title-screen picker and the run state.")]
+        private RunDefinition _runDefinition;
+
         private const int DefaultSpotSeed = 6;
 
         private ShiftScore _score;
@@ -65,17 +71,21 @@ namespace UncannyValet.Bootstrap
         private DirectorBootstrap _directorBoot;
         private TrafficTuningLink _trafficLink;
         private DifficultyDialsLink _dialsLink;
+        private RunBootstrap _runBoot;
+        private IEventBus _bus;
 
         private void Awake()
         {
-            if (_shiftConfig == null)
+            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null)
             {
-                Debug.LogError("GameBootstrap has no ShiftConfig: rebuild with Uncanny Valet/Setup/Build Everything.", this);
+                Debug.LogError("GameBootstrap has no ShiftConfig, LotDefinition or RunDefinition: rebuild with Uncanny Valet/Setup/Build Everything.", this);
                 enabled = false;
                 return;
             }
+            if (!_lotDefinition.TryValidate(out var problem)) Debug.LogError("Invalid lot definition: " + problem, _lotDefinition);
             Services.Reset();
             var bus = new EventBus();
+            _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
             var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping || _ui.IsTitleShowing);
             var tuning = new TuningStore(bus);
@@ -98,16 +108,17 @@ namespace UncannyValet.Bootstrap
             Services.Register<IRoadLayout>(_lot.Road);
             SeedTuning(tuning, _lot.RegularSpotCount);
             StartTraffic(bus);
-            FrameLot();
+            if (!LotBounds.TryFrame(_lot.gameObject, _decor, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
             PedestrianBootstrap.Start(_pedestrians, _decor);
             _powers.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
-            SpawnValet();
+            ValetSpawner.Spawn(_valet, _camera);
             _random = new ShiftRandom(bus, tuning);
             _spawner.Random = _random;
             StartDirector(bus, tuning);
             _spawner.gameObject.SetActive(true);
+            _runBoot = RunBootstrap.Start(bus, _runDefinition, _lotDefinition); // before the UI, which reads the lot picker
             StartUi();
             _tuningPanel.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
@@ -127,7 +138,8 @@ namespace UncannyValet.Bootstrap
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions, queueClear: _lot.QueueClear);
+                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition,
+                queueSlots: spotCount > 0 ? _lot.ArrivalSlots.Count : int.MaxValue);
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
@@ -156,26 +168,6 @@ namespace UncannyValet.Bootstrap
             if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }
 
-        private void FrameLot()
-        {
-            if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
-                _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect, rect);
-            else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
-        }
-
-        private void SpawnValet()
-        {
-            _valet.transform.position = Services.Get<ILotLayout>().ValetStartPoint;
-            if (_valet.GetComponent<ValetAnimator>() == null) // the animator owns the sprites when present
-            {
-                var body = _valet.GetComponentInChildren<SpriteRenderer>();
-                body.sprite = PlaceholderSprite.Create();
-                body.color = new Color(0.95f, 0.85f, 0.2f);
-            }
-            _valet.SetActive(true);
-            if (_camera != null) _camera.SetTarget(_valet.transform);
-        }
-
         private void StartUi()
         {
             var interactor = _valet.GetComponent<Interactor>();
@@ -193,7 +185,9 @@ namespace UncannyValet.Bootstrap
             _dialsLink?.Dispose();
             _random?.Dispose();
             _score?.Dispose();
-            Services.Reset();
+            _runBoot?.Dispose();
+            // A newer lot scene may already have registered its own services; only the owner of the current bus clears them.
+            if (Services.TryGet<IEventBus>(out var current) && ReferenceEquals(current, _bus)) Services.Reset();
         }
     }
 }

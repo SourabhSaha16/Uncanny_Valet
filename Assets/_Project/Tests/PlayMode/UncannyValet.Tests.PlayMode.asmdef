@@ -5,6 +5,7 @@
         "UncannyValet.Core",
         "UncannyValet.Cars",
         "UncannyValet.Lot",
+        "UncannyValet.Run",
         "UncannyValet.Night",
         "UncannyValet.Valet",
         "UncannyValet.UI",

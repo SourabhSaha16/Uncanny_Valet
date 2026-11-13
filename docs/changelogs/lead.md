@@ -790,3 +790,9 @@ Date: 2026-11-12
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last build: issues 19 (impact damage lowers the tip, DMG % on the key board) and 20 (screen shake on hard impacts of the car you drive). Beta site only; main stays on the earlier build.
 Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. Damage and shake were not seen in play.
+
+## lead: merge agent/integration run state, lot definitions and lot scenes (#80) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a1067622abbf49073 (Run module: RunProgress, RunHost, LotDefinition, RunDefinition, LotModifier; Core LotId/World/LotKind/events/contracts; Bootstrap RunBootstrap, TuningSeeder lot seeding, ValetSpawner, LotBounds; title lot picker; Editor scene-per-lot builder; Data/Run assets; two Midgard lot scenes; tests), docs/changelogs/lead.md
+Why: story epic 79, task 80. Open points reported by the agent: crazy waiting cap 4 is clamped to the 3 queue slots; the arrival budget caps the crazy lot near 16 cars; layout parameters are only a kind (Diner) for now; nothing publishes LotCleared/LotFailed/PowerGranted yet (tasks 81, 83, 84).
+Tests: 1361 of 1361 EditMode, 31 of 31 PlayMode after the merge and RunBatch (scene fileID churn reverted to the merged versions).

@@ -1,3 +1,4 @@
+using UncannyValet.Lot;
 using UnityEngine;
 
 namespace UncannyValet.Bootstrap
@@ -14,6 +15,14 @@ namespace UncannyValet.Bootstrap
             var b = renderers[0].bounds;
             for (var i = 1; i < renderers.Length; i++) b.Encapsulate(renderers[i].bounds);
             rect = Rect.MinMaxRect(b.min.x, b.min.y, b.max.x, b.max.y);
+            return true;
+        }
+
+        /// <summary>Points the camera at the lot (widened by the decor, when there is one). False when the lot has no renderers.</summary>
+        public static bool TryFrame(GameObject lot, LotDecor decor, CameraFollow camera)
+        {
+            if (!TryMeasure(lot, out var rect)) return false;
+            camera.SetWorldBounds(decor != null ? decor.ExtendView(rect) : rect, rect);
             return true;
         }
     }
