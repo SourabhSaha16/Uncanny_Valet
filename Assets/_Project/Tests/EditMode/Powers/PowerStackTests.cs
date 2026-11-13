@@ -8,11 +8,10 @@ namespace UncannyValet.Tests.Powers
 {
     public class PowerStackTests
     {
-        private PowerMeterConfig _config;
+        private PowerBarConfig _config;
         private PowerSettings _settings;
         private EventBus _bus;
         private PowerStack _stack;
-        private SpeedBoostEffect _boost;
         private FreezeTimeEffect _freeze;
         private readonly List<PowerKind> _activated = new List<PowerKind>();
         private readonly List<PowerKind> _ended = new List<PowerKind>();
@@ -20,16 +19,15 @@ namespace UncannyValet.Tests.Powers
         [SetUp]
         public void SetUp()
         {
-            _config = ScriptableObject.CreateInstance<PowerMeterConfig>();
+            _config = ScriptableObject.CreateInstance<PowerBarConfig>();
             _settings = new PowerSettings(_config);
             _activated.Clear();
             _ended.Clear();
             _bus = new EventBus();
             _bus.Subscribe<PowerActivated>(e => _activated.Add(e.Power));
             _bus.Subscribe<PowerEnded>(e => _ended.Add(e.Power));
-            _boost = new SpeedBoostEffect(_settings);
             _freeze = new FreezeTimeEffect(_settings);
-            _stack = new PowerStack(_bus, new IPowerEffect[] { _boost, _freeze, new ParkSmashEffect() });
+            _stack = new PowerStack(_bus, new IPowerEffect[] { _freeze });
         }
 
         [TearDown]
@@ -38,45 +36,20 @@ namespace UncannyValet.Tests.Powers
         [Test]
         public void Fire_PublishesActivatedAndStartsTheTimer()
         {
-            Assert.IsTrue(_stack.Fire(PowerKind.SpeedBoost));
-            CollectionAssert.AreEqual(new[] { PowerKind.SpeedBoost }, _activated);
-            Assert.AreEqual(1.4f, _boost.WalkMultiplier, 0.0001f);
+            Assert.IsTrue(_stack.Fire(PowerKind.FreezeTime));
+            CollectionAssert.AreEqual(new[] { PowerKind.FreezeTime }, _activated);
+            Assert.AreEqual(6f, _freeze.Remaining, 0.0001f);
         }
 
         [Test]
-        public void SpeedBoost_EndsAfterItsDuration()
+        public void FiringAgain_RefreshesTheTimerWithoutDoubling()
         {
-            _stack.Fire(PowerKind.SpeedBoost);
-            _stack.Tick(3.9f);
-            Assert.IsEmpty(_ended);
-            _stack.Tick(0.2f);
-            CollectionAssert.AreEqual(new[] { PowerKind.SpeedBoost }, _ended);
-            Assert.AreEqual(1f, _boost.WalkMultiplier);
-        }
-
-        [Test]
-        public void FiringTheSamePowerAgain_RefreshesTheTimerWithoutDoubling()
-        {
-            _stack.Fire(PowerKind.SpeedBoost);
-            _stack.Tick(3f);
-            _stack.Fire(PowerKind.SpeedBoost);
-            Assert.AreEqual(4f, _boost.Remaining, 0.0001f);
-            Assert.AreEqual(1.4f, _boost.WalkMultiplier, 0.0001f);
-            _stack.Tick(3.9f);
-            Assert.IsEmpty(_ended);
-        }
-
-        [Test]
-        public void AHigherPowerFiresWhileALowerOneKeepsRunning()
-        {
-            _stack.Fire(PowerKind.SpeedBoost);
-            _stack.Tick(1f);
             _stack.Fire(PowerKind.FreezeTime);
-            Assert.IsTrue(_stack.IsActive(PowerKind.SpeedBoost));
-            Assert.IsTrue(_stack.IsActive(PowerKind.FreezeTime));
-            _stack.Tick(3.1f);
-            CollectionAssert.AreEqual(new[] { PowerKind.SpeedBoost }, _ended);
-            Assert.IsTrue(_freeze.IsActive);
+            _stack.Tick(3f);
+            _stack.Fire(PowerKind.FreezeTime);
+            Assert.AreEqual(6f, _freeze.Remaining, 0.0001f);
+            _stack.Tick(5.9f);
+            Assert.IsEmpty(_ended);
         }
 
         [Test]
@@ -95,23 +68,11 @@ namespace UncannyValet.Tests.Powers
         }
 
         [Test]
-        public void ParkSmash_IsInstantAndNeverEnds()
-        {
-            _stack.Fire(PowerKind.ParkSmash);
-            _stack.Tick(10f);
-            CollectionAssert.AreEqual(new[] { PowerKind.ParkSmash }, _activated);
-            Assert.IsEmpty(_ended);
-            Assert.IsFalse(_stack.IsActive(PowerKind.ParkSmash));
-        }
-
-        [Test]
         public void EndAll_StopsEveryRunningPower()
         {
-            _stack.Fire(PowerKind.SpeedBoost);
             _stack.Fire(PowerKind.FreezeTime);
             _stack.EndAll();
-            Assert.AreEqual(2, _ended.Count);
-            Assert.IsFalse(_boost.IsActive);
+            Assert.AreEqual(1, _ended.Count);
             Assert.IsFalse(_freeze.IsActive);
         }
 

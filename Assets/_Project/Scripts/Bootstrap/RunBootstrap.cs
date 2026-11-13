@@ -15,8 +15,9 @@ namespace UncannyValet.Bootstrap
     {
         private const string HostName = "RunHost";
         private readonly RunProgressLink _link;
+        private readonly DevPowerLink _devPowers;
 
-        private RunBootstrap(RunProgressLink link) { _link = link; }
+        private RunBootstrap(RunProgressLink link, DevPowerLink devPowers) { _link = link; _devPowers = devPowers; }
 
         /// <summary>
         /// The only lookup of the persistent host: a scene load destroys every scene object, so the host cannot be
@@ -35,10 +36,15 @@ namespace UncannyValet.Bootstrap
             Services.Register<IRunProgress>(host.Progress);
             Services.Register<ILotPicker>(host);
             var link = new RunProgressLink(bus, host.Progress);
+            var devPowers = Services.TryGet<ITuning>(out var tuning) ? new DevPowerLink(bus, tuning, host.Progress) : null;
             bus.Publish(new LotStarted(lot.Id));
-            return new RunBootstrap(link);
+            return new RunBootstrap(link, devPowers);
         }
 
-        public void Dispose() => _link.Dispose();
+        public void Dispose()
+        {
+            _link.Dispose();
+            _devPowers?.Dispose();
+        }
     }
 }

@@ -64,10 +64,10 @@ namespace UncannyValet.Pedestrians
         [SerializeField, Min(0.1f), Tooltip("Impact speed that gives a full-strength bump (bigger distance, louder sound).")]
         private float _bounceFullSpeed = 5f;
 
-        [Header("Stumble (the boosted valet runs through a person)")]
-        [SerializeField, Min(0.1f), Tooltip("Seconds of the stumble when the F2 value is missing.")]
+        [Header("Stumble (a person knocked off their feet)")]
+        [SerializeField, Min(0.1f), Tooltip("Seconds of the stumble.")]
         private float _stumbleSeconds = 0.4f;
-        [SerializeField, Range(0f, 2f), Tooltip("Peak push away from the valet, world units.")]
+        [SerializeField, Range(0f, 2f), Tooltip("Peak push away from whatever knocked them, world units.")]
         private float _stumbleDistance = 0.7f;
         [SerializeField, Range(0f, 3f), Tooltip("Full turns the person spins during the stumble.")]
         private float _stumbleSpins = 1f;

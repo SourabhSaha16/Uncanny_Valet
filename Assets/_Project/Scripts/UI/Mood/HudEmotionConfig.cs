@@ -1,5 +1,6 @@
 using UncannyValet.UI.Hud;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.UI.Mood
 {
@@ -37,11 +38,12 @@ namespace UncannyValet.UI.Mood
         [Header("Tip pop over a boarding patron")]
         [SerializeField] private TipPopSettings _tipPop = new TipPopSettings();
 
-        [Header("Power meter (right edge)")]
-        [SerializeField] private PowerMeterSettings _powerMeter = new PowerMeterSettings();
+        [Header("Power bar (right edge)")]
+        [FormerlySerializedAs("_powerMeter")]
+        [SerializeField] private PowerBarSettings _powerBar = new PowerBarSettings();
 
         public TipPopSettings TipPop => _tipPop;
-        public PowerMeterSettings PowerMeter => _powerMeter;
+        public PowerBarSettings PowerBar => _powerBar;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
         public float WillNotTipFrom => _willNotTipFrom;

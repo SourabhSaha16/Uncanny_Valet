@@ -1,46 +1,37 @@
-using System;
+using UncannyValet.Core.Events;
 
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Pure countdown of the powers on screen, indexed by meter level (1 speed boost, 2 freeze time, 3 park smash).
-    /// A start sets the timer, a refresh restarts it, an end or the timer reaching zero clears it.
+    /// Pure countdown of the timed power on screen (freeze time). A start sets the timer, a refresh restarts it,
+    /// an end or the timer reaching zero clears it. Other power kinds are ignored.
     /// </summary>
     public sealed class ActivePowers
     {
-        public const int Count = 3;
-        private readonly float[] _duration = new float[Count];
-        private readonly float[] _remaining = new float[Count];
+        private readonly float _freezeDuration;
+        private float _freezeRemaining;
 
-        public ActivePowers(PowerMeterSettings settings)
-        {
-            for (var i = 0; i < Count; i++) _duration[i] = settings.DurationOf(i + 1);
-        }
+        public ActivePowers(PowerBarSettings settings) { _freezeDuration = settings.FreezeSeconds; }
 
-        /// <summary>True while the power (1 to 3) is showing.</summary>
-        public bool IsActive(int power) => Valid(power) && _remaining[power - 1] > 0f;
+        /// <summary>True while the power is showing.</summary>
+        public bool IsActive(PowerKind power) => power == PowerKind.FreezeTime && _freezeRemaining > 0f;
 
         /// <summary>Fraction of the power's time left, 1 down to 0.</summary>
-        public float Remaining01(int power)
-            => Valid(power) && _duration[power - 1] > 0f ? _remaining[power - 1] / _duration[power - 1] : 0f;
+        public float Remaining01(PowerKind power)
+            => power == PowerKind.FreezeTime && _freezeDuration > 0f ? _freezeRemaining / _freezeDuration : 0f;
 
-        public void Start(int power)
+        public void Start(PowerKind power)
         {
-            if (Valid(power)) _remaining[power - 1] = _duration[power - 1];
+            if (power == PowerKind.FreezeTime) _freezeRemaining = _freezeDuration;
         }
 
-        public void End(int power)
+        public void End(PowerKind power)
         {
-            if (Valid(power)) _remaining[power - 1] = 0f;
+            if (power == PowerKind.FreezeTime) _freezeRemaining = 0f;
         }
 
-        public void Clear() => Array.Clear(_remaining, 0, Count);
+        public void Clear() => _freezeRemaining = 0f;
 
-        public void Tick(float dt)
-        {
-            for (var i = 0; i < Count; i++) _remaining[i] = Math.Max(0f, _remaining[i] - dt);
-        }
-
-        private static bool Valid(int power) => power >= 1 && power <= Count;
+        public void Tick(float dt) => _freezeRemaining = System.Math.Max(0f, _freezeRemaining - dt);
     }
 }

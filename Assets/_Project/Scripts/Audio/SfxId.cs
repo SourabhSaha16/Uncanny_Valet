@@ -19,14 +19,9 @@ namespace UncannyValet.Audio
         CarBump,
         TyreChirp,
         TyreScreech,
-        PerfectDing,
-        SpeedBoost,
-        TimeStop,
-        TimeResume,
-        SmashBoom,
-        SmashChime0,
-        SmashChime1,
-        SmashChime2,
-        SmashChime3
+        PerfectDing = 16,
+        // 17 and 20 to 24 are retired (the speed boost and Park Smash sounds): their numbers are never reused or shifted.
+        TimeStop = 18,
+        TimeResume = 19
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UncannyValet.EditorTools
 {
-    /// <summary>Builds the Powers object of the Bootstrap scene: the meter, the activation and the Perfect feedback link.</summary>
+    /// <summary>Builds the Powers object of the Bootstrap scene: the power bar, the activation and the Perfect feedback link.</summary>
     public static class PowersSceneBuilder
     {
         /// <summary>Creates the inactive "Powers" child; GameBootstrap activates it once the event bus is registered.</summary>
@@ -14,11 +14,11 @@ namespace UncannyValet.EditorTools
             var go = new GameObject("Powers");
             go.transform.SetParent(root.transform, false);
             go.SetActive(false);
-            var meter = go.AddComponent<PowerMeterController>();
+            var bar = go.AddComponent<PowerBarController>();
             var activation = go.AddComponent<PowerActivationController>();
             var feedback = go.AddComponent<PerfectFeedback>();
-            Set(meter, "_config", AssetDatabase.LoadAssetAtPath<PowerMeterConfig>(ProjectSetup.PowerMeterConfigPath));
-            Set(activation, "_meter", meter);
+            Set(bar, "_config", AssetDatabase.LoadAssetAtPath<PowerBarConfig>(ProjectSetup.PowerBarConfigPath));
+            Set(activation, "_bar", bar);
             Set(feedback, "_camera", camera);
             return feedback;
         }

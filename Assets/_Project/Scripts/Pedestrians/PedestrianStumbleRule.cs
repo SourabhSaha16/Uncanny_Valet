@@ -3,8 +3,8 @@ using UnityEngine;
 namespace UncannyValet.Pedestrians
 {
     /// <summary>
-    /// Pure rule for the stumble of a pedestrian the boosted valet runs through: a stronger, longer version of the bounce
-    /// (a bigger push away from the valet) with a spin, that settles back to the route point.
+    /// Pure rule for the stumble of a pedestrian who is knocked over: a stronger, longer version of the bounce
+    /// (a bigger push away from whatever hit them) with a spin, that settles back to the route point.
     /// </summary>
     public sealed class PedestrianStumbleRule
     {

@@ -13,7 +13,6 @@ namespace UncannyValet.Audio
         private readonly SfxRateLimiter _carBumpLimit = new SfxRateLimiter(CarBumpMinInterval);
         private readonly SfxRateLimiter _chirpLimit = new SfxRateLimiter(ChirpMinInterval);
         private readonly SfxRateLimiter _screechLimit = new SfxRateLimiter(ScreechMinInterval);
-        private int _smashChimes;
         private bool _active;
 
         /// <summary>Fewest seconds between two pedestrian bump sounds.</summary>
@@ -60,9 +59,6 @@ namespace UncannyValet.Audio
             _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Subscribe<PowerActivated>(OnPowerActivated);
             _bus.Subscribe<PowerEnded>(OnPowerEnded);
-            _bus.Subscribe<ParkSmashCarParked>(OnSmashCarParked);
-            _bus.Subscribe<ParkSmashCarDelivered>(OnSmashCarDelivered);
-            _bus.Subscribe<ParkSmashCompleted>(OnSmashCompleted);
         }
 
         public void Unsubscribe()
@@ -89,9 +85,6 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Unsubscribe<PowerActivated>(OnPowerActivated);
             _bus.Unsubscribe<PowerEnded>(OnPowerEnded);
-            _bus.Unsubscribe<ParkSmashCarParked>(OnSmashCarParked);
-            _bus.Unsubscribe<ParkSmashCarDelivered>(OnSmashCarDelivered);
-            _bus.Unsubscribe<ParkSmashCompleted>(OnSmashCompleted);
         }
 
         private void OnCarEntered(CarEntered e) => _play(SfxId.CarEnter);
@@ -112,20 +105,7 @@ namespace UncannyValet.Audio
 
         private void OnPowerActivated(PowerActivated e)
         {
-            if (e.Power == PowerKind.SpeedBoost) _play(SfxId.SpeedBoost);
-            else if (e.Power == PowerKind.FreezeTime) _play(SfxId.TimeStop);
-            else if (e.Power == PowerKind.ParkSmash) _play(SfxId.SmashBoom);
-        }
-
-        private void OnSmashCarParked(ParkSmashCarParked e) => PlaySmashChime();
-        private void OnSmashCarDelivered(ParkSmashCarDelivered e) => PlaySmashChime();
-        private void OnSmashCompleted(ParkSmashCompleted e) => _smashChimes = 0;
-
-        // One chime per car done, each a step higher than the last (the top step repeats).
-        private void PlaySmashChime()
-        {
-            var step = Math.Min(_smashChimes++, SfxSmash.ChimeSteps - 1);
-            _play(SfxId.SmashChime0 + step);
+            if (e.Power == PowerKind.FreezeTime) _play(SfxId.TimeStop);
         }
 
         private void OnPowerEnded(PowerEnded e)

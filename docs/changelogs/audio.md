@@ -31,3 +31,9 @@ Date: 2026-11-10
 Files: Assets/_Project/Scripts/Audio/SfxEventRouter.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs
 Why: Play-test note: SfxId.CarArrives played at spawn (TicketOpened). It now plays on CarArrived, published by CarAutoDrive.ArriveAtTarget once the trip finishes and the car rests in its slot. Trip path verified by reading; no Cars/Traffic change needed.
 Tests: SfxTests.CarArrivesSoundPlaysOnCarArrivedNotOnTicketOpened added; full EditMode suite run, all passing.
+
+## powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
+Date: 2026-11-13
+Files: Audio: SfxId (17 and 20 to 24 retired as numbering gaps), SfxBank, SfxRecipeBook, SfxEventRouter; removed SfxPowers, SfxSmash.
+Why: Speed boost and Park Smash sounds deleted; numbers stay reserved (issue #86). issue #86 of epic #79 (Valet to Valhalla).
+Tests: SfxTests still render every remaining effect; suites pass.

@@ -1,3 +1,4 @@
+using System;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
@@ -53,10 +54,10 @@ namespace UncannyValet.Bootstrap
         private TrafficModule _traffic;
         [SerializeField, Tooltip("Seeds the traffic keys of the F2 panel.")]
         private TrafficConfig _trafficConfig;
-        [SerializeField, Tooltip("Valet powers: the meter, the activation and the Perfect feedback. Starts once the bus is registered.")]
+        [SerializeField, Tooltip("Valet powers: the power bar, the activation and the Perfect feedback. Starts once the bus is registered.")]
         private PerfectFeedback _powers;
         [SerializeField, Tooltip("Seeds the power keys of the F2 panel.")]
-        private PowerMeterConfig _powerConfig;
+        private PowerBarConfig _powerConfig;
 
         [SerializeField, Tooltip("This scene's lot: shift length, pacing, dial positions, layout and blessing threshold.")]
         private LotDefinition _lotDefinition;
@@ -87,7 +88,8 @@ namespace UncannyValet.Bootstrap
             var bus = new EventBus();
             _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
-            var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping || _ui.IsTitleShowing);
+            Func<bool> inputBlocked = () => _tuningPanel.IsTyping || _ui.IsTitleShowing;
+            var input = new GatedInputSource(keyboard, inputBlocked);
             var tuning = new TuningStore(bus);
             _score = new ShiftScore(bus, _shiftConfig);
             _carFactory.Bus = bus;
@@ -98,6 +100,7 @@ namespace UncannyValet.Bootstrap
             Services.Register<ICarFactory>(_carFactory);
             Services.Register<ILotLayout>(_lot);
             Services.Register<IInputSource>(input);
+            Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
             Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
             Services.Register<IShiftScoreView>(_score);

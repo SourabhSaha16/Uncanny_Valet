@@ -194,24 +194,24 @@ namespace UncannyValet.Core.Events
         ImpatientWindowScale,
 
         // Valet powers (Powers module; appended so earlier key numbers stay put).
-        /// <summary>Power meter fill for one Perfect Park (meter 0..100).</summary>
+        /// <summary>Power bar fill for one Perfect Park (bar 0..100).</summary>
         PowerFillPerfectPark,
-        /// <summary>Power meter fill for one perfect drop-off.</summary>
+        /// <summary>Power bar fill for one perfect drop-off.</summary>
         PowerFillPerfectDropOff,
-        /// <summary>Power meter fill per second of sliding.</summary>
+        /// <summary>Power bar fill per second of sliding.</summary>
         PowerFillDriftPerSecond,
-        /// <summary>Most meter one slide can add.</summary>
+        /// <summary>Most bar one slide can add.</summary>
         PowerFillDriftCap,
-        /// <summary>Meter value that unlocks level 1 (speed boost).</summary>
-        PowerLevel1Threshold,
-        /// <summary>Meter value that unlocks level 2 (freeze time).</summary>
-        PowerLevel2Threshold,
-        /// <summary>Meter value that unlocks level 3 (Park Smash); also the full bar.</summary>
-        PowerLevel3Threshold,
-        /// <summary>Seconds the speed boost lasts.</summary>
-        PowerSpeedBoostSeconds,
-        /// <summary>Walk speed multiplier while the speed boost runs.</summary>
-        PowerWalkMultiplier,
+        /// <summary>Retired: the old meter's level 1 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel1Threshold,
+        /// <summary>Retired: the old meter's level 2 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel2Threshold,
+        /// <summary>Retired: the old meter's level 3 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel3Threshold,
+        /// <summary>Retired: seconds the removed speed boost lasted. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerSpeedBoostSeconds,
+        /// <summary>Retired: walk multiplier of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerWalkMultiplier,
         /// <summary>Seconds freeze time lasts.</summary>
         PowerFreezeSeconds,
         /// <summary>World time scale during freeze time: 0 = stopped, 0.3 = slow.</summary>
@@ -257,11 +257,11 @@ namespace UncannyValet.Core.Events
         TrafficMinOnScreen,
         /// <summary>Ambient cars on screen that spawning aims for (0 = no ambient traffic).</summary>
         TrafficTargetOnScreen,
-        // Speed boost feel (Powers seeds, Valet and Pedestrians read). Issue 41.
-        /// <summary>Seconds a pedestrian stumbles when the boosted valet runs through them.</summary>
-        PowerStumbleSeconds,
-        /// <summary>Sparkles per second in the boosted valet's trail.</summary>
-        PowerTrailPerSecond,
+        // Retired speed boost feel keys (issue 41, removed with issue 86); the numbers stay reserved.
+        /// <summary>Retired: stumble length of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerStumbleSeconds,
+        /// <summary>Retired: sparkle trail of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerTrailPerSecond,
         // Patron stay start: when a queued car's clock starts (Lot and Patrons own). Issue 78.
         /// <summary>World units a resting car must be from the nearest queue slot centre for the patron's stay to start.</summary>
         QueueClearDistance,
@@ -279,5 +279,8 @@ namespace UncannyValet.Core.Events
         ShakeSeconds,
         /// <summary>Impact force at which the shake reaches its full strength.</summary>
         ShakeFullForce,
+        // Developer grant of a power through the F2 panel (Bootstrap owns). Issue 86.
+        /// <summary>1 when Freeze time is granted to Thor for testing, 0 when not (the run progress is the real owner).</summary>
+        DevOwnFreezeTime,
     }
 }

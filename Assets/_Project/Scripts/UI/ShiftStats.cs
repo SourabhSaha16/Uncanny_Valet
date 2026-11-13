@@ -16,7 +16,6 @@ namespace UncannyValet.UI
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<CarParked>(OnParked);
             _bus.Subscribe<PerfectPark>(OnPerfectPark);
-            _bus.Subscribe<ParkSmashCompleted>(OnSmash);
             _bus.Subscribe<ScoreChanged>(OnScore);
         }
 
@@ -26,9 +25,6 @@ namespace UncannyValet.UI
         /// <summary>Perfect Parks earned this shift.</summary>
         public int PerfectParks { get; private set; }
 
-        /// <summary>Dollars of tips paid by Park Smashes this shift.</summary>
-        public int SmashTips { get; private set; }
-
         /// <summary>Highest combo multiplier reached.</summary>
         public int BestCombo { get; private set; } = 1;
 
@@ -37,7 +33,6 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
             _bus.Unsubscribe<CarParked>(OnParked);
             _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
-            _bus.Unsubscribe<ParkSmashCompleted>(OnSmash);
             _bus.Unsubscribe<ScoreChanged>(OnScore);
         }
 
@@ -45,15 +40,12 @@ namespace UncannyValet.UI
         {
             _parked.Clear();
             PerfectParks = 0;
-            SmashTips = 0;
             BestCombo = 1;
         }
 
         private void OnParked(CarParked e) => _parked.Add(e.Car.Value);
 
         private void OnPerfectPark(PerfectPark e) => PerfectParks++;
-
-        private void OnSmash(ParkSmashCompleted e) => SmashTips += e.TotalTips;
 
         private void OnScore(ScoreChanged e)
         {

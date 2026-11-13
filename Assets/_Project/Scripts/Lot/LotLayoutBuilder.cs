@@ -85,7 +85,6 @@ namespace UncannyValet.Lot
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
-            gameObject.AddComponent<SmashRunner>().Init(c, _occupancy, spots, curb, g.AisleY);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
 

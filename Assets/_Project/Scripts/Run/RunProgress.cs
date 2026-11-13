@@ -50,6 +50,13 @@ namespace UncannyValet.Run
             _levels[power] = level;
         }
 
+        /// <summary>Takes a power away again (the developer panel only). No-op when it is not owned.</summary>
+        public void RevokePower(StoryPower power)
+        {
+            if (!_levels.Remove(power)) return;
+            _earned.Remove(power);
+        }
+
         /// <summary>Marks the lot cleared (kept for the rest of the run).</summary>
         public void MarkCleared(LotId lot) => _cleared.Add(lot);
 

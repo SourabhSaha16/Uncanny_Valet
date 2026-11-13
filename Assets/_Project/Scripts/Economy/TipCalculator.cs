@@ -58,7 +58,7 @@ namespace UncannyValet.Economy
         private int SpeedAdjust(in TipInput input)
         {
             var window = _tuning != null && _tuning.TryGet(TuningKey.SpeedWindowMinutes, out var w) ? w : _config.SpeedBonusWindowMinutes;
-            if (input.MaxSpeedBonus || input.WaitMinutes <= window)
+            if (input.WaitMinutes <= window)
                 return input.Impatient ? _config.ImpatientSpeedBonus : _config.SpeedBonus;
             var penalty = (input.WaitMinutes - window) * _config.PenaltyPerMinute;
             return -(int)Math.Round(penalty, MidpointRounding.AwayFromZero);

@@ -32,4 +32,11 @@ namespace UncannyValet.Core.Events
         public readonly int Level;
         public PowerGranted(StoryPower power, int level) { Power = power; Level = level; }
     }
+
+    /// <summary>A story power was taken away again (the developer panel only; the story never removes a power).</summary>
+    public readonly struct PowerRevoked : IGameEvent
+    {
+        public readonly StoryPower Power;
+        public PowerRevoked(StoryPower power) { Power = power; }
+    }
 }

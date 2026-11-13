@@ -31,19 +31,16 @@ namespace UncannyValet.Core.Contracts
         /// <summary>Perfect Parks earned and not yet paid on this ticket. Each adds the Perfect Park bonus.</summary>
         public readonly int PerfectParks;
 
-        /// <summary>Pay the speed bonus as if the car came back instantly, whatever the wait (Park Smash).</summary>
-        public readonly bool MaxSpeedBonus;
-
         public TipInput(int baseTip, float waitMinutes, bool impatient, bool pickupExpired = false,
             bool chargedEv = false, bool cleanedDirty = false, bool uncleanedDirty = false,
             float patienceRemaining01 = 0f, float damage01 = 0f, int comboMultiplier = 1,
-            int perfectParks = 0, bool maxSpeedBonus = false)
+            int perfectParks = 0)
         {
             BaseTip = baseTip; WaitMinutes = waitMinutes; Impatient = impatient;
             PickupExpired = pickupExpired; ChargedEv = chargedEv;
             CleanedDirty = cleanedDirty; UncleanedDirty = uncleanedDirty;
             PatienceRemaining01 = patienceRemaining01; Damage01 = damage01; ComboMultiplier = comboMultiplier;
-            PerfectParks = perfectParks; MaxSpeedBonus = maxSpeedBonus;
+            PerfectParks = perfectParks;
         }
     }
 }

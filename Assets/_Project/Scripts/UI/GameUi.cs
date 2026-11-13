@@ -72,7 +72,7 @@ namespace UncannyValet.UI
             var style = new EmotionStyle(EmotionConfig());
             _emotionLink = new EmotionTuningLink(_bus, Services.Get<ITuning>(), style.Rule, EmotionConfig().AngryFrom, EmotionConfig().WillNotTipFrom);
             _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>(),
-                Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerMeter);
+                Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerBar);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _howToPlayPainter = new HowToPlayPainter(_canvas);
@@ -118,7 +118,7 @@ namespace UncannyValet.UI
 
         private void OnResult(ShiftResultReady e)
         {
-            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.BestCombo, _stats.PerfectParks, _stats.SmashTips);
+            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.BestCombo, _stats.PerfectParks);
             SetPhase(UiPhase.Results);
         }
 

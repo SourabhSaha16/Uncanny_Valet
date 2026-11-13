@@ -20,7 +20,6 @@ namespace UncannyValet.Patrons
         private readonly DamageLedger _damage;
         private readonly ReturnShifter _returns;
         private readonly StayStarter _stays;
-        private readonly SmashSettler _smash;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         /// <summary>Game minutes a summoned patron may walk before the pickup is requested anyway; 0 = no walk (see <see cref="CurbCall"/>).</summary>
@@ -54,7 +53,6 @@ namespace UncannyValet.Patrons
             _stations = new StationService(bus, _book);
             _returns = new ReturnShifter(bus, clock, _book);
             _stays = new StayStarter(bus, clock, _book);
-            _smash = new SmashSettler(bus, _book, _settler, score);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -71,7 +69,6 @@ namespace UncannyValet.Patrons
             _stations.Dispose();
             _returns.Dispose();
             _stays.Dispose();
-            _smash.Dispose();
             _perfect.Dispose();
             _damage.Dispose();
             _live?.Dispose();

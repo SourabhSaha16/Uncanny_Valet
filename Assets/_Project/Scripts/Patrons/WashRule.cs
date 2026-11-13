@@ -10,9 +10,6 @@ namespace UncannyValet.Patrons
         public float Clean01 => _progress.Value;
         public bool IsClean => _progress.IsFull;
 
-        /// <summary>Washes the car spotless at once (Park Smash). Returns true if the clean level changed.</summary>
-        public bool Complete() => _progress.Complete();
-
         /// <summary>One game minute. Returns true if the clean level changed.</summary>
         public bool Advance(bool inWashBay) => inWashBay && _progress.Step();
     }
