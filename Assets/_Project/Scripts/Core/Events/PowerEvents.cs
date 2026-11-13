@@ -38,6 +38,21 @@ namespace UncannyValet.Core.Events
         public PowerActivated(StoryPower power, int level) { Power = power; Level = level; }
     }
 
+    /// <summary>
+    /// Thunder stride was used by the valet: Origin is where the dash or boost starts, Direction is the unit way it goes (the
+    /// way he moves or faces on foot, the way the car faces when driving) and InCar says which use it is. The camera kick reacts.
+    /// </summary>
+    public readonly struct ThunderStrideStarted : IGameEvent
+    {
+        public readonly UnityEngine.Vector2 Origin;
+        public readonly UnityEngine.Vector2 Direction;
+        public readonly bool InCar;
+        public ThunderStrideStarted(UnityEngine.Vector2 origin, UnityEngine.Vector2 direction, bool inCar)
+        {
+            Origin = origin; Direction = direction; InCar = inCar;
+        }
+    }
+
     /// <summary>A power with a duration ran out (or was ended by a new lot). Instant powers never publish it.</summary>
     public readonly struct PowerEnded : IGameEvent
     {

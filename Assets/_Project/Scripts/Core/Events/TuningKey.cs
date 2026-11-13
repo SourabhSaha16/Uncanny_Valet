@@ -378,5 +378,21 @@ namespace UncannyValet.Core.Events
         PowerMjolnirRecallL2PushStrength,
         /// <summary>Mjolnir recall level 2: width, in world units.</summary>
         PowerMjolnirRecallL2Width,
+        /// <summary>Thunder stride level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerThunderStrideL1Secondary,
+        /// <summary>Thunder stride level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerThunderStrideL2Secondary,
+        /// <summary>Storm wind level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerStormWindL1Secondary,
+        /// <summary>Storm wind level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerStormWindL2Secondary,
+        /// <summary>Freeze time level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerFreezeTimeL1Secondary,
+        /// <summary>Freeze time level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerFreezeTimeL2Secondary,
+        /// <summary>Mjolnir recall level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerMjolnirRecallL1Secondary,
+        /// <summary>Mjolnir recall level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerMjolnirRecallL2Secondary,
     }
 }

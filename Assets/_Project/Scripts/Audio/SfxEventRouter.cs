@@ -112,6 +112,7 @@ namespace UncannyValet.Audio
         private void OnPowerActivated(PowerActivated e)
         {
             if (e.Power == StoryPower.FreezeTime) _play(SfxId.TimeStop);
+            else if (e.Power == StoryPower.ThunderStride) _play(SfxId.ThunderCrack);
         }
 
         private void OnPowerEnded(PowerEnded e)

@@ -33,6 +33,7 @@ namespace UncannyValet.EditorTools
             var mover = go.AddComponent<OnFootMover>();
             var interactor = go.AddComponent<Interactor>();
             var seat = go.AddComponent<SeatController>();
+            go.AddComponent<ThunderDash>();
 
             var so = new SerializedObject(seat);
             so.FindProperty("_mover").objectReferenceValue = mover;

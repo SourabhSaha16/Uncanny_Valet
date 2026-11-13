@@ -17,7 +17,7 @@ namespace UncannyValet.Powers
             switch (power)
             {
                 case StoryPower.ThunderStride:
-                    return upgraded ? new PowerLevelValues(6f, 0.25f, 6f) : new PowerLevelValues(8f, 0.25f, 4f);
+                    return upgraded ? ThunderStrideNumbers(2.2f, 8f) : ThunderStrideNumbers(1.5f, 5f);
                 case StoryPower.StormWind:
                     return upgraded ? new PowerLevelValues(8f, 2f, 10f, 8f, 4f) : new PowerLevelValues(10f, 1.5f, 8f, 6f, 3f);
                 case StoryPower.FreezeTime:
@@ -29,6 +29,10 @@ namespace UncannyValet.Powers
             }
         }
 
+        // Cooldown 4 s; dash time 0.2 s; car boost top speed x1.5 and acceleration x2 (issue 88); only the boost time and dash distance differ per level.
+        private static PowerLevelValues ThunderStrideNumbers(float boostSeconds, float dashDistance) =>
+            new PowerLevelValues(4f, boostSeconds, dashDistance, 1.5f, 2f, 0.2f);
+
         /// <summary>The display name of a power.</summary>
         public static string DisplayName(StoryPower power) => PowerLevelRows.GroupOf(power);
 
@@ -37,7 +41,7 @@ namespace UncannyValet.Powers
         {
             switch (power)
             {
-                case StoryPower.ThunderStride: return "Dash forward on foot in a flash of lightning.";
+                case StoryPower.ThunderStride: return "Dash forward on foot in a flash of lightning, or boost your car.";
                 case StoryPower.StormWind: return "Blow a gust that clears a lane of cars and people.";
                 case StoryPower.FreezeTime: return "Stop the world for a few seconds while you keep moving.";
                 case StoryPower.MjolnirRecall: return "Call the hammer back to your hand.";

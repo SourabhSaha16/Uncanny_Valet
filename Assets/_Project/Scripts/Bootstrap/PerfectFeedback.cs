@@ -1,3 +1,4 @@
+using UncannyValet.Cars;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
@@ -16,6 +17,8 @@ namespace UncannyValet.Bootstrap
 
         private PerfectKickLink _link;
         private ShakeLink _shakeLink;
+        private ThunderKickLink _thunderKick;
+        private ThunderBoostLink _thunderBoost;
 
         private void Start()
         {
@@ -26,12 +29,17 @@ namespace UncannyValet.Bootstrap
             }
             _link = new PerfectKickLink(Services.Get<IEventBus>(), Services.Get<ICarFactory>(), _camera.Kick);
             _shakeLink = new ShakeLink(Services.Get<IEventBus>(), Services.Get<ITuning>(), _camera.Shake);
+            _thunderKick = new ThunderKickLink(Services.Get<IEventBus>(), _camera.Kick);
+            _thunderBoost = new ThunderBoostLink(Services.Get<IEventBus>(), Services.Get<ICarFactory>(),
+                () => Services.TryGet<IPowerView>(out var view) ? view : null);
         }
 
         private void OnDestroy()
         {
             _link?.Dispose();
             _shakeLink?.Dispose();
+            _thunderKick?.Dispose();
+            _thunderBoost?.Dispose();
         }
     }
 }
