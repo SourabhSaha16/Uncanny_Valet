@@ -24,10 +24,11 @@ namespace UncannyValet.Run
         public TuningKey Dial => _dial;
         public float Position => _position;
 
-        /// <summary>True when the key is one of the eight difficulty dials and the position is on the slider.</summary>
+        /// <summary>True when the key is one of the six difficulty dials and the position is on the slider.</summary>
         public bool IsValid => IsDialKey(_dial) && _position >= 0f && _position <= MaxPosition;
 
-        /// <summary>The eight dials are the contiguous keys DialIntensity to DialSkillReward.</summary>
-        public static bool IsDialKey(TuningKey key) => key >= TuningKey.DialIntensity && key <= TuningKey.DialSkillReward;
+        /// <summary>The six dials are the keys DialIntensity to DialSkillReward, less the two retired Car Mix slots between them.</summary>
+        public static bool IsDialKey(TuningKey key) => key >= TuningKey.DialIntensity && key <= TuningKey.DialSkillReward
+            && key != TuningKey.RetiredDialCarMixWash && key != TuningKey.RetiredDialCarMixEv;
     }
 }

@@ -37,11 +37,9 @@ namespace UncannyValet.Core.Config
         private float _arrivalGapScale = 1f;
         [SerializeField, Min(0), Tooltip("Regular parking spots open, counted in grid order from the curb (the lot has 6; the EV bay and the wash slot are extra). 0 = all regular spots.")]
         private int _activeSpots;
-        [SerializeField, Range(0f, 1f)] private float _evChance = 0.3f;
-        [SerializeField, Range(0f, 1f)] private float _dirtyChance = 0.3f;
-        [SerializeField, Range(0f, 1f), Tooltip("EV chance reached at the end of the shift.")]
+        [SerializeField, Range(0f, 1f), Tooltip("Arrival chance of the late-ramping modifier (needs a charge) at the end of the shift.")]
         private float _lateEvChance = 0.5f;
-        [SerializeField, Range(0f, 1f), Tooltip("Fraction of the shift after which the EV chance ramps up.")]
+        [SerializeField, Range(0f, 1f), Tooltip("Fraction of the shift after which the late-ramping chance moves up.")]
         private float _lateEvStart = 0.6f;
         [SerializeField] private bool _chargingOpen = true;
         [SerializeField] private bool _washOpen = true;
@@ -56,7 +54,7 @@ namespace UncannyValet.Core.Config
         public int MaxComboMultiplier => _maxComboMultiplier;
 
         /// <summary>The pacing rules for the shift.</summary>
-        public ShiftPlan Plan => new ShiftPlan(_maxWaitingCars, _arrivalGapScale, _evChance, _dirtyChance,
+        public ShiftPlan Plan => new ShiftPlan(_maxWaitingCars, _arrivalGapScale,
             _chargingOpen, _washOpen, _activeSpots, _lateEvChance, _lateEvStart);
 
         private void OnValidate()

@@ -133,3 +133,9 @@ Date: 2026-11-13
 Files: Lot: removed SmashRunner, SmashPlan, SmashRoster; ParkingSpot (Place, Release removed), LotLayoutBuilder.
 Why: Park Smash deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
 Tests: SmashPlanTests and the Smash PlayMode tests removed; suites pass.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Lot/SlotTint.cs
+Why: Issue #121. The slot tint follows ModifierProgressChanged and ModifierCleared of the modifier its station kind clears (read from the catalog) instead of the four wash and charge events.
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).

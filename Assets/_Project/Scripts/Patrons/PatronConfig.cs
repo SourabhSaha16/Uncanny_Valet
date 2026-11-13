@@ -24,15 +24,6 @@ namespace UncannyValet.Patrons
         [Tooltip("Impatient patrons wait this fraction of the pickup window (1 = same as everyone).")]
         [SerializeField, Range(0.3f, 1f)] private float _impatientWindowScale = 0.6f;
 
-        [Tooltip("Charge an EV arrives with (0..1).")]
-        [SerializeField, Range(0f, 1f)] private float _evStartCharge = 0.2f;
-
-        [Tooltip("Game minutes in a charging bay to go from empty to full.")]
-        [SerializeField, Min(1f)] private float _chargeMinutes = 20f;
-
-        [Tooltip("Game minutes in the wash bay to get a dirty car clean.")]
-        [SerializeField, Min(1f)] private float _washMinutes = 15f;
-
         [Header("Stay start")]
         [SerializeField, Min(0.5f), Tooltip("Game minutes a car may sit in the arrival queue before the patron's stay starts anyway. Normally the stay starts when the car first rests clear of the queue.")]
         private float _queueWaitMinutes = ServiceTuning.DefaultQueueWaitMinutes;
@@ -54,7 +45,7 @@ namespace UncannyValet.Patrons
         public float LateStayFloorMinutes => _lateStayFloorMinutes;
         public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;
         public float QueueWaitMinutes => _queueWaitMinutes;
-        public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes, _queueWaitMinutes);
+        public ServiceTuning Tuning => new ServiceTuning(_queueWaitMinutes);
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;
@@ -62,7 +53,5 @@ namespace UncannyValet.Patrons
         public float ImpatientChance => _impatientChance;
         public float PickupWindowMinutes => _pickupWindowMinutes;
         public float ImpatientWindowScale => _impatientWindowScale;
-        public float ChargeMinutes => _chargeMinutes;
-        public float WashMinutes => _washMinutes;
     }
 }

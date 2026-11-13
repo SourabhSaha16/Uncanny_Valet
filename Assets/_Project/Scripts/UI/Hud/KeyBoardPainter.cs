@@ -94,7 +94,7 @@ namespace UncannyValet.UI.Hud
         private void DrawStatus(TicketRow row, int x, int y)
         {
             var status = _status.Resolve(row);
-            var label = CarStatusTable.LabelFitting(status, Width - Border * 2 - StatusOffset);
+            var label = CarStatusTable.LabelFitting(status, row, Width - Border * 2 - StatusOffset);
             _canvas.Text(label, x, y, CarStatusTable.ColorOf(status));
         }
 

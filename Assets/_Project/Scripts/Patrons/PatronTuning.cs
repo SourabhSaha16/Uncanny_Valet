@@ -1,5 +1,6 @@
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
@@ -28,10 +29,14 @@ namespace UncannyValet.Patrons
 
         public float ImpatientChance => Read(TuningKey.ImpatientChance, _config.ImpatientChance);
 
-        /// <summary>Charge and wash numbers for tickets created from now on.</summary>
-        public ServiceTuning Service => new ServiceTuning(_config.Tuning.EvStartCharge,
-            Read(TuningKey.ChargeMinutes, _config.ChargeMinutes), Read(TuningKey.WashMinutes, _config.WashMinutes),
-            Read(TuningKey.QueueMaxWaitMinutes, _config.QueueWaitMinutes));
+        /// <summary>The queue wait for tickets created from now on.</summary>
+        public ServiceTuning Service => new ServiceTuning(Read(TuningKey.QueueMaxWaitMinutes, _config.QueueWaitMinutes));
+
+        /// <summary>The live clear time of a modifier in game minutes (the definition's own value until its key is seeded).</summary>
+        public float ClearMinutes(ServiceModifierDefinition def) => Read(def.ClearMinutesKey, def.ClearMinutes);
+
+        /// <summary>The live arrival chance of a modifier (0 until the lot seeds its key).</summary>
+        public float Chance(ServiceModifierDefinition def) => Read(def.ChanceKey, 0f);
 
         private float Read(TuningKey key, float fallback) => _tuning.TryGet(key, out var v) ? v : fallback;
     }

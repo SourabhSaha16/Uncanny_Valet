@@ -2,6 +2,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Cars
@@ -19,6 +20,7 @@ namespace UncannyValet.Cars
         private CarFlashConfig _config;
         private CarBodyArt _art;
         private IEventBus _bus;
+        private IModifierCatalog _modifiers;
         private Color _tagColor = Color.white;
         private Color _tint = Color.white;
         private bool _isEv;
@@ -40,8 +42,9 @@ namespace UncannyValet.Cars
         private void OnEnable()
         {
             if (!Services.TryGet<IEventBus>(out _bus)) return;
+            Services.TryGet(out _modifiers);
             _bus.Subscribe<CarTagAssigned>(OnTag);
-            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Subscribe<TicketModifiersAssigned>(OnModifiers);
             _bus.Subscribe<PickupRequested>(OnPickup);
             _bus.Subscribe<TicketTimerChanged>(OnChanged);
             _bus.Subscribe<TicketTimerExpired>(OnExpired);
@@ -52,7 +55,7 @@ namespace UncannyValet.Cars
         {
             if (_bus == null) return;
             _bus.Unsubscribe<CarTagAssigned>(OnTag);
-            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Unsubscribe<TicketModifiersAssigned>(OnModifiers);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
             _bus.Unsubscribe<TicketTimerChanged>(OnChanged);
             _bus.Unsubscribe<TicketTimerExpired>(OnExpired);
@@ -67,10 +70,10 @@ namespace UncannyValet.Cars
             ApplyTint();
         }
 
-        private void OnTraits(TicketTraitsAssigned e)
+        private void OnModifiers(TicketModifiersAssigned e)
         {
             if (e.Car != _id) return;
-            _isEv = e.IsEv;
+            _isEv = ModifierLooks.Has(_modifiers, e.Modifiers, ModifierLook.ElectricBody);
             ApplyTint();
         }
 

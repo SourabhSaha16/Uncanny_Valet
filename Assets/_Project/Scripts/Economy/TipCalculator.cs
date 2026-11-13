@@ -1,22 +1,26 @@
 using System;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Economy
 {
     /// <summary>
-    /// Base, speed bonus or wait penalty, patience, charge, clean and Perfect Park bonuses, then less damage, then times the
+    /// Base, speed bonus or wait penalty, patience, modifier-clear and Perfect Park bonuses, then less damage, then times the
     /// combo. $0 when forced. Never below 0.
     /// </summary>
     public sealed class TipCalculator : ITipCalculator
     {
         private readonly TipConfig _config;
         private readonly ITuning _tuning;
+        private readonly IModifierCatalog _catalog;
 
-        public TipCalculator(TipConfig config, ITuning tuning = null)
+        /// <param name="catalog">The modifier definitions that give each cleared modifier its bonus; null pays no modifier bonus.</param>
+        public TipCalculator(TipConfig config, ITuning tuning = null, IModifierCatalog catalog = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _tuning = tuning;
+            _catalog = catalog;
         }
 
         public int Calculate(in TipInput input) => Explain(input).Total;
@@ -27,21 +31,30 @@ namespace UncannyValet.Economy
             if (DamagePenalty.IsWrecked(input.Damage01)) return Zeroed(TipZeroReason.Wrecked);
             var speed = SpeedAdjust(input);
             var baseTip = Live(TuningKey.BaseTip, input.BaseTip);
-            var charge = input.ChargedEv ? Live(TuningKey.ChargeBonus, _config.ChargeBonus) : 0;
-            var clean = input.CleanedDirty ? Live(TuningKey.CleanBonus, _config.CleanBonus) : 0;
+            var modifiers = ModifierBonus(input.ClearedModifiers);
             var patience = PatienceBonus(input);
             var perfect = input.PerfectParks * Live(TuningKey.PerfectParkBonus, _config.PerfectParkBonus);
-            var subtotal = Math.Max(0, baseTip + speed + charge + clean + patience + perfect);
+            var subtotal = Math.Max(0, baseTip + speed + modifiers + patience + perfect);
             var damage = DamageAdjust(input, subtotal);
             var combo = Math.Max(1, input.ComboMultiplier);
             var total = Math.Max(0, subtotal + damage) * combo;
-            return new TipBreakdown(baseTip, speed, charge, clean, total, TipZeroReason.None, patience, damage, combo, perfect);
+            return new TipBreakdown(baseTip, speed, modifiers, total, TipZeroReason.None, patience, damage, combo, perfect);
+        }
+
+        // Each cleared modifier pays its definition's bonus, or the live value of the key that bonus is tuned through.
+        private int ModifierBonus(ModifierSet cleared)
+        {
+            if (_catalog == null) return 0;
+            var sum = 0;
+            for (var i = 0; i < cleared.Count; i++)
+                if (_catalog.TryGet(cleared.At(i), out var def)) sum += Live(def.BonusKey, def.Bonus);
+            return sum;
         }
 
         private int Live(TuningKey key, int configured)
             => _tuning != null && _tuning.TryGet(key, out var v) ? (int)Math.Round(v, MidpointRounding.AwayFromZero) : configured;
 
-        private static TipBreakdown Zeroed(TipZeroReason reason) => new TipBreakdown(0, 0, 0, 0, 0, reason);
+        private static TipBreakdown Zeroed(TipZeroReason reason) => new TipBreakdown(0, 0, 0, 0, reason);
 
         private int PatienceBonus(in TipInput input)
         {

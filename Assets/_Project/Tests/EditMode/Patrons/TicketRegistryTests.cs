@@ -21,7 +21,7 @@ namespace UncannyValet.Tests.Patrons
         {
             public TipInput Last;
             public int Calculate(in TipInput input) { Last = input; return input.BaseTip + 5; }
-            public TipBreakdown Explain(in TipInput input) { var t = Calculate(input); return new TipBreakdown(input.BaseTip, 5, 0, 0, t, TipZeroReason.None); }
+            public TipBreakdown Explain(in TipInput input) { var t = Calculate(input); return new TipBreakdown(input.BaseTip, 5, 0, t, TipZeroReason.None); }
         }
 
         private EventBus _bus;

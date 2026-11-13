@@ -124,7 +124,7 @@ namespace UncannyValet.Tests.Run
             var tuning = new TuningStore(new EventBus());
             tuning.Seed(TuningKey.DialIntensity, 8f);
             Assert.IsTrue(new DialPosition(TuningKey.DialIntensity, 3f).IsValid);
-            Assert.IsFalse(new DialPosition(TuningKey.PlanEvChance, 3f).IsValid);
+            Assert.IsFalse(new DialPosition(TuningKey.PlanLateEvChance, 3f).IsValid);
             Assert.IsFalse(new DialPosition(TuningKey.DialMercy, 11f).IsValid);
             var so = new UnityEditor.SerializedObject(_lot);
             var dials = so.FindProperty("_dials");

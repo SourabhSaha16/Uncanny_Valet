@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Economy;
 
 namespace UncannyValet.Tests.Economy
@@ -14,7 +15,7 @@ namespace UncannyValet.Tests.Economy
         public void SetUp()
         {
             // Defaults: window 10 min, bonus 2, impatient bonus 6, penalty 0.5 per minute.
-            _calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>());
+            _calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>(), null, ModifierTestKit.Catalog());
         }
 
         private int Tip(int baseTip, float wait, bool impatient = false)
@@ -28,6 +29,9 @@ namespace UncannyValet.Tests.Economy
         [Test] public void NeverNegative() => Assert.AreEqual(0, Tip(10, 500f));
         [Test] public void NegativeBaseClampsToZero() => Assert.AreEqual(0, Tip(-5, 0f));
         [Test] public void Impatient_LateGetsNoBonus() => Assert.AreEqual(8, Tip(10, 14f, true));
+
+        private static readonly ModifierSet Charged = ModifierSet.Of(ModifierId.NeedsCharge);
+        private static readonly ModifierSet Washed = ModifierSet.Of(ModifierId.Muddy);
 
         private TipBreakdown Explain(TipInput input) => _calc.Explain(input);
 
@@ -45,35 +49,50 @@ namespace UncannyValet.Tests.Economy
         public void Explain_PenaltyIsNegative() => Assert.AreEqual(-2, Explain(new TipInput(10, 14f, false)).SpeedAdjust);
 
         [Test]
-        public void Explain_ChargeBonusOnlyWhenCharged()
+        public void Explain_ModifierBonusOnlyForClearedModifiers()
         {
-            Assert.AreEqual(15, Explain(new TipInput(10, 5f, false, chargedEv: true)).ChargeBonus);
-            Assert.AreEqual(27, Explain(new TipInput(10, 5f, false, chargedEv: true)).Total);
-            Assert.AreEqual(0, Explain(new TipInput(10, 5f, false)).ChargeBonus);
+            Assert.AreEqual(15, Explain(new TipInput(10, 5f, false, clearedModifiers: Charged)).ModifierBonus);
+            Assert.AreEqual(27, Explain(new TipInput(10, 5f, false, clearedModifiers: Charged)).Total);
+            Assert.AreEqual(0, Explain(new TipInput(10, 5f, false)).ModifierBonus);
+            Assert.AreEqual(0, Explain(new TipInput(10, 5f, false, openModifiers: Charged)).ModifierBonus);
         }
 
         [Test]
-        public void Explain_CleanBonusOnlyWhenCleaned()
+        public void Explain_MuddyClearedPaysItsBonus()
         {
-            Assert.AreEqual(15, Explain(new TipInput(10, 5f, false, cleanedDirty: true)).CleanBonus);
-            Assert.AreEqual(27, Explain(new TipInput(10, 5f, false, cleanedDirty: true)).Total);
+            Assert.AreEqual(15, Explain(new TipInput(10, 5f, false, clearedModifiers: Washed)).ModifierBonus);
+            Assert.AreEqual(27, Explain(new TipInput(10, 5f, false, clearedModifiers: Washed)).Total);
+        }
+
+        [Test]
+        public void Explain_TwoClearedModifiersPayBothBonuses()
+        {
+            var both = ModifierSet.Of(ModifierId.Muddy, ModifierId.NeedsCharge);
+            Assert.AreEqual(30, Explain(new TipInput(10, 5f, false, clearedModifiers: both)).ModifierBonus);
+        }
+
+        [Test]
+        public void Explain_WithoutACatalogNoModifierBonusIsPaid()
+        {
+            var bare = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>());
+            Assert.AreEqual(0, bare.Explain(new TipInput(10, 5f, false, clearedModifiers: Charged)).ModifierBonus);
         }
 
         [Test]
         public void Explain_PickupExpiredZeroes()
         {
-            var b = Explain(new TipInput(10, 5f, false, pickupExpired: true, chargedEv: true));
+            var b = Explain(new TipInput(10, 5f, false, pickupExpired: true, clearedModifiers: Charged));
             Assert.AreEqual(0, b.Total);
             Assert.AreEqual(TipZeroReason.PickupExpired, b.ZeroReason);
         }
 
         [Test]
-        public void Explain_UncleanedDirtyCar_PaysBaseAndSpeed_WithNoCleanBonus()
+        public void Explain_UnclearedMuddyCar_PaysBaseAndSpeed_WithNoModifierBonus()
         {
-            var clean = Explain(new TipInput(10, 5f, false, cleanedDirty: true));
-            var unclean = Explain(new TipInput(10, 5f, false, uncleanedDirty: true));
+            var clean = Explain(new TipInput(10, 5f, false, clearedModifiers: Washed));
+            var unclean = Explain(new TipInput(10, 5f, false, openModifiers: Washed));
             Assert.AreEqual(TipZeroReason.None, unclean.ZeroReason);
-            Assert.AreEqual(0, unclean.CleanBonus);
+            Assert.AreEqual(0, unclean.ModifierBonus);
             Assert.AreEqual(10 + unclean.SpeedAdjust, unclean.Total);
             Assert.Greater(unclean.Total, 0);
             Assert.Less(unclean.Total, clean.Total);
@@ -82,14 +101,14 @@ namespace UncannyValet.Tests.Economy
         [Test]
         public void Explain_PickupExpiredWinsOverUncleaned()
         {
-            var b = Explain(new TipInput(10, 5f, false, pickupExpired: true, uncleanedDirty: true));
+            var b = Explain(new TipInput(10, 5f, false, pickupExpired: true, openModifiers: Washed));
             Assert.AreEqual(TipZeroReason.PickupExpired, b.ZeroReason);
         }
 
         [Test]
         public void Calculate_EqualsExplainTotal()
         {
-            var input = new TipInput(10, 14f, true, chargedEv: true, cleanedDirty: true);
+            var input = new TipInput(10, 14f, true, clearedModifiers: ModifierSet.Of(ModifierId.Muddy, ModifierId.NeedsCharge));
             Assert.AreEqual(Explain(input).Total, _calc.Calculate(input));
         }
 

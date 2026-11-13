@@ -89,9 +89,9 @@ namespace UncannyValet.Tests.Director
         {
             var w = _profile.Weights;
             Assert.AreEqual(50f, w.Of(CarArchetype.Plain));
-            Assert.AreEqual(20f, w.Of(CarArchetype.Dirty));
+            Assert.AreEqual(20f, w.Of(CarArchetype.Muddy));
             Assert.AreEqual(20f, w.Of(CarArchetype.Ev));
-            Assert.AreEqual(10f, w.Of(CarArchetype.DirtyEv));
+            Assert.AreEqual(10f, w.Of(CarArchetype.MuddyEv));
         }
 
         [Test]
@@ -100,9 +100,9 @@ namespace UncannyValet.Tests.Director
             Assert.AreEqual(14, _profile.ArrivalBudget);
             Assert.AreEqual(2, _profile.BudgetSlack);
             Assert.AreEqual(50f, _profile.WeightOf(CarArchetype.Plain));
-            Assert.AreEqual(20f, _profile.WeightOf(CarArchetype.Dirty));
+            Assert.AreEqual(20f, _profile.WeightOf(CarArchetype.Muddy));
             Assert.AreEqual(20f, _profile.WeightOf(CarArchetype.Ev));
-            Assert.AreEqual(10f, _profile.WeightOf(CarArchetype.DirtyEv));
+            Assert.AreEqual(10f, _profile.WeightOf(CarArchetype.MuddyEv));
         }
     }
 }

@@ -32,6 +32,8 @@ namespace UncannyValet.EditorTools
                 TrainingScene, TrainingThreshold, 150f, 15f, 25f, 2, TrainingQueueSlots, StoryPower.None);
             var crazy = CreateLot(MidgardCrazyPath, new LotId(World.Midgard, LotKind.Crazy), "Fair Night at Grandma's",
                 CrazyScene, CrazyThreshold, 240f, 10f, 15f, 4, CrazyQueueSlots, StoryPower.ThunderStride);
+            ModifierAssetSetup.EnsureChances(training);
+            ModifierAssetSetup.EnsureChances(crazy);
             if (AssetDatabase.LoadAssetAtPath<RunDefinition>(RunPath) != null) return;
             Directory.CreateDirectory(Path.GetDirectoryName(RunPath));
             var run = ScriptableObject.CreateInstance<RunDefinition>();

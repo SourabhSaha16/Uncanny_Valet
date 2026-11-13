@@ -37,7 +37,7 @@ namespace UncannyValet.Patrons
             var wait = _clock.ElapsedMinutes - t.PickupRequestMinute;
             var patience = t.PickupExpired ? 0f : 1f - t.PickupTimer.Elapsed01;
             var input = new TipInput(t.Request.BaseTip, wait, t.Request.Impatient, t.PickupExpired,
-                t.ChargedEv, t.CleanedDirty, t.UncleanedDirty, patienceRemaining01: patience, comboMultiplier: combo,
+                t.ClearedModifiers, t.OpenModifiers, patienceRemaining01: patience, comboMultiplier: combo,
                 damage01: _damage?.Take(t.CarId) ?? 0f,
                 perfectParks: _perfect?.Take(t.TicketId) ?? 0);
             var breakdown = _tips.Explain(input);
@@ -56,7 +56,7 @@ namespace UncannyValet.Patrons
             _book.Remove(t);
             _perfect?.Clear(t.TicketId);
             _damage?.Clear(t.CarId);
-            var none = new TipBreakdown(0, 0, 0, 0, 0, TipZeroReason.None);
+            var none = new TipBreakdown(0, 0, 0, 0, TipZeroReason.None);
             _bus.Publish(new TipExplained(t.TicketId, t.CarId, none));
             _bus.Publish(new TicketClosed(t.TicketId, t.CarId, 0f, 0));
         }

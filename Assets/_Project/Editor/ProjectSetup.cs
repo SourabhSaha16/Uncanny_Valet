@@ -38,6 +38,7 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<DifficultyDialsConfig>(DifficultyDialsPath);
             CreateIfMissing<PowerBarConfig>(PowerBarConfigPath);
             WireDialsIntoDirectorConfig();
+            ModifierAssetSetup.CreateIfMissing();
             RunAssetSetup.CreateIfMissing();
             AssetDatabase.SaveAssets();
         }

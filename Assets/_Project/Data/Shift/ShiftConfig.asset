@@ -23,8 +23,6 @@ MonoBehaviour:
   _maxWaitingCars: 3
   _arrivalGapScale: 1
   _activeSpots: 0
-  _evChance: 0.3
-  _dirtyChance: 0.3
   _lateEvChance: 0.5
   _lateEvStart: 0.6
   _chargingOpen: 1

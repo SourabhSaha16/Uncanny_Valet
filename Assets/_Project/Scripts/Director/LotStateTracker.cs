@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Director
 {
@@ -23,10 +24,10 @@ namespace UncannyValet.Director
 
         /// <param name="regularSpots">Regular (non-charging) parking spots in the lot.</param>
         /// <param name="chargingBays">EV charging bays in the lot.</param>
-        public LotStateTracker(IEventBus bus, IGameClock clock, ITuning tuning, int regularSpots, int chargingBays)
+        public LotStateTracker(IEventBus bus, IGameClock clock, ITuning tuning, IModifierCatalog catalog, int regularSpots, int chargingBays)
         {
             _bus = bus; _clock = clock; _tuning = tuning;
-            _book = new CarBook(regularSpots, chargingBays);
+            _book = new CarBook(catalog, regularSpots, chargingBays);
             Subscribe();
         }
 
@@ -44,7 +45,7 @@ namespace UncannyValet.Director
             _bus.Unsubscribe<ShiftPlanChanged>(OnPlan);
             _bus.Unsubscribe<CarSpawned>(OnSpawned);
             _bus.Unsubscribe<TicketOpened>(OnOpened);
-            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Unsubscribe<TicketModifiersAssigned>(OnModifiers);
             _bus.Unsubscribe<CarArrived>(OnArrived);
             _bus.Unsubscribe<StayStarted>(OnStayStarted);
             _bus.Unsubscribe<CarEntered>(OnEntered);
@@ -53,9 +54,8 @@ namespace UncannyValet.Director
             _bus.Unsubscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Unsubscribe<CarEnteredStation>(OnStationEntered);
             _bus.Unsubscribe<CarLeftStation>(OnStationLeft);
-            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Unsubscribe<CarCleaned>(OnCleaned);
-            _bus.Unsubscribe<CarFullyCharged>(OnCharged);
+            _bus.Unsubscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Unsubscribe<ModifierCleared>(OnCleared);
             _bus.Unsubscribe<PickupRequested>(OnPickup);
             _bus.Unsubscribe<TicketTimerChanged>(OnTimer);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
@@ -70,7 +70,7 @@ namespace UncannyValet.Director
             _bus.Subscribe<ShiftPlanChanged>(OnPlan);
             _bus.Subscribe<CarSpawned>(OnSpawned);
             _bus.Subscribe<TicketOpened>(OnOpened);
-            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Subscribe<TicketModifiersAssigned>(OnModifiers);
             _bus.Subscribe<CarArrived>(OnArrived);
             _bus.Subscribe<StayStarted>(OnStayStarted);
             _bus.Subscribe<CarEntered>(OnEntered);
@@ -79,9 +79,8 @@ namespace UncannyValet.Director
             _bus.Subscribe<CarLeftSpot>(OnLeftSpot);
             _bus.Subscribe<CarEnteredStation>(OnStationEntered);
             _bus.Subscribe<CarLeftStation>(OnStationLeft);
-            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Subscribe<CarCleaned>(OnCleaned);
-            _bus.Subscribe<CarFullyCharged>(OnCharged);
+            _bus.Subscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Subscribe<ModifierCleared>(OnCleared);
             _bus.Subscribe<PickupRequested>(OnPickup);
             _bus.Subscribe<TicketTimerChanged>(OnTimer);
             _bus.Subscribe<TicketClosed>(OnClosed);
@@ -102,7 +101,7 @@ namespace UncannyValet.Director
         private void OnPlan(ShiftPlanChanged e) => _book.ApplyPlan(e.Plan.ActiveSpots, e.Plan.ChargingOpen, e.Plan.WashOpen);
         private void OnSpawned(CarSpawned e) => _book.Spawned(e.Car);
         private void OnOpened(TicketOpened e) => _book.Stay(e.Car, e.StayMinutes);
-        private void OnTraits(TicketTraitsAssigned e) => _book.Traits(e.Car, e.IsEv, e.IsDirty);
+        private void OnModifiers(TicketModifiersAssigned e) => _book.Modifiers(e.Car, e.Modifiers);
         private void OnArrived(CarArrived e) => _book.Arrived(e.Car);
         private void OnStayStarted(StayStarted e) => _book.StayStarted(e.Car, e.Minute);
         private void OnEntered(CarEntered e) => _book.Driven(e.Car, true);
@@ -111,9 +110,8 @@ namespace UncannyValet.Director
         private void OnLeftSpot(CarLeftSpot e) => _book.LeftSpot(e.Car, e.SpotId);
         private void OnStationEntered(CarEnteredStation e) => _book.StationEntered(e.Car, e.Station);
         private void OnStationLeft(CarLeftStation e) => _book.StationLeft(e.Car, e.Station);
-        private void OnCleanChanged(CarCleanChanged e) => _book.CleanChanged(e.Car, e.Clean01);
-        private void OnCleaned(CarCleaned e) => _book.Cleaned(e.Car);
-        private void OnCharged(CarFullyCharged e) => _book.FullyCharged(e.Car);
+        private void OnProgress(ModifierProgressChanged e) => _book.Progress(e.Car, e.Modifier, e.Progress01);
+        private void OnCleared(ModifierCleared e) => _book.Cleared(e.Car, e.Modifier);
         private void OnPickup(PickupRequested e) => _book.PickupRequested(e.Car);
         private void OnTimer(TicketTimerChanged e) => _book.TimerChanged(e.Car, e.Elapsed01);
         private void OnClosed(TicketClosed e) => _book.Closed(e.Car);

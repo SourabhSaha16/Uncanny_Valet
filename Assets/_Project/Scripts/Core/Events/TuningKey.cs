@@ -7,9 +7,11 @@ namespace UncannyValet.Core.Events
         PlanMaxWaitingCars,
         PlanArrivalGapScale,
         PlanActiveSpots,
-        PlanEvChance,
-        PlanDirtyChance,
-        /// <summary>EV chance reached at the end of the shift (ramps from PlanEvChance).</summary>
+        /// <summary>Retired: the shift plan's EV chance, now the lot's NeedsCharge chance (ModifierChanceNeedsCharge). Reserved slot, never reuse or remove.</summary>
+        RetiredPlanEvChance,
+        /// <summary>Retired: the shift plan's wash-need chance, now the lot's Muddy chance (ModifierChanceMuddy). Reserved slot, never reuse or remove.</summary>
+        RetiredPlanWashChance,
+        /// <summary>Chance of the late-ramping modifier (NeedsCharge) at the end of the shift (ramps from its lot chance).</summary>
         PlanLateEvChance,
         /// <summary>Fraction 0..1 of the shift after which the EV chance starts ramping.</summary>
         PlanLateEvStart,
@@ -126,10 +128,10 @@ namespace UncannyValet.Core.Events
         DialRamp,
         /// <summary>Dial: strength of the end-of-shift surge.</summary>
         DialLateRush,
-        /// <summary>Dial: share of cars that need a wash.</summary>
-        DialDirtyCars,
-        /// <summary>Dial: share of EVs that need a charge.</summary>
-        DialEvCars,
+        /// <summary>Retired: the Car Mix dial for the share of cars needing a wash (replaced by the lot's Muddy chance). Reserved slot, never reuse or remove.</summary>
+        RetiredDialCarMixWash,
+        /// <summary>Retired: the Car Mix dial for the share of EVs (replaced by the lot's NeedsCharge chance). Reserved slot, never reuse or remove.</summary>
+        RetiredDialCarMixEv,
         /// <summary>Dial: how often the director sets up squeeze moments.</summary>
         DialDilemmas,
         /// <summary>Dial: how readily the director backs off when the player is overwhelmed.</summary>
@@ -145,9 +147,9 @@ namespace UncannyValet.Core.Events
         /// <summary>Extra target workload at the very end of the shift, as a fraction; ramps in from PlanLateEvStart.</summary>
         DirLateTargetBoost,
         DirWeightPlain,
-        DirWeightDirty,
+        DirWeightMuddy,
         DirWeightEv,
-        DirWeightDirtyEv,
+        DirWeightMuddyEv,
 
         // Car handling (Cars module owns; applies live to every car). docs/redesign/car_handling_spec.md section 2.
         /// <summary>How fast sideways slide dies out at full grip, per second.</summary>
@@ -282,5 +284,10 @@ namespace UncannyValet.Core.Events
         // Developer grant of a power through the F2 panel (Bootstrap owns). Issue 86.
         /// <summary>1 when Freeze time is granted to Thor for testing, 0 when not (the run progress is the real owner).</summary>
         DevOwnFreezeTime,
+        // Service modifiers: arrival chance per modifier, seeded from the lot (Run owns the numbers). Issue 121.
+        /// <summary>Chance 0..1 that a new car arrives Muddy.</summary>
+        ModifierChanceMuddy,
+        /// <summary>Chance 0..1 that a new car arrives needing a charge (ramps up late in the shift).</summary>
+        ModifierChanceNeedsCharge,
     }
 }

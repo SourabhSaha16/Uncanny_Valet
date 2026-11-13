@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Mood;
@@ -23,60 +24,52 @@ namespace UncannyValet.Tests.UI
         public void PlainParkedCar_IsParked() => Assert.AreEqual(CarStatus.Parked, Resolver.Resolve(Parked()));
 
         [Test]
-        public void DirtyCarInTheWashSlot_IsWashing_ThenWashed()
+        public void MuddyCarInTheWashSlot_IsServicing_ThenServiced_WithTheWordsOfTheModifier()
         {
-            var row = Parked();
-            row.IsDirty = true;
+            var row = Parked().Give(false, true);
             row.HasStation = true;
             row.Station = StationKind.Wash;
-            Assert.AreEqual(CarStatus.Washing, Resolver.Resolve(row));
-            row.Washed = true;
-            row.ShowWashed = true;
-            Assert.AreEqual(CarStatus.Washed, Resolver.Resolve(row));
+            Assert.AreEqual(CarStatus.Servicing, Resolver.Resolve(row));
+            Assert.AreEqual("Washing", CarStatusTable.LabelFitting(CarStatus.Servicing, row, 200));
+            row.Clear(ModifierId.Muddy);
+            Assert.AreEqual(CarStatus.Serviced, Resolver.Resolve(row));
+            Assert.AreEqual("Washed", CarStatusTable.LabelFitting(CarStatus.Serviced, row, 200));
         }
 
         [Test]
-        public void EvOnAChargerIsCharging_ThenCharged()
+        public void CarNeedingAChargeOnAChargerIsServicing_ThenServiced_WithTheChargeWords()
         {
-            var row = Parked();
-            row.IsEv = true;
+            var row = Parked().Give(true, false);
             row.HasStation = true;
             row.Station = StationKind.Charging;
-            row.Charge01 = 0.4f;
-            Assert.AreEqual(CarStatus.Charging, Resolver.Resolve(row));
-            row.Charge01 = 1f;
-            row.ShowCharged = true;
-            Assert.AreEqual(CarStatus.Charged, Resolver.Resolve(row));
+            Assert.AreEqual(CarStatus.Servicing, Resolver.Resolve(row));
+            Assert.AreEqual("Charging", CarStatusTable.LabelFitting(CarStatus.Servicing, row, 200));
+            row.Clear(ModifierId.NeedsCharge);
+            Assert.AreEqual(CarStatus.Serviced, Resolver.Resolve(row));
+            Assert.AreEqual("Charged", CarStatusTable.LabelFitting(CarStatus.Serviced, row, 200));
         }
 
         [Test]
-        public void ChargedEvThatLeftTheCharger_StaysCharged()
+        public void ChargedCarThatLeftTheCharger_StaysServiced()
         {
-            var row = Parked();
-            row.IsEv = true;
-            row.Charge01 = 1f;
-            row.ShowCharged = true;
-            Assert.AreEqual(CarStatus.Charged, Resolver.Resolve(row));
+            var row = Parked().Give(true, false);
+            row.Clear(ModifierId.NeedsCharge);
+            Assert.AreEqual(CarStatus.Serviced, Resolver.Resolve(row));
         }
 
         [Test]
-        public void DirtyCarParkedInASpot_IsJustParked()
+        public void MuddyCarParkedInASpot_IsJustParked()
         {
-            var row = Parked();
-            row.IsDirty = true;
+            var row = Parked().Give(false, true);
             Assert.AreEqual(CarStatus.Parked, Resolver.Resolve(row));
         }
 
         [Test]
         public void PickupBeatsEverythingBelow_AndAngerBeatsPickup()
         {
-            var row = Pickup();
-            row.IsEv = true;
-            row.Charge01 = 1f;
-            row.IsDirty = true;
-            row.Washed = true;
-            row.ShowWashed = true;
-            row.ShowCharged = true;
+            var row = Pickup().Give(true, true);
+            row.Clear(ModifierId.Muddy);
+            row.Clear(ModifierId.NeedsCharge);
             Assert.AreEqual(CarStatus.PickUp, Resolver.Resolve(row));
             row.Elapsed01 = 0.9f;
             Assert.AreEqual(CarStatus.CustAngry, Resolver.Resolve(row));
@@ -87,15 +80,11 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void InProgressBeatsDone()
         {
-            var row = Parked();
-            row.IsEv = true;
-            row.IsDirty = true;
-            row.Washed = true;
-            row.ShowWashed = true;
-            row.Charge01 = 0.2f;
+            var row = Parked().Give(true, true);
+            row.Clear(ModifierId.Muddy);
             row.HasStation = true;
             row.Station = StationKind.Charging;
-            Assert.AreEqual(CarStatus.Charging, Resolver.Resolve(row));
+            Assert.AreEqual(CarStatus.Servicing, Resolver.Resolve(row));
         }
 
         [Test]
@@ -111,8 +100,8 @@ namespace UncannyValet.Tests.UI
         {
             Assert.AreEqual(PixelPalette.Amber, CarStatusTable.ColorOf(CarStatus.PickUp));
             Assert.AreEqual(PixelPalette.OrangeRed, CarStatusTable.ColorOf(CarStatus.CustAngry));
-            Assert.AreEqual(PixelPalette.Green, CarStatusTable.ColorOf(CarStatus.Washed));
-            Assert.AreEqual(PixelPalette.Green, CarStatusTable.ColorOf(CarStatus.Charged));
+            Assert.AreEqual(PixelPalette.Green, CarStatusTable.ColorOf(CarStatus.Serviced));
+            Assert.AreEqual(PixelPalette.Cyan, CarStatusTable.ColorOf(CarStatus.Servicing));
             Assert.AreEqual(PixelPalette.Cyan, CarStatusTable.ColorOf(CarStatus.Parked));
         }
 
@@ -149,7 +138,7 @@ namespace UncannyValet.Tests.UI
         public void BoardTracksTheStationFromEvents()
         {
             var bus = new EventBus();
-            var board = new TicketBoard(bus);
+            var board = new TicketBoard(bus, ModifierTestKit.Catalog());
             var car = new CarId(3);
             bus.Publish(new TicketOpened(new TicketId(1), car, 60f));
             bus.Publish(new CarEnteredStation(car, StationKind.Wash));

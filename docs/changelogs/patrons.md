@@ -115,3 +115,9 @@ Date: 2026-11-13
 Files: Patrons: removed SmashSettler, SmashTally; TicketSettler (PaySmash), TicketRegistry, ChargeRule, WashRule, ServiceProgress (Complete).
 Why: Park Smash deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
 Tests: ParkSmashTests removed; suites pass.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Patrons/ (ModifierInstance, ModifierFactory, ModifierRoller, TicketAnnouncer, LateChanceCurve, Ticket, TicketBook, TicketRegistry, StationService, TicketSettler, PatronPlan, PatronRequest, PatronRequestRoller, PatronTuning, PatronConfig, ServiceTuning, LiveTicketTuning, PatronSpawner; WashRule and ArchetypeTraits removed), Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/*
+Why: Issue #121. Tickets carry a list of ModifierInstance (own progress each) instead of the EV and dirty traits; StationService advances them per station kind and publishes ModifierProgressChanged and ModifierCleared; the arrival roll is one draw over the lot's chances in list order (ModifierRoller), at most one modifier per car; clear times are read live from each definition's key when a ticket is created.
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).

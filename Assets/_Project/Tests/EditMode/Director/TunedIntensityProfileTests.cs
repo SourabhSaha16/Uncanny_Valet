@@ -46,7 +46,7 @@ namespace UncannyValet.Tests.Director
                 Assert.AreEqual(_lot.IsRising(f), _tuned.IsRising(f));
                 Assert.AreEqual(_lot.AreaFrom(f, 240f), _tuned.AreaFrom(f, 240f));
             }
-            Assert.AreEqual(_lot.Weights.Dirty, _tuned.Weights.Dirty);
+            Assert.AreEqual(_lot.Weights.Muddy, _tuned.Weights.Muddy);
             Assert.AreEqual(_lot.PhaseAt(0.5f), _tuned.PhaseAt(0.5f));
         }
 
@@ -89,8 +89,8 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void SeededWeights_ReplaceTheLotWeights()
         {
-            Set(TuningKey.DirWeightDirty, 40f);
-            Assert.AreEqual(40f, _tuned.Weights.Dirty);
+            Set(TuningKey.DirWeightMuddy, 40f);
+            Assert.AreEqual(40f, _tuned.Weights.Muddy);
             Assert.AreEqual(_lot.Weights.Plain, _tuned.Weights.Plain);
             Assert.AreEqual(RisingLookahead, _lot.RisingLookahead, Tolerance);
         }

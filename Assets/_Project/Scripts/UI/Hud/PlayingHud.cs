@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Mood;
 using UnityEngine;
@@ -40,7 +42,7 @@ namespace UncannyValet.UI.Hud
             _power = new PowerBarPainter(canvas, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
-            _board = new TicketBoard(bus);
+            _board = new TicketBoard(bus, Services.Get<IModifierCatalog>());
             _hud = new HudPainter(canvas, clock, score);
             _keyBoard = new KeyBoardPainter(canvas, style);
             _notices = new NoticePainter(canvas);

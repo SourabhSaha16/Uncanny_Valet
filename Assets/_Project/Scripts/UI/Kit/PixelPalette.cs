@@ -24,7 +24,7 @@ namespace UncannyValet.UI.Kit
         public static readonly Color PanelCream = new Color32(0xE8, 0xDC, 0xB8, 255);
         public static readonly Color Dim = new Color(0f, 0f, 0f, 0.55f);
 
-        /// <summary>Dark brown of the dirt meter, matching the mud on a dirty car.</summary>
+        /// <summary>Dark brown of the mud meter, matching the mud on a Muddy car.</summary>
         public static readonly Color Mud = new Color32(0x7A, 0x4E, 0x2A, 255);
 
         /// <summary>The key tag colour for a spot number (title screen decoration); spot 0 is grey.</summary>

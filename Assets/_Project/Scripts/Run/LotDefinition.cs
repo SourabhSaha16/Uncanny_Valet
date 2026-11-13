@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Run
@@ -22,6 +23,8 @@ namespace UncannyValet.Run
         [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Training lots 3, crazy lots 4. The lot grows taller for more.")]
         private int _queueSlots = DefaultQueueSlots;
         [SerializeField] private LotPacing _pacing = new LotPacing();
+        [SerializeField, Tooltip("The service modifiers cars of this lot arrive with and the chance of each; the list order is the roll order.")]
+        private List<ModifierChance> _modifierChances = new List<ModifierChance>();
         [SerializeField, Tooltip("Dials that start somewhere other than the global baseline in this lot.")]
         private List<DialPosition> _dials = new List<DialPosition>();
         [SerializeField, Tooltip("The mechanics this lot uses.")]
@@ -42,14 +45,30 @@ namespace UncannyValet.Run
         public LotLayoutKind Layout => _layout;
         public int QueueSlots => _queueSlots;
         public LotPacing Pacing => _pacing;
+        public IReadOnlyList<ModifierChance> ModifierChances => _modifierChances;
         public IReadOnlyList<DialPosition> Dials => _dials;
         public IReadOnlyList<LotModifier> Modifiers => _modifiers;
         public int BlessingThreshold => _blessingThreshold;
         public PowerGrant Grant => _grant;
 
-        /// <summary>Seeds shift length, pacing and the arrival budget (see <see cref="LotPacing.SeedInto"/>); the waiting cap never exceeds <see cref="QueueSlots"/>.</summary>
-        public void SeedPacing(ITuning tuning, float gameMinutesPerSecond) =>
+        /// <summary>
+        /// Seeds shift length, pacing, the arrival budget (see <see cref="LotPacing.SeedInto"/>) and the modifier arrival chances;
+        /// the waiting cap never exceeds <see cref="QueueSlots"/>.
+        /// </summary>
+        public void SeedPacing(ITuning tuning, float gameMinutesPerSecond)
+        {
             _pacing.SeedInto(tuning, gameMinutesPerSecond, _queueSlots);
+            for (var i = 0; i < _modifierChances.Count; i++)
+                tuning.Seed(_modifierChances[i].Modifier.ChanceKey, _modifierChances[i].Chance);
+        }
+
+        /// <summary>The definitions of the lot's modifiers in roll order (the modifier catalog of the lot).</summary>
+        public ModifierCatalog BuildModifierCatalog()
+        {
+            var definitions = new List<ServiceModifierDefinition>(_modifierChances.Count);
+            for (var i = 0; i < _modifierChances.Count; i++) definitions.Add(_modifierChances[i].Modifier);
+            return new ModifierCatalog(definitions);
+        }
 
         /// <summary>Seeds this lot's dial positions; call before the dials capture their baselines.</summary>
         public void SeedDialPositions(ITuning tuning)

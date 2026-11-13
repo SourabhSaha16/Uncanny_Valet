@@ -60,14 +60,14 @@ namespace UncannyValet.Tests.Director
             Assert.AreEqual(6, RegularSpots);
             Assert.AreEqual(RegularSpots, snap.TotalSpots);
             Assert.AreEqual(RegularSpots, snap.FreeSpots);
-            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, 0f, 0f, true, true, 0)));
+            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, true, true, 0)));
             Assert.AreEqual(RegularSpots, Tracker.Capture().TotalSpots, "a plan of 0 opens every regular spot");
         }
 
         [Test]
         public void PlanLimitsTotalSpots()
         {
-            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, 0f, 0f, true, true, 4)));
+            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, true, true, 4)));
             var snap = Tracker.Capture();
             Assert.AreEqual(4, snap.TotalSpots);
             Assert.AreEqual(4, snap.FreeSpots);

@@ -17,16 +17,14 @@ namespace UncannyValet.UI.Status
             _fallback = fallback;
         }
 
-        /// <summary>The game's rules: Won't tip, Cust. Angry, Pick Up, Washing, Charging, Washed, Charged, then Parked.</summary>
+        /// <summary>The game's rules: Won't tip, Cust. Angry, Pick Up, Servicing, Serviced, then Parked.</summary>
         public static CarStatusResolver CreateDefault(EmotionRule emotions) => new CarStatusResolver(new ICarStatusRule[]
         {
             new WillNotTipStatusRule(emotions),
             new CustAngryStatusRule(emotions),
             new PickUpStatusRule(),
-            new WashingStatusRule(),
-            new ChargingStatusRule(),
-            new WashedStatusRule(),
-            new ChargedStatusRule()
+            new ServicingStatusRule(),
+            new ServicedStatusRule()
         }, CarStatus.Parked);
 
         /// <summary>The status of the ticket. Allocates nothing.</summary>

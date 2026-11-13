@@ -25,7 +25,7 @@ namespace UncannyValet.Tests.Patrons
             public int Calls;
             public TipInput Last;
             public int Calculate(in TipInput input) { Calls++; Last = input; return input.PickupExpired ? 0 : 25; }
-            public TipBreakdown Explain(in TipInput input) { var t = Calculate(input); return new TipBreakdown(t, 0, 0, 0, t, TipZeroReason.None); }
+            public TipBreakdown Explain(in TipInput input) { var t = Calculate(input); return new TipBreakdown(t, 0, 0, t, TipZeroReason.None); }
         }
 
         private EventBus _bus;

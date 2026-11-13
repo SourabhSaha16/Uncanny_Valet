@@ -16,7 +16,7 @@ namespace UncannyValet.Night
         private static readonly TuningKey[] PlanKeys =
         {
             TuningKey.PlanMaxWaitingCars, TuningKey.PlanArrivalGapScale, TuningKey.PlanActiveSpots,
-            TuningKey.PlanEvChance, TuningKey.PlanDirtyChance, TuningKey.PlanLateEvChance, TuningKey.PlanLateEvStart,
+            TuningKey.PlanLateEvChance, TuningKey.PlanLateEvStart,
         };
 
         private readonly ShiftConfig _config;
@@ -39,7 +39,6 @@ namespace UncannyValet.Night
             return new ShiftPlan(
                 Mathf.RoundToInt(Value(TuningKey.PlanMaxWaitingCars, p.MaxWaitingCars)),
                 Value(TuningKey.PlanArrivalGapScale, p.ArrivalGapScale),
-                Value(TuningKey.PlanEvChance, p.EvChance), Value(TuningKey.PlanDirtyChance, p.DirtyChance),
                 p.ChargingOpen, p.WashOpen,
                 Mathf.RoundToInt(Value(TuningKey.PlanActiveSpots, p.ActiveSpots)),
                 Value(TuningKey.PlanLateEvChance, p.LateEvChance), Value(TuningKey.PlanLateEvStart, p.LateEvStart));

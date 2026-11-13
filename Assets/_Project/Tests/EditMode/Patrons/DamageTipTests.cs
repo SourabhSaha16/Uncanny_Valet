@@ -32,7 +32,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus = new EventBus(); _clock = new FakeClock();
             _config = ScriptableObject.CreateInstance<TipConfig>();
-            _registry = new TicketRegistry(_bus, _clock, new TipCalculator(_config));
+            _registry = new TicketRegistry(_bus, _clock, new TipCalculator(_config, null, ModifierTestKit.Catalog()));
             _bus.Subscribe<TipExplained>(e => _tips[e.Car.Value] = e.Breakdown);
         }
 

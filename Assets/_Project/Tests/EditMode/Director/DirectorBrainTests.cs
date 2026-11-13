@@ -46,7 +46,7 @@ namespace UncannyValet.Tests.Director
             _form = new FormTracker(_bus, settings.Form, _clock, null, 4);
             var pacer = new ArrivalPacer(new MidRandom(), settings.Pacing, new ReliefGate(settings.Relief));
             var rules = DilemmaRules.CreateAll(settings.Rules);
-            _dilemmas = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new MidRandom(), rules, settings.Picker),
+            _dilemmas = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new MidRandom(), rules, settings.Picker, ModifierTestKit.Catalog()),
                 new DilemmaGate(settings.Gate), rules, _state);
             _brain = new DirectorBrain(_bus, _tuning, _clock, _lot, _profile, _state, settings, _form, pacer, _dilemmas);
             _bus.Subscribe<PatronScheduled>(e => _scheduled.Add(e));
@@ -153,7 +153,7 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void ABlockedWashSendsABoostedDirtyCarAndOpensADilemma()
+        public void ABlockedWashSendsABoostedMuddyCarAndOpensADilemma()
         {
             var b = new SnapshotBuilderForTests();
             b.Slot(StationKind.Wash, StationSlotState.Blocked);
@@ -164,7 +164,7 @@ namespace UncannyValet.Tests.Director
             _bus.Subscribe<DilemmaCreated>(e => created.Add(e));
             Run(7f);
             Assert.AreEqual(1, _scheduled.Count);
-            Assert.AreEqual(CarArchetype.Dirty, _scheduled[0].Archetype, "the middle roll lands on the x3 Dirty weight");
+            Assert.AreEqual(CarArchetype.Muddy, _scheduled[0].Archetype, "the middle roll lands on the x3 Muddy weight");
             var logged = _state.GetDecision(0);
             Assert.IsTrue(logged.HasRule);
             Assert.AreEqual(DilemmaKind.WashBlocked, logged.Rule);

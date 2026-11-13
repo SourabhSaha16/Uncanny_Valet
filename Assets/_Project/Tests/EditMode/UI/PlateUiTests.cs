@@ -21,7 +21,7 @@ namespace UncannyValet.Tests.UI
         public void SetUp()
         {
             _bus = new EventBus();
-            _board = new TicketBoard(_bus);
+            _board = new TicketBoard(_bus, ModifierTestKit.Catalog());
         }
 
         [TearDown]

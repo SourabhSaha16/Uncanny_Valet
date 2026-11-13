@@ -24,7 +24,7 @@ namespace UncannyValet.Tests.Patrons
         {
             public TipInput Last;
             public int Calculate(in TipInput input) { Last = input; return 10; }
-            public TipBreakdown Explain(in TipInput input) { Last = input; return new TipBreakdown(10, 0, 0, 0, 10, TipZeroReason.None); }
+            public TipBreakdown Explain(in TipInput input) { Last = input; return new TipBreakdown(10, 0, 0, 10, TipZeroReason.None); }
         }
 
         private EventBus _bus;
@@ -45,7 +45,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         private static Ticket NewTicket() =>
-            new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1", ServiceTuning.Default);
+            new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1");
 
         private void Tick(float minute)
         {
@@ -136,8 +136,8 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void DeliveryFromTheQueueAndFromAStation_ClosesTheTicket()
         {
-            var queued = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false, 60f, true, false));
-            var washing = _registry.Open(new CarId(2), new PatronRequest(Stay, 20, false, 60f, false, true));
+            var queued = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false, 60f, ModifierTestKit.Of(true, false)));
+            var washing = _registry.Open(new CarId(2), new PatronRequest(Stay, 20, false, 60f, ModifierTestKit.Of(false, true)));
             _bus.Publish(new CarEnteredStation(washing.CarId, StationKind.Wash));
             _bus.Publish(new CarClearedQueue(queued.CarId));
             _bus.Publish(new CarClearedQueue(washing.CarId));
@@ -146,7 +146,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarAtCurb(washing.CarId));
             Assert.AreEqual(2, _closed);
             Assert.AreEqual(0, _registry.OpenCount);
-            Assert.IsTrue(_tips.Last.UncleanedDirty, "an unfinished wash is reported to the tip rules, not hidden");
+            Assert.IsFalse(_tips.Last.OpenModifiers.IsEmpty, "an unfinished wash is reported to the tip rules, not hidden");
         }
 
         [Test]

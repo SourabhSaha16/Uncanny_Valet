@@ -1,3 +1,5 @@
+using UncannyValet.Core.Modifiers;
+
 namespace UncannyValet.Core.Contracts
 {
     /// <summary>Everything the tip maths needs.</summary>
@@ -10,14 +12,11 @@ namespace UncannyValet.Core.Contracts
         /// <summary>True when the pickup timer ran out before the car came back. The tip is then $0.</summary>
         public readonly bool PickupExpired;
 
-        /// <summary>An EV handed back with a full charge: earns the charge bonus.</summary>
-        public readonly bool ChargedEv;
+        /// <summary>The modifiers cleared by hand-back; each earns its bonus.</summary>
+        public readonly ModifierSet ClearedModifiers;
 
-        /// <summary>A dirty car that was washed: earns the clean bonus.</summary>
-        public readonly bool CleanedDirty;
-
-        /// <summary>A dirty car handed back unwashed: the tip is $0.</summary>
-        public readonly bool UncleanedDirty;
+        /// <summary>The modifiers still open at hand-back (reported to the tip rules; the service-missed rule reads it).</summary>
+        public readonly ModifierSet OpenModifiers;
 
         /// <summary>Share 0..1 of the pickup patience still left when the car came back. Earns the patience bonus.</summary>
         public readonly float PatienceRemaining01;
@@ -32,13 +31,13 @@ namespace UncannyValet.Core.Contracts
         public readonly int PerfectParks;
 
         public TipInput(int baseTip, float waitMinutes, bool impatient, bool pickupExpired = false,
-            bool chargedEv = false, bool cleanedDirty = false, bool uncleanedDirty = false,
+            ModifierSet clearedModifiers = default, ModifierSet openModifiers = default,
             float patienceRemaining01 = 0f, float damage01 = 0f, int comboMultiplier = 1,
             int perfectParks = 0)
         {
             BaseTip = baseTip; WaitMinutes = waitMinutes; Impatient = impatient;
-            PickupExpired = pickupExpired; ChargedEv = chargedEv;
-            CleanedDirty = cleanedDirty; UncleanedDirty = uncleanedDirty;
+            PickupExpired = pickupExpired;
+            ClearedModifiers = clearedModifiers; OpenModifiers = openModifiers;
             PatienceRemaining01 = patienceRemaining01; Damage01 = damage01; ComboMultiplier = comboMultiplier;
             PerfectParks = perfectParks;
         }

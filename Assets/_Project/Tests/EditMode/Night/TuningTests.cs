@@ -121,7 +121,7 @@ namespace UncannyValet.Tests.Night
             Seed();
             var count = 0;
             _bus.Subscribe<ShiftPlanChanged>(_ => count++);
-            _tuning.Set(TuningKey.PlanEvChance, 0.5f);
+            _tuning.Set(TuningKey.PlanLateEvChance, 0.7f);
             Assert.AreEqual(0, count);
             _clock.StartShift();
             Assert.AreEqual(1, count);
@@ -134,13 +134,13 @@ namespace UncannyValet.Tests.Night
             _tuning.Seed(TuningKey.ChargeBonus, 15f);
             _tuning.Seed(TuningKey.CleanBonus, 15f);
             _tuning.Seed(TuningKey.SpeedWindowMinutes, 10f);
-            var calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>(), _tuning);
+            var calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>(), _tuning, ModifierTestKit.Catalog());
             Assert.AreEqual(12, calc.Calculate(new TipInput(99, 5f, false)));
 
             _tuning.Set(TuningKey.BaseTip, 20f);
             _tuning.Set(TuningKey.ChargeBonus, 30f);
             _tuning.Set(TuningKey.SpeedWindowMinutes, 2f);
-            Assert.AreEqual(20 + 30 - 2, calc.Calculate(new TipInput(99, 6f, false, chargedEv: true)));
+            Assert.AreEqual(20 + 30 - 2, calc.Calculate(new TipInput(99, 6f, false, clearedModifiers: UncannyValet.Core.Modifiers.ModifierSet.Of(UncannyValet.Core.Modifiers.ModifierId.NeedsCharge))));
         }
     }
 }
