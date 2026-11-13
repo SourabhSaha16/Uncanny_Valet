@@ -85,6 +85,8 @@ namespace UncannyValet.EditorTools
             Set(factory, "_defaultDefinition", Load<CarDefinition>(DefaultCarPath));
             Set(lot, "_config", Load<LotConfig>(lotConfigPath));
             Set(lot, "_art", lotArt);
+            SetInt(lot, "_queueSlots", definition.QueueSlots);
+            SetInt(decor, "_queueSlots", definition.QueueSlots);
             Set(factory, "_art", carArt);
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
             AddHandling(root, factory, Load<LotConfig>(lotConfigPath));
@@ -151,6 +153,13 @@ namespace UncannyValet.EditorTools
             var check = root.AddComponent<HandlingAisleCheck>();
             Set(check, "_lot", lot);
             Set(check, "_handling", handling);
+        }
+
+        private static void SetInt(Object target, string field, int value)
+        {
+            var so = new SerializedObject(target);
+            so.FindProperty(field).intValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void Set(Object target, string field, Object value)

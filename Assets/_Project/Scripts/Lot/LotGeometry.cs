@@ -54,7 +54,8 @@ namespace UncannyValet.Lot
         /// <summary>Id of the first charging bay.</summary>
         public int FirstChargingId => Spots.Length + 1;
 
-        public LotGeometry(LotConfig c)
+        /// <param name="queueSlots">Arrival queue slots for this lot; 0 or less uses the config's count.</param>
+        public LotGeometry(LotConfig c, int queueSlots = 0)
         {
             var s = c.Site;
             Curb = Box(c.CurbPosition, c.CurbSize);
@@ -63,7 +64,7 @@ namespace UncannyValet.Lot
             ChargingSpots = Cells(c, spotsLeft, BayPlan.Charging);
             Wash = Cells(c, spotsLeft, new[] { BayPlan.Wash })[0];
             AisleY = Curb.yMax - c.SpotSize.y - c.AisleWidth * 0.5f;
-            QueueSlots = QueueSlotsFor(c);
+            QueueSlots = QueueSlotsFor(c, queueSlots > 0 ? queueSlots : c.QueueSlotCount);
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
 
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
@@ -107,13 +108,13 @@ namespace UncannyValet.Lot
             return cells;
         }
 
-        private Vector2[] QueueSlotsFor(LotConfig c)
+        private Vector2[] QueueSlotsFor(LotConfig c, int count)
         {
             var footprint = ArrivalQueue.Footprint(Vector2.zero, c.QueueCarSize, c.QueueRotationDegrees);
             var dir = c.QueueDirection.sqrMagnitude < 0.0001f ? Vector2.down : c.QueueDirection.normalized;
             var along = Mathf.Abs(dir.x) * footprint.width + Mathf.Abs(dir.y) * footprint.height;
             var first = new Vector2(c.CurbPosition.x, Curb.yMin - c.QueueStartGap - footprint.height * 0.5f);
-            return ArrivalQueue.Slots(first, c.QueueSlotCount, dir, ArrivalQueue.Pitch(along, c.QueueSlotGap));
+            return ArrivalQueue.Slots(first, count, dir, ArrivalQueue.Pitch(along, c.QueueSlotGap));
         }
 
         private static Rect[] Boxes(Vector2[] centres, Vector2 size, float degrees)

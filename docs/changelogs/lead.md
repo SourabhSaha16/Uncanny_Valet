@@ -796,3 +796,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a1067622abbf49073 (Run module: RunProgress, RunHost, LotDefinition, RunDefinition, LotModifier; Core LotId/World/LotKind/events/contracts; Bootstrap RunBootstrap, TuningSeeder lot seeding, ValetSpawner, LotBounds; title lot picker; Editor scene-per-lot builder; Data/Run assets; two Midgard lot scenes; tests), docs/changelogs/lead.md
 Why: story epic 79, task 80. Open points reported by the agent: crazy waiting cap 4 is clamped to the 3 queue slots; the arrival budget caps the crazy lot near 16 cars; layout parameters are only a kind (Diner) for now; nothing publishes LotCleared/LotFailed/PowerGranted yet (tasks 81, 83, 84).
 Tests: 1361 of 1361 EditMode, 31 of 31 PlayMode after the merge and RunBatch (scene fileID churn reverted to the merged versions).
+
+## lead: merge agent/integration queue slots and arrival budget per lot (#80) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-ab668bba07086fc7d (LotDefinition QueueSlots, LotPacing arrival budget, LotGeometry/LotLayoutBuilder/LotDecor slot count, QueueSlotCheck, scene builder, Midgard lot assets and scenes, tests), docs/changelogs/lead.md
+Why: story epic 79, task 80 follow-up decisions: training lots have 3 queue slots and crazy lots 4 (so the crazy waiting cap of 4 is real); the Director's arrival budget is a per-lot value derived from shift length and mean gap (training 8, crazy 20) instead of the shared 14.
+Tests: 1371 of 1371 EditMode, 33 of 33 PlayMode after the merge.

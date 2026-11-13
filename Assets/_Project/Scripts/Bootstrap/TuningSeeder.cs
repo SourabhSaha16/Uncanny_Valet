@@ -31,13 +31,12 @@ namespace UncannyValet.Bootstrap
         /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
         /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
         /// <param name="lot">The lot's overrides (shift length, arrival pacing, dial positions); null keeps the shared defaults.</param>
-        /// <param name="queueSlots">Slots the layout has for waiting cars; the lot's waiting cap never exceeds it.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null,
             PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
-            LotDefinition lot = null, int queueSlots = int.MaxValue)
+            LotDefinition lot = null)
         {
             SeedEmotions(t, emotions);
             CameraShake.SeedDefaults(t);
@@ -78,7 +77,7 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
-            lot?.SeedPacing(t, shift.GameMinutesPerSecond, queueSlots); // the lot's numbers win over the shared defaults
+            lot?.SeedPacing(t, shift.GameMinutesPerSecond); // the lot's numbers and arrival budget win over the shared defaults
             return SeedDials(t, director, bus, lot);
         }
 

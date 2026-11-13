@@ -152,6 +152,20 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
+        public void FourSlotsAndACapOfFour_SendFourCarsToFourSlots_ThenNoSlot()
+        {
+            _slots.Dispose();
+            _scan.Occupied.Add(false);
+            _slots = new QueueSlotAllocator(_bus, _registry, _scan, new PatronPlan(4));
+            for (var expected = 0; expected < 4; expected++)
+            {
+                Send(out var slot);
+                Assert.AreEqual(expected, slot);
+            }
+            Assert.AreEqual(ArrivalGate.NoSlot, _slots.ChooseForSpawn());
+        }
+
+        [Test]
         public void FullWaitingCap_GivesNoSlot()
         {
             Send(out _);
