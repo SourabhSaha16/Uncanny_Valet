@@ -127,3 +127,9 @@ Date: 2026-11-13
 Files: see docs/changelogs/blessings.md (this module's part of the same commit).
 Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
 Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## blessings: half a blessing when a needed service is missed [Claude]
+Date: 2026-11-13
+Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
+Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
+Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.

@@ -7,7 +7,7 @@ namespace UncannyValet.Economy
 {
     /// <summary>
     /// Base, speed bonus or wait penalty, patience, and modifier-clear bonuses, then less damage, then times the
-    /// favour. 0 when forced. Never below 0.
+    /// favour, then halved (ties up) once when any needed service modifier is still open. 0 when forced. Never below 0.
     /// </summary>
     public sealed class BlessingCalculator : IBlessingCalculator
     {
@@ -37,7 +37,9 @@ namespace UncannyValet.Economy
             var damage = DamageAdjust(input, subtotal);
             var favour = Math.Max(1, input.FavourMultiplier);
             var total = Math.Max(0, subtotal + damage) * favour;
-            return new BlessingBreakdown(baseBlessing, speed, modifiers, total, BlessingZeroReason.None, patience, damage, favour);
+            var missed = !input.OpenModifiers.IsEmpty;
+            if (missed) total = HalveRoundingUp(total);
+            return new BlessingBreakdown(baseBlessing, speed, modifiers, total, BlessingZeroReason.None, patience, damage, favour, missed);
         }
 
         // Each cleared modifier pays its definition's bonus, or the live value of the key that bonus is tuned through.
@@ -49,6 +51,9 @@ namespace UncannyValet.Economy
                 if (_catalog.TryGet(cleared.At(i), out var def)) sum += Live(def.BonusKey, def.Bonus);
             return sum;
         }
+
+        // A missed service halves the final amount once, to the nearest whole blessing with ties up (5 pays 3).
+        private static int HalveRoundingUp(int total) => (total + 1) / 2;
 
         private int Live(TuningKey key, int configured)
             => _tuning != null && _tuning.TryGet(key, out var v) ? (int)Math.Round(v, MidpointRounding.AwayFromZero) : configured;
