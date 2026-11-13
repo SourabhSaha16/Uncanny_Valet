@@ -16,13 +16,13 @@ namespace UncannyValet.Bootstrap
 
         /// <summary>Registers ILotSnapshotSource and IDirectorView, then initialises and activates the director.</summary>
         public static DirectorBootstrap Start(IEventBus bus, ITuning tuning, IGameClock clock, ILotLayout lot,
-            PatronDirector director, DirectorProfile profile, IDirectorRandom random, int maxCombo)
+            PatronDirector director, DirectorProfile profile, IDirectorRandom random, int maxFavour)
         {
             var tracker = new LotStateTracker(bus, clock, tuning, Services.Get<IModifierCatalog>(), lot.RegularSpotCount, lot.ChargingSpotCount);
             var state = new DirectorState();
             Services.Register<ILotSnapshotSource>(tracker);
             Services.Register<IDirectorView>(state);
-            director.Initialize(profile, state, random, maxCombo);
+            director.Initialize(profile, state, random, maxFavour);
             director.gameObject.SetActive(true);
             return new DirectorBootstrap(tracker);
         }

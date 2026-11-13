@@ -139,3 +139,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/UI/ (RowModifier, TicketRow, TicketNeedsTracker, TicketBoard, Hud/ServiceIcons, Hud/PlayingHud, Status/*, Kit/{PixelIcon,PixelIconData,PixelPalette,ModifierIcons}, TuningRowView), Scripts/Bootstrap/{TuningSeeder,GameBootstrap,ModifierBootstrap,DirectorBootstrap}.cs, Editor/{ModifierAssetSetup,ProjectSetup,RunAssetSetup}.cs, Data/Modifiers/*, Data/Shift/ShiftConfig.asset, Tests/PlayMode/ServiceModifierPlayModeTests.cs
 Why: Issue #121. The board rows hold a modifier list; icons next to the plate come from each open modifier (mud splat, plug); the key board status words are generic (Servicing and Serviced take their word from the modifier). Bootstrap registers the lot's IModifierCatalog, seeds clear times, bonuses and chances from the definitions and the lot, and the setup tool creates the two definition assets and fills the lots' chance lists.
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).

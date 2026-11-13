@@ -4,32 +4,33 @@ namespace UncannyValet.Core.Events
 {
     // Economy events, grouped in one file by domain.
 
-    /// <summary>A tip was earned (already multiplied by the combo). Amount is never negative; 0 means a missed tip.</summary>
-    public readonly struct TipEarned : IGameEvent
+    /// <summary>A blessing was earned (already multiplied by the favour). Amount is never negative; 0 means a missed blessing.</summary>
+    public readonly struct BlessingEarned : IGameEvent
     {
         public readonly TicketId Ticket;
         public readonly int Amount;
-        public TipEarned(TicketId ticket, int amount) { Ticket = ticket; Amount = amount; }
+        public BlessingEarned(TicketId ticket, int amount) { Ticket = ticket; Amount = amount; }
     }
 
-    /// <summary>The shift score, combo multiplier, complaint count or stars changed.</summary>
-    public readonly struct ScoreChanged : IGameEvent
+    /// <summary>The shift's blessings, favour multiplier or curse count changed.</summary>
+    public readonly struct BlessingsChanged : IGameEvent
     {
-        public readonly int Score;
-        public readonly int ComboMultiplier;
-        public readonly int Complaints;
-        public readonly int Stars;
-        public ScoreChanged(int score, int comboMultiplier, int complaints, int stars)
+        public readonly int Blessings;
+        public readonly int FavourMultiplier;
+        public readonly int Curses;
+        public BlessingsChanged(int blessings, int favourMultiplier, int curses)
         {
-            Score = score; ComboMultiplier = comboMultiplier; Complaints = complaints; Stars = stars;
+            Blessings = blessings; FavourMultiplier = favourMultiplier; Curses = curses;
         }
     }
 
-    /// <summary>An angry patron cost the shift a complaint penalty and reset the combo.</summary>
-    public readonly struct ComplaintFiled : IGameEvent
+    /// <summary>A curse cost the shift blessings and reset the favour. An angry patron is the first source.</summary>
+    public readonly struct CurseApplied : IGameEvent
     {
+        /// <summary>The ticket that caused it, or TicketId.None for a source without a ticket.</summary>
         public readonly TicketId Ticket;
-        public readonly int Penalty;
-        public ComplaintFiled(TicketId ticket, int penalty) { Ticket = ticket; Penalty = penalty; }
+        /// <summary>Blessings the curse asked to take off (the total never goes below 0).</summary>
+        public readonly int Amount;
+        public CurseApplied(TicketId ticket, int amount) { Ticket = ticket; Amount = amount; }
     }
 }

@@ -13,6 +13,7 @@ search these files for its subject, or open `changelog.txt` on the live site.
 | `patrons.md` | patrons agent |
 | `economy-night.md` | economy-night agent |
 | `integration.md` | integration agent |
+| `blessings.md` | blessings agent |
 | `qa.md` | qa agent |
 
 Entry format (newest at the bottom):

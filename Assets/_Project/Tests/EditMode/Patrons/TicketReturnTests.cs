@@ -20,24 +20,24 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public TipInput Last;
-            public int Calculate(in TipInput input) { Last = input; return 10; }
-            public TipBreakdown Explain(in TipInput input) { Last = input; return new TipBreakdown(10, 0, 0, 10, TipZeroReason.None); }
+            public BlessingInput Last;
+            public int Calculate(in BlessingInput input) { Last = input; return 10; }
+            public BlessingBreakdown Explain(in BlessingInput input) { Last = input; return new BlessingBreakdown(10, 0, 0, 10, BlessingZeroReason.None); }
         }
 
         private EventBus _bus;
         private FakeClock _clock;
-        private FakeTips _tips;
+        private FakeBlessings _blessings;
         private TicketRegistry _registry;
         private int _summoned, _requested, _closed;
 
         [SetUp]
         public void SetUp()
         {
-            _bus = new EventBus(); _clock = new FakeClock(); _tips = new FakeTips();
-            _registry = new TicketRegistry(_bus, _clock, _tips);
+            _bus = new EventBus(); _clock = new FakeClock(); _blessings = new FakeBlessings();
+            _registry = new TicketRegistry(_bus, _clock, _blessings);
             _summoned = _requested = _closed = 0;
             _bus.Subscribe<PatronSummoned>(e => _summoned++);
             _bus.Subscribe<PickupRequested>(e => _requested++);
@@ -146,7 +146,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarAtCurb(washing.CarId));
             Assert.AreEqual(2, _closed);
             Assert.AreEqual(0, _registry.OpenCount);
-            Assert.IsFalse(_tips.Last.OpenModifiers.IsEmpty, "an unfinished wash is reported to the tip rules, not hidden");
+            Assert.IsFalse(_blessings.Last.OpenModifiers.IsEmpty, "an unfinished wash is reported to the blessing rules, not hidden");
         }
 
         [Test]

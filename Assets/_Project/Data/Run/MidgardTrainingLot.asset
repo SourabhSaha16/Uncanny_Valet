@@ -32,7 +32,7 @@ MonoBehaviour:
     _chance: 0.3
   _dials: []
   _modifiers: []
-  _blessingThreshold: 3
+  _blessingThreshold: 150
   _grant:
     _power: 0
     _level: 1

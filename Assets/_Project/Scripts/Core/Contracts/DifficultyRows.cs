@@ -22,7 +22,7 @@ namespace UncannyValet.Core.Contracts
             Dial(TuningKey.DialMercy, "Mercy",
                 "How quickly and how much the director backs off when you are overwhelmed. Higher means more relief."),
             Dial(TuningKey.DialSkillReward, "Skill Reward",
-                "How much good play (tips, combo, no angry patrons) raises the difficulty. Higher pushes good players harder."),
+                "How much good play (blessings, favour, no angry patrons) raises the difficulty. Higher pushes good players harder."),
             new TuningInfo(TuningKey.DirSeed, Group, "Randomness Seed", 0, 9999, 1,
                 "0 gives a new random shift every time. Any other number replays the same shift.", false),
         };

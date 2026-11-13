@@ -4,8 +4,8 @@ namespace UncannyValet.Core.Modifiers
 {
     /// <summary>
     /// The shipped numbers of the two modifiers (the setup tool writes them into the assets; tests build catalogs from
-    /// them). Muddy is the old wash need: 15 game minutes, $15. NeedsCharge is the EV need: starts 20% charged,
-    /// 20 game minutes to full, $15.
+    /// them). Muddy is the old wash need: 15 game minutes, 15 blessings. NeedsCharge is the EV need: starts 20% charged,
+    /// 20 game minutes to full, 15 blessings.
     /// </summary>
     public static class ModifierDefaults
     {

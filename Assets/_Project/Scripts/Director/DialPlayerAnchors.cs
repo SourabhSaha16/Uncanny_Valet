@@ -38,9 +38,9 @@ namespace UncannyValet.Director
         private static DialLink[] SkillLinks() => new[]
         {
             new DialLink(Skill, TuningKey.DirFormInfluence, 0f, 2.2f),
-            new DialLink(Skill, TuningKey.DirFormTipWeight, 0.3f, 1.6f),
+            new DialLink(Skill, TuningKey.DirFormBlessingWeight, 0.3f, 1.6f),
             new DialLink(Skill, TuningKey.DirFormAngryWeight, 0.5f, 1.5f),
-            new DialLink(Skill, TuningKey.DirFormComboWeight, 0.3f, 2f),
+            new DialLink(Skill, TuningKey.DirFormFavourWeight, 0.3f, 2f),
             new DialLink(Skill, TuningKey.DirFormWindow, 1.5f, 0.6f),
             new DialLink(Skill, TuningKey.DirFormWarmup, 2f, 0.3f),
             new DialLink(Skill, TuningKey.DirFormMaxStep, 0.4f, 2f),

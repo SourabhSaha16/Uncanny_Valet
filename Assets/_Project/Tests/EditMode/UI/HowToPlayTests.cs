@@ -53,10 +53,9 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void Mask_MarksEveryOccurrenceOfEveryPhrase()
         {
-            const string text = "paid TIPS $$ for PICK UPs and NOT for DROP OFFs";
+            const string text = "earn BLESSINGS only for PICK UPs, NOT for DROP OFFs";
             var mask = HighlightMask.Build(text, HowToPlayText.Highlights);
-            Assert.IsTrue(mask[text.IndexOf("TIPS", System.StringComparison.Ordinal)]);
-            Assert.IsTrue(mask[text.IndexOf("$$", System.StringComparison.Ordinal) + 1]);
+            Assert.IsTrue(mask[text.IndexOf("BLESSINGS", System.StringComparison.Ordinal)]);
             Assert.IsTrue(mask[text.IndexOf("PICK UP", System.StringComparison.Ordinal) + 6]);
             Assert.IsTrue(mask[text.IndexOf("DROP OFF", System.StringComparison.Ordinal)]);
             Assert.IsFalse(mask[0]);

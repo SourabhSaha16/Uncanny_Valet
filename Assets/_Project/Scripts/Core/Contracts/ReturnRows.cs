@@ -14,7 +14,7 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.PickupSpacingSeconds, Group, "Pickup spacing (s)", 0f, 15f, 0.5f,
                 "Fewest seconds between two patrons reaching the curb, except in a peak. The late-shift pickups obey it too."),
             new TuningInfo(TuningKey.LatePickupStart, Group, "Late-shift pickups start (s before the end)", 0f, 180f, 5f,
-                "From here on every waiting patron is called back early, wherever their car is, even outside the return window, so the player is still paid tips. 0 turns it off."),
+                "From here on every waiting patron is called back early, wherever their car is, even outside the return window, so the player is still earns blessings. 0 turns it off."),
             new TuningInfo(TuningKey.LastPickupLead, Group, "Last late pickup requested (s before the end)", 0f, 60f, 1f,
                 "The late-shift pickups are spread so the last one is requested this long before the end, leaving time to deliver it."),
         };

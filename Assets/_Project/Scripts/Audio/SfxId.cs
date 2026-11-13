@@ -6,7 +6,7 @@ namespace UncannyValet.Audio
         CarEnter,
         CarExit,
         CarParked,
-        TipEarned,
+        BlessingEarned,
         PickupRequested,
         CarVanished,
         CarArrives,

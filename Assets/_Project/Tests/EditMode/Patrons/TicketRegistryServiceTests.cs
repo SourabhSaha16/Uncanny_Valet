@@ -18,20 +18,20 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public TipInput Last;
-            public int Calculate(in TipInput input) => 40;
-            public TipBreakdown Explain(in TipInput input)
+            public BlessingInput Last;
+            public int Calculate(in BlessingInput input) => 40;
+            public BlessingBreakdown Explain(in BlessingInput input)
             {
                 Last = input;
-                return new TipBreakdown(20, 5, 15, 40, TipZeroReason.None);
+                return new BlessingBreakdown(20, 5, 15, 40, BlessingZeroReason.None);
             }
         }
 
         private EventBus _bus;
         private FakeClock _clock;
-        private FakeTips _tips;
+        private FakeBlessings _blessings;
         private TicketRegistry _registry;
         private List<IGameEvent> _log;
         private readonly CarId _car = new CarId(1);
@@ -39,8 +39,8 @@ namespace UncannyValet.Tests.Patrons
         [SetUp]
         public void SetUp()
         {
-            _bus = new EventBus(); _clock = new FakeClock(); _tips = new FakeTips();
-            _registry = new TicketRegistry(_bus, _clock, _tips, ServiceTuning.Default, null, null, ModifierTestKit.Catalog());
+            _bus = new EventBus(); _clock = new FakeClock(); _blessings = new FakeBlessings();
+            _registry = new TicketRegistry(_bus, _clock, _blessings, ServiceTuning.Default, null, null, ModifierTestKit.Catalog());
             _log = new List<IGameEvent>();
             _bus.Subscribe<CarSpawned>(e => _log.Add(e));
             _bus.Subscribe<TicketOpened>(e => _log.Add(e));
@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<TicketModifiersAssigned>(e => _log.Add(e));
             _bus.Subscribe<ModifierProgressChanged>(e => _log.Add(e));
             _bus.Subscribe<ModifierCleared>(e => _log.Add(e));
-            _bus.Subscribe<TipExplained>(e => _log.Add(e));
+            _bus.Subscribe<BlessingExplained>(e => _log.Add(e));
             _bus.Subscribe<TicketClosed>(e => _log.Add(e));
             _bus.Subscribe<TicketTimerExpired>(e => _log.Add(e));
         }
@@ -177,8 +177,8 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarParked(_car, 1));
             Tick(50f);
             _bus.Publish(new CarAtCurb(_car));
-            Assert.AreEqual(ModifierSet.Of(ModifierId.Muddy, ModifierId.NeedsCharge), _tips.Last.ClearedModifiers);
-            Assert.IsTrue(_tips.Last.OpenModifiers.IsEmpty);
+            Assert.AreEqual(ModifierSet.Of(ModifierId.Muddy, ModifierId.NeedsCharge), _blessings.Last.ClearedModifiers);
+            Assert.IsTrue(_blessings.Last.OpenModifiers.IsEmpty);
         }
 
         [Test]
@@ -203,11 +203,11 @@ namespace UncannyValet.Tests.Patrons
             Tick(40f);
             _bus.Publish(new CarAtCurb(_car));
 
-            Assert.AreEqual(ModifierSet.Of(ModifierId.NeedsCharge), _tips.Last.ClearedModifiers);
-            Assert.IsTrue(_tips.Last.OpenModifiers.IsEmpty);
-            var explained = _log.FindIndex(e => e is TipExplained);
+            Assert.AreEqual(ModifierSet.Of(ModifierId.NeedsCharge), _blessings.Last.ClearedModifiers);
+            Assert.IsTrue(_blessings.Last.OpenModifiers.IsEmpty);
+            var explained = _log.FindIndex(e => e is BlessingExplained);
             Assert.IsInstanceOf<TicketClosed>(_log[explained + 1]);
-            Assert.AreEqual(40, ((TicketClosed)_log[explained + 1]).Tip);
+            Assert.AreEqual(40, ((TicketClosed)_log[explained + 1]).Blessing);
             Assert.AreEqual(TicketState.Closed, t.State);
         }
 
@@ -218,8 +218,8 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarParked(_car, 1));
             Tick(10f);
             _bus.Publish(new CarAtCurb(_car));
-            Assert.AreEqual(ModifierSet.Of(ModifierId.Muddy), _tips.Last.OpenModifiers);
-            Assert.IsTrue(_tips.Last.ClearedModifiers.IsEmpty);
+            Assert.AreEqual(ModifierSet.Of(ModifierId.Muddy), _blessings.Last.OpenModifiers);
+            Assert.IsTrue(_blessings.Last.ClearedModifiers.IsEmpty);
         }
 
         [Test]
@@ -227,9 +227,9 @@ namespace UncannyValet.Tests.Patrons
         {
             Arrive(false, false);
             _bus.Publish(new ShiftEnded());
-            var e = (TipExplained)_log.Find(x => x is TipExplained);
+            var e = (BlessingExplained)_log.Find(x => x is BlessingExplained);
             Assert.AreEqual(0, e.Breakdown.Total);
-            Assert.AreEqual(TipZeroReason.None, e.Breakdown.ZeroReason);
+            Assert.AreEqual(BlessingZeroReason.None, e.Breakdown.ZeroReason);
         }
     }
 }

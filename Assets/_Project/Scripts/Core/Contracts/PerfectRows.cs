@@ -4,7 +4,7 @@ namespace UncannyValet.Core.Contracts
 {
     /// <summary>
     /// Panel rows of Perfect Park and Perfect drop-off judging (Lot owns the values), in designer language. The three
-    /// Perfect Park judging rows and the bonus show without the Advanced toggle; the rest are Advanced.
+    /// Perfect Park judging rows show without the Advanced toggle; the rest are Advanced.
     /// </summary>
     public static class PerfectRows
     {
@@ -29,9 +29,6 @@ namespace UncannyValet.Core.Contracts
                 "Seconds that must pass before the same car can earn another Perfect Park; 10 means a car can score at most every 10 seconds."),
             new TuningInfo(TuningKey.PerfectParkMinTravel, Group, "Perfect Park: distance to drive between scores", 0f, 10f, 0.5f,
                 "How far a car must drive after its last score before it can score again, so nudging a parked car earns nothing; 3 is about one car length and a half."),
-            new TuningInfo(TuningKey.PerfectParkBonus, Group, "Perfect Park bonus ($ per perfect park)", 0f, 10f, 1f,
-                "Dollars added to the car's ticket for each perfect park, then multiplied by the combo like the rest of the tip; 2 adds $2.",
-                advanced: false),
         };
     }
 }

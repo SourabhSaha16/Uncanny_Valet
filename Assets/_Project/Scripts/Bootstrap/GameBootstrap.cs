@@ -18,6 +18,7 @@ using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.Bootstrap
 {
@@ -28,7 +29,7 @@ namespace UncannyValet.Bootstrap
     public sealed class GameBootstrap : MonoBehaviour
     {
         [SerializeField] private ShiftConfig _shiftConfig;
-        [SerializeField] private TipConfig _tipConfig;
+        [SerializeField, FormerlySerializedAs("_tipConfig")] private BlessingConfig _blessingConfig;
         [SerializeField] private CarFactory _carFactory;
         [SerializeField] private LotLayoutBuilder _lot;
         [SerializeField] private ShiftClock _clock;
@@ -67,7 +68,7 @@ namespace UncannyValet.Bootstrap
 
         private const int DefaultSpotSeed = 6;
 
-        private ShiftScore _score;
+        private ShiftBlessings _blessings;
         private ShiftFlow _flow;
         private ShiftRandom _random;
         private DirectorBootstrap _directorBoot;
@@ -92,7 +93,7 @@ namespace UncannyValet.Bootstrap
             Func<bool> inputBlocked = () => _tuningPanel.IsTyping || _ui.IsTitleShowing;
             var input = new GatedInputSource(keyboard, inputBlocked);
             var tuning = new TuningStore(bus);
-            _score = new ShiftScore(bus, _shiftConfig);
+            _blessings = new ShiftBlessings(bus, _shiftConfig, () => Services.TryGet<ILotGoal>(out var goal) ? goal : null);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
@@ -104,8 +105,8 @@ namespace UncannyValet.Bootstrap
             Services.Register<IInputSource>(input);
             Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
-            Services.Register<ITipCalculator>(new TipCalculator(_tipConfig, null, modifiers));
-            Services.Register<IShiftScoreView>(_score);
+            Services.Register<IBlessingCalculator>(new BlessingCalculator(_blessingConfig, null, modifiers));
+            Services.Register<IShiftBlessingsView>(_blessings);
             Services.Register<IPlayerFocus>(new TransformPlayerFocus(_valet.transform));
 
             _carFactory.gameObject.SetActive(true);
@@ -140,7 +141,7 @@ namespace UncannyValet.Bootstrap
         private void SeedTuning(ITuning tuning, int spotCount)
         {
             _dialsLink?.Dispose();
-            _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
+            _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _blessingConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
@@ -169,7 +170,7 @@ namespace UncannyValet.Bootstrap
                 return;
             }
             _directorBoot = DirectorBootstrap.Start(bus, tuning, _clock, _lot, _director, _directorProfile, _random,
-                _shiftConfig.MaxComboMultiplier);
+                _shiftConfig.MaxFavourMultiplier);
             if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }
 
@@ -189,7 +190,7 @@ namespace UncannyValet.Bootstrap
             _trafficLink?.Dispose();
             _dialsLink?.Dispose();
             _random?.Dispose();
-            _score?.Dispose();
+            _blessings?.Dispose();
             _runBoot?.Dispose();
             // A newer lot scene may already have registered its own services; only the owner of the current bus clears them.
             if (Services.TryGet<IEventBus>(out var current) && ReferenceEquals(current, _bus)) Services.Reset();

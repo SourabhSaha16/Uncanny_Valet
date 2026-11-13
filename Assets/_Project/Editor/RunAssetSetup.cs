@@ -19,9 +19,9 @@ namespace UncannyValet.EditorTools
         // Scene 0 stays Bootstrap.unity (the Midgard training lot) so existing tests and the web build entry keep working.
         private const string TrainingScene = "Bootstrap";
         private const string CrazyScene = "Lot_MidgardCrazy";
-        // Placeholder blessing thresholds until the blessing task tunes them.
-        private const int TrainingThreshold = 3;
-        private const int CrazyThreshold = 5;
+        // Placeholder blessing thresholds (the old one- and two-star scores) until the owner tunes them.
+        private const int TrainingThreshold = 150;
+        private const int CrazyThreshold = 300;
         // Slots of the arrival queue: the crazy lot is a little taller so four cars can really wait.
         private const int TrainingQueueSlots = 3;
         private const int CrazyQueueSlots = 4;

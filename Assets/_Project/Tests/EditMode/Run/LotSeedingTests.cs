@@ -17,7 +17,7 @@ namespace UncannyValet.Tests.Run
         private RunFixtures _fx;
         private ShiftConfig _shift;
         private PatronConfig _patrons;
-        private TipConfig _tips;
+        private BlessingConfig _blessings;
 
         [SetUp]
         public void SetUp()
@@ -25,7 +25,7 @@ namespace UncannyValet.Tests.Run
             _fx = new RunFixtures();
             _shift = ScriptableObject.CreateInstance<ShiftConfig>();
             _patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            _tips = ScriptableObject.CreateInstance<TipConfig>();
+            _blessings = ScriptableObject.CreateInstance<BlessingConfig>();
         }
 
         [TearDown]
@@ -34,7 +34,7 @@ namespace UncannyValet.Tests.Run
             _fx.Dispose();
             Object.DestroyImmediate(_shift);
             Object.DestroyImmediate(_patrons);
-            Object.DestroyImmediate(_tips);
+            Object.DestroyImmediate(_blessings);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace UncannyValet.Tests.Run
         {
             var lot = _fx.Lot(World.Midgard, LotKind.Training);
             var tuning = new TuningStore(new EventBus());
-            TuningSeeder.Seed(tuning, _shift, _patrons, _tips, 6, lot: lot);
+            TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6, lot: lot);
             Assert.AreEqual(lot.Pacing.ShiftLengthSeconds, tuning.Get(TuningKey.ShiftLengthSeconds));
             Assert.AreEqual(lot.Pacing.ArrivalGapMinSeconds, tuning.Get(TuningKey.ArrivalGapMinMinutes));
             Assert.AreEqual(lot.Pacing.MaxWaitingCars, tuning.Get(TuningKey.PlanMaxWaitingCars));
@@ -53,7 +53,7 @@ namespace UncannyValet.Tests.Run
         public void Seed_WithoutALot_KeepsTheSharedDefaults()
         {
             var tuning = new TuningStore(new EventBus());
-            TuningSeeder.Seed(tuning, _shift, _patrons, _tips, 6);
+            TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6);
             Assert.AreEqual(_shift.ShiftLengthSeconds, tuning.Get(TuningKey.ShiftLengthSeconds));
             Assert.AreEqual(_patrons.ArrivalIntervalRange.x, tuning.Get(TuningKey.ArrivalGapMinMinutes));
         }
@@ -73,7 +73,7 @@ namespace UncannyValet.Tests.Run
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             try
             {
-                TuningSeeder.Seed(tuning, _shift, _patrons, _tips, 6, director, profile, bus: new EventBus(), lot: lot);
+                TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6, director, profile, bus: new EventBus(), lot: lot);
                 Assert.AreEqual(2f, tuning.Get(TuningKey.DialIntensity));
             }
             finally

@@ -29,34 +29,42 @@ namespace UncannyValet.Tests.UI
         public void Alarm_Clock_TurnsAmberThenOrangeRed(int seconds, AlarmLevel expected)
             => Assert.AreEqual(expected, Alarm.ForClock(seconds));
 
-        [Test]
-        public void StarBar_FillsTowardTheThreeStarScoreAndLightsStars()
+        [TestCase(0, 30, 0, false)]
+        [TestCase(15, 30, 25, false)]
+        [TestCase(29, 30, 48, false)]
+        [TestCase(30, 30, 50, true)]
+        [TestCase(400, 30, 50, true)]
+        [TestCase(-5, 30, 0, false)]
+        public void BlessingBar_FillsTowardTheThresholdAtTheRightEnd(int blessings, int threshold, int fill, bool reached)
         {
-            var bar = new StarBarLayout(300, 150, 300, 450, 90);
-            Assert.AreEqual(60, bar.Fill);
-            Assert.AreEqual(2, bar.LitStars);
-            Assert.AreEqual(30, bar.MarkerX(0));
-            Assert.AreEqual(60, bar.MarkerX(1));
-            Assert.AreEqual(90, bar.MarkerX(2));
-            Assert.IsTrue(bar.IsLit(1));
-            Assert.IsFalse(bar.IsLit(2));
+            var bar = new BlessingBarLayout(blessings, threshold, 50);
+            Assert.AreEqual(fill, bar.Fill);
+            Assert.AreEqual(reached, bar.Reached);
         }
 
         [Test]
-        public void StarBar_CapsAtFullAndSurvivesBadThresholds()
+        public void BlessingBar_SurvivesABadThreshold()
         {
-            Assert.AreEqual(90, new StarBarLayout(9999, 150, 300, 450, 90).Fill);
-            Assert.AreEqual(0, new StarBarLayout(-20, 150, 300, 450, 90).Fill);
-            Assert.AreEqual(0, new StarBarLayout(0, 0, 0, 0, 90).Fill);
+            Assert.AreEqual(0, new BlessingBarLayout(0, 0, 50).Fill);
+            Assert.AreEqual(50, new BlessingBarLayout(3, 0, 50).Fill);
         }
 
         [Test]
-        public void ComboWobble_ShakesThenSettlesToZero()
+        public void BlessingPulse_StartsBrightAndFadesOut()
         {
-            Assert.AreEqual(0, ComboWobble.OffsetY(0f));
-            Assert.AreNotEqual(0, ComboWobble.OffsetY(0.0625f));
-            Assert.AreEqual(0, ComboWobble.OffsetY(ComboWobble.DurationSeconds));
-            Assert.AreEqual(0, ComboWobble.OffsetY(-1f));
+            Assert.AreEqual(1f, BlessingPulse.Strength(0f), 1e-4f);
+            Assert.AreEqual(0.5f, BlessingPulse.Strength(BlessingPulse.DurationSeconds * 0.5f), 1e-4f);
+            Assert.AreEqual(0f, BlessingPulse.Strength(BlessingPulse.DurationSeconds));
+            Assert.AreEqual(0f, BlessingPulse.Strength(-1f));
+        }
+
+        [Test]
+        public void FavourWobble_ShakesThenSettlesToZero()
+        {
+            Assert.AreEqual(0, FavourWobble.OffsetY(0f));
+            Assert.AreNotEqual(0, FavourWobble.OffsetY(0.0625f));
+            Assert.AreEqual(0, FavourWobble.OffsetY(FavourWobble.DurationSeconds));
+            Assert.AreEqual(0, FavourWobble.OffsetY(-1f));
         }
 
         private static TicketRow Row(int car, TicketRowState state, bool timer = false, float elapsed = 0f)

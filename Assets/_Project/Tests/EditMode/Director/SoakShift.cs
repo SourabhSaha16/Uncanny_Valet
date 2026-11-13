@@ -39,7 +39,7 @@ namespace UncannyValet.Tests.Director
     {
         private const float Dt = 0.5f;
         private const float ShiftSeconds = 240f;
-        private const int MaxCombo = 4;
+        private const int MaxFavour = 4;
 
         public static SoakResult Run(int seed)
         {
@@ -50,7 +50,7 @@ namespace UncannyValet.Tests.Director
             var settings = new DirectorSettings();
             var state = new DirectorState();
             var random = new TestRandom(seed);
-            var form = new FormTracker(bus, settings.Form, clock, null, MaxCombo);
+            var form = new FormTracker(bus, settings.Form, clock, 0, MaxFavour);
             var rules = DilemmaRules.CreateAll(settings.Rules);
             var dilemmas = new DilemmaDirector(bus, clock, new ArchetypePicker(random, rules, settings.Picker, ModifierTestKit.Catalog()),
                 new DilemmaGate(settings.Gate), rules, state);

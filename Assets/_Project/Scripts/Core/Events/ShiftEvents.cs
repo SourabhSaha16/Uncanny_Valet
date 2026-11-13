@@ -9,7 +9,7 @@ namespace UncannyValet.Core.Events
         public ShiftPlanChanged(ShiftPlan plan) { Plan = plan; }
     }
 
-    /// <summary>A shift began. Score, combo and tickets start clean.</summary>
+    /// <summary>A shift began. Score, favour and tickets start clean.</summary>
     public readonly struct ShiftStarted : IGameEvent { }
 
     /// <summary>Published once per game minute. ElapsedMinutes counts from the start of the shift.</summary>

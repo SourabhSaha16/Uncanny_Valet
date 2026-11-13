@@ -11,9 +11,9 @@ namespace UncannyValet.Tests.Integration
         [SetUp] public void SetUp() { _h = new ShiftHarness(); }
         [TearDown] public void TearDown() { _h.Dispose(); }
 
-        // Tip config defaults: window 10 min, bonus +2, penalty 0.5 per minute late. The harness has no patience bonus.
+        // Blessing config defaults: window 10 min, bonus +2, penalty 0.5 per minute late. The harness has no patience bonus.
         [Test]
-        public void WholeShift_TicketToTipToScoreToResult()
+        public void WholeShift_TicketToBlessingToScoreToResult()
         {
             _h.StartShift();
             var ticket = _h.Spawn(new PatronRequest(30f, 20, false));
@@ -30,10 +30,10 @@ namespace UncannyValet.Tests.Integration
 
             Assert.AreEqual(TicketState.Closed, ticket.State);
             Assert.AreEqual(4f, _h.Log.Last<TicketClosed>().WaitMinutes);
-            Assert.AreEqual(22, _h.Log.Last<TicketClosed>().Tip);
-            Assert.AreEqual(22, _h.Log.Last<TipEarned>().Amount);
-            Assert.AreEqual(22, _h.Score.Score);
-            Assert.AreEqual(2, _h.Score.ComboMultiplier, "a happy patron raises the combo");
+            Assert.AreEqual(22, _h.Log.Last<TicketClosed>().Blessing);
+            Assert.AreEqual(22, _h.Log.Last<BlessingEarned>().Amount);
+            Assert.AreEqual(22, _h.Blessings.Blessings);
+            Assert.AreEqual(2, _h.Blessings.FavourMultiplier, "a happy patron raises the favour");
             Assert.AreEqual(0, _h.Registry.OpenCount);
             Assert.AreEqual(1, _h.Cars.DespawnCount);
 
@@ -41,9 +41,9 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(1, _h.Log.Count<ShiftEnded>());
             Assert.AreEqual(1, _h.Log.Count<ShiftResultReady>());
             var result = _h.Log.Last<ShiftResultReady>().Result;
-            Assert.AreEqual(22, result.Score);
-            Assert.AreEqual(0, result.Stars);
-            Assert.AreEqual(0, result.Complaints);
+            Assert.AreEqual(22, result.Blessings);
+            Assert.IsFalse(result.Cleared, "no lot goal is registered, so nothing is cleared");
+            Assert.AreEqual(0, result.Curses);
         }
 
         [Test]
@@ -60,13 +60,13 @@ namespace UncannyValet.Tests.Integration
             Assert.Less(l.IndexOf<TicketOpened>(), l.IndexOf<CarParked>());
             Assert.Less(l.IndexOf<CarParked>(), l.IndexOf<PickupRequested>());
             Assert.Less(l.IndexOf<PickupRequested>(), l.IndexOf<TicketClosed>());
-            Assert.Less(l.IndexOf<TicketClosed>(), l.IndexOf<TipEarned>());
-            Assert.AreEqual(22, l.Last<ScoreChanged>().Score, "score reacts to the tip");
+            Assert.Less(l.IndexOf<TicketClosed>(), l.IndexOf<BlessingEarned>());
+            Assert.AreEqual(22, l.Last<BlessingsChanged>().Blessings, "the blessings react to the blessing");
             Assert.Less(l.IndexOf<TicketClosed>(), l.IndexOf<CarDeparted>());
         }
 
         [Test]
-        public void VeryLateReturn_TipIsZero_AndTheAngryPatronCostsAComplaint()
+        public void VeryLateReturn_BlessingIsZero_AndTheAngryPatronCostsACurse()
         {
             _h.StartShift();
             var t = _h.Spawn(new PatronRequest(30f, 20, false));
@@ -74,12 +74,12 @@ namespace UncannyValet.Tests.Integration
             _h.Park(t, 1);
             _h.Minutes(30 + 100);
             _h.AtCurb(t);
-            Assert.AreEqual(0, _h.Log.Last<TipEarned>().Amount);
-            Assert.AreEqual(1, _h.Log.Count<ComplaintFiled>());
-            Assert.AreEqual(15, _h.Log.Last<ComplaintFiled>().Penalty);
-            Assert.AreEqual(1, _h.Score.Complaints);
-            Assert.AreEqual(0, _h.Score.Score, "the score never drops below 0");
-            Assert.AreEqual(1, _h.Score.ComboMultiplier);
+            Assert.AreEqual(0, _h.Log.Last<BlessingEarned>().Amount);
+            Assert.AreEqual(1, _h.Log.Count<CurseApplied>());
+            Assert.AreEqual(15, _h.Log.Last<CurseApplied>().Amount);
+            Assert.AreEqual(1, _h.Blessings.Curses);
+            Assert.AreEqual(0, _h.Blessings.Blessings, "the score never drops below 0");
+            Assert.AreEqual(1, _h.Blessings.FavourMultiplier);
         }
 
         [Test]
@@ -91,11 +91,11 @@ namespace UncannyValet.Tests.Integration
             _h.Park(t, 2);
             _h.Minutes(20 + 3);
             _h.AtCurb(t);
-            Assert.AreEqual(26, _h.Log.Last<TipEarned>().Amount);
+            Assert.AreEqual(26, _h.Log.Last<BlessingEarned>().Amount);
         }
 
         [Test]
-        public void SeveralTickets_OnlyClosedOnesScore_AndTheComboMultipliesTheSecondTip()
+        public void SeveralTickets_OnlyClosedOnesScore_AndTheFavourMultipliesTheSecondBlessing()
         {
             _h.StartShift();
             var a = _h.Spawn(new PatronRequest(10f, 20, false));
@@ -106,55 +106,55 @@ namespace UncannyValet.Tests.Integration
             _h.Minutes(10);
             _h.AtCurb(a); _h.AtCurb(b);
             Assert.AreEqual(1, _h.Registry.OpenCount);
-            Assert.AreEqual(22 + 32 * 2, _h.Score.Score);
+            Assert.AreEqual(22 + 32 * 2, _h.Blessings.Blessings);
 
             _h.Minutes(400);
-            Assert.AreEqual(2, _h.Log.Count<TipEarned>());
-            Assert.AreEqual(1, _h.Score.Complaints, "the third patron ran out of patience");
-            Assert.AreEqual(22 + 32 * 2 - 15, _h.Log.Last<ShiftResultReady>().Result.Score);
+            Assert.AreEqual(2, _h.Log.Count<BlessingEarned>());
+            Assert.AreEqual(1, _h.Blessings.Curses, "the third patron ran out of patience");
+            Assert.AreEqual(22 + 32 * 2 - 15, _h.Log.Last<ShiftResultReady>().Result.Blessings);
         }
 
         [Test]
-        public void BackToBackHappyPatrons_ClimbTheComboToTheCap_AndEarnStars()
+        public void BackToBackHappyPatrons_ClimbTheFavourToTheCap_AndPeakAtTheCap()
         {
             _h.StartShift();
             for (var i = 0; i < 5; i++) Deliver();
 
-            Assert.AreEqual(22 + 44 + 66 + 88 + 88, _h.Score.Score);
-            Assert.AreEqual(4, _h.Score.ComboMultiplier);
-            Assert.AreEqual(2, _h.Score.Stars);
+            Assert.AreEqual(22 + 44 + 66 + 88 + 88, _h.Blessings.Blessings);
+            Assert.AreEqual(4, _h.Blessings.FavourMultiplier);
+            Assert.AreEqual(4, _h.Blessings.PeakFavour);
         }
 
         [Test]
-        public void UnparkedCarThatWasAskedFor_FilesNoComplaint_AndKeepsTheCombo()
+        public void UnparkedCarThatWasAskedFor_FilesNoCurse_AndKeepsTheFavour()
         {
             _h.StartShift();
             Deliver();
             Deliver();
-            Assert.AreEqual(3, _h.Score.ComboMultiplier);
-            Assert.AreEqual(22 + 44, _h.Score.Score);
+            Assert.AreEqual(3, _h.Blessings.FavourMultiplier);
+            Assert.AreEqual(22 + 44, _h.Blessings.Blessings);
 
             _h.Spawn(new PatronRequest(10f, 20, false));
             _h.Minutes(12);
 
-            Assert.AreEqual(0, _h.Log.Count<ComplaintFiled>());
-            Assert.AreEqual(0, _h.Score.Complaints);
-            Assert.AreEqual(3, _h.Score.ComboMultiplier);
-            Assert.AreEqual(22 + 44, _h.Score.Score);
+            Assert.AreEqual(0, _h.Log.Count<CurseApplied>());
+            Assert.AreEqual(0, _h.Blessings.Curses);
+            Assert.AreEqual(3, _h.Blessings.FavourMultiplier);
+            Assert.AreEqual(22 + 44, _h.Blessings.Blessings);
         }
 
         [Test]
-        public void NewShift_StartsWithACleanScore()
+        public void NewShift_StartsWithCleanBlessings()
         {
             _h.StartShift();
             Deliver();
             _h.Minutes(1000);
-            Assert.AreEqual(22, _h.Log.Last<ShiftResultReady>().Result.Score);
+            Assert.AreEqual(22, _h.Log.Last<ShiftResultReady>().Result.Blessings);
 
             _h.StartShift();
-            Assert.AreEqual(0, _h.Score.Score);
-            Assert.AreEqual(1, _h.Score.ComboMultiplier);
-            Assert.AreEqual(0, _h.Score.Complaints);
+            Assert.AreEqual(0, _h.Blessings.Blessings);
+            Assert.AreEqual(1, _h.Blessings.FavourMultiplier);
+            Assert.AreEqual(0, _h.Blessings.Curses);
         }
 
         // One happy patron: arrive, park, stay 5, leave the spot and reach the curb right away.

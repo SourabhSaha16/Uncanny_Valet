@@ -50,8 +50,8 @@ namespace UncannyValet.Patrons
             var tuning = _tuning = new PatronTuning(_liveTuning, _config);
             _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog);
             _clock = Services.Get<IGameClock>();
-            Services.TryGet<IShiftScoreView>(out var score);
-            Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score, _catalog);
+            Services.TryGet<IShiftBlessingsView>(out var score);
+            Registry = new TicketRegistry(_bus, _clock, Services.Get<IBlessingCalculator>(), tuning, score, _catalog);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
             Services.Register<IPickupAcceptance>(new PickupAcceptance(Registry));
             _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);

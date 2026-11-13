@@ -17,10 +17,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 25;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(25, 0, 0, 25, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 25;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(25, 0, 0, 25, BlessingZeroReason.None);
         }
 
         private sealed class ConstantRandom : IPatronRandom
@@ -38,7 +38,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus();
-            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeTips(), ServiceTuning.Default, null,
+            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings(), ServiceTuning.Default, null,
                 new PlatePool(new ConstantRandom()));
             _plates = new List<CarPlateAssigned>();
             _order = new List<IGameEvent>();

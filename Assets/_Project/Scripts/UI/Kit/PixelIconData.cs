@@ -23,18 +23,11 @@ namespace UncannyValet.UI.Kit
             new Color32(0x4E, 0x31, 0x1B, 255), new Color32(0xA8, 0x74, 0x48, 255),
         };
 
-        private static readonly string[] Coin =
+        private static readonly string[] Bolt =
         {
-            "..kkkk..", ".kyyyyk.", "kyywyyok", "kywyyyok", "kywyyyok", "kyyyyyok", ".kooook.", "..kkkk..",
+            "....kkkk.", "...kyyyyk", "..kyyyyk.", ".kyyyyk..", "kyyyyyyyk", "kkkkyyyk.",
+            "...kyyk..", "..kyyk...", "..kyyk...", ".kyyk....", ".kyk.....", ".kk......",
         };
-
-        private static readonly string[] StarLit =
-        {
-            "....k....", "...kyk...", "...kyk...", "kkkkykkkk", "kyyyyyyyk",
-            ".kyyyyyk.", ".kyyyyyk.", "kyyykyyyk", "kkkk.kkkk",
-        };
-
-        private static readonly string[] StarUnlit = Recolor(StarLit, 'y', 'd');
 
         private static readonly string[] Bell =
         {
@@ -68,9 +61,7 @@ namespace UncannyValet.UI.Kit
         {
             switch (icon)
             {
-                case PixelIcon.Coin: return Coin;
-                case PixelIcon.StarLit: return StarLit;
-                case PixelIcon.StarUnlit: return StarUnlit;
+                case PixelIcon.Bolt: return Bolt;
                 case PixelIcon.Bell: return Bell;
                 case PixelIcon.KeyTag: return KeyTag;
                 case PixelIcon.Car: return Car;
@@ -79,13 +70,6 @@ namespace UncannyValet.UI.Kit
                 case PixelIcon.Plug: return Plug;
                 default: throw new ArgumentOutOfRangeException(nameof(icon), icon, "Icon has no bitmap.");
             }
-        }
-
-        private static string[] Recolor(string[] rows, char from, char to)
-        {
-            var result = new string[rows.Length];
-            for (var i = 0; i < rows.Length; i++) result[i] = rows[i].Replace(from, to);
-            return result;
         }
     }
 }

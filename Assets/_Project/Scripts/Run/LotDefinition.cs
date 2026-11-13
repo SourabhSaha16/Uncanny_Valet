@@ -30,7 +30,7 @@ namespace UncannyValet.Run
         [SerializeField, Tooltip("The mechanics this lot uses.")]
         private List<LotModifier> _modifiers = new List<LotModifier>();
         [SerializeField, Min(1), Tooltip("Blessings needed to clear the lot. Placeholder until the blessing task tunes it.")]
-        private int _blessingThreshold = 3;
+        private int _blessingThreshold = 150;
         [SerializeField, Tooltip("The power or upgrade clearing this lot grants (None for training lots).")]
         private PowerGrant _grant;
 

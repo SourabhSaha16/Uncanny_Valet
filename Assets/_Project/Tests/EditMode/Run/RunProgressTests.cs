@@ -134,6 +134,21 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
+        public void Link_RecordsTheBestBlessingsOfTheCurrentLotAtShiftEnd()
+        {
+            var bus = new EventBus();
+            using (new RunProgressLink(bus, _progress))
+            {
+                bus.Publish(new ShiftResultReady(new ShiftResult(9, 5, true, 0, 1)));
+                Assert.AreEqual(0, _progress.BestBlessings(MidgardCrazy), "no lot started yet");
+                bus.Publish(new LotStarted(MidgardCrazy));
+                bus.Publish(new ShiftResultReady(new ShiftResult(12, 5, true, 0, 2)));
+                bus.Publish(new ShiftResultReady(new ShiftResult(7, 5, true, 1, 2)));
+            }
+            Assert.AreEqual(12, _progress.BestBlessings(MidgardCrazy));
+        }
+
+        [Test]
         public void Link_AfterDispose_IgnoresEvents()
         {
             var bus = new EventBus();

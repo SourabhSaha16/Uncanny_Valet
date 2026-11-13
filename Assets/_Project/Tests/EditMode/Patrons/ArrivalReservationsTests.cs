@@ -18,11 +18,11 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => input.BaseTip;
-            public TipBreakdown Explain(in TipInput input) =>
-                new TipBreakdown(input.BaseTip, 0, 0, input.BaseTip, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => input.BaseBlessing;
+            public BlessingBreakdown Explain(in BlessingInput input) =>
+                new BlessingBreakdown(input.BaseBlessing, 0, 0, input.BaseBlessing, BlessingZeroReason.None);
         }
 
         private sealed class RecordingCars : ICarFactory
@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus();
-            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeTips());
+            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings());
             _reservations = new ArrivalReservations();
         }
 

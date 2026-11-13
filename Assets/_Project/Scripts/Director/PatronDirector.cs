@@ -16,7 +16,7 @@ namespace UncannyValet.Director
         private DirectorProfile _profile;
         private DirectorState _state;
         private IDirectorRandom _random;
-        private int _maxCombo;
+        private int _maxFavour;
         private IGameClock _clock;
         private DirectorSettings _settings;
         private FormTracker _form;
@@ -27,10 +27,10 @@ namespace UncannyValet.Director
         private readonly DirectorTicker _ticker = new DirectorTicker();
 
         /// <summary>Hands over what only Bootstrap can supply. Must be called before this object is activated.</summary>
-        /// <param name="maxCombo">The highest combo multiplier, for the form calculation.</param>
-        public void Initialize(DirectorProfile profile, DirectorState state, IDirectorRandom random, int maxCombo)
+        /// <param name="maxFavour">The highest favour multiplier, for the form calculation.</param>
+        public void Initialize(DirectorProfile profile, DirectorState state, IDirectorRandom random, int maxFavour)
         {
-            _profile = profile; _state = state; _random = random; _maxCombo = maxCombo;
+            _profile = profile; _state = state; _random = random; _maxFavour = maxFavour;
         }
 
         // Bootstrap registers services, then activates this object, so OnEnable is the first safe moment.
@@ -45,10 +45,9 @@ namespace UncannyValet.Director
             var bus = Services.Get<IEventBus>();
             var tuning = Services.Get<ITuning>();
             _clock = Services.Get<IGameClock>();
-            Services.TryGet<IShiftScoreView>(out var score);
             _settings = new DirectorSettings();
             _settings.Refresh(tuning);
-            _form = new FormTracker(bus, _settings.Form, _clock, score, _maxCombo);
+            _form = new FormTracker(bus, _settings.Form, _clock, _settings.Form.PaceBlessings, _maxFavour);
             var pacer = new ArrivalPacer(_random, _settings.Pacing, new ReliefGate(_settings.Relief));
             var rules = DilemmaRules.CreateAll(_settings.Rules);
             var picker = new ArchetypePicker(_random, rules, _settings.Picker, Services.Get<IModifierCatalog>());

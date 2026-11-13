@@ -28,11 +28,11 @@ namespace UncannyValet.Tests.Integration
             Tuning = new TuningStore(Bus);
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             var director = ScriptableObject.CreateInstance<DirectorConfig>();
             Profile = ScriptableObject.CreateInstance<DirectorProfile>();
-            _assets = new ScriptableObject[] { shift, patrons, tips, director, Profile };
-            Link = TuningSeeder.Seed(Tuning, shift, patrons, tips, 6, director, Profile, bus: linked ? Bus : null);
+            _assets = new ScriptableObject[] { shift, patrons, blessings, director, Profile };
+            Link = TuningSeeder.Seed(Tuning, shift, patrons, blessings, 6, director, Profile, bus: linked ? Bus : null);
             if (linked && anchorDefaults)
                 foreach (var key in DifficultyDials.DialKeys) Tuning.Set(key, AnchorDefault);
             Bus.Subscribe<TuningChanged>(OnChanged);

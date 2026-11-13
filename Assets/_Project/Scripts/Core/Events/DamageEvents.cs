@@ -6,7 +6,7 @@ namespace UncannyValet.Core.Events
 
     /// <summary>
     /// A car took damage from a hard impact (published by Cars). Damage01 is the car's total damage afterwards (0..1,
-    /// 1 = wrecked) and Delta01 what this hit added. Patrons keeps it for the tip; the HUD shows it on the ticket.
+    /// 1 = wrecked) and Delta01 what this hit added. Patrons keeps it for the blessing; the HUD shows it on the ticket.
     /// </summary>
     public readonly struct CarDamaged : IGameEvent
     {

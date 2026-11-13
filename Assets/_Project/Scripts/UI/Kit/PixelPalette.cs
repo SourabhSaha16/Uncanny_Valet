@@ -20,7 +20,7 @@ namespace UncannyValet.UI.Kit
         public static readonly Color Grey = new Color32(0x8C, 0x8C, 0x9C, 255);
         public static readonly Color Track = new Color32(0x12, 0x0F, 0x1C, 255);
         public static readonly Color PanelDark = new Color32(0x3A, 0x30, 0x58, 255);
-        public static readonly Color PanelCombo = new Color32(0xD0, 0x5A, 0x1E, 255);
+        public static readonly Color PanelFavour = new Color32(0xD0, 0x5A, 0x1E, 255);
         public static readonly Color PanelCream = new Color32(0xE8, 0xDC, 0xB8, 255);
         public static readonly Color Dim = new Color(0f, 0f, 0f, 0.55f);
 

@@ -5,26 +5,26 @@ namespace UncannyValet.UI.Mood
     {
         private float _impatientFrom;
         private float _angryFrom;
-        private float _willNotTipFrom;
+        private float _willNotBlessFrom;
 
         /// <summary>Thresholds are fractions of the patience used up (0 = just started, 1 = out of time); each level never starts before the one below it.</summary>
-        public EmotionRule(float impatientFrom, float angryFrom, float willNotTipFrom = 1f)
+        public EmotionRule(float impatientFrom, float angryFrom, float willNotBlessFrom = 1f)
         {
             _impatientFrom = impatientFrom;
-            SetLevels(angryFrom, willNotTipFrom);
+            SetLevels(angryFrom, willNotBlessFrom);
         }
 
-        /// <summary>Changes the angry and will-not-tip levels (a live tuning change).</summary>
-        public void SetLevels(float angryFrom, float willNotTipFrom)
+        /// <summary>Changes the angry and will-not-blessing levels (a live tuning change).</summary>
+        public void SetLevels(float angryFrom, float willNotBlessFrom)
         {
             _angryFrom = angryFrom < _impatientFrom ? _impatientFrom : angryFrom;
-            _willNotTipFrom = willNotTipFrom < _angryFrom ? _angryFrom : willNotTipFrom;
+            _willNotBlessFrom = willNotBlessFrom < _angryFrom ? _angryFrom : willNotBlessFrom;
         }
 
-        /// <summary>The emotion at this point of the timer; an expired timer always means the patron will not tip.</summary>
+        /// <summary>The emotion at this point of the timer; an expired timer always means the patron will not bless.</summary>
         public Emotion Resolve(float elapsed01, bool expired)
         {
-            if (expired || elapsed01 >= _willNotTipFrom) return Emotion.WillNotTip;
+            if (expired || elapsed01 >= _willNotBlessFrom) return Emotion.WillNotBless;
             if (elapsed01 >= _angryFrom) return Emotion.Angry;
             return elapsed01 >= _impatientFrom ? Emotion.Impatient : Emotion.Happy;
         }

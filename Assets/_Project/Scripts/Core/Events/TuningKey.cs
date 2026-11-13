@@ -31,8 +31,8 @@ namespace UncannyValet.Core.Events
         /// <summary>Real seconds in a shift. Read when a shift starts.</summary>
         ShiftLengthSeconds,
 
-        // Tips.
-        BaseTip,
+        // Blessings.
+        BaseBlessing,
         ChargeBonus,
         CleanBonus,
         SpeedWindowMinutes,
@@ -81,9 +81,9 @@ namespace UncannyValet.Core.Events
         DirFormMaxStep,
         DirFormWindow,
         DirFormWarmup,
-        DirFormTipWeight,
+        DirFormBlessingWeight,
         DirFormAngryWeight,
-        DirFormComboWeight,
+        DirFormFavourWeight,
         DirFormAngryFull,
 
         // Director: dilemma rule multipliers and thresholds.
@@ -233,13 +233,13 @@ namespace UncannyValet.Core.Events
         PerfectParkCooldown,
         /// <summary>Units a car must have moved since it last stopped for a Perfect Park to count again.</summary>
         PerfectParkMinTravel,
-        /// <summary>Dollars a Perfect Park adds to the car's ticket (before the combo multiplier).</summary>
+        /// <summary>Retired: the Perfect Park bonus (a perfect park no longer adds blessings, it fills the power bar). Reserved slot, never reuse or remove.</summary>
         PerfectParkBonus,
         // Pickup emotions (UI owns). docs/design.md A8.
         /// <summary>Share (0..1) of the pickup patience used up from which the patron is angry (red).</summary>
         EmotionAngryFrom,
-        /// <summary>Share (0..1) of the pickup patience used up from which the patron will not tip any more.</summary>
-        EmotionWillNotTipFrom,
+        /// <summary>Share (0..1) of the pickup patience used up from which the patron will not bless any more.</summary>
+        EmotionWillNotBlessFrom,
         // Arrival idle guard (Director owns). Issue 70.
         /// <summary>Longest, in seconds, the arrival queue may stay empty before a car is sent whatever the pacing says.</summary>
         ArrivalIdleLimit,

@@ -30,12 +30,12 @@ namespace UncannyValet.Tests.UI
         public void SeededLevelsApplyAndLiveChangesFollow()
         {
             _tuning.Seed(TuningKey.EmotionAngryFrom, 0.7f);
-            _tuning.Seed(TuningKey.EmotionWillNotTipFrom, 0.95f);
+            _tuning.Seed(TuningKey.EmotionWillNotBlessFrom, 0.95f);
             using (new EmotionTuningLink(_bus, _tuning, _rule, 0.8f, 1f))
             {
                 Assert.AreEqual(Emotion.Angry, _rule.Resolve(0.7f, false));
-                Assert.AreEqual(Emotion.WillNotTip, _rule.Resolve(0.95f, false));
-                _tuning.Set(TuningKey.EmotionWillNotTipFrom, 1f);
+                Assert.AreEqual(Emotion.WillNotBless, _rule.Resolve(0.95f, false));
+                _tuning.Set(TuningKey.EmotionWillNotBlessFrom, 1f);
                 Assert.AreEqual(Emotion.Angry, _rule.Resolve(0.95f, false));
             }
         }

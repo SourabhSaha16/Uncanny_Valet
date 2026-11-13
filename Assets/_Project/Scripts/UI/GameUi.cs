@@ -70,9 +70,9 @@ namespace UncannyValet.UI
             _kit = new PixelKit();
             _canvas = new PixelCanvas(_kit);
             var style = new EmotionStyle(EmotionConfig());
-            _emotionLink = new EmotionTuningLink(_bus, Services.Get<ITuning>(), style.Rule, EmotionConfig().AngryFrom, EmotionConfig().WillNotTipFrom);
-            _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftScoreView>(),
-                Services.Get<ICarFactory>(), style, EmotionConfig().TipPop, EmotionConfig().PowerBar);
+            _emotionLink = new EmotionTuningLink(_bus, Services.Get<ITuning>(), style.Rule, EmotionConfig().AngryFrom, EmotionConfig().WillNotBlessFrom);
+            _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftBlessingsView>(),
+                Services.TryGet<ILotGoal>(out var goal) ? goal : null, Services.Get<ICarFactory>(), style, EmotionConfig().BlessingPop, EmotionConfig().PowerBar);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _howToPlayPainter = new HowToPlayPainter(_canvas);
@@ -118,7 +118,7 @@ namespace UncannyValet.UI
 
         private void OnResult(ShiftResultReady e)
         {
-            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.BestCombo, _stats.PerfectParks);
+            _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.PerfectParks);
             SetPhase(UiPhase.Results);
         }
 
@@ -181,7 +181,7 @@ namespace UncannyValet.UI
             if (_phase == UiPhase.Title) { _titlePainter.Draw(time, _picker); return; }
             if (_phase == UiPhase.HowToPlay) { _howToPlayPainter.Draw(time); return; }
             _playing.Draw(ResolveCamera(), time, _prompt());
-            if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);
+            if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results);
         }
 
         // Camera.main is looked up only until it is found, then cached.

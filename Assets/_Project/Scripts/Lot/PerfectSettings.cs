@@ -24,8 +24,6 @@ namespace UncannyValet.Lot
         private float _parkCooldownSeconds = 10f;
         [SerializeField, Min(0f), Tooltip("Units a car must have moved since it last stopped for a Perfect Park to count again.")]
         private float _parkMinTravel = 3f;
-        [SerializeField, Min(0f), Tooltip("Dollars a Perfect Park adds to the ticket before the combo multiplier (Patrons applies it).")]
-        private float _parkBonusDollars = 2f;
 
         public float DropOffAngleDegrees => _dropOffAngleDegrees;
         public float DropOffTimerShare => _dropOffTimerShare;
@@ -34,6 +32,5 @@ namespace UncannyValet.Lot
         public float ParkLengthOffset => _parkLengthOffset;
         public float ParkCooldownSeconds => _parkCooldownSeconds;
         public float ParkMinTravel => _parkMinTravel;
-        public float ParkBonusDollars => _parkBonusDollars;
     }
 }

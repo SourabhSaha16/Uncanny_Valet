@@ -19,11 +19,11 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => input.BaseTip;
-            public TipBreakdown Explain(in TipInput input) =>
-                new TipBreakdown(input.BaseTip, 0, 0, input.BaseTip, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => input.BaseBlessing;
+            public BlessingBreakdown Explain(in BlessingInput input) =>
+                new BlessingBreakdown(input.BaseBlessing, 0, 0, input.BaseBlessing, BlessingZeroReason.None);
         }
 
         private sealed class FakeScan : IArrivalScan
@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _nextCar = 1;
             _bus = new EventBus();
-            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeTips());
+            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings());
             _scan = new FakeScan();
             _slots = new QueueSlotAllocator(_bus, _registry, _scan, new PatronPlan(Cap));
         }

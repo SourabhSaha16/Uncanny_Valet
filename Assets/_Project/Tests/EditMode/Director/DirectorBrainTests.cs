@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Director
             _state = new DirectorState();
             var settings = new DirectorSettings();
             settings.Refresh(_tuning);
-            _form = new FormTracker(_bus, settings.Form, _clock, null, 4);
+            _form = new FormTracker(_bus, settings.Form, _clock, 0, 4);
             var pacer = new ArrivalPacer(new MidRandom(), settings.Pacing, new ReliefGate(settings.Relief));
             var rules = DilemmaRules.CreateAll(settings.Rules);
             _dilemmas = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new MidRandom(), rules, settings.Picker, ModifierTestKit.Catalog()),

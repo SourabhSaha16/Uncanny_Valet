@@ -41,7 +41,7 @@ namespace UncannyValet.Core.Modifiers
         private float _clearMinutes = 15f;
         [SerializeField, Range(0f, 0.99f), Tooltip("Progress 0 to 1 the car arrives with (a car that arrives 20% charged starts at 0.2).")]
         private float _startProgress01;
-        [SerializeField, Min(0), Tooltip("Dollars added to the tip for clearing this modifier (before the combo).")]
+        [SerializeField, Min(0), Tooltip("Blessings added for clearing this modifier (before the favour).")]
         private int _bonus = 15;
         [SerializeField, Tooltip("Status word while the station works on it, for example Washing.")]
         private string _activeWord;

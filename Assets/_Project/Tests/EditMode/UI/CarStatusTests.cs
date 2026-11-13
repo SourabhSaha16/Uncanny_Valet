@@ -74,7 +74,7 @@ namespace UncannyValet.Tests.UI
             row.Elapsed01 = 0.9f;
             Assert.AreEqual(CarStatus.CustAngry, Resolver.Resolve(row));
             row.Expired = true;
-            Assert.AreEqual(CarStatus.WillNotTip, Resolver.Resolve(row));
+            Assert.AreEqual(CarStatus.WillNotBless, Resolver.Resolve(row));
         }
 
         [Test]
@@ -110,8 +110,8 @@ namespace UncannyValet.Tests.UI
         {
             Assert.AreEqual("Cust. Angry", CarStatusTable.LabelFitting(CarStatus.CustAngry, 200));
             Assert.AreEqual("Angry", CarStatusTable.LabelFitting(CarStatus.CustAngry, 56));
-            Assert.AreEqual("Won't tip", CarStatusTable.LabelFitting(CarStatus.WillNotTip, 56));
-            Assert.AreEqual("No tip", CarStatusTable.LabelFitting(CarStatus.WillNotTip, 40));
+            Assert.AreEqual("Unblessed", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 56));
+            Assert.AreEqual("Zero", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 40));
             Assert.AreEqual("Pick Up", CarStatusTable.LabelFitting(CarStatus.PickUp, 56));
         }
 

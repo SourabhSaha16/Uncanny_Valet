@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.UI::UncannyValet.UI.Mood.HudEmotionConfig
   _impatientFrom: 0.6
   _angryFrom: 0.8
-  _willNotTipFrom: 1
+  _willNotBlessFrom: 1
   _happyHz: 1.5
   _impatientHz: 3
   _angryHz: 7
-  _willNotTipHz: 1
+  _willNotBlessHz: 1
   _happyColor: {r: 0.29803923, g: 0.79607844, b: 0.36862746, a: 1}
   _impatientColor: {r: 1, g: 0.8784314, b: 0.22745098, a: 1}
   _angryColor: {r: 0.9411765, g: 0.22745098, b: 0.16470589, a: 1}
-  _willNotTipColor: {r: 0.627451, g: 0.15686275, b: 0.15686275, a: 1}
+  _willNotBlessColor: {r: 0.627451, g: 0.15686275, b: 0.15686275, a: 1}

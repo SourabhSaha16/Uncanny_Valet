@@ -4,11 +4,13 @@ namespace UncannyValet.UI.Screens
     public sealed class ResultsContent
     {
         public string Title;
-        /// <summary>Total tips, such as "$320".</summary>
-        public string Score;
-        /// <summary>Stars earned, 0 to 3.</summary>
-        public int Stars;
-        /// <summary>What to aim for next, or the top-marks line.</summary>
+        /// <summary>CLEARED or FAILED.</summary>
+        public string Verdict;
+        /// <summary>True when the lot was cleared (the verdict is drawn green, otherwise red).</summary>
+        public bool Cleared;
+        /// <summary>Blessings and the threshold, such as "12 / 30".</summary>
+        public string Blessings;
+        /// <summary>What is left to do, or the reached line.</summary>
         public string Goal;
         public StatLine[] Stats;
     }

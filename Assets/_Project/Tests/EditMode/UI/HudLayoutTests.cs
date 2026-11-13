@@ -6,63 +6,56 @@ namespace UncannyValet.Tests.UI
 {
     public class HudLayoutTests
     {
-        private const int OldScoreWidth = 112;
-        private const int OldScoreHeight = 40;
-        private const int OldComboWidth = 40;
-        private const int OldComboHeight = 24;
+        private const int Border = PixelKit.PanelBorder;
 
         [Test]
-        public void ScorePanel_IsAboutHalfTheOldSize()
+        public void BoltAndCount_FitInTheFirstRowAboveTheBar()
         {
-            Assert.LessOrEqual(HudLayout.ScoreWidth, OldScoreWidth * 0.6f);
-            Assert.LessOrEqual(HudLayout.ScoreHeight, OldScoreHeight * 0.75f);
-            Assert.LessOrEqual(HudLayout.ComboWidth, OldComboWidth * 0.7f);
-            Assert.LessOrEqual(HudLayout.ComboHeight, OldComboHeight * 0.7f);
+            var bolt = PixelIconData.Rows(PixelIcon.Bolt);
+            Assert.GreaterOrEqual(HudLayout.BoltX, Border);
+            Assert.LessOrEqual(HudLayout.BoltX + bolt[0].Length, HudLayout.CountX);
+            Assert.LessOrEqual(HudLayout.BoltY + bolt.Length, HudLayout.BarY - HudLayout.MarkerOverhang);
+            var fiveDigits = PixelTextLayout.Width("99999".Length, HudLayout.TextScale);
+            Assert.LessOrEqual(HudLayout.CountX + fiveDigits, HudLayout.BlessingsWidth - Border);
         }
 
         [Test]
-        public void StarBar_AndEveryStarIcon_FitInsideTheScorePanelBorder()
+        public void BarMarkerAndGoalText_FitInsideThePanelBorder()
         {
-            var bar = new StarBarLayout(0, 150, 300, 450, HudLayout.BarWidth);
-            var starWidth = PixelIconData.Rows(PixelIcon.StarLit)[0].Length;
-            var starHeight = PixelIconData.Rows(PixelIcon.StarLit).Length;
-            for (var star = 0; star < StarBarLayout.Stars; star++)
-            {
-                var x = HudLayout.StarX(bar, star);
-                Assert.GreaterOrEqual(x, PixelKit.PanelBorder, "star " + star);
-                Assert.LessOrEqual(x + starWidth, HudLayout.ScoreWidth - PixelKit.PanelBorder, "star " + star);
-            }
-            var top = HudLayout.BarY + HudLayout.BarHeight / 2 - starHeight / 2;
-            Assert.GreaterOrEqual(top, PixelKit.PanelBorder);
-            Assert.LessOrEqual(top + starHeight, HudLayout.ScoreHeight - PixelKit.PanelBorder);
+            Assert.GreaterOrEqual(HudLayout.BarX - 1, Border);
+            Assert.LessOrEqual(HudLayout.BarX + HudLayout.BarWidth + 1, HudLayout.BlessingsWidth - Border);
+            Assert.GreaterOrEqual(HudLayout.BarY - HudLayout.MarkerOverhang, Border);
+            Assert.Less(HudLayout.BarY + HudLayout.BarHeight + HudLayout.MarkerOverhang, HudLayout.GoalTextY);
+            var text = PixelTextLayout.Width("999 / 999".Length, HudLayout.TextScale);
+            Assert.LessOrEqual(HudLayout.BarX + text, HudLayout.BlessingsWidth - Border);
+            Assert.LessOrEqual(HudLayout.GoalTextY + PixelTextLayout.Height(HudLayout.TextScale), HudLayout.BlessingsHeight - Border);
         }
 
         [Test]
-        public void CoinAndScoreText_FitInTheFirstRowAboveTheBar()
-        {
-            var coin = PixelIconData.Rows(PixelIcon.Coin);
-            Assert.GreaterOrEqual(HudLayout.CoinX, PixelKit.PanelBorder);
-            Assert.LessOrEqual(HudLayout.CoinX + coin[0].Length, HudLayout.TipsX);
-            Assert.LessOrEqual(HudLayout.CoinY + coin.Length, HudLayout.BarY);
-            var fiveDigits = PixelTextLayout.Width("$9999".Length, HudLayout.TextScale);
-            Assert.LessOrEqual(HudLayout.TipsX + fiveDigits, HudLayout.ScoreWidth - PixelKit.PanelBorder);
-            Assert.LessOrEqual(HudLayout.TipsY + PixelTextLayout.Height(HudLayout.TextScale), HudLayout.BarY);
-        }
-
-        [Test]
-        public void ComboBadge_HoldsTwoDigitMultiplierText()
+        public void FavourBadge_HoldsTwoDigitMultiplierText()
         {
             var width = PixelTextLayout.Width("X4".Length, HudLayout.TextScale);
-            Assert.LessOrEqual(width, HudLayout.ComboWidth - PixelKit.PanelBorder * 2);
-            var bottom = HudLayout.ComboTextY + PixelTextLayout.Height(HudLayout.TextScale);
-            Assert.GreaterOrEqual(HudLayout.ComboTextY, PixelKit.PanelBorder - 1);
-            Assert.LessOrEqual(bottom, HudLayout.ComboHeight - PixelKit.PanelBorder + 1);
+            Assert.LessOrEqual(width, HudLayout.FavourWidth - Border * 2);
+            var bottom = HudLayout.FavourTextY + PixelTextLayout.Height(HudLayout.TextScale);
+            Assert.GreaterOrEqual(HudLayout.FavourTextY, Border - 1);
+            Assert.LessOrEqual(bottom, HudLayout.FavourHeight - Border + 1);
         }
 
         [Test]
-        public void ComboWobble_StaysInsideTheBadgeMargin()
+        public void FavourWobble_StaysInsideTheBadgeMargin()
         {
-            Assert.LessOrEqual(ComboWobble.AmplitudePixels, HudLayout.Margin);
+            Assert.LessOrEqual(FavourWobble.AmplitudePixels, HudLayout.Margin);
+        }
+
+        [Test]
+        public void BoltIcon_IsARectangularBitmapOfKnownColours()
+        {
+            var rows = PixelIconData.Rows(PixelIcon.Bolt);
+            foreach (var row in rows)
+            {
+                Assert.AreEqual(rows[0].Length, row.Length);
+                foreach (var c in row) Assert.IsTrue(c == '.' || PixelIconData.Keys.IndexOf(c) >= 0, "colour key " + c);
+            }
         }
     }
 }

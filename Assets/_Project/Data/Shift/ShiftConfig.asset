@@ -15,11 +15,8 @@ MonoBehaviour:
   _shiftLengthSeconds: 240
   _gameMinutesPerSecond: 1
   _finalStretchSeconds: 30
-  _oneStarScore: 150
-  _twoStarScore: 300
-  _threeStarScore: 450
-  _complaintPenalty: 15
-  _maxComboMultiplier: 4
+  _defaultCurse: 15
+  _maxFavourMultiplier: 4
   _maxWaitingCars: 3
   _arrivalGapScale: 1
   _activeSpots: 0
