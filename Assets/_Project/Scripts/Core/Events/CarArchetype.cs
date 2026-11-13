@@ -6,13 +6,13 @@ namespace UncannyValet.Core.Events
         /// <summary>Park, return.</summary>
         Plain,
 
-        /// <summary>Wash, then park.</summary>
-        Dirty,
+        /// <summary>Muddy: wash, then park.</summary>
+        Muddy,
 
         /// <summary>Charge before pickup for a bonus.</summary>
         Ev,
 
-        /// <summary>Wash and charge: two stations in sequence.</summary>
-        DirtyEv
+        /// <summary>Muddy and needs a charge: wash and charge: two stations in sequence.</summary>
+        MuddyEv
     }
 }

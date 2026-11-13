@@ -10,7 +10,7 @@ namespace UncannyValet.Tests.Director
         public const int Budget = 14;
 
         public static ArchetypePicker Picker(DirectorSettings settings, int seed)
-            => new ArchetypePicker(new TestRandom(seed), DilemmaRules.CreateAll(settings.Rules), settings.Picker);
+            => new ArchetypePicker(new TestRandom(seed), DilemmaRules.CreateAll(settings.Rules), settings.Picker, ModifierTestKit.Catalog());
 
         /// <summary>A lot with the wash slot and/or the two EV bays unlocked (the wash in the given state).</summary>
         public static SnapshotBuilderForTests Stations(bool wash, bool bays, StationSlotState washState = StationSlotState.Free)

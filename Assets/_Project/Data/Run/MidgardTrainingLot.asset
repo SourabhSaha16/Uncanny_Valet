@@ -25,6 +25,11 @@ MonoBehaviour:
     _arrivalGapMaxSeconds: 25
     _maxWaitingCars: 2
     _arrivalBudget: 0
+  _modifierChances:
+  - _modifier: {fileID: 11400000, guid: ba5303a9395f5a943bca97c240726119, type: 2}
+    _chance: 0.3
+  - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
+    _chance: 0.3
   _dials: []
   _modifiers: []
   _blessingThreshold: 3

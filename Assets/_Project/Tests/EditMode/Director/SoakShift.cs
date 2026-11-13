@@ -52,7 +52,7 @@ namespace UncannyValet.Tests.Director
             var random = new TestRandom(seed);
             var form = new FormTracker(bus, settings.Form, clock, null, MaxCombo);
             var rules = DilemmaRules.CreateAll(settings.Rules);
-            var dilemmas = new DilemmaDirector(bus, clock, new ArchetypePicker(random, rules, settings.Picker),
+            var dilemmas = new DilemmaDirector(bus, clock, new ArchetypePicker(random, rules, settings.Picker, ModifierTestKit.Catalog()),
                 new DilemmaGate(settings.Gate), rules, state);
             var lot = new SoakLotView(sim);
             var profile = new SoakProfile();

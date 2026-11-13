@@ -22,7 +22,7 @@ namespace UncannyValet.Tests.Patrons
         {
             public int Calculate(in TipInput input) => input.BaseTip;
             public TipBreakdown Explain(in TipInput input) =>
-                new TipBreakdown(input.BaseTip, 0, 0, 0, input.BaseTip, TipZeroReason.None);
+                new TipBreakdown(input.BaseTip, 0, 0, input.BaseTip, TipZeroReason.None);
         }
 
         private sealed class RecordingCars : ICarFactory

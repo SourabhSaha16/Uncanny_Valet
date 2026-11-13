@@ -23,7 +23,7 @@ namespace UncannyValet.Tests.Patrons
         private sealed class FakeTips : ITipCalculator
         {
             public int Calculate(in TipInput input) => 10;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(10, 0, 0, 0, 10, TipZeroReason.None);
+            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(10, 0, 0, 10, TipZeroReason.None);
         }
 
         private EventBus _bus;
@@ -117,7 +117,7 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void ATicketWhoseStayHasNotStarted_NeverEnds()
         {
-            var t = new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1", ServiceTuning.Default);
+            var t = new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1");
             Assert.IsFalse(t.StayEnded(1000f));
             Assert.IsFalse(t.QueueWaitOver(1000f, Wait), "never arrived, so no queue wait");
         }

@@ -1,6 +1,7 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Director
@@ -50,7 +51,7 @@ namespace UncannyValet.Director
             _form = new FormTracker(bus, _settings.Form, _clock, score, _maxCombo);
             var pacer = new ArrivalPacer(_random, _settings.Pacing, new ReliefGate(_settings.Relief));
             var rules = DilemmaRules.CreateAll(_settings.Rules);
-            var picker = new ArchetypePicker(_random, rules, _settings.Picker);
+            var picker = new ArchetypePicker(_random, rules, _settings.Picker, Services.Get<IModifierCatalog>());
             _dilemmas = new DilemmaDirector(bus, _clock, picker, new DilemmaGate(_settings.Gate), rules, _state);
             var tuned = new TunedIntensityProfile(_profile, _settings.Shape, _profile.RisingLookahead);
             _returns = new ReturnDirector(bus, _clock, tuning, _settings);

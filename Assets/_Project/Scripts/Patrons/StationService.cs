@@ -4,7 +4,10 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Tracks which station each car is stopped in, charges EVs and washes cars each minute.</summary>
+    /// <summary>
+    /// Tracks which station each car is stopped in and advances the modifiers each game minute: a station works on one
+    /// open modifier of the car it holds (the first one it clears), so two modifiers of one kind clear one after the other.
+    /// </summary>
     public sealed class StationService
     {
         private readonly IEventBus _bus;
@@ -26,48 +29,46 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<ShiftTick>(OnShiftTick);
         }
 
-        /// <summary>Publishes the starting charge (EV) or clean level (dirty) of a new car.</summary>
+        /// <summary>Publishes the starting progress of every modifier of a new car.</summary>
         public void Announce(Ticket t)
         {
-            if (t.IsEv) _bus.Publish(new CarChargeChanged(t.CarId, t.Charge.Charge01));
-            if (t.IsDirty) _bus.Publish(new CarCleanChanged(t.CarId, t.Wash.Clean01));
+            for (var i = 0; i < t.Modifiers.Count; i++)
+                _bus.Publish(new ModifierProgressChanged(t.CarId, t.Modifiers[i].Id, t.Modifiers[i].Progress01));
         }
 
-        private void OnEntered(CarEnteredStation e) => SetBay(e.Car, e.Station, true);
+        private void OnEntered(CarEnteredStation e) => SetStation(e.Car, e.Station, true);
 
-        private void OnLeft(CarLeftStation e) => SetBay(e.Car, e.Station, false);
+        private void OnLeft(CarLeftStation e) => SetStation(e.Car, e.Station, false);
 
-        private void SetBay(Core.Ids.CarId car, StationKind kind, bool inside)
+        private void SetStation(Core.Ids.CarId car, StationKind kind, bool inside)
         {
-            if (!_book.TryGetByCar(car, out var t)) return;
-            if (kind == StationKind.Charging)
-            {
-                if (t.IsEv) t.InChargingBay = inside;
-                return;
-            }
-            t.InWashBay = inside;
+            if (_book.TryGetByCar(car, out var t)) t.SetInStation(kind, inside);
         }
 
         private void OnShiftTick(ShiftTick e)
         {
             _book.CopyTo(_scratch);
-            foreach (var t in _scratch)
+            foreach (var t in _scratch) Work(t);
+        }
+
+        // Per station kind only the first open modifier it clears gets this minute.
+        private void Work(Ticket t)
+        {
+            var served = 0;
+            for (var i = 0; i < t.Modifiers.Count; i++)
             {
-                if (t.IsEv && t.Charge.Advance(t.InChargingBay)) PublishCharge(t);
-                if (t.IsDirty && t.Wash.Advance(t.InWashBay)) PublishClean(t);
+                var m = t.Modifiers[i];
+                var bit = 1 << (int)m.ClearedAt;
+                if (m.IsCleared || (served & bit) != 0) continue;
+                served |= bit;
+                if (m.Advance(t.InStation(m.ClearedAt))) Publish(t, m);
             }
         }
 
-        private void PublishCharge(Ticket t)
+        private void Publish(Ticket t, ModifierInstance m)
         {
-            _bus.Publish(new CarChargeChanged(t.CarId, t.Charge.Charge01));
-            if (t.Charge.IsFull) _bus.Publish(new CarFullyCharged(t.CarId));
-        }
-
-        private void PublishClean(Ticket t)
-        {
-            _bus.Publish(new CarCleanChanged(t.CarId, t.Wash.Clean01));
-            if (t.Wash.IsClean) _bus.Publish(new CarCleaned(t.CarId));
+            _bus.Publish(new ModifierProgressChanged(t.CarId, m.Id, m.Progress01));
+            if (m.IsCleared) _bus.Publish(new ModifierCleared(t.CarId, m.Id));
         }
     }
 }

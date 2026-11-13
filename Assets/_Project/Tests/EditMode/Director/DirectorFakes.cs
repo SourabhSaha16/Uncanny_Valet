@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 
 namespace UncannyValet.Tests.Director
@@ -64,13 +65,20 @@ namespace UncannyValet.Tests.Director
         public float NextPickup = float.PositiveInfinity;
         public readonly List<float> Angry = new List<float>();
 
-        public CarId Car(CarLotState state, bool dirty = false, bool ev = false, bool washDone = false,
-            bool chargeDone = false, bool awaitingPark = false, float washLeft = 0f, float patience = 1f,
+        /// <param name="washLeft">Share of the wash still to do of an open Muddy car; negative means all of it.</param>
+        public CarId Car(CarLotState state, bool muddy = false, bool ev = false, bool washDone = false,
+            bool chargeDone = false, bool awaitingPark = false, float washLeft = -1f, float patience = 1f,
             float toPickup = float.PositiveInfinity, float plannedStay = 0f, float shift = 0f)
         {
             var id = new CarId(_next++);
-            _cars.Add(new CarSnapshot(id, state, dirty, ev, washDone, chargeDone, awaitingPark, washLeft, patience, toPickup,
-                plannedStay, shift));
+            var held = ModifierTestKit.Of(ev, muddy);
+            var done = ModifierSet.None;
+            if (muddy && washDone) done = done.With(ModifierId.Muddy);
+            if (ev && chargeDone) done = done.With(ModifierId.NeedsCharge);
+            var left = new float[CarSnapshot.StationKindCount];
+            if (muddy && !washDone) left[(int)StationKind.Wash] = washLeft < 0f ? 1f : washLeft;
+            if (ev && !chargeDone) left[(int)StationKind.Charging] = 1f;
+            _cars.Add(new CarSnapshot(id, state, held, done, awaitingPark, patience, toPickup, plannedStay, shift, left));
             return id;
         }
 

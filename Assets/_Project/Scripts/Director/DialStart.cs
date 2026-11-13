@@ -22,8 +22,6 @@ namespace UncannyValet.Director
             new DialStart(TuningKey.DialIntensity, 8f),
             new DialStart(TuningKey.DialRamp, 8f),
             new DialStart(TuningKey.DialLateRush, 6f),
-            new DialStart(TuningKey.DialDirtyCars, 5f),
-            new DialStart(TuningKey.DialEvCars, 5f),
             new DialStart(TuningKey.DialDilemmas, 6.5f),
             new DialStart(TuningKey.DialMercy, 4f),
             new DialStart(TuningKey.DialSkillReward, 5.5f),

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 
 namespace UncannyValet.Tests.Director
@@ -107,7 +108,8 @@ namespace UncannyValet.Tests.Director
             var car = new SoakCar
             {
                 PlannedStay = stay,
-                Id = id, Dirty = ArchetypeKinds.NeedsWash(_pendingArchetype), Ev = ArchetypeKinds.NeedsCharge(_pendingArchetype),
+                Id = id, Muddy = ArchetypeKinds.Modifiers(_pendingArchetype).Contains(ModifierId.Muddy),
+                Ev = ArchetypeKinds.Modifiers(_pendingArchetype).Contains(ModifierId.NeedsCharge),
                 State = CarLotState.Arriving, ArriveLeft = ArriveSeconds,
                 StayLeft = stay,
             };

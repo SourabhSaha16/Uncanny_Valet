@@ -29,9 +29,9 @@ namespace UncannyValet.Tests.Director
                 var band = bands[seed % bands.Length];
                 for (var i = 0; i < Budget; i++) picker.Pick(Request(lot, band));
                 AssertShare(picker, CarArchetype.Plain, 0.5f, seed);
-                AssertShare(picker, CarArchetype.Dirty, 0.2f, seed);
+                AssertShare(picker, CarArchetype.Muddy, 0.2f, seed);
                 AssertShare(picker, CarArchetype.Ev, 0.2f, seed);
-                AssertShare(picker, CarArchetype.DirtyEv, 0.1f, seed);
+                AssertShare(picker, CarArchetype.MuddyEv, 0.1f, seed);
             }
         }
 
@@ -45,24 +45,24 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void ABoostedWinnerReportsItsRuleAndMultiplier()
         {
-            var pick = FirstDirtyPick(out var seed);
+            var pick = FirstMuddyPick(out var seed);
             Assert.IsTrue(pick.HasRule, "seed " + seed);
             Assert.AreEqual(DilemmaKind.WashBlocked, pick.Rule);
             Assert.AreEqual(3f, pick.Multiplier);
         }
 
-        // The first seed whose draw on a blocked-wash lot lands on Dirty (a x3 weight wins within a few seeds).
-        private PickResult FirstDirtyPick(out int foundSeed)
+        // The first seed whose draw on a blocked-wash lot lands on Muddy (a x3 weight wins within a few seeds).
+        private PickResult FirstMuddyPick(out int foundSeed)
         {
             var lot = Stations(true, true, StationSlotState.Blocked);
             for (var seed = 1; seed <= 30; seed++)
             {
                 var pick = Picker(seed).Pick(Request(lot, dilemmas: true));
-                if (pick.Archetype != CarArchetype.Dirty) continue;
+                if (pick.Archetype != CarArchetype.Muddy) continue;
                 foundSeed = seed;
                 return pick;
             }
-            Assert.Fail("a x3 Dirty weight should win at least one of 30 draws");
+            Assert.Fail("a x3 Muddy weight should win at least one of 30 draws");
             foundSeed = 0;
             return default;
         }
@@ -96,11 +96,11 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void UnderTargetFavoursDirtyAndOverTargetDoesNot()
+        public void UnderTargetFavoursMuddyAndOverTargetDoesNot()
         {
             var lot = Stations(true, true);
-            Assert.Greater(CountOf(CarArchetype.Dirty, lot, ScheduleReason.UnderTarget),
-                CountOf(CarArchetype.Dirty, lot, ScheduleReason.OverTarget));
+            Assert.Greater(CountOf(CarArchetype.Muddy, lot, ScheduleReason.UnderTarget),
+                CountOf(CarArchetype.Muddy, lot, ScheduleReason.OverTarget));
         }
 
         private int CountOf(CarArchetype wanted, SnapshotBuilderForTests lot, ScheduleReason band)
@@ -121,7 +121,7 @@ namespace UncannyValet.Tests.Director
             tuning.Seed(TuningKey.DirAssist, 1f);
             tuning.Seed(TuningKey.DirAssistDilemmaScale, 0.5f);
             _settings.Refresh(tuning);
-            var pick = FirstDirtyPick(out _);
+            var pick = FirstMuddyPick(out _);
             Assert.AreEqual(2f, pick.Multiplier, 0.0001f, "x3 with half the strength is x2");
         }
     }

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 
 namespace UncannyValet.Tests.Director
@@ -23,17 +24,17 @@ namespace UncannyValet.Tests.Director
         {
             Bus = new EventBus();
             Clock = new FakeClock();
-            Tracker = new LotStateTracker(Bus, Clock, new TuningStore(Bus), RegularSpots, Bays);
+            Tracker = new LotStateTracker(Bus, Clock, new TuningStore(Bus), ModifierTestKit.Catalog(), RegularSpots, Bays);
         }
 
         [TearDown]
         public void TearDown() => Tracker.Dispose();
 
-        protected void Spawn(bool ev = false, bool dirty = false, float stay = 30f)
+        protected void Spawn(bool ev = false, bool muddy = false, float stay = 30f)
         {
             Bus.Publish(new CarSpawned(Car, Ticket));
             Bus.Publish(new TicketOpened(Ticket, Car, stay));
-            Bus.Publish(new TicketTraitsAssigned(Ticket, Car, ev, dirty));
+            Bus.Publish(new TicketModifiersAssigned(Ticket, Car, ModifierTestKit.Of(ev, muddy)));
         }
 
         protected CarSnapshot Only() => Tracker.Capture().Cars[0];

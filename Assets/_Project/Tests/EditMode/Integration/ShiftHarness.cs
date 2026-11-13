@@ -46,7 +46,7 @@ namespace UncannyValet.Tests.Integration
             so.FindProperty("_maxPatienceBonus").intValue = 0;
             so.ApplyModifiedPropertiesWithoutUndo();
             Score = new ShiftScore(Bus, _config);
-            Registry = new TicketRegistry(Bus, Clock, new TipCalculator(_tipConfig), Score);
+            Registry = new TicketRegistry(Bus, Clock, new TipCalculator(_tipConfig, null, ModifierTestKit.Catalog()), Score);
             _departure = new PatronDeparture(Bus, Cars);
         }
 

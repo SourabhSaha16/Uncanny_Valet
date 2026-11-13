@@ -1,4 +1,5 @@
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
@@ -8,11 +9,14 @@ namespace UncannyValet.Patrons
         private readonly PatronConfig _config;
         private readonly PatronTuning _tuning;
         private readonly PatronPlan _plan;
+        private readonly ModifierRoller _modifiers;
         private readonly IPatronRandom _random;
 
-        public PatronRequestRoller(PatronConfig config, PatronTuning tuning, PatronPlan plan, IPatronRandom random)
+        public PatronRequestRoller(PatronConfig config, PatronTuning tuning, PatronPlan plan, IPatronRandom random,
+            IModifierCatalog catalog)
         {
             _config = config; _tuning = tuning; _plan = plan; _random = random;
+            _modifiers = new ModifierRoller(catalog, tuning, plan);
         }
 
         public float NextGap() => _random.Range(_tuning.GapMin, _tuning.GapMax) * _plan.ArrivalGapScale;
@@ -23,8 +27,8 @@ namespace UncannyValet.Patrons
             var progress = shiftProgress01;
             var stay = _random.Range(_tuning.StayMin, _tuning.StayMax);
             var impatient = _random.Value() < _tuning.ImpatientChance;
-            _plan.RollTraits(_random, progress, out var ev, out var dirty);
-            return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.WindowFor(impatient), ev, dirty);
+            var modifiers = _modifiers.Roll(_random, progress);
+            return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.WindowFor(impatient), modifiers);
         }
 
         /// <summary>Like <see cref="Roll(float)"/> but the car type is dictated (by the director) instead of rolled.</summary>
@@ -32,9 +36,8 @@ namespace UncannyValet.Patrons
         {
             var stay = _random.Range(_tuning.StayMin, _tuning.StayMax);
             var impatient = _random.Value() < _tuning.ImpatientChance;
-            _random.Value(); // the trait roll Roll() makes, so both paths draw the same number of values
-            ArchetypeTraits.Of(archetype, out var ev, out var dirty);
-            return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.WindowFor(impatient), ev, dirty);
+            _random.Value(); // the modifier roll Roll() makes, so both paths draw the same number of values
+            return new PatronRequest(stay, _config.BaseTip, impatient, _tuning.WindowFor(impatient), ArchetypeModifiers.Of(archetype));
         }
     }
 }

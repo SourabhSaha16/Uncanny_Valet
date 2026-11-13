@@ -1,6 +1,7 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -45,7 +46,8 @@ namespace UncannyValet.Audio
             _tyreTuning = new TyreSoundTuning(bus, _config.TyreVolume, _config.TyreSharpness, OnTyreTuned);
             if (Services.TryGet<ITuning>(out var tuning)) _tyreTuning.Load(tuning);
             BuildAudio();
-            _router =new SfxEventRouter(bus, Play, () => Time.unscaledTime);
+            Services.TryGet<IModifierCatalog>(out var modifiers);
+            _router = new SfxEventRouter(bus, Play, () => Time.unscaledTime, modifiers);
             _pending = new PendingCarTracker(bus);
             _urgency = new UrgencyRule(_config.MinTempoMultiplier, _config.MaxTempoMultiplier,
                 _config.PendingForMaxTempo, _config.TempoSmoothingSeconds);

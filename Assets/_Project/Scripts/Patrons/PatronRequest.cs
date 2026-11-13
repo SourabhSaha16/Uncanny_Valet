@@ -1,3 +1,5 @@
+using UncannyValet.Core.Modifiers;
+
 namespace UncannyValet.Patrons
 {
     /// <summary>
@@ -13,20 +15,20 @@ namespace UncannyValet.Patrons
         public readonly int BaseTip;
         public readonly bool Impatient;
         public readonly float PickupWindowMinutes;
-        public readonly bool IsEv;
-        public readonly bool IsDirty;
+        /// <summary>The service modifiers the car arrives with.</summary>
+        public readonly ModifierSet Modifiers;
 
         public PatronRequest(float stayMinutes, int baseTip, bool impatient,
             float pickupWindowMinutes = DefaultPickupWindowMinutes,
-            bool isEv = false, bool isDirty = false)
+            ModifierSet modifiers = default)
         {
             StayMinutes = stayMinutes; BaseTip = baseTip; Impatient = impatient;
             PickupWindowMinutes = pickupWindowMinutes;
-            IsEv = isEv; IsDirty = isDirty;
+            Modifiers = modifiers;
         }
 
         /// <summary>The same visit with another stay.</summary>
         public PatronRequest WithStay(float stayMinutes)
-            => new PatronRequest(stayMinutes, BaseTip, Impatient, PickupWindowMinutes, IsEv, IsDirty);
+            => new PatronRequest(stayMinutes, BaseTip, Impatient, PickupWindowMinutes, Modifiers);
     }
 }

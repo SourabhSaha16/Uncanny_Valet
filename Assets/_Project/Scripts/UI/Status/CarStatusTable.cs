@@ -23,10 +23,8 @@ namespace UncannyValet.UI.Status
         private static readonly Entry[] Entries =
         {
             new Entry("Parked", "Parked", PixelPalette.Cyan),
-            new Entry("Washing", "Washing", PixelPalette.Cyan),
-            new Entry("Washed", "Washed", PixelPalette.Green),
-            new Entry("Charging", "Charging", PixelPalette.Cyan),
-            new Entry("Charged", "Charged", PixelPalette.Green),
+            new Entry("Servicing", "Servicing", PixelPalette.Cyan),
+            new Entry("Serviced", "Serviced", PixelPalette.Green),
             new Entry("Pick Up", "Pick Up", PixelPalette.Amber),
             new Entry("Cust. Angry", "Angry", PixelPalette.OrangeRed),
             new Entry("Won't tip", "No tip", PixelPalette.Grey)
@@ -40,6 +38,23 @@ namespace UncannyValet.UI.Status
 
         /// <summary>The status colour.</summary>
         public static Color ColorOf(CarStatus status) => Entries[(int)status].Color;
+
+        /// <summary>
+        /// The label of the status for this row: the service statuses say the word of the modifier involved (Washing,
+        /// Charged, ...), the others their table label; the full label when it fits, else the short one.
+        /// </summary>
+        public static string LabelFitting(CarStatus status, TicketRow row, int availablePixels)
+        {
+            var word = ServiceWord(status, row);
+            return word.Length > 0 ? word : LabelFitting(status, availablePixels);
+        }
+
+        private static string ServiceWord(CarStatus status, TicketRow row)
+        {
+            if (status == CarStatus.Servicing) return row.HasStation ? row.OpenAt(row.Station)?.ActiveWord ?? string.Empty : string.Empty;
+            if (status == CarStatus.Serviced) return row.JustCleared()?.DoneWord ?? string.Empty;
+            return string.Empty;
+        }
 
         /// <summary>The full label when it fits in <paramref name="availablePixels"/>, else the short one.</summary>
         public static string LabelFitting(CarStatus status, int availablePixels)

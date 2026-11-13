@@ -1,4 +1,5 @@
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Core.Events
 {
@@ -32,33 +33,26 @@ namespace UncannyValet.Core.Events
         public StationEntryRefused(StationKind station, float worldX, float worldY) { Station = station; WorldX = worldX; WorldY = worldY; }
     }
 
-    /// <summary>An EV's charge changed (published by Patrons). Charge01: 0 empty, 1 full.</summary>
-    public readonly struct CarChargeChanged : IGameEvent
+    /// <summary>
+    /// A modifier of a car moved toward cleared (published by Patrons, also once when the car's modifiers are announced).
+    /// Progress01: 0 untouched, 1 cleared.
+    /// </summary>
+    public readonly struct ModifierProgressChanged : IGameEvent
     {
         public readonly CarId Car;
-        public readonly float Charge01;
-        public CarChargeChanged(CarId car, float charge01) { Car = car; Charge01 = charge01; }
+        public readonly ModifierId Modifier;
+        public readonly float Progress01;
+        public ModifierProgressChanged(CarId car, ModifierId modifier, float progress01)
+        {
+            Car = car; Modifier = modifier; Progress01 = progress01;
+        }
     }
 
-    /// <summary>An EV reached a full charge.</summary>
-    public readonly struct CarFullyCharged : IGameEvent
+    /// <summary>A modifier of a car was cleared at its station.</summary>
+    public readonly struct ModifierCleared : IGameEvent
     {
         public readonly CarId Car;
-        public CarFullyCharged(CarId car) { Car = car; }
-    }
-
-    /// <summary>A dirty car is being washed (published by Patrons). Clean01: 0 filthy, 1 spotless.</summary>
-    public readonly struct CarCleanChanged : IGameEvent
-    {
-        public readonly CarId Car;
-        public readonly float Clean01;
-        public CarCleanChanged(CarId car, float clean01) { Car = car; Clean01 = clean01; }
-    }
-
-    /// <summary>A dirty car finished washing.</summary>
-    public readonly struct CarCleaned : IGameEvent
-    {
-        public readonly CarId Car;
-        public CarCleaned(CarId car) { Car = car; }
+        public readonly ModifierId Modifier;
+        public ModifierCleared(CarId car, ModifierId modifier) { Car = car; Modifier = modifier; }
     }
 }

@@ -43,7 +43,7 @@ namespace UncannyValet.Tests.Integration
         [Test]
         public void TipNeverBelowZero_ForAnyWaitAndBase()
         {
-            var calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>());
+            var calc = new TipCalculator(ScriptableObject.CreateInstance<TipConfig>(), null, ModifierTestKit.Catalog());
             for (var baseTip = -10; baseTip <= 60; baseTip += 5)
             for (var wait = 0f; wait <= 2000f; wait += 7.5f)
             {

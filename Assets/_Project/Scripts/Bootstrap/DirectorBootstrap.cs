@@ -2,6 +2,7 @@ using System;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 
 namespace UncannyValet.Bootstrap
@@ -17,7 +18,7 @@ namespace UncannyValet.Bootstrap
         public static DirectorBootstrap Start(IEventBus bus, ITuning tuning, IGameClock clock, ILotLayout lot,
             PatronDirector director, DirectorProfile profile, IDirectorRandom random, int maxCombo)
         {
-            var tracker = new LotStateTracker(bus, clock, tuning, lot.RegularSpotCount, lot.ChargingSpotCount);
+            var tracker = new LotStateTracker(bus, clock, tuning, Services.Get<IModifierCatalog>(), lot.RegularSpotCount, lot.ChargingSpotCount);
             var state = new DirectorState();
             Services.Register<ILotSnapshotSource>(tracker);
             Services.Register<IDirectorView>(state);

@@ -1,5 +1,6 @@
 using System;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Audio
 {
@@ -9,6 +10,7 @@ namespace UncannyValet.Audio
         private readonly IEventBus _bus;
         private readonly Action<SfxId> _play;
         private readonly Func<float> _clock;
+        private readonly IModifierCatalog _modifiers;
         private readonly SfxRateLimiter _bumpLimit = new SfxRateLimiter(BumpMinInterval);
         private readonly SfxRateLimiter _carBumpLimit = new SfxRateLimiter(CarBumpMinInterval);
         private readonly SfxRateLimiter _chirpLimit = new SfxRateLimiter(ChirpMinInterval);
@@ -28,8 +30,10 @@ namespace UncannyValet.Audio
         public const float ScreechMinInterval = 0.6f;
 
         /// <param name="clock">Seconds clock used to rate-limit repeated sounds; without one nothing is limited.</param>
-        public SfxEventRouter(IEventBus bus, Action<SfxId> play, Func<float> clock = null)
+        /// <param name="modifiers">The modifier definitions, to tell a charge from a wash when a modifier clears; null plays the wash sound.</param>
+        public SfxEventRouter(IEventBus bus, Action<SfxId> play, Func<float> clock = null, IModifierCatalog modifiers = null)
         {
+            _modifiers = modifiers;
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _play = play ?? throw new ArgumentNullException(nameof(play));
             _clock = clock;
@@ -48,8 +52,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
             _bus.Subscribe<RetryShiftRequested>(OnRetryShiftRequested);
-            _bus.Subscribe<CarFullyCharged>(OnCarFullyCharged);
-            _bus.Subscribe<CarCleaned>(OnCarCleaned);
+            _bus.Subscribe<ModifierCleared>(OnModifierCleared);
             _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Subscribe<PedestrianBumped>(OnPedestrianBumped);
             _bus.Subscribe<CarsCollided>(OnCarsCollided);
@@ -74,8 +77,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
             _bus.Unsubscribe<RetryShiftRequested>(OnRetryShiftRequested);
-            _bus.Unsubscribe<CarFullyCharged>(OnCarFullyCharged);
-            _bus.Unsubscribe<CarCleaned>(OnCarCleaned);
+            _bus.Unsubscribe<ModifierCleared>(OnModifierCleared);
             _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Unsubscribe<PedestrianBumped>(OnPedestrianBumped);
             _bus.Unsubscribe<CarsCollided>(OnCarsCollided);
@@ -96,8 +98,11 @@ namespace UncannyValet.Audio
         private void OnTimerExpired(TicketTimerExpired e) => _play(SfxId.CarVanished);
         private void OnShiftEnded(ShiftEnded e) => _play(SfxId.NightEnded);
         private void OnRetryShiftRequested(RetryShiftRequested e) => _play(SfxId.ButtonClick);
-        private void OnCarFullyCharged(CarFullyCharged e) => _play(SfxId.Charged);
-        private void OnCarCleaned(CarCleaned e) => _play(SfxId.Washed);
+        private void OnModifierCleared(ModifierCleared e)
+        {
+            var charged = _modifiers != null && _modifiers.TryGet(e.Modifier, out var def) && def.ClearedAt == StationKind.Charging;
+            _play(charged ? SfxId.Charged : SfxId.Washed);
+        }
         private void OnCarEnteredStation(CarEnteredStation e) => _play(SfxId.StationStart);
 
         private void OnPerfectPark(PerfectPark e) => _play(SfxId.PerfectDing);

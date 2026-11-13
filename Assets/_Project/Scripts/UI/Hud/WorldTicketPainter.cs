@@ -9,7 +9,7 @@ namespace UncannyValet.UI.Hud
 {
     /// <summary>
     /// Every placed ticketed car carries its licence plate just under it; the plate border and glow flash in the
-    /// patron's emotion colour once they want the car back. Once the car has arrived, small droplet / plug icons say
+    /// patron's emotion colour once they want the car back. Once the car has arrived, small modifier icons (mud splat, plug) say
     /// what it still needs: beside the plate, or just under the car while no plate shows yet. Projected from the car's world
     /// position so it shares the pixel scale.
     /// </summary>

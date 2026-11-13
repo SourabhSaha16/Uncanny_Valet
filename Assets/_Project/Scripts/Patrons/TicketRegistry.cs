@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
@@ -33,20 +34,23 @@ namespace UncannyValet.Patrons
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, IShiftScoreView score = null)
             : this(bus, clock, tips, ServiceTuning.Default, score) { }
 
-        /// <summary>Registry whose charge, wash and window numbers follow the live tuning.</summary>
+        /// <summary>Registry whose clear times and windows follow the live tuning. A null catalog uses the shipped modifiers.</summary>
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning,
-            IShiftScoreView score = null)
-            : this(bus, clock, tips, tuning.Service, score)
+            IShiftScoreView score = null, IModifierCatalog catalog = null)
+            : this(bus, clock, tips, tuning.Service, score, null, catalog, tuning)
         {
             _live = new LiveTicketTuning(bus, tuning, _book);
         }
 
+        /// <param name="catalog">The modifier definitions; null uses the shipped Muddy and NeedsCharge numbers.</param>
+        /// <param name="live">The live numbers the modifier clear times follow; null uses the definitions' values.</param>
         public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning,
-            IShiftScoreView score = null, PlatePool plates = null)
+            IShiftScoreView score = null, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
-            _book = new TicketBook(tuning, plates);
+            var modifiers = new ModifierFactory(catalog ?? ModifierDefaults.CreateCatalog(), live);
+            _book = new TicketBook(tuning, modifiers, plates);
             _perfect = new PerfectBonusLedger(bus);
             _damage = new DamageLedger(bus);
             _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect, _damage);
@@ -101,16 +105,8 @@ namespace UncannyValet.Patrons
             return _book.Add(car, request);
         }
 
-        /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
-        public void AnnounceArrival(Ticket t)
-        {
-            _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
-            _bus.Publish(new TicketOpened(t.TicketId, t.CarId, t.StayMinutes));
-            _bus.Publish(new CarTagAssigned(t.CarId, t.Tag));
-            _bus.Publish(new CarPlateAssigned(t.CarId, t.Plate));
-            _bus.Publish(new TicketTraitsAssigned(t.TicketId, t.CarId, t.IsEv, t.IsDirty));
-            _stations.Announce(t);
-        }
+        /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, modifiers, then initial progress.</summary>
+        public void AnnounceArrival(Ticket t) => TicketAnnouncer.Announce(_bus, _stations, t);
 
         private void OnCarParked(CarParked e)
         {

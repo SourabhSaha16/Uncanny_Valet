@@ -23,7 +23,7 @@ namespace UncannyValet.Run
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
-            return CheckPacing(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
+            return CheckPacing(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
         }
 
         private static string CheckPacing(LotDefinition lot)
@@ -36,6 +36,20 @@ namespace UncannyValet.Run
             if (p.MaxWaitingCars < 1) return lot.name + ": at least one car must be allowed to wait";
             if (p.ArrivalBudgetOverride < 0) return lot.name + ": the arrival budget cannot be negative (0 derives it)";
             return null;
+        }
+
+        private static string CheckModifierChances(LotDefinition lot)
+        {
+            var total = 0f;
+            for (var i = 0; i < lot.ModifierChances.Count; i++)
+            {
+                var entry = lot.ModifierChances[i];
+                if (!entry.IsValid) return lot.name + ": modifier chance entry " + i + " has no modifier or a chance outside 0..1";
+                for (var j = 0; j < i; j++)
+                    if (lot.ModifierChances[j].Modifier.Id == entry.Modifier.Id) return lot.name + ": modifier " + entry.Modifier.name + " is listed twice";
+                total += entry.Chance;
+            }
+            return total > 1.0001f ? lot.name + ": the modifier chances add up to more than 1 (they are one draw in list order)" : null;
         }
 
         private static string CheckDials(LotDefinition lot)

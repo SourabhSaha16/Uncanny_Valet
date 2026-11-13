@@ -1,4 +1,5 @@
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Core.Events
 {
@@ -16,16 +17,15 @@ namespace UncannyValet.Core.Events
         }
     }
 
-    /// <summary>The traits of a new patron car, published right after TicketOpened.</summary>
-    public readonly struct TicketTraitsAssigned : IGameEvent
+    /// <summary>The service modifiers a new patron car carries, published right after TicketOpened.</summary>
+    public readonly struct TicketModifiersAssigned : IGameEvent
     {
         public readonly TicketId Ticket;
         public readonly CarId Car;
-        public readonly bool IsEv;
-        public readonly bool IsDirty;
-        public TicketTraitsAssigned(TicketId ticket, CarId car, bool isEv, bool isDirty)
+        public readonly ModifierSet Modifiers;
+        public TicketModifiersAssigned(TicketId ticket, CarId car, ModifierSet modifiers)
         {
-            Ticket = ticket; Car = car; IsEv = isEv; IsDirty = isDirty;
+            Ticket = ticket; Car = car; Modifiers = modifiers;
         }
     }
 

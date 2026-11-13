@@ -23,9 +23,8 @@ namespace UncannyValet.Director
                 var toPickup = SecondsToPickup(r, nowMinutes, secondsPerMinute);
                 if (toPickup < nextPickup) nextPickup = toPickup;
                 if (r.SpotId != CarRecord.NoSpot && r.SpotId <= book.RegularSpots) occupiedRegular++;
-                _cars.Add(new CarSnapshot(r.Car, r.State, r.IsDirty, r.IsEv, r.WashDone, r.ChargeDone, r.AwaitingPark,
-                    r.IsDirty && !r.WashDone ? 1f - r.Clean01 : 0f, r.Patience01, toPickup,
-                    r.StayMinutes * secondsPerMinute, r.ShiftedMinutes * secondsPerMinute));
+                _cars.Add(new CarSnapshot(r.Car, r.State, r.Held, r.Done, r.AwaitingPark, r.Patience01, toPickup,
+                    r.StayMinutes * secondsPerMinute, r.ShiftedMinutes * secondsPerMinute, r.LeftAtStation));
             }
             BuildSlots(book);
             var total = TotalSpots(book);
@@ -60,7 +59,7 @@ namespace UncannyValet.Director
                 if (i < occupants.Count)
                 {
                     var o = occupants[i];
-                    var state = SlotStateRule.Occupied(kind, o.IsDirty, o.WashDone, o.IsEv, o.ChargeDone);
+                    var state = SlotStateRule.Occupied(o.HoldsFor(kind), o.NeedsAt(kind));
                     _slots.Add(new StationSlot(kind, state, o.Car));
                     continue;
                 }
@@ -73,7 +72,7 @@ namespace UncannyValet.Director
         {
             var n = 0;
             foreach (var r in book.Records)
-                if (r.Driven && (kind == StationKind.Wash ? r.NeedsWash : r.NeedsCharge)) n++;
+                if (r.Driven && r.NeedsAt(kind)) n++;
             return n;
         }
     }

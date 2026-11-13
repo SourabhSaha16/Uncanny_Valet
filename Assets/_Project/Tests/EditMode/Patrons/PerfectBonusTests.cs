@@ -45,7 +45,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus = new EventBus(); _clock = new FakeClock(); _score = new FakeScore();
             _config = ScriptableObject.CreateInstance<TipConfig>();
-            _registry = new TicketRegistry(_bus, _clock, new TipCalculator(_config), _score);
+            _registry = new TicketRegistry(_bus, _clock, new TipCalculator(_config, null, ModifierTestKit.Catalog()), _score);
             _bus.Subscribe<TipExplained>(e => _explained = e);
         }
 

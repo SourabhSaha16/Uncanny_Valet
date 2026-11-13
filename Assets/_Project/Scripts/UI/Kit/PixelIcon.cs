@@ -9,7 +9,7 @@ namespace UncannyValet.UI.Kit
         Bell,
         KeyTag,
         Car,
-        Wash,
+        Mud,
         Tyre,
         Plug
     }

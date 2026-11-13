@@ -19,6 +19,3 @@ MonoBehaviour:
   _impatientWindowScale: 0.6
   _maxWaitingCars: 3
   _pickupWindowMinutes: 25
-  _evStartCharge: 0.2
-  _chargeMinutes: 20
-  _washMinutes: 15

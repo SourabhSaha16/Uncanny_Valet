@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
@@ -48,26 +51,44 @@ namespace UncannyValet.Patrons
 
         public float StayMinutes => Request.StayMinutes;
 
-        public bool IsEv => Request.IsEv;
-        public bool IsDirty => Request.IsDirty;
-        public ChargeRule Charge { get; }
-        public WashRule Wash { get; }
+        /// <summary>The car's service modifiers, each with its own progress (a list: a car may hold several).</summary>
+        public IReadOnlyList<ModifierInstance> Modifiers { get; }
 
         /// <summary>A valet is driving the car.</summary>
         public bool Driven { get; set; }
-        /// <summary>An EV is parked in a charging spot.</summary>
-        public bool InChargingBay { get; set; }
-        public bool InWashBay { get; set; }
-        public bool ChargedEv => IsEv && Charge.IsFull;
-        public bool CleanedDirty => IsDirty && Wash.IsClean;
-        public bool UncleanedDirty => IsDirty && !Wash.IsClean;
 
-        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate, ServiceTuning tuning)
+        private int _stationMask;
+
+        /// <summary>True while the car is stopped in a station of this kind.</summary>
+        public bool InStation(StationKind kind) => (_stationMask & (1 << (int)kind)) != 0;
+
+        /// <summary>Records that the car entered (true) or left (false) a station of this kind.</summary>
+        public void SetInStation(StationKind kind, bool inside)
+        {
+            if (inside) _stationMask |= 1 << (int)kind;
+            else _stationMask &= ~(1 << (int)kind);
+        }
+
+        /// <summary>The modifiers already cleared.</summary>
+        public ModifierSet ClearedModifiers => Select(true);
+
+        /// <summary>The modifiers still open (not cleared).</summary>
+        public ModifierSet OpenModifiers => Select(false);
+
+        private ModifierSet Select(bool cleared)
+        {
+            var set = ModifierSet.None;
+            for (var i = 0; i < Modifiers.Count; i++)
+                if (Modifiers[i].IsCleared == cleared) set = set.With(Modifiers[i].Id);
+            return set;
+        }
+
+        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate,
+            IReadOnlyList<ModifierInstance> modifiers = null)
         {
             TicketId = ticketId; CarId = carId; Request = request; Tag = tag; Plate = plate;
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
-            Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);
-            Wash = new WashRule(tuning.WashMinutes);
+            Modifiers = modifiers ?? new List<ModifierInstance>();
         }
 
         /// <summary>Game minutes the director has moved the end of the stay by; negative means earlier.</summary>

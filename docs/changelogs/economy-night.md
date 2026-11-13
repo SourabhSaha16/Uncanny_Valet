@@ -38,3 +38,9 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Night/{INightEnder,RunLossGuard,NightClock}.cs, Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder}.cs, Assets/_Project/Tests/EditMode/Night/RunLossTests.cs
 Why: design.md sections 2 and 6 (boss strikes). RunLossGuard (plain class, Bootstrap must `new RunLossGuard(bus, clock)`) asks the clock to end on a final StrikeGiven while the night runs; NightClock.EndAtNextTick ends on the next Advance so every StrikeGiven subscriber has run first and the end goes through the normal NightEnded path. NightTallyRecorder flags a final strike during an active tally and the summary is published with RunLost = true (tips so far kept, DebtLeft floored at 1 so PaidOff stays false, no next-night note).
 Tests: RunLossTests (ends once with RunLost, non-final ignored, ignored when not running, no double end, new run after loss, never paid off); not run (sandbox refused the Unity batch command).
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Night/ShiftPlanSource.cs, Data/Economy/TipConfig.asset, Tests/EditMode/Economy and Night
+Why: Issue #121. The tip pays each cleared modifier's own bonus (live key when tuned) as TipBreakdown.ModifierBonus; the old charge and clean bonuses move into the modifier definitions. The shift plan no longer carries the EV and wash chances (the lot owns them).
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).

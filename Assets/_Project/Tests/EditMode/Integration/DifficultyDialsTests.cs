@@ -75,10 +75,6 @@ namespace UncannyValet.Tests.Integration
         [TestCase(TuningKey.DialRamp, TuningKey.DirRampShape, 1)]
         [TestCase(TuningKey.DialLateRush, TuningKey.DirLateTargetBoost, 1)]
         [TestCase(TuningKey.DialLateRush, TuningKey.PlanLateEvStart, -1)]
-        [TestCase(TuningKey.DialDirtyCars, TuningKey.PlanDirtyChance, 1)]
-        [TestCase(TuningKey.DialDirtyCars, TuningKey.DirWeightDirty, 1)]
-        [TestCase(TuningKey.DialEvCars, TuningKey.PlanEvChance, 1)]
-        [TestCase(TuningKey.DialEvCars, TuningKey.DirWeightEv, 1)]
         [TestCase(TuningKey.DialDilemmas, TuningKey.DirDilemmaWashBlocked, 1)]
         [TestCase(TuningKey.DialDilemmas, TuningKey.DirDilemmaCooldown, -1)]
         [TestCase(TuningKey.DialMercy, TuningKey.DirReliefWorkload, -1)]
@@ -142,7 +138,7 @@ namespace UncannyValet.Tests.Integration
             {
                 rig.Tuning.Set(TuningKey.DirBudgetSlack, 7f);
                 Assert.AreEqual(7f, rig[TuningKey.DirBudgetSlack]);
-                rig.Dial(TuningKey.DialEvCars, 6f);
+                rig.Dial(TuningKey.DialDilemmas, 6f);
                 Assert.AreEqual(2f, rig[TuningKey.DirBudgetSlack], "any dial move re-derives every driven key");
                 rig.Tuning.Set(TuningKey.DirBudgetSlack, 7f);
                 rig.Dial(TuningKey.DialIntensity, DialMax);
@@ -168,17 +164,50 @@ namespace UncannyValet.Tests.Integration
         }
 
         [Test]
-        public void DirtyEvWeight_FollowsBothCarMixDials()
+        public void TheCarMixWeightsAndChances_NoLongerFollowAnyDial()
         {
             using (var rig = new DialRig())
             {
-                rig.Dial(TuningKey.DialDirtyCars, DialMax);
-                rig.Dial(TuningKey.DialEvCars, DialMax);
-                Assert.AreEqual(10f * 2.5f * 2.5f, rig[TuningKey.DirWeightDirtyEv], 0.001f, "both anchors multiply");
-                rig.Dial(TuningKey.DialEvCars, DialMin);
-                Assert.AreEqual(0f, rig[TuningKey.DirWeightEv]);
-                Assert.AreEqual(0f, rig[TuningKey.DirWeightDirtyEv]);
+                var carMix = new[]
+                {
+                    TuningKey.DirWeightPlain, TuningKey.DirWeightMuddy, TuningKey.DirWeightEv, TuningKey.DirWeightMuddyEv,
+                    TuningKey.ModifierChanceMuddy, TuningKey.ModifierChanceNeedsCharge,
+                };
+                var before = new float[carMix.Length];
+                for (var i = 0; i < carMix.Length; i++) before[i] = rig[carMix[i]];
+                foreach (var key in DifficultyDials.DialKeys) rig.Dial(key, DialMax);
+                for (var i = 0; i < carMix.Length; i++) Assert.AreEqual(before[i], rig[carMix[i]], carMix[i] + " must stay put");
             }
+        }
+
+        [Test]
+        public void TheCarMixDialsAreGone_AndTheirKeyNumbersStayReserved()
+        {
+            CollectionAssert.DoesNotContain(DifficultyDials.DialKeys, TuningKey.RetiredDialCarMixWash);
+            CollectionAssert.DoesNotContain(DifficultyDials.DialKeys, TuningKey.RetiredDialCarMixEv);
+            Assert.AreEqual(6, DifficultyDials.DialKeys.Length, "six dials plus the seed make the seven top-level rows");
+            foreach (var info in TuningCatalog.All)
+            {
+                Assert.AreNotEqual(TuningKey.RetiredDialCarMixWash, info.Key);
+                Assert.AreNotEqual(TuningKey.RetiredDialCarMixEv, info.Key);
+                Assert.AreNotEqual(TuningKey.RetiredPlanEvChance, info.Key);
+                Assert.AreNotEqual(TuningKey.RetiredPlanWashChance, info.Key);
+            }
+            // The asset stores raw key numbers: nothing may have moved.
+            Assert.AreEqual(82, (int)TuningKey.DialIntensity);
+            Assert.AreEqual(85, (int)TuningKey.RetiredDialCarMixWash);
+            Assert.AreEqual(86, (int)TuningKey.RetiredDialCarMixEv);
+            Assert.AreEqual(87, (int)TuningKey.DialDilemmas);
+            Assert.AreEqual(89, (int)TuningKey.DialSkillReward);
+            Assert.AreEqual(156, (int)TuningKey.ModifierChanceMuddy);
+        }
+
+        [Test]
+        public void TheShippedAssetHasNoLinkOfARetiredDial()
+        {
+            var config = UnityEditor.AssetDatabase.LoadAssetAtPath<DifficultyDialsConfig>("Assets/_Project/Data/Director/DifficultyDialsConfig.asset");
+            foreach (var link in config.Links)
+                Assert.IsTrue(DifficultyDials.IsDial(link.Dial), "a link of " + link.Dial + " is left in the asset");
         }
 
         [Test]
@@ -194,12 +223,12 @@ namespace UncannyValet.Tests.Integration
                 Assert.IsTrue(seen.Add(info.Key), info.Key + " listed twice");
                 if (info.Group != group) { Assert.IsTrue(closed.Add(info.Group), info.Group + " is split"); group = info.Group; }
                 if (!info.Advanced) visible.Add(info.Key);
-                if (i < 9) Assert.AreEqual(TuningInfo.DifficultyGroup, info.Group, "dials come first");
+                if (i < 7) Assert.AreEqual(TuningInfo.DifficultyGroup, info.Group, "dials come first");
             }
-            Assert.AreEqual(18, visible.Count, "nine dials plus game speed, shift length, the empty-queue wait, pickup patience, impatient scale and the four Perfect Park rows");
+            Assert.AreEqual(16, visible.Count, "seven rows (six dials and the seed) plus game speed, shift length, the empty-queue wait, pickup patience, impatient scale and the four Perfect Park rows");
             Assert.AreEqual(TuningKey.DialIntensity, TuningCatalog.All[0].Key);
             foreach (var key in DifficultyDials.DialKeys) Assert.IsNotEmpty(Find(key).Tooltip, key + " needs a tooltip");
-            Assert.AreEqual(TuningKey.DirSeed, TuningCatalog.All[8].Key);
+            Assert.AreEqual(TuningKey.DirSeed, TuningCatalog.All[6].Key);
         }
 
         [Test]
@@ -210,8 +239,6 @@ namespace UncannyValet.Tests.Integration
                 Assert.AreEqual(8f, rig[TuningKey.DialIntensity]);
                 Assert.AreEqual(8f, rig[TuningKey.DialRamp]);
                 Assert.AreEqual(6f, rig[TuningKey.DialLateRush]);
-                Assert.AreEqual(5f, rig[TuningKey.DialDirtyCars]);
-                Assert.AreEqual(5f, rig[TuningKey.DialEvCars]);
                 Assert.AreEqual(6.5f, rig[TuningKey.DialDilemmas]);
                 Assert.AreEqual(4f, rig[TuningKey.DialMercy]);
                 Assert.AreEqual(5.5f, rig[TuningKey.DialSkillReward]);

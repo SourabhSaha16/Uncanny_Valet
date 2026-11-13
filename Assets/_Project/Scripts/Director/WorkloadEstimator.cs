@@ -41,13 +41,13 @@ namespace UncannyValet.Director
             ref int washDemand, ref int chargeDemand)
         {
             var seconds = 0f;
-            if (c.NeedsWash)
+            if (c.NeedsAt(StationKind.Wash))
             {
                 var inWash = Holds(lot, StationKind.Wash, c.Car);
                 if (!inWash) { washDemand++; seconds += s.WashTripCost; }
-                seconds += s.WashSecondsFull * c.WashLeft01;
+                seconds += s.WashSecondsFull * c.LeftAt(StationKind.Wash);
             }
-            if (c.NeedsCharge && !Holds(lot, StationKind.Charging, c.Car))
+            if (c.NeedsAt(StationKind.Charging) && !Holds(lot, StationKind.Charging, c.Car))
             {
                 chargeDemand++;
                 seconds += s.ChargeTripCost;

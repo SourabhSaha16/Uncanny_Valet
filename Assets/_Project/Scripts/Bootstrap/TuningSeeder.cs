@@ -3,6 +3,7 @@ using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
@@ -30,13 +31,14 @@ namespace UncannyValet.Bootstrap
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
         /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
         /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
-        /// <param name="lot">The lot's overrides (shift length, arrival pacing, dial positions); null keeps the shared defaults.</param>
+        /// <param name="lot">The lot's overrides (shift length, arrival pacing, modifier chances, dial positions); null keeps the shared defaults.</param>
+        /// <param name="modifiers">The modifier definitions; they seed the clear time and bonus keys. Null uses the shipped defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerBarConfig powers = null,
             PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
-            LotDefinition lot = null)
+            LotDefinition lot = null, IModifierCatalog modifiers = null)
         {
             SeedEmotions(t, emotions);
             CameraShake.SeedDefaults(t);
@@ -59,26 +61,40 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ArrivalGapMaxMinutes, patrons.ArrivalIntervalRange.y);
             t.Seed(TuningKey.ImpatientChance, patrons.ImpatientChance);
             t.Seed(TuningKey.ImpatientWindowScale, patrons.ImpatientWindowScale);
-            t.Seed(TuningKey.ChargeMinutes, service.ChargeMinutes);
-            t.Seed(TuningKey.WashMinutes, service.WashMinutes);
             t.Seed(TuningKey.QueueMaxWaitMinutes, service.QueueWaitMinutes);
             t.Seed(TuningKey.QueueClearDistance, (queueClear ?? new QueueClearSettings()).ClearDistance);
 
             t.Seed(TuningKey.BaseTip, patrons.BaseTip);
-            t.Seed(TuningKey.ChargeBonus, tips.ChargeBonus);
-            t.Seed(TuningKey.CleanBonus, tips.CleanBonus);
+            SeedModifiers(t, modifiers ?? ModifierDefaults.CreateCatalog());
             t.Seed(TuningKey.SpeedWindowMinutes, tips.SpeedBonusWindowMinutes);
 
             var plan = shift.Plan;
             t.Seed(TuningKey.PlanMaxWaitingCars, plan.MaxWaitingCars);
             t.Seed(TuningKey.PlanArrivalGapScale, plan.ArrivalGapScale);
             t.Seed(TuningKey.PlanActiveSpots, plan.ActiveSpots > 0 ? plan.ActiveSpots : spotCount);
-            t.Seed(TuningKey.PlanEvChance, plan.EvChance);
-            t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
+            if (lot == null) SeedDefaultChances(t);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
             lot?.SeedPacing(t, shift.GameMinutesPerSecond); // the lot's numbers and arrival budget win over the shared defaults
             return SeedDials(t, director, bus, lot);
+        }
+
+        // Each modifier's clear time and bonus live in its definition; the keys are what the F2 panel edits.
+        private static void SeedModifiers(ITuning t, IModifierCatalog modifiers)
+        {
+            for (var i = 0; i < modifiers.All.Count; i++)
+            {
+                var def = modifiers.All[i];
+                t.Seed(def.ClearMinutesKey, def.ClearMinutes);
+                t.Seed(def.BonusKey, def.Bonus);
+            }
+        }
+
+        // Without a lot the diner's chances apply (the lot's own list replaces them).
+        private static void SeedDefaultChances(ITuning t)
+        {
+            t.Seed(TuningKey.ModifierChanceNeedsCharge, ModifierDefaults.NeedsChargeChance);
+            t.Seed(TuningKey.ModifierChanceMuddy, ModifierDefaults.MuddyChance);
         }
 
         // Dials start at their default position and the mapper runs once, so every derived number is consistent at startup.

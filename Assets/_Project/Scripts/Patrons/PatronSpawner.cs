@@ -2,6 +2,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Patrons
@@ -27,6 +28,7 @@ namespace UncannyValet.Patrons
         private PatronRequestRoller _roller;
         private IGameClock _clock;
         private ITuning _liveTuning;
+        private IModifierCatalog _catalog;
         private PatronRequest _pending;
         private bool _hasPending;
 
@@ -44,11 +46,12 @@ namespace UncannyValet.Patrons
             _lot = Services.Get<ILotLayout>();
             _plan = new PatronPlan(_config.MaxWaitingCars);
             _liveTuning = Services.Get<ITuning>();
+            _catalog = Services.Get<IModifierCatalog>();
             var tuning = _tuning = new PatronTuning(_liveTuning, _config);
-            _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
+            _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog);
             _clock = Services.Get<IGameClock>();
             Services.TryGet<IShiftScoreView>(out var score);
-            Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
+            Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score, _catalog);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
             Services.Register<IPickupAcceptance>(new PickupAcceptance(Registry));
             _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);

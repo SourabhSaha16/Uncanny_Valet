@@ -37,3 +37,9 @@ Date: 2026-11-13
 Files: Audio: SfxId (17 and 20 to 24 retired as numbering gaps), SfxBank, SfxRecipeBook, SfxEventRouter; removed SfxPowers, SfxSmash.
 Why: Speed boost and Park Smash sounds deleted; numbers stay reserved (issue #86). issue #86 of epic #79 (Valet to Valhalla).
 Tests: SfxTests still render every remaining effect; suites pass.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Audio/{SfxEventRouter,AudioDirector}.cs, Tests/EditMode/Audio/SfxTests.cs
+Why: Issue #121. One ModifierCleared handler plays the Charged or Washed sound by the station kind that clears the modifier (SfxId unchanged).
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).

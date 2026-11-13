@@ -6,8 +6,8 @@ namespace UncannyValet.Core.Events
         public readonly int BaseTip;
         /// <summary>Speed bonus (positive) or wait penalty (negative).</summary>
         public readonly int SpeedAdjust;
-        public readonly int ChargeBonus;
-        public readonly int CleanBonus;
+        /// <summary>Dollars for the service modifiers cleared by hand-back (before damage and combo).</summary>
+        public readonly int ModifierBonus;
         public readonly int Total;
         public readonly TipZeroReason ZeroReason;
 
@@ -23,12 +23,12 @@ namespace UncannyValet.Core.Events
         /// <summary>Dollars for Perfect Parks on this ticket (before damage and combo).</summary>
         public readonly int PerfectBonus;
 
-        public TipBreakdown(int baseTip, int speedAdjust, int chargeBonus, int cleanBonus, int total,
+        public TipBreakdown(int baseTip, int speedAdjust, int modifierBonus, int total,
             TipZeroReason zeroReason, int patienceBonus = 0, int damageAdjust = 0, int comboMultiplier = 1,
             int perfectBonus = 0)
         {
-            BaseTip = baseTip; SpeedAdjust = speedAdjust; ChargeBonus = chargeBonus;
-            CleanBonus = cleanBonus; Total = total; ZeroReason = zeroReason;
+            BaseTip = baseTip; SpeedAdjust = speedAdjust; ModifierBonus = modifierBonus;
+            Total = total; ZeroReason = zeroReason;
             PatienceBonus = patienceBonus; DamageAdjust = damageAdjust; ComboMultiplier = comboMultiplier;
             PerfectBonus = perfectBonus;
         }

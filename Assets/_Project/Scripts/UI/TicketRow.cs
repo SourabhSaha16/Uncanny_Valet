@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.UI
 {
@@ -33,24 +35,8 @@ namespace UncannyValet.UI
         /// <summary>True from the moment the car has finished driving in until it leaves.</summary>
         public bool Arrived;
 
-        /// <summary>Charge shown when an EV's level is not known yet.</summary>
-        public const float UnknownCharge = -1f;
-
-        public bool IsEv;
-        /// <summary>0 empty, 1 full, <see cref="UnknownCharge"/> until the first CarChargeChanged.</summary>
-        public float Charge01 = UnknownCharge;
-        public bool IsDirty;
-        /// <summary>0 filthy, 1 spotless; stays 0 until the wash starts.</summary>
-        public float Clean01;
-        /// <summary>True once a dirty car has been washed.</summary>
-        public bool Washed;
-        /// <summary>Set by CarCleaned, cleared by the next CarParked: the status shows Washed only until the car is parked again.</summary>
-        public bool ShowWashed;
-        /// <summary>Set by CarFullyCharged, cleared by the next CarParked: the status shows Charged only until the car is parked again.</summary>
-        public bool ShowCharged;
-
-        /// <summary>Charge at or above this counts as full.</summary>
-        public const float FullCharge = 0.999f;
+        /// <summary>The car's service modifiers (a list: a car may hold several), each with its own progress.</summary>
+        public readonly List<RowModifier> Modifiers = new List<RowModifier>();
 
         /// <summary>The licence plate under the car is drawn only once the plate is known and the car is parked in a spot or station (the CAR SLOTS rule).</summary>
         public bool ShowsPlate => HasPlate && Placed;
@@ -61,26 +47,43 @@ namespace UncannyValet.UI
         /// <summary>True once the plate text is known.</summary>
         public bool HasPlate => Plate.Length > 0;
 
-        /// <summary>The patron wants a wash that has not happened yet.</summary>
-        public bool NeedsWash => IsDirty && !Washed;
+        /// <summary>The modifier row of <paramref name="id"/>, or null.</summary>
+        public RowModifier Find(ModifierId id)
+        {
+            for (var i = 0; i < Modifiers.Count; i++)
+                if (Modifiers[i].Id == id) return Modifiers[i];
+            return null;
+        }
 
-        /// <summary>An EV that is not fully charged yet (an unknown level counts as not charged).</summary>
-        public bool NeedsCharge => IsEv && Charge01 < FullCharge;
+        /// <summary>The first open modifier cleared at this kind of station, or null.</summary>
+        public RowModifier OpenAt(StationKind kind)
+        {
+            for (var i = 0; i < Modifiers.Count; i++)
+                if (Modifiers[i].IsOpen && Modifiers[i].ClearedAt == kind) return Modifiers[i];
+            return null;
+        }
 
-        /// <summary>How much dirt is left: 1 filthy, 0 clean.</summary>
-        public float Dirt01 => Washed ? 0f : 1f - Clean01;
+        /// <summary>The first modifier that just cleared and whose done word is still showing, or null.</summary>
+        public RowModifier JustCleared()
+        {
+            for (var i = 0; i < Modifiers.Count; i++)
+                if (Modifiers[i].ShowDone) return Modifiers[i];
+            return null;
+        }
 
-        /// <summary>The charge level to draw (an unknown level reads as empty).</summary>
-        public float ChargeShown => Charge01 < 0f ? 0f : Charge01;
+        /// <summary>The car still needs a service: at least one modifier is open.</summary>
+        public bool NeedsService
+        {
+            get
+            {
+                for (var i = 0; i < Modifiers.Count; i++)
+                    if (Modifiers[i].IsOpen) return true;
+                return false;
+            }
+        }
 
-        /// <summary>The floating info box lists the dirt meter while the car still needs a wash.</summary>
-        public bool ShowsDirtMeter => NeedsWash;
-
-        /// <summary>The floating info box lists the charge meter for every EV (amber once full).</summary>
-        public bool ShowsChargeMeter => IsEv;
-
-        /// <summary>The floating info box appears only after arrival and only when a meter applies.</summary>
-        public bool ShowsInfoBox => Arrived && (ShowsDirtMeter || ShowsChargeMeter);
+        /// <summary>The floating info box appears only after arrival and only while a modifier meter applies.</summary>
+        public bool ShowsInfoBox => Arrived && NeedsService;
 
         public void StartTimer(TimerKind kind, float elapsed01)
         {

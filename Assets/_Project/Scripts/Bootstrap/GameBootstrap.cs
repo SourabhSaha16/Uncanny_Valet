@@ -5,6 +5,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
@@ -96,13 +97,14 @@ namespace UncannyValet.Bootstrap
 
             Services.Register<IEventBus>(bus);
             Services.Register<ITuning>(tuning);
+            var modifiers = ModifierBootstrap.Register(_lotDefinition);
             SeedTuning(tuning, 0);
             Services.Register<ICarFactory>(_carFactory);
             Services.Register<ILotLayout>(_lot);
             Services.Register<IInputSource>(input);
             Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
-            Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
+            Services.Register<ITipCalculator>(new TipCalculator(_tipConfig, null, modifiers));
             Services.Register<IShiftScoreView>(_score);
             Services.Register<IPlayerFocus>(new TransformPlayerFocus(_valet.transform));
 
@@ -142,7 +144,7 @@ namespace UncannyValet.Bootstrap
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition);
+                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.

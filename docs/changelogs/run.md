@@ -17,3 +17,9 @@ Date: 2026-11-13
 Files: Run/RunProgress.cs (RevokePower), Run/RunProgressLink.cs (PowerRevoked).
 Why: The developer power row must be able to take a power away again; story code never revokes. issue #86 of epic #79 (Valet to Valhalla).
 Tests: DevPowerLinkTests; EditMode and PlayMode pass.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Run/{ModifierChance,LotDefinition,LotDefinitionRules,DialPosition}.cs, Data/Run/Midgard{Training,Crazy}Lot.asset, Tests/EditMode/Run/*
+Why: Issue #121. A LotDefinition lists (modifier, chance) pairs, seeded with the other per-lot pacing values before the dials and validated (no duplicates, 0 to 1 each, total at most 1); both Midgard lots carry today's diner chances (needs charge 0.3 then Muddy 0.3). DialPosition no longer accepts the retired Car Mix slots.
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
