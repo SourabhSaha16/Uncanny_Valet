@@ -20,6 +20,8 @@ namespace UncannyValet.Lot
         [SerializeField] private LotConfig _config;
         [SerializeField, Tooltip("Optional scenery art: asphalt, hedge walls, sidewalk curb and painted bays.")]
         private LotArtConfig _art;
+        [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot (the lot definition's); 0 uses the LotConfig's count. Set by the scene builder.")]
+        private int _queueSlots;
 
         private LotExpander _expander;
         private SpotOccupancy _occupancy;
@@ -53,7 +55,7 @@ namespace UncannyValet.Lot
         {
             var rects = new RectFactory();
             var c = _config;
-            var g = new LotGeometry(c);
+            var g = new LotGeometry(c, _queueSlots);
             _arrivalSlots = g.QueueSlots;
             RegularSpotCount = g.Spots.Length;
             ChargingSpotCount = g.ChargingSpots.Length;

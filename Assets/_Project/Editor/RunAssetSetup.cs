@@ -22,13 +22,16 @@ namespace UncannyValet.EditorTools
         // Placeholder blessing thresholds until the blessing task tunes them.
         private const int TrainingThreshold = 3;
         private const int CrazyThreshold = 5;
+        // Slots of the arrival queue: the crazy lot is a little taller so four cars can really wait.
+        private const int TrainingQueueSlots = 3;
+        private const int CrazyQueueSlots = 4;
 
         public static void CreateIfMissing()
         {
             var training = CreateLot(MidgardTrainingPath, new LotId(World.Midgard, LotKind.Training), "Grandma's Diner",
-                TrainingScene, TrainingThreshold, 150f, 15f, 25f, 2, StoryPower.None);
+                TrainingScene, TrainingThreshold, 150f, 15f, 25f, 2, TrainingQueueSlots, StoryPower.None);
             var crazy = CreateLot(MidgardCrazyPath, new LotId(World.Midgard, LotKind.Crazy), "Fair Night at Grandma's",
-                CrazyScene, CrazyThreshold, 240f, 10f, 15f, 4, StoryPower.ThunderStride);
+                CrazyScene, CrazyThreshold, 240f, 10f, 15f, 4, CrazyQueueSlots, StoryPower.ThunderStride);
             if (AssetDatabase.LoadAssetAtPath<RunDefinition>(RunPath) != null) return;
             Directory.CreateDirectory(Path.GetDirectoryName(RunPath));
             var run = ScriptableObject.CreateInstance<RunDefinition>();
@@ -42,7 +45,7 @@ namespace UncannyValet.EditorTools
         }
 
         private static LotDefinition CreateLot(string path, LotId id, string displayName, string scene, int threshold,
-            float shiftSeconds, float gapMin, float gapMax, int maxWaiting, StoryPower grant)
+            float shiftSeconds, float gapMin, float gapMax, int maxWaiting, int queueSlots, StoryPower grant)
         {
             var existing = AssetDatabase.LoadAssetAtPath<LotDefinition>(path);
             if (existing != null) return existing;
@@ -55,6 +58,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_displayName").stringValue = displayName;
             so.FindProperty("_sceneName").stringValue = scene;
             so.FindProperty("_blessingThreshold").intValue = threshold;
+            so.FindProperty("_queueSlots").intValue = queueSlots;
             so.FindProperty("_pacing._shiftLengthSeconds").floatValue = shiftSeconds;
             so.FindProperty("_pacing._arrivalGapMinSeconds").floatValue = gapMin;
             so.FindProperty("_pacing._arrivalGapMaxSeconds").floatValue = gapMax;

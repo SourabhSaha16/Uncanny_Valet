@@ -18,11 +18,13 @@ MonoBehaviour:
   _displayName: Fair Night at Grandma's
   _sceneName: Lot_MidgardCrazy
   _layout: 1
+  _queueSlots: 4
   _pacing:
     _shiftLengthSeconds: 240
     _arrivalGapMinSeconds: 10
     _arrivalGapMaxSeconds: 15
     _maxWaitingCars: 4
+    _arrivalBudget: 0
   _dials: []
   _modifiers: []
   _blessingThreshold: 5

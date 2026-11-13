@@ -106,6 +106,7 @@ namespace UncannyValet.Bootstrap
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
             Services.Register<IRoadLayout>(_lot.Road);
+            QueueSlotCheck.Verify(_lotDefinition, _lot, this);
             SeedTuning(tuning, _lot.RegularSpotCount);
             StartTraffic(bus);
             if (!LotBounds.TryFrame(_lot.gameObject, _decor, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
@@ -138,8 +139,7 @@ namespace UncannyValet.Bootstrap
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition,
-                queueSlots: spotCount > 0 ? _lot.ArrivalSlots.Count : int.MaxValue);
+                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition);
         }
 
         // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.

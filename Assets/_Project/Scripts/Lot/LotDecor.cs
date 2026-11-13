@@ -15,12 +15,14 @@ namespace UncannyValet.Lot
 
         [SerializeField] private LotConfig _config;
         [SerializeField] private LotArtConfig _art;
+        [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot; 0 uses the LotConfig's count. Must match the lot builder's.")]
+        private int _queueSlots;
 
         private LotGeometry _geometry;
         private DecorLayout _layout;
         private PedestrianPathMap _paths;
 
-        private LotGeometry Geometry => _geometry ?? (_geometry = new LotGeometry(_config));
+        private LotGeometry Geometry => _geometry ?? (_geometry = new LotGeometry(_config, _queueSlots));
 
         private DecorLayout Layout
         {

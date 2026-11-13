@@ -20,6 +20,8 @@ namespace UncannyValet.Run
             if (string.IsNullOrEmpty(lot.SceneName)) return name + ": no scene name";
             if (string.IsNullOrEmpty(lot.DisplayName)) return name + ": no display name";
             if (lot.Layout == LotLayoutKind.None) return name + ": no layout";
+            if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
+                return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
             return CheckPacing(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
         }
@@ -32,6 +34,7 @@ namespace UncannyValet.Run
             if (p.ArrivalGapMinSeconds <= 0f) return lot.name + ": the shortest arrival gap must be above zero";
             if (p.ArrivalGapMaxSeconds < p.ArrivalGapMinSeconds) return lot.name + ": the longest arrival gap is below the shortest";
             if (p.MaxWaitingCars < 1) return lot.name + ": at least one car must be allowed to wait";
+            if (p.ArrivalBudgetOverride < 0) return lot.name + ": the arrival budget cannot be negative (0 derives it)";
             return null;
         }
 

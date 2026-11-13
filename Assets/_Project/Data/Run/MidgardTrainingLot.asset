@@ -18,11 +18,13 @@ MonoBehaviour:
   _displayName: Grandma's Diner
   _sceneName: Bootstrap
   _layout: 1
+  _queueSlots: 3
   _pacing:
     _shiftLengthSeconds: 150
     _arrivalGapMinSeconds: 15
     _arrivalGapMaxSeconds: 25
     _maxWaitingCars: 2
+    _arrivalBudget: 0
   _dials: []
   _modifiers: []
   _blessingThreshold: 3

@@ -883,6 +883,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotDecor
   _config: {fileID: 11400000, guid: b8cc3528ed7fe7640bbf60931e01af90, type: 2}
   _art: {fileID: 11400000, guid: 8148e89e4a5dc154890021bf7b9901db, type: 2}
+  _queueSlots: 3
 --- !u!4 &1244739358
 Transform:
   m_ObjectHideFlags: 0
@@ -1432,6 +1433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotLayoutBuilder
   _config: {fileID: 11400000, guid: b8cc3528ed7fe7640bbf60931e01af90, type: 2}
   _art: {fileID: 11400000, guid: 8148e89e4a5dc154890021bf7b9901db, type: 2}
+  _queueSlots: 3
 --- !u!4 &2117062031
 Transform:
   m_ObjectHideFlags: 0

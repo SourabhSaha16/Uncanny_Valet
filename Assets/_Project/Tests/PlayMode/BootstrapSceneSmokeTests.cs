@@ -4,6 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
 using UncannyValet.Run;
 using UncannyValet.UI;
@@ -73,6 +74,32 @@ namespace UncannyValet.Tests.PlayMode
             Assert.AreSame(progress, after, "The run state must survive the scene load.");
             Assert.AreEqual(new LotId(World.Midgard, LotKind.Crazy), after.CurrentLot);
             Assert.AreEqual(1, Object.FindObjectsByType<RunHost>(FindObjectsSortMode.None).Length);
+            Application.logMessageReceived -= OnLog;
+            Assert.IsEmpty(_problems, string.Join("\n---\n", _problems));
+        }
+
+        [UnityTest]
+        public IEnumerator TrainingLot_HasThreeQueueSlots_AndAllowsTwoWaiting() => CheckQueue(ScenePath, 3, 2, 3, 8);
+
+        [UnityTest]
+        public IEnumerator CrazyLot_HasFourQueueSlots_AndFourCarsCanWait() => CheckQueue(CrazyScenePath, 4, 4, 4, 20);
+
+        // The slot count comes from the lot's definition; cars parked in every slot stay put (nothing overlaps or walls them in).
+        private IEnumerator CheckQueue(string path, int slots, int cap, int cars, int minBudget)
+        {
+            Application.logMessageReceived += OnLog;
+            yield return LoadScene(path);
+            var layout = Services.Get<ILotLayout>();
+            Assert.AreEqual(slots, layout.ArrivalSlots.Count);
+            Assert.AreEqual(cap, Services.Get<ITuning>().Get(TuningKey.PlanMaxWaitingCars));
+            Assert.GreaterOrEqual(Services.Get<ITuning>().Get(TuningKey.DirArrivalBudget), minBudget, "the lot's own arrival budget must not be capped");
+            var factory = Services.Get<ICarFactory>();
+            var made = new List<IDrivable>();
+            for (var i = 0; i < cars; i++)
+                made.Add(factory.Spawn(new CarId(100 + i), layout.ArrivalSlots[i], layout.ArrivalRotationDegrees));
+            yield return new WaitForSeconds(0.5f);
+            for (var i = 0; i < cars; i++)
+                Assert.Less(Vector2.Distance(layout.ArrivalSlots[i], made[i].Transform.position), 0.1f, "car " + i + " was pushed out of its slot");
             Application.logMessageReceived -= OnLog;
             Assert.IsEmpty(_problems, string.Join("\n---\n", _problems));
         }
