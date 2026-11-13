@@ -16,10 +16,13 @@ namespace UncannyValet.Tests.UI
         private sealed class Owned : IRunProgress
         {
             public readonly List<StoryPower> Powers = new List<StoryPower>();
+            public readonly Dictionary<StoryPower, int> Levels = new Dictionary<StoryPower, int>();
+            public readonly Dictionary<StoryPower, int> Flashed = new Dictionary<StoryPower, int>();
             public bool HasCurrentLot => false;
             public LotId CurrentLot => default;
             public IReadOnlyList<StoryPower> EarnedPowers => Powers;
-            public int PowerLevel(StoryPower power) => Powers.Contains(power) ? 1 : 0;
+            public int PowerLevel(StoryPower power) => Levels.TryGetValue(power, out var level) ? level : Powers.Contains(power) ? 1 : 0;
+            public int FlashedLevel(StoryPower power) => Flashed.TryGetValue(power, out var level) ? level : 0;
             public bool IsCleared(LotId lot) => false;
             public bool IsWorldCleared(World world) => false;
             public int BestBlessings(LotId lot) => 0;
@@ -75,34 +78,86 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual(0f, view.Flash01);
         }
 
-        [Test]
-        public void ActivePower_CountsDownEndsAndIgnoresOthers()
+        private sealed class FakePowers : IPowerView
         {
-            var active = new ActivePowers(new PowerBarSettings());
-            active.Start(PowerKind.FreezeTime);
-            Assert.IsTrue(active.IsActive(PowerKind.FreezeTime));
-            Assert.AreEqual(1f, active.Remaining01(PowerKind.FreezeTime));
-            active.Tick(3f);
-            Assert.AreEqual(0.5f, active.Remaining01(PowerKind.FreezeTime), 0.001f);
-            active.Start(PowerKind.FreezeTime);
-            Assert.AreEqual(1f, active.Remaining01(PowerKind.FreezeTime));
-            active.End(PowerKind.FreezeTime);
-            Assert.IsFalse(active.IsActive(PowerKind.FreezeTime));
-            active.Start((PowerKind)9);
-            Assert.IsFalse(active.IsActive((PowerKind)9));
+            public PowerState State;
+            public bool Has = true;
+            public bool TryGetState(StoryPower power, out PowerState state) { state = State; return Has; }
+            public bool TryGetValues(StoryPower power, int level, out PowerLevelValues values) { values = default; return false; }
+        }
+
+        private static PowerState StateOf(PowerPhase phase, float remaining01 = 0f)
+            => new PowerState(StoryPower.FreezeTime, 1, phase, remaining01, default);
+
+        [Test]
+        public void Icon_IsLitWhenReadyWithABucket_AndDimWithoutOne()
+        {
+            Assert.IsFalse(PowerIconLook.Of(StateOf(PowerPhase.Ready), 1).Dimmed);
+            Assert.IsTrue(PowerIconLook.Of(StateOf(PowerPhase.Ready), 0).Dimmed);
+            Assert.AreEqual(0f, PowerIconLook.Of(StateOf(PowerPhase.Ready), 3).RingFraction);
         }
 
         [Test]
-        public void Tracker_FollowsTheCoreEventsAndStopsAfterDispose()
+        public void Icon_OnCooldownIsDimWithACoolingRing_AndRunningIsLitWithAnActiveRing()
+        {
+            var cooling = PowerIconLook.Of(StateOf(PowerPhase.Cooling, 0.4f), 3);
+            Assert.IsTrue(cooling.Dimmed);
+            Assert.AreEqual(0.4f, cooling.RingFraction, 0.0001f);
+            Assert.IsFalse(cooling.RingIsActive);
+            var active = PowerIconLook.Of(StateOf(PowerPhase.Active, 0.7f), 0);
+            Assert.IsFalse(active.Dimmed);
+            Assert.AreEqual(0.7f, active.RingFraction, 0.0001f);
+            Assert.IsTrue(active.RingIsActive);
+        }
+
+        [Test]
+        public void Flashes_FadeOutOnceStarted()
+        {
+            var flashes = new PowerIconFlashes(1f);
+            Assert.AreEqual(0f, flashes.Flash01(StoryPower.FreezeTime));
+            flashes.Begin(StoryPower.FreezeTime);
+            Assert.AreEqual(1f, flashes.Flash01(StoryPower.FreezeTime));
+            flashes.Tick(0.25f);
+            Assert.AreEqual(0.75f, flashes.Flash01(StoryPower.FreezeTime), 0.0001f);
+            flashes.Tick(5f);
+            Assert.AreEqual(0f, flashes.Flash01(StoryPower.FreezeTime));
+            Assert.AreEqual(0f, flashes.Flash01(StoryPower.None));
+        }
+
+        [Test]
+        public void TheIconFlashesOnceAtTheFirstLotStartAfterTheGrant_AndNotAgain()
         {
             var bus = new EventBus();
-            var tracker = new PowerBarTracker(bus, new PowerBarSettings(), new Owned());
+            var owned = new Owned();
+            var flashed = new List<PowerIconFlashed>();
+            bus.Subscribe<PowerIconFlashed>(e => { flashed.Add(e); owned.Flashed[e.Power] = e.Level; });
+            var tracker = new PowerBarTracker(bus, new PowerBarSettings(), owned, new FakePowers());
+            owned.Powers.Add(StoryPower.FreezeTime);
+            Assert.AreEqual(0f, tracker.Flashes.Flash01(StoryPower.FreezeTime), "no flash between lots, at the reward card");
+            bus.Publish(new ShiftStarted());
+            Assert.AreEqual(1f, tracker.Flashes.Flash01(StoryPower.FreezeTime));
+            Assert.AreEqual(1, flashed.Count);
+            tracker.Flashes.Clear();
+            bus.Publish(new ShiftStarted());
+            Assert.AreEqual(0f, tracker.Flashes.Flash01(StoryPower.FreezeTime), "already flashed at this level");
+            owned.Levels[StoryPower.FreezeTime] = 2;
+            bus.Publish(new ShiftStarted());
+            Assert.AreEqual(1f, tracker.Flashes.Flash01(StoryPower.FreezeTime), "an upgrade flashes at the next lot start too");
+            Assert.AreEqual(2, flashed[1].Level);
+        }
+
+        [Test]
+        public void Tracker_ReadsTheLookFromThePowerViewAndStopsAfterDispose()
+        {
+            var bus = new EventBus();
+            var powers = new FakePowers { State = StateOf(PowerPhase.Cooling, 0.5f) };
+            var tracker = new PowerBarTracker(bus, new PowerBarSettings(), new Owned(), powers);
             bus.Publish(new PowerBarChanged(75f, 2));
-            bus.Publish(new PowerActivated(PowerKind.FreezeTime));
             Assert.AreEqual(2, tracker.View.OpenBuckets);
-            Assert.IsTrue(tracker.Active.IsActive(PowerKind.FreezeTime));
-            bus.Publish(new PowerEnded(PowerKind.FreezeTime));
-            Assert.IsFalse(tracker.Active.IsActive(PowerKind.FreezeTime));
+            Assert.IsTrue(tracker.TryGetLook(StoryPower.FreezeTime, out var look));
+            Assert.IsTrue(look.Dimmed);
+            powers.Has = false;
+            Assert.IsFalse(tracker.TryGetLook(StoryPower.FreezeTime, out _));
             tracker.Dispose();
             bus.Publish(new PowerBarChanged(100f, 3));
             Assert.AreEqual(2, tracker.View.OpenBuckets);
@@ -121,12 +176,12 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void Tracker_FirstTickOnlyStartsTheClock()
         {
-            var tracker = new PowerBarTracker(new EventBus(), new PowerBarSettings(), new Owned());
-            tracker.Active.Start(PowerKind.FreezeTime);
+            var tracker = new PowerBarTracker(new EventBus(), new PowerBarSettings(), new Owned(), new FakePowers());
+            tracker.Flashes.Begin(StoryPower.FreezeTime);
             tracker.Tick(500f);
-            Assert.AreEqual(1f, tracker.Active.Remaining01(PowerKind.FreezeTime));
-            tracker.Tick(501f);
-            Assert.Less(tracker.Active.Remaining01(PowerKind.FreezeTime), 1f);
+            Assert.AreEqual(1f, tracker.Flashes.Flash01(StoryPower.FreezeTime));
+            tracker.Tick(500.1f);
+            Assert.Less(tracker.Flashes.Flash01(StoryPower.FreezeTime), 1f);
         }
 
         [Test]

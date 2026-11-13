@@ -19,6 +19,7 @@ namespace UncannyValet.Tests.Powers
             public LotId CurrentLot => default;
             public IReadOnlyList<StoryPower> EarnedPowers => Owned;
             public int PowerLevel(StoryPower power) => Owned.Contains(power) ? 1 : 0;
+            public int FlashedLevel(StoryPower power) => 0;
             public bool IsCleared(LotId lot) => false;
             public bool IsWorldCleared(World world) => false;
             public int BestBlessings(LotId lot) => 0;

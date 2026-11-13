@@ -27,6 +27,8 @@ namespace UncannyValet.Run
         private List<ModifierChance> _modifierChances = new List<ModifierChance>();
         [SerializeField, Tooltip("Dials that start somewhere other than the global baseline in this lot.")]
         private List<DialPosition> _dials = new List<DialPosition>();
+        [SerializeField, Tooltip("Power bar gained per Perfect Park, perfect drop-off and drift in this lot.")]
+        private LotPowerFill _powerFill = new LotPowerFill();
         [SerializeField, Tooltip("The mechanics this lot uses.")]
         private List<LotModifier> _modifiers = new List<LotModifier>();
         [SerializeField, Min(1), Tooltip("Blessings needed to clear the lot. Placeholder until the blessing task tunes it.")]
@@ -47,17 +49,19 @@ namespace UncannyValet.Run
         public LotPacing Pacing => _pacing;
         public IReadOnlyList<ModifierChance> ModifierChances => _modifierChances;
         public IReadOnlyList<DialPosition> Dials => _dials;
+        public LotPowerFill PowerFill => _powerFill;
         public IReadOnlyList<LotModifier> Modifiers => _modifiers;
         public int BlessingThreshold => _blessingThreshold;
         public PowerGrant Grant => _grant;
 
         /// <summary>
-        /// Seeds shift length, pacing, the arrival budget (see <see cref="LotPacing.SeedInto"/>) and the modifier arrival chances;
+        /// Seeds shift length, pacing, the arrival budget (see <see cref="LotPacing.SeedInto"/>), the modifier arrival chances and the power bar fill amounts;
         /// the waiting cap never exceeds <see cref="QueueSlots"/>.
         /// </summary>
         public void SeedPacing(ITuning tuning, float gameMinutesPerSecond)
         {
             _pacing.SeedInto(tuning, gameMinutesPerSecond, _queueSlots);
+            _powerFill.SeedInto(tuning);
             for (var i = 0; i < _modifierChances.Count; i++)
                 tuning.Seed(_modifierChances[i].Modifier.ChanceKey, _modifierChances[i].Chance);
         }

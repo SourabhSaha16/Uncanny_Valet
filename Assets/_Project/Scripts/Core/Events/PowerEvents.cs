@@ -27,17 +27,29 @@ namespace UncannyValet.Core.Events
         }
     }
 
-    /// <summary>The player spent a bucket of the power bar and a power started. Modules react by doing their part of it.</summary>
+    /// <summary>
+    /// The player spent a bucket of the power bar and a power started at the given level (1 earned, 2 upgraded). Modules
+    /// react by doing their part of it and read the level's numbers through IPowerView.
+    /// </summary>
     public readonly struct PowerActivated : IGameEvent
     {
-        public readonly PowerKind Power;
-        public PowerActivated(PowerKind power) { Power = power; }
+        public readonly StoryPower Power;
+        public readonly int Level;
+        public PowerActivated(StoryPower power, int level) { Power = power; Level = level; }
     }
 
-    /// <summary>A timed power ran out.</summary>
+    /// <summary>A power with a duration ran out (or was ended by a new lot). Instant powers never publish it.</summary>
     public readonly struct PowerEnded : IGameEvent
     {
-        public readonly PowerKind Power;
-        public PowerEnded(PowerKind power) { Power = power; }
+        public readonly StoryPower Power;
+        public PowerEnded(StoryPower power) { Power = power; }
+    }
+
+    /// <summary>The HUD flashed a power's icon for its new level at the start of a lot; the run state remembers it so it flashes once.</summary>
+    public readonly struct PowerIconFlashed : IGameEvent
+    {
+        public readonly StoryPower Power;
+        public readonly int Level;
+        public PowerIconFlashed(StoryPower power, int level) { Power = power; Level = level; }
     }
 }

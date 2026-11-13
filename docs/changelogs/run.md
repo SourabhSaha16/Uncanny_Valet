@@ -29,3 +29,9 @@ Date: 2026-11-13
 Files: see docs/changelogs/blessings.md (this module's part of the same commit).
 Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
 Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## powers: power framework with PowerDefinition levels, cooldowns and HUD icons [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/powers.md (this module's part: LotPowerFill, LotDefinition, LotDefinitionRules, RunProgress.FlashedLevel and MarkFlashed, RunProgressLink).
+Why: Issue #87 of epic #79: per-lot power bar fill amounts as LotDefinition overrides, and the run state remembers which power icon flashed.
+Tests: see docs/changelogs/powers.md.

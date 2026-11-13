@@ -826,3 +826,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a75cdc1e4d3976704 (BlessingCalculator halving, BlessingBreakdown.ServiceMissed, BlessingEarned.serviceMissed, ShiftBlessings favour handling, TicketSettler, ServiceMissedTests), docs/changelogs/lead.md
 Why: story epic 79, task 82. A handback with any open service modifier pays half of its final total (after damage and favour), rounded to the nearest whole blessing with ties up, once; a missed-service handback neither adds nor resets favour; no on-screen feedback.
 Tests: 1364 of 1364 EditMode, 30 of 30 PlayMode after the merge.
+
+## lead: merge agent/powers power framework (#87) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a148e5573f10c1461 (StoryPower as the one power id, PowerDefinition and PowerLevelValues, IPower, PowerCooldowns, IPowerBucket, PowerStack.TryFire, PowerView/IPowerView, PowerKeyMap by earn order, per-level F2 keys, LotPowerFill per-lot fill overrides, generalised dev rows, HUD icons with ring, key digit and one-time flash, PowerAssetSetup and the four definition assets, tests), docs/changelogs/lead.md
+Why: story epic 79, task 87. Powers are data (two levels, cooldown starting after the use ends, one bucket per use), fired on number keys 1 to 4 in earn order, shown as HUD icons; Freeze time runs through the framework. Placeholder level numbers in PowerDefaults are for tasks 88 to 92 to tune.
+Tests: 1388 of 1388 EditMode, 31 of 31 PlayMode after the merge and RunBatch (scene fileID churn reverted).

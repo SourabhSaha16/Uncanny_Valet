@@ -21,6 +21,9 @@ namespace UncannyValet.Core.Contracts
         /// <summary>0 when the power is not owned, 1 when earned, 2 when upgraded.</summary>
         int PowerLevel(StoryPower power);
 
+        /// <summary>The level of the power whose icon flash the HUD already showed (0 until it flashed); below <see cref="PowerLevel"/> means a flash is due at the next lot start.</summary>
+        int FlashedLevel(StoryPower power);
+
         /// <summary>True once this lot was cleared. Training and crazy lots of one world are separate.</summary>
         bool IsCleared(LotId lot);
 

@@ -83,6 +83,42 @@ namespace UncannyValet.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Freeze_RunsAtItsUpgradedLevel_ThenCoolsDown_AndAPressWhileCoolingCostsNothing()
+        {
+            yield return Load();
+            var key = Hook(out var bar);
+            var bus = Services.Get<IEventBus>();
+            var tuning = Services.Get<ITuning>();
+            var view = Services.Get<IPowerView>();
+            tuning.Set(TuningKey.PowerFreezeTimeL2Duration, 0.3f);
+            tuning.Set(TuningKey.PowerFreezeTimeL2Cooldown, 30f);
+            tuning.Set(TuningKey.DevOwnFreezeTime, 2f);
+            Assert.IsTrue(view.TryGetState(StoryPower.FreezeTime, out var state));
+            Assert.AreEqual(2, state.Level, "the upgrade level comes from the run progress");
+            Assert.AreEqual(PowerPhase.Ready, state.Phase);
+            for (var i = 0; i < 4; i++) bus.Publish(new PerfectPark(new CarId(i + 1), TicketId.None));
+
+            key.Pressed = true;
+            yield return null;
+            key.Pressed = false;
+            view.TryGetState(StoryPower.FreezeTime, out state);
+            Assert.AreEqual(PowerPhase.Active, state.Phase);
+            Assert.AreEqual(0f, Services.Get<IWorldTime>().Scale);
+            yield return new WaitForSecondsRealtime(0.6f);
+            view.TryGetState(StoryPower.FreezeTime, out state);
+            Assert.AreEqual(PowerPhase.Cooling, state.Phase, "the cooldown runs after the use ends");
+            Assert.AreEqual(1f, Services.Get<IWorldTime>().Scale);
+
+            for (var i = 0; i < 4; i++) bus.Publish(new PerfectPark(new CarId(10 + i), TicketId.None));
+            var value = bar.Bar.Value;
+            key.Pressed = true;
+            yield return null;
+            key.Pressed = false;
+            Assert.AreEqual(value, bar.Bar.Value, 0.001f, "no bucket is spent while the power cools down");
+            Assert.AreEqual(1f, Services.Get<IWorldTime>().Scale);
+        }
+
+        [UnityTest]
         public IEnumerator WithNoPowerOwned_TheKeyDoesNothing()
         {
             yield return Load();

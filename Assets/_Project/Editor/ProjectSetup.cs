@@ -37,6 +37,7 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<DirectorProfile>(DinerDirectorProfilePath);
             CreateIfMissing<DifficultyDialsConfig>(DifficultyDialsPath);
             CreateIfMissing<PowerBarConfig>(PowerBarConfigPath);
+            PowerAssetSetup.CreateIfMissing();
             WireDialsIntoDirectorConfig();
             ModifierAssetSetup.CreateIfMissing();
             RunAssetSetup.CreateIfMissing();

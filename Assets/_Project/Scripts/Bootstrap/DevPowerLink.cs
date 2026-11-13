@@ -6,13 +6,12 @@ using UncannyValet.Core.Ids;
 namespace UncannyValet.Bootstrap
 {
     /// <summary>
-    /// The F2 "Developer: owned powers" rows: turns the switch of a power into PowerGranted or PowerRevoked on the bus, so
-    /// the run progress (the real owner) gains or loses the power for the session. At start the rows show what is owned.
+    /// The F2 "Developer: owned powers" rows: turns the level of a power (0 none, 1 earned, 2 upgraded) into PowerGranted or
+    /// PowerRevoked on the bus, so the run progress (the real owner) gains, upgrades or loses the power for the session.
+    /// At start the rows show what is owned.
     /// </summary>
     public sealed class DevPowerLink : IDisposable
     {
-        private const float OnThreshold = 0.5f;
-
         private readonly IEventBus _bus;
         private readonly IRunProgress _progress;
 
@@ -20,7 +19,8 @@ namespace UncannyValet.Bootstrap
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _progress = progress ?? throw new ArgumentNullException(nameof(progress));
-            tuning.Set(TuningKey.DevOwnFreezeTime, progress.PowerLevel(StoryPower.FreezeTime) > 0 ? 1f : 0f);
+            for (var i = 0; i < PowerLevelRows.All.Count; i++)
+                if (PowerRows.TryGetDeveloperKey(PowerLevelRows.All[i], out var key)) tuning.Set(key, progress.PowerLevel(PowerLevelRows.All[i]));
             _bus.Subscribe<TuningChanged>(OnChanged);
         }
 
@@ -29,13 +29,20 @@ namespace UncannyValet.Bootstrap
 
         private void OnChanged(TuningChanged e)
         {
-            if (e.Key == TuningKey.DevOwnFreezeTime) Apply(StoryPower.FreezeTime, e.Value >= OnThreshold);
+            for (var i = 0; i < PowerLevelRows.All.Count; i++)
+            {
+                var power = PowerLevelRows.All[i];
+                if (PowerRows.TryGetDeveloperKey(power, out var key) && key == e.Key) Apply(power, (int)Math.Round(e.Value));
+            }
         }
 
-        private void Apply(StoryPower power, bool owned)
+        private void Apply(StoryPower power, int level)
         {
-            if (owned) _bus.Publish(new PowerGranted(power, 1));
-            else if (_progress.PowerLevel(power) > 0) _bus.Publish(new PowerRevoked(power));
+            level = Math.Max(0, Math.Min(level, PowerTuningKeys.Levels));
+            var owned = _progress.PowerLevel(power);
+            if (owned == level) return;
+            if (owned > level) _bus.Publish(new PowerRevoked(power));
+            if (level > 0) _bus.Publish(new PowerGranted(power, level));
         }
     }
 }

@@ -214,8 +214,8 @@ namespace UncannyValet.Core.Events
         RetiredPowerSpeedBoostSeconds,
         /// <summary>Retired: walk multiplier of the removed speed boost. Reserved slot, never reuse or remove.</summary>
         RetiredPowerWalkMultiplier,
-        /// <summary>Seconds freeze time lasts.</summary>
-        PowerFreezeSeconds,
+        /// <summary>Retired by issue 87: freeze time length is now the duration of its power level 1 and 2 keys. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerFreezeSeconds,
         /// <summary>World time scale during freeze time: 0 = stopped, 0.3 = slow.</summary>
         PowerFreezeTimeScale,
         // Perfect Park and Perfect drop-off judging (Lot owns). docs/redesign/car_handling_spec.md section 4, valet_powers.md Q1.
@@ -289,5 +289,94 @@ namespace UncannyValet.Core.Events
         ModifierChanceMuddy,
         /// <summary>Chance 0..1 that a new car arrives needing a charge (ramps up late in the shift).</summary>
         ModifierChanceNeedsCharge,
+        // Developer grants of the other story powers (Bootstrap owns). Issue 87.
+        /// <summary>Thunder stride level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnThunderStride,
+        /// <summary>Storm wind level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnStormWind,
+        /// <summary>Mjolnir recall level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnMjolnirRecall,
+        // Per-level numbers of every story power (Powers owns, seeded from the PowerDefinition assets). Issue 87.
+        // Order: power (Thunder stride, Storm wind, Freeze time, Mjolnir recall) x level (1, 2) x field (PowerField order). Contiguous: PowerTuningKeys maps by index.
+        /// <summary>Thunder stride level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerThunderStrideL1Cooldown,
+        /// <summary>Thunder stride level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerThunderStrideL1Duration,
+        /// <summary>Thunder stride level 1: distance or range, in world units.</summary>
+        PowerThunderStrideL1Distance,
+        /// <summary>Thunder stride level 1: push strength.</summary>
+        PowerThunderStrideL1PushStrength,
+        /// <summary>Thunder stride level 1: width, in world units.</summary>
+        PowerThunderStrideL1Width,
+        /// <summary>Thunder stride level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerThunderStrideL2Cooldown,
+        /// <summary>Thunder stride level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerThunderStrideL2Duration,
+        /// <summary>Thunder stride level 2: distance or range, in world units.</summary>
+        PowerThunderStrideL2Distance,
+        /// <summary>Thunder stride level 2: push strength.</summary>
+        PowerThunderStrideL2PushStrength,
+        /// <summary>Thunder stride level 2: width, in world units.</summary>
+        PowerThunderStrideL2Width,
+        /// <summary>Storm wind level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerStormWindL1Cooldown,
+        /// <summary>Storm wind level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerStormWindL1Duration,
+        /// <summary>Storm wind level 1: distance or range, in world units.</summary>
+        PowerStormWindL1Distance,
+        /// <summary>Storm wind level 1: push strength.</summary>
+        PowerStormWindL1PushStrength,
+        /// <summary>Storm wind level 1: width, in world units.</summary>
+        PowerStormWindL1Width,
+        /// <summary>Storm wind level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerStormWindL2Cooldown,
+        /// <summary>Storm wind level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerStormWindL2Duration,
+        /// <summary>Storm wind level 2: distance or range, in world units.</summary>
+        PowerStormWindL2Distance,
+        /// <summary>Storm wind level 2: push strength.</summary>
+        PowerStormWindL2PushStrength,
+        /// <summary>Storm wind level 2: width, in world units.</summary>
+        PowerStormWindL2Width,
+        /// <summary>Freeze time level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerFreezeTimeL1Cooldown,
+        /// <summary>Freeze time level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerFreezeTimeL1Duration,
+        /// <summary>Freeze time level 1: distance or range, in world units.</summary>
+        PowerFreezeTimeL1Distance,
+        /// <summary>Freeze time level 1: push strength.</summary>
+        PowerFreezeTimeL1PushStrength,
+        /// <summary>Freeze time level 1: width, in world units.</summary>
+        PowerFreezeTimeL1Width,
+        /// <summary>Freeze time level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerFreezeTimeL2Cooldown,
+        /// <summary>Freeze time level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerFreezeTimeL2Duration,
+        /// <summary>Freeze time level 2: distance or range, in world units.</summary>
+        PowerFreezeTimeL2Distance,
+        /// <summary>Freeze time level 2: push strength.</summary>
+        PowerFreezeTimeL2PushStrength,
+        /// <summary>Freeze time level 2: width, in world units.</summary>
+        PowerFreezeTimeL2Width,
+        /// <summary>Mjolnir recall level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerMjolnirRecallL1Cooldown,
+        /// <summary>Mjolnir recall level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerMjolnirRecallL1Duration,
+        /// <summary>Mjolnir recall level 1: distance or range, in world units.</summary>
+        PowerMjolnirRecallL1Distance,
+        /// <summary>Mjolnir recall level 1: push strength.</summary>
+        PowerMjolnirRecallL1PushStrength,
+        /// <summary>Mjolnir recall level 1: width, in world units.</summary>
+        PowerMjolnirRecallL1Width,
+        /// <summary>Mjolnir recall level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerMjolnirRecallL2Cooldown,
+        /// <summary>Mjolnir recall level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerMjolnirRecallL2Duration,
+        /// <summary>Mjolnir recall level 2: distance or range, in world units.</summary>
+        PowerMjolnirRecallL2Distance,
+        /// <summary>Mjolnir recall level 2: push strength.</summary>
+        PowerMjolnirRecallL2PushStrength,
+        /// <summary>Mjolnir recall level 2: width, in world units.</summary>
+        PowerMjolnirRecallL2Width,
     }
 }

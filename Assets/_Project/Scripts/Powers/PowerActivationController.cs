@@ -6,8 +6,8 @@ using UnityEngine;
 namespace UncannyValet.Powers
 {
     /// <summary>
-    /// Fires an owned power on its number key by spending one bucket of the power bar, and runs the active powers' timers.
-    /// Registers IWorldTime. Key 1 is the first power earned (until the power framework adds the other keys).
+    /// Fires an owned power on its number key (keys fill in the player's earn order) by spending one bucket of the power
+    /// bar, and runs the powers' timers and cooldowns in real time. Registers IWorldTime and IPowerView.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class PowerActivationController : MonoBehaviour
@@ -20,6 +20,9 @@ namespace UncannyValet.Powers
         private bool _started;
         private bool _subscribed;
 
+        /// <summary>The running powers and their cooldowns; null until Start.</summary>
+        public PowerStack Stack => _stack;
+
         private void Start()
         {
             if (_bar == null)
@@ -31,8 +34,9 @@ namespace UncannyValet.Powers
             _bus = Services.Get<IEventBus>();
             _input = Services.TryGet<IPowerInput>(out var input) ? input : new KeyboardPowerInput();
             var freeze = new FreezeTimeEffect(_bar.Settings);
-            _stack = new PowerStack(_bus, new IPowerEffect[] { freeze });
+            _stack = new PowerStack(_bus, new IPower[] { freeze }, new PowerCooldowns());
             Services.Register<IWorldTime>(freeze);
+            Services.Register<IPowerView>(new PowerView(() => _bar.Progress, _bar.Settings, _stack));
             _started = true;
             Subscribe();
         }
@@ -46,13 +50,14 @@ namespace UncannyValet.Powers
             if (_stack == null) return;
             for (var slot = 0; slot < PowerKeyMap.SlotCount; slot++)
                 if (_input.PowerPressed(slot)) TryFire(slot);
-            _stack.Tick(Time.deltaTime);
+            _stack.Tick(Time.unscaledDeltaTime);
         }
 
         private void TryFire(int slot)
         {
-            if (!_bar.IsActive || !PowerKeyMap.TryGetKind(_bar.Progress.EarnedPowers, slot, out var kind)) return;
-            if (_bar.TrySpend()) _stack.Fire(kind);
+            if (!_bar.IsActive || !PowerKeyMap.TryGetPower(_bar.Progress.EarnedPowers, slot, out var power)) return;
+            var level = _bar.Progress.PowerLevel(power);
+            if (_bar.Settings.TryGetValues(power, level, out var values)) _stack.TryFire(power, level, values, _bar);
         }
 
         private void OnShiftStarted(ShiftStarted e) => _stack.EndAll();
