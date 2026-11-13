@@ -90,3 +90,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/Cars/{CarTraitLook,CarMudOverlay,CarKeyTag}.cs
 Why: Issue #121. Car looks (electric body tint, mud overlay and its wipe) come from the modifier definition's look field and the modifier events instead of the EV and dirty flags.
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## valet: Thunder stride dash on foot and car boost with lightning, crack and kick [Claude]
+Date: 2026-11-13
+Files: Cars: DriveInput (top speed and acceleration scales, default 1), CarDriver (applies them), ThunderBoostModifier, ThunderBoostLink (new). Part of the valet commit for issue #88.
+Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
+Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.

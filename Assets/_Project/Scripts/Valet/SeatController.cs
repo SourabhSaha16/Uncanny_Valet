@@ -25,6 +25,12 @@ namespace UncannyValet.Valet
         private CarId _carId;
         private int _enterFrame = -1;
 
+        /// <summary>True while the valet sits in a car.</summary>
+        public bool IsDriving => _state.IsDriving;
+
+        /// <summary>The car the valet sits in; null on foot.</summary>
+        public IDrivable Car => _state.IsDriving ? _car : null;
+
         private void Start()
         {
             _input = GetComponent<IInputSource>();

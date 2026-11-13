@@ -16,10 +16,12 @@ namespace UncannyValet.Core.Contracts
         public float PushStrength;
         /// <summary>Width of the power's reach in world units.</summary>
         public float Width;
+        /// <summary>A second time or number a power needs (Thunder stride: the on-foot dash time in seconds).</summary>
+        public float Secondary;
 
-        public PowerLevelValues(float cooldown, float duration, float distance = 0f, float pushStrength = 0f, float width = 0f)
+        public PowerLevelValues(float cooldown, float duration, float distance = 0f, float pushStrength = 0f, float width = 0f, float secondary = 0f)
         {
-            Cooldown = cooldown; Duration = duration; Distance = distance; PushStrength = pushStrength; Width = width;
+            Cooldown = cooldown; Duration = duration; Distance = distance; PushStrength = pushStrength; Width = width; Secondary = secondary;
         }
 
         /// <summary>The value of a field.</summary>
@@ -31,7 +33,8 @@ namespace UncannyValet.Core.Contracts
                 case PowerField.Duration: return Duration;
                 case PowerField.Distance: return Distance;
                 case PowerField.PushStrength: return PushStrength;
-                default: return Width;
+                case PowerField.Width: return Width;
+                default: return Secondary;
             }
         }
 
@@ -44,7 +47,8 @@ namespace UncannyValet.Core.Contracts
                 case PowerField.Duration: Duration = value; break;
                 case PowerField.Distance: Distance = value; break;
                 case PowerField.PushStrength: PushStrength = value; break;
-                default: Width = value; break;
+                case PowerField.Width: Width = value; break;
+                default: Secondary = value; break;
             }
         }
     }

@@ -18,6 +18,8 @@ namespace UncannyValet.Powers
         private float _pushStrength;
         [SerializeField, Min(0f), Tooltip("Width of the power's reach in world units.")]
         private float _width;
+        [SerializeField, Min(0f), Tooltip("A second time or number a power needs (Thunder stride: the on-foot dash time in seconds).")]
+        private float _secondary;
 
         public PowerLevelData() { }
 
@@ -28,9 +30,10 @@ namespace UncannyValet.Powers
             _distance = values.Distance;
             _pushStrength = values.PushStrength;
             _width = values.Width;
+            _secondary = values.Secondary;
         }
 
         /// <summary>The numbers as the plain struct the rest of the game passes around.</summary>
-        public PowerLevelValues ToValues() => new PowerLevelValues(_cooldown, _duration, _distance, _pushStrength, _width);
+        public PowerLevelValues ToValues() => new PowerLevelValues(_cooldown, _duration, _distance, _pushStrength, _width, _secondary);
     }
 }

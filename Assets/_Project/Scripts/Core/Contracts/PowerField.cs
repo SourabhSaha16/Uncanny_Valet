@@ -16,5 +16,7 @@ namespace UncannyValet.Core.Contracts
         PushStrength = 3,
         /// <summary>Width of the power's reach in world units.</summary>
         Width = 4,
+        /// <summary>A second time or number a power needs; its keys sit in their own block at the end of the enum (Thunder stride: the dash time).</summary>
+        Secondary = 5,
     }
 }

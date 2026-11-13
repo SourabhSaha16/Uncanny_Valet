@@ -14,18 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Powers::UncannyValet.Powers.PowerDefinition
   _power: 1
   _displayName: Thunder stride
-  _description: Dash forward on foot in a flash of lightning.
+  _description: Dash forward on foot in a flash of lightning, or boost your car.
   _icon: {fileID: 0}
   _sting: {fileID: 0}
   _level1:
-    _cooldown: 8
-    _duration: 0.25
-    _distance: 4
-    _pushStrength: 0
-    _width: 0
+    _cooldown: 4
+    _duration: 1.5
+    _distance: 5
+    _pushStrength: 1.5
+    _width: 2
+    _secondary: 0.2
   _level2:
-    _cooldown: 6
-    _duration: 0.25
-    _distance: 6
-    _pushStrength: 0
-    _width: 0
+    _cooldown: 4
+    _duration: 2.2
+    _distance: 8
+    _pushStrength: 1.5
+    _width: 2
+    _secondary: 0.2

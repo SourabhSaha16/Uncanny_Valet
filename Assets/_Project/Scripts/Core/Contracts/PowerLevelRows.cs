@@ -38,7 +38,7 @@ namespace UncannyValet.Core.Contracts
             switch (power)
             {
                 case StoryPower.ThunderStride:
-                    return field == PowerField.Duration ? "dash time (s)" : field == PowerField.Distance ? "dash distance" : null;
+                    return ThunderFieldName(field);
                 case StoryPower.StormWind:
                     return field == PowerField.Duration ? "gust time (s)" : field == PowerField.Distance ? "gust range"
                         : field == PowerField.PushStrength ? "push strength" : field == PowerField.Width ? "gust width" : null;
@@ -46,6 +46,20 @@ namespace UncannyValet.Core.Contracts
                     return field == PowerField.Duration ? "duration (s)" : null;
                 default:
                     return field == PowerField.Duration ? "flight time (s)" : field == PowerField.Distance ? "recall range" : null;
+            }
+        }
+
+        // One bucket, two uses: the dash on foot (distance, dash time) and the boost in a car (boost time, top speed, acceleration).
+        private static string ThunderFieldName(PowerField field)
+        {
+            switch (field)
+            {
+                case PowerField.Distance: return "dash distance";
+                case PowerField.Secondary: return "dash time (s)";
+                case PowerField.Duration: return "car boost time (s)";
+                case PowerField.PushStrength: return "car top speed (times)";
+                case PowerField.Width: return "car acceleration (times)";
+                default: return null;
             }
         }
 
@@ -71,13 +85,14 @@ namespace UncannyValet.Core.Contracts
             switch (field)
             {
                 case PowerField.Cooldown: return CooldownMax;
-                case PowerField.Duration: return DurationMax;
+                case PowerField.Duration:
+                case PowerField.Secondary: return DurationMax;
                 case PowerField.Distance: return DistanceMax;
                 case PowerField.PushStrength: return PushMax;
                 default: return WidthMax;
             }
         }
 
-        private static float StepOf(PowerField field) => field == PowerField.Duration ? 0.1f : 0.5f;
+        private static float StepOf(PowerField field) => field == PowerField.Duration || field == PowerField.Secondary ? 0.1f : 0.5f;
     }
 }

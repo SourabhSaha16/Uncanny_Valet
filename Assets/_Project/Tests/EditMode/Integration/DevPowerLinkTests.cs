@@ -102,7 +102,10 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(3, (int)StoryPower.FreezeTime, "story power ids are stored in assets");
             Assert.AreEqual((int)TuningKey.ModifierChanceNeedsCharge + 1, (int)TuningKey.DevOwnThunderStride, "issue 87 keys appended at the end");
             Assert.AreEqual((int)TuningKey.DevOwnMjolnirRecall + 1, (int)TuningKey.PowerThunderStrideL1Cooldown);
-            Assert.AreEqual((int)TuningKey.PowerThunderStrideL1Cooldown + PowerTuningKeys.KeyCount - 1, (int)TuningKey.PowerMjolnirRecallL2Width);
+            Assert.AreEqual((int)TuningKey.PowerThunderStrideL1Cooldown + PowerTuningKeys.KeyCount - 9, (int)TuningKey.PowerMjolnirRecallL2Width, "the first 40 power keys keep their numbers");
+            Assert.AreEqual((int)TuningKey.PowerMjolnirRecallL2Width + 1, (int)TuningKey.PowerThunderStrideL1Secondary, "issue 88 keys appended contiguously at the end");
+            Assert.AreEqual((int)TuningKey.PowerThunderStrideL1Cooldown + PowerTuningKeys.KeyCount - 1, (int)TuningKey.PowerMjolnirRecallL2Secondary);
+            Assert.AreEqual(25, (int)SfxId.ThunderCrack);
             Assert.AreEqual(16, (int)SfxId.PerfectDing);
             Assert.AreEqual(18, (int)SfxId.TimeStop);
             Assert.AreEqual(19, (int)SfxId.TimeResume);

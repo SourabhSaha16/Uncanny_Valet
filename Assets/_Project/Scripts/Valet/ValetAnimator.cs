@@ -20,6 +20,9 @@ namespace UncannyValet.Valet
         private float _movingSeconds;
         private bool _valid;
 
+        /// <summary>The way the sprite faces.</summary>
+        public ValetFacing Facing => _facing;
+
         private void Awake()
         {
             _body = GetComponent<Rigidbody2D>();

@@ -145,3 +145,9 @@ Date: 2026-11-13
 Files: see docs/changelogs/blessings.md (this module's part of the same commit).
 Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
 Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## valet: Thunder stride dash on foot and car boost with lightning, crack and kick [Claude]
+Date: 2026-11-13
+Files: Bootstrap: ThunderKickLink (new), PerfectFeedback (wires the kick and ThunderBoostLink); Editor/ValetSceneBuilder.cs. Part of the valet commit for issue #88.
+Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
+Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
