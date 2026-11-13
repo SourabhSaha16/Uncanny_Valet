@@ -13,6 +13,6 @@ namespace UncannyValet.UI.Status
         Serviced,
         PickUp,
         CustAngry,
-        WillNotTip
+        WillNotBless
     }
 }

@@ -109,6 +109,9 @@ namespace UncannyValet.Tests.PlayMode
             Application.logMessageReceived += OnLog;
             yield return LoadScene(path);
             Assert.AreEqual(expected, Services.Get<IRunProgress>().CurrentLot, "LotStarted must record the current lot.");
+            var goal = Services.Get<ILotGoal>();
+            Assert.AreEqual(expected, goal.Lot, "The lot goal must name the lot that started.");
+            Assert.Greater(goal.BlessingThreshold, 0, "The lot goal needs a blessing threshold.");
 
             var ui = Object.FindFirstObjectByType<GameUi>();
             Assert.IsNotNull(ui, "The lot scene has no GameUi.");

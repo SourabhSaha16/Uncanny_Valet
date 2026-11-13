@@ -11,9 +11,9 @@ namespace UncannyValet.UI.Screens
         {
             "You are a Valet at a busy diner",
             "Customers will DROP OFF their car and then PICK UP after a while",
-            "You are ONLY paid TIPS $$ for PICK UPs and NOT for DROP OFFs",
+            "You earn BLESSINGS only for PICK UPs, NOT for DROP OFFs",
             "Customer cars will sometimes have SPECIAL REQUESTs like car wash or EV charging",
-            "Completing these requests will earn bonus $$"
+            "Completing these requests will earn bonus BLESSINGS"
         };
 
         public static readonly string[] Controls =
@@ -23,6 +23,6 @@ namespace UncannyValet.UI.Screens
             "E (to enter/exit car)"
         };
 
-        public static readonly string[] Highlights = { "DROP OFF", "PICK UP", "TIPS", "SPECIAL REQUEST", "$$" };
+        public static readonly string[] Highlights = { "DROP OFF", "PICK UP", "BLESSINGS", "SPECIAL REQUEST" };
     }
 }

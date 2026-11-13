@@ -19,9 +19,9 @@ namespace UncannyValet.Tests.Integration
         [SetUp] public void SetUp() { _h = new ShiftHarness(); _h.StartShift(); }
         [TearDown] public void TearDown() { _h.Dispose(); }
 
-        private Ticket ParkedTicket(float stay = 10f, int baseTip = 20)
+        private Ticket ParkedTicket(float stay = 10f, int baseBlessing = 20)
         {
-            var t = _h.Spawn(new PatronRequest(stay, baseTip, false));
+            var t = _h.Spawn(new PatronRequest(stay, baseBlessing, false));
             _h.Minutes(1);
             _h.Park(t, 1);
             return t;
@@ -48,10 +48,10 @@ namespace UncannyValet.Tests.Integration
             _h.AtCurb(t);
             _h.AtCurb(t);
             Assert.AreEqual(1, _h.Log.Count<TicketClosed>());
-            Assert.AreEqual(1, _h.Log.Count<TipEarned>());
+            Assert.AreEqual(1, _h.Log.Count<BlessingEarned>());
             Assert.AreEqual(1, _h.Log.Count<CarDeparted>());
             Assert.AreEqual(1, _h.Cars.DespawnCount);
-            Assert.AreEqual(22, _h.Score.Score);
+            Assert.AreEqual(22, _h.Blessings.Blessings);
         }
 
         [Test]
@@ -102,12 +102,12 @@ namespace UncannyValet.Tests.Integration
         {
             var t = ParkedTicket(30f);
             _h.AtCurb(t);
-            Assert.AreEqual(0, _h.Log.Count<TipEarned>());
+            Assert.AreEqual(0, _h.Log.Count<BlessingEarned>());
             Assert.AreEqual(1, _h.Registry.OpenCount);
         }
 
         [Test]
-        public void ShiftEnds_WithOpenTicket_ClosesItWithNoTipAndEndsOnce()
+        public void ShiftEnds_WithOpenTicket_ClosesItWithNoBlessingAndEndsOnce()
         {
             ParkedTicket(30f);
             _h.Minutes(500);

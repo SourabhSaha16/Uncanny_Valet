@@ -11,8 +11,8 @@ namespace UncannyValet.Core.Contracts
         {
             new TuningInfo(TuningKey.EmotionAngryFrom, Group, "Patron gets angry at (share of patience used)", 0.1f, 1f, 0.01f,
                 "From here the plate and the mood bubble flash red and the CAR SLOTS row says Cust. Angry."),
-            new TuningInfo(TuningKey.EmotionWillNotTipFrom, Group, "Patron will not tip at (share of patience used)", 0.1f, 1f, 0.01f,
-                "From here the patron has given up: dark red, Won't tip. At 1 this is when the patience runs out."),
+            new TuningInfo(TuningKey.EmotionWillNotBlessFrom, Group, "Patron will not bless at (share of patience used)", 0.1f, 1f, 0.01f,
+                "From here the patron has given up: dark red, Unblessed. At 1 this is when the patience runs out."),
         };
     }
 }

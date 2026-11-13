@@ -34,7 +34,7 @@ namespace UncannyValet.Tests.Audio
             router.Subscribe();
             router.Subscribe();
             bus.Publish(new CarEntered(new CarId(1)));
-            bus.Publish(new TipEarned(new TicketId(1), 5));
+            bus.Publish(new BlessingEarned(new TicketId(1), 5));
             bus.Publish(new ShiftEnded());
             bus.Publish(new RetryShiftRequested());
             bus.Publish(new ModifierCleared(new CarId(1), ModifierId.NeedsCharge));
@@ -42,7 +42,7 @@ namespace UncannyValet.Tests.Audio
             bus.Publish(new CarEnteredStation(new CarId(1), StationKind.Wash));
             CollectionAssert.AreEqual(new[]
             {
-                SfxId.CarEnter, SfxId.TipEarned, SfxId.NightEnded, SfxId.ButtonClick,
+                SfxId.CarEnter, SfxId.BlessingEarned, SfxId.NightEnded, SfxId.ButtonClick,
                 SfxId.Charged, SfxId.Washed, SfxId.StationStart
             }, played);
 

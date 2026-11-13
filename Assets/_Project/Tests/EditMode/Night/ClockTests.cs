@@ -73,11 +73,8 @@ namespace UncannyValet.Tests.Night
         {
             Assert.AreEqual(240f, _config.ShiftLengthSeconds);
             Assert.AreEqual(30f, _config.FinalStretchSeconds);
-            Assert.AreEqual(150, _config.OneStarScore);
-            Assert.AreEqual(300, _config.TwoStarScore);
-            Assert.AreEqual(450, _config.ThreeStarScore);
-            Assert.AreEqual(15, _config.ComplaintPenalty);
-            Assert.AreEqual(4, _config.MaxComboMultiplier);
+            Assert.AreEqual(15, _config.DefaultCurse);
+            Assert.AreEqual(4, _config.MaxFavourMultiplier);
         }
 
         [Test]

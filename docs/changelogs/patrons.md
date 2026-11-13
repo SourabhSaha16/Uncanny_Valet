@@ -121,3 +121,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/Patrons/ (ModifierInstance, ModifierFactory, ModifierRoller, TicketAnnouncer, LateChanceCurve, Ticket, TicketBook, TicketRegistry, StationService, TicketSettler, PatronPlan, PatronRequest, PatronRequestRoller, PatronTuning, PatronConfig, ServiceTuning, LiveTicketTuning, PatronSpawner; WashRule and ArchetypeTraits removed), Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/*
 Why: Issue #121. Tickets carry a list of ModifierInstance (own progress each) instead of the EV and dirty traits; StationService advances them per station kind and publishes ModifierProgressChanged and ModifierCleared; the arrival roll is one draw over the lot's chances in list order (ModifierRoller), at most one modifier per car; clear times are read live from each definition's key when a ticket is created.
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).

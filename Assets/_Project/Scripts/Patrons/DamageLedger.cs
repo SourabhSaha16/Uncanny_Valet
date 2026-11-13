@@ -5,7 +5,7 @@ using UncannyValet.Core.Ids;
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Remembers each car's damage (0..1) from <see cref="CarDamaged"/> until its ticket is paid or voided, so the tip can
+    /// Remembers each car's damage (0..1) from <see cref="CarDamaged"/> until its ticket is paid or voided, so the blessing can
     /// be reduced at payout. Forgets everything when a shift starts.
     /// </summary>
     public sealed class DamageLedger

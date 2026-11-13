@@ -30,11 +30,11 @@ namespace UncannyValet.Bootstrap
         /// <param name="powers">The valet power config; null seeds the config defaults.</param>
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
         /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
-        /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
+        /// <param name="emotions">The pickup emotion levels (angry, will not bless); null seeds the config defaults.</param>
         /// <param name="lot">The lot's overrides (shift length, arrival pacing, modifier chances, dial positions); null keeps the shared defaults.</param>
         /// <param name="modifiers">The modifier definitions; they seed the clear time and bonus keys. Null uses the shipped defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
-        public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
+        public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, BlessingConfig blessings, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerBarConfig powers = null,
             PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
@@ -64,9 +64,9 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.QueueMaxWaitMinutes, service.QueueWaitMinutes);
             t.Seed(TuningKey.QueueClearDistance, (queueClear ?? new QueueClearSettings()).ClearDistance);
 
-            t.Seed(TuningKey.BaseTip, patrons.BaseTip);
+            t.Seed(TuningKey.BaseBlessing, patrons.BaseBlessing);
             SeedModifiers(t, modifiers ?? ModifierDefaults.CreateCatalog());
-            t.Seed(TuningKey.SpeedWindowMinutes, tips.SpeedBonusWindowMinutes);
+            t.Seed(TuningKey.SpeedWindowMinutes, blessings.SpeedBonusWindowMinutes);
 
             var plan = shift.Plan;
             t.Seed(TuningKey.PlanMaxWaitingCars, plan.MaxWaitingCars);
@@ -125,7 +125,7 @@ namespace UncannyValet.Bootstrap
         {
             var config = emotions != null ? emotions : ScriptableObject.CreateInstance<HudEmotionConfig>();
             t.Seed(TuningKey.EmotionAngryFrom, config.AngryFrom);
-            t.Seed(TuningKey.EmotionWillNotTipFrom, config.WillNotTipFrom);
+            t.Seed(TuningKey.EmotionWillNotBlessFrom, config.WillNotBlessFrom);
             if (emotions == null) Object.DestroyImmediate(config);
         }
 

@@ -11,7 +11,7 @@ namespace UncannyValet.UI.Mood
         public EmotionStyle(HudEmotionConfig config)
         {
             _config = config;
-            Rule = new EmotionRule(config.ImpatientFrom, config.AngryFrom, config.WillNotTipFrom);
+            Rule = new EmotionRule(config.ImpatientFrom, config.AngryFrom, config.WillNotBlessFrom);
         }
 
         /// <summary>Maps patience to an emotion.</summary>
@@ -22,7 +22,7 @@ namespace UncannyValet.UI.Mood
         {
             switch (emotion)
             {
-                case Emotion.WillNotTip: return _config.WillNotTipColor;
+                case Emotion.WillNotBless: return _config.WillNotBlessColor;
                 case Emotion.Angry: return _config.AngryColor;
                 case Emotion.Impatient: return _config.ImpatientColor;
                 default: return _config.HappyColor;
@@ -39,7 +39,7 @@ namespace UncannyValet.UI.Mood
         {
             switch (emotion)
             {
-                case Emotion.WillNotTip: return _config.WillNotTipHz;
+                case Emotion.WillNotBless: return _config.WillNotBlessHz;
                 case Emotion.Angry: return _config.AngryHz;
                 case Emotion.Impatient: return _config.ImpatientHz;
                 default: return _config.HappyHz;

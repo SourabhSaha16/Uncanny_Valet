@@ -20,10 +20,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 10;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(10, 0, 0, 10, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 10;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(10, 0, 0, 10, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -35,7 +35,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus(); _clock = new FakeClock();
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips());
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings());
             _started.Clear();
             _bus.Subscribe<StayStarted>(e => _started.Add(e));
         }

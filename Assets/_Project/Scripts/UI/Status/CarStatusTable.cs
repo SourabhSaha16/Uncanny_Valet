@@ -27,7 +27,7 @@ namespace UncannyValet.UI.Status
             new Entry("Serviced", "Serviced", PixelPalette.Green),
             new Entry("Pick Up", "Pick Up", PixelPalette.Amber),
             new Entry("Cust. Angry", "Angry", PixelPalette.OrangeRed),
-            new Entry("Won't tip", "No tip", PixelPalette.Grey)
+            new Entry("Unblessed", "Zero", PixelPalette.Grey)
         };
 
         /// <summary>Number of statuses the table covers; it must equal the enum's length.</summary>

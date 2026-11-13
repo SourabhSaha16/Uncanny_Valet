@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UncannyValet.Core.Events;
 using UncannyValet.UI.Kit;
 
@@ -8,42 +7,40 @@ namespace UncannyValet.UI.Screens
     public static class ResultsFormatter
     {
         public const string Title = "SHIFT OVER";
+        public const string ClearedLabel = "CLEARED";
+        public const string FailedLabel = "FAILED";
+        public const string BlessingsHeading = "BLESSINGS / THRESHOLD";
         public const string RetryLabel = "RETRY";
         public const string NextLotLabel = "NEXT LOT";
         public const string SoonLabel = "SOON";
         public const string BossName = "MRS. OKAFOR";
-        public const string TopMarks = "THREE STARS! TOP MARKS!";
-        public const int MaxStars = 3;
+        public const string ReachedLine = "THRESHOLD REACHED!";
 
-        public static ResultsContent Build(in ShiftResult result, int carsParked, int bestCombo, int perfectParks = 0)
+        public static ResultsContent Build(in ShiftResult result, int carsParked, int perfectParks = 0)
         {
             return new ResultsContent
             {
                 Title = Title,
-                Score = "$" + result.Score,
-                Stars = result.Stars,
-                Goal = NextGoal(result),
-                Stats = Stats(result, carsParked, bestCombo, perfectParks),
+                Verdict = result.Cleared ? ClearedLabel : FailedLabel,
+                Cleared = result.Cleared,
+                Blessings = result.Blessings + " / " + result.Threshold,
+                Goal = Goal(result),
+                Stats = Stats(result, carsParked, perfectParks),
             };
         }
 
-        private static StatLine[] Stats(in ShiftResult result, int carsParked, int bestCombo, int perfectParks)
+        private static StatLine[] Stats(in ShiftResult result, int carsParked, int perfectParks)
         {
-            var lines = new List<StatLine>(4)
+            return new[]
             {
                 new StatLine(PixelIcon.Tyre, "CARS PARKED", carsParked.ToString()),
-                new StatLine(PixelIcon.StarLit, "BEST COMBO", "X" + bestCombo),
-                new StatLine(PixelIcon.Bell, "COMPLAINTS", result.Complaints.ToString()),
+                new StatLine(PixelIcon.Bolt, "PEAK FAVOUR", "X" + result.PeakFavour),
+                new StatLine(PixelIcon.Bell, "CURSES", result.Curses.ToString()),
                 new StatLine(PixelIcon.Car, "PERFECT PARKS", perfectParks.ToString()),
             };
-            return lines.ToArray();
         }
 
-        private static string NextGoal(in ShiftResult r)
-        {
-            if (r.Stars >= MaxStars) return TopMarks;
-            var target = r.Stars == 0 ? r.OneStarScore : r.Stars == 1 ? r.TwoStarScore : r.ThreeStarScore;
-            return "NEXT STAR AT $" + target + " (" + (target - r.Score) + " TO GO)";
-        }
+        private static string Goal(in ShiftResult r)
+            => r.Cleared ? ReachedLine : (r.Threshold - r.Blessings) + " MORE BLESSINGS NEEDED";
     }
 }

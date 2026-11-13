@@ -102,7 +102,7 @@ namespace UncannyValet.Tests.Cars
         }
 
         [Test]
-        public void TrySet_RejectsOtherKeys() => Assert.IsFalse(new CarHandlingLive(_config).TrySet(TuningKey.BaseTip, 1f));
+        public void TrySet_RejectsOtherKeys() => Assert.IsFalse(new CarHandlingLive(_config).TrySet(TuningKey.BaseBlessing, 1f));
 
         [Test]
         public void Link_AppliesPanelChangesToTheLiveValues()

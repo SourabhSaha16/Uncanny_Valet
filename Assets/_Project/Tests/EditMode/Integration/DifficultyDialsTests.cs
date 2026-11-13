@@ -225,7 +225,7 @@ namespace UncannyValet.Tests.Integration
                 if (!info.Advanced) visible.Add(info.Key);
                 if (i < 7) Assert.AreEqual(TuningInfo.DifficultyGroup, info.Group, "dials come first");
             }
-            Assert.AreEqual(16, visible.Count, "seven rows (six dials and the seed) plus game speed, shift length, the empty-queue wait, pickup patience, impatient scale and the four Perfect Park rows");
+            Assert.AreEqual(15, visible.Count, "seven rows (six dials and the seed) plus game speed, shift length, the empty-queue wait, pickup patience, impatient scale and the three Perfect Park rows");
             Assert.AreEqual(TuningKey.DialIntensity, TuningCatalog.All[0].Key);
             foreach (var key in DifficultyDials.DialKeys) Assert.IsNotEmpty(Find(key).Tooltip, key + " needs a tooltip");
             Assert.AreEqual(TuningKey.DirSeed, TuningCatalog.All[6].Key);

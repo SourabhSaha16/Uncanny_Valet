@@ -12,23 +12,23 @@ namespace UncannyValet.Patrons
         public const float DefaultPickupWindowMinutes = 25f;
 
         public readonly float StayMinutes;
-        public readonly int BaseTip;
+        public readonly int BaseBlessing;
         public readonly bool Impatient;
         public readonly float PickupWindowMinutes;
         /// <summary>The service modifiers the car arrives with.</summary>
         public readonly ModifierSet Modifiers;
 
-        public PatronRequest(float stayMinutes, int baseTip, bool impatient,
+        public PatronRequest(float stayMinutes, int baseBlessing, bool impatient,
             float pickupWindowMinutes = DefaultPickupWindowMinutes,
             ModifierSet modifiers = default)
         {
-            StayMinutes = stayMinutes; BaseTip = baseTip; Impatient = impatient;
+            StayMinutes = stayMinutes; BaseBlessing = baseBlessing; Impatient = impatient;
             PickupWindowMinutes = pickupWindowMinutes;
             Modifiers = modifiers;
         }
 
         /// <summary>The same visit with another stay.</summary>
         public PatronRequest WithStay(float stayMinutes)
-            => new PatronRequest(stayMinutes, BaseTip, Impatient, PickupWindowMinutes, Modifiers);
+            => new PatronRequest(stayMinutes, BaseBlessing, Impatient, PickupWindowMinutes, Modifiers);
     }
 }

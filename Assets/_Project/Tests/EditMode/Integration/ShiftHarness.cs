@@ -1,5 +1,6 @@
 using System;
 using UncannyValet.Core.Config;
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
 using UncannyValet.Economy;
@@ -13,24 +14,27 @@ using Object = UnityEngine.Object;
 namespace UncannyValet.Tests.Integration
 {
     /// <summary>
-    /// Wires the real EventBus, ShiftClock, TicketRegistry, TipCalculator, ShiftScore, PatronDeparture and
+    /// Wires the real EventBus, ShiftClock, TicketRegistry, BlessingCalculator, ShiftBlessings, PatronDeparture and
     /// SpotOccupancy. The scene-bound pieces (spawner, parking zones) are replaced by the small helper
-    /// methods below, which publish the same events in the same order as the real code. The tip config has no
-    /// patience bonus, so tips stay easy to add up by hand (the combo still applies).
+    /// methods below, which publish the same events in the same order as the real code. The blessing config has no
+    /// patience bonus, so blessings stay easy to add up by hand (the favour still applies).
     /// </summary>
     public sealed class ShiftHarness : IDisposable
     {
         private readonly GameObject _clockObject = new GameObject("test-clock");
         private readonly PatronDeparture _departure;
         private readonly ShiftConfig _config;
-        private readonly TipConfig _tipConfig;
+        private readonly BlessingConfig _blessingConfig;
         private int _nextCar = 1;
 
         public readonly EventBus Bus = new EventBus();
         public readonly ShiftClock Clock;
         public readonly FakeCarFactory Cars;
         public readonly TicketRegistry Registry;
-        public readonly ShiftScore Score;
+        public readonly ShiftBlessings Blessings;
+
+        /// <summary>The lot goal the shift is judged against at its end; null judges nothing.</summary>
+        public ILotGoal Goal;
         public readonly SpotOccupancy Spots = new SpotOccupancy(new[] { 1, 2, 3, 4 });
         public readonly EventLog Log;
 
@@ -41,12 +45,12 @@ namespace UncannyValet.Tests.Integration
             Clock = _clockObject.AddComponent<ShiftClock>();
             Clock.Initialize(Bus, _config); // the config default is 1 game minute per second, so Minutes(n) is exact
             Cars = new FakeCarFactory(Bus);
-            _tipConfig = ScriptableObject.CreateInstance<TipConfig>();
-            var so = new SerializedObject(_tipConfig);
+            _blessingConfig = ScriptableObject.CreateInstance<BlessingConfig>();
+            var so = new SerializedObject(_blessingConfig);
             so.FindProperty("_maxPatienceBonus").intValue = 0;
             so.ApplyModifiedPropertiesWithoutUndo();
-            Score = new ShiftScore(Bus, _config);
-            Registry = new TicketRegistry(Bus, Clock, new TipCalculator(_tipConfig, null, ModifierTestKit.Catalog()), Score);
+            Blessings = new ShiftBlessings(Bus, _config, () => Goal);
+            Registry = new TicketRegistry(Bus, Clock, new BlessingCalculator(_blessingConfig, null, ModifierTestKit.Catalog()), Blessings);
             _departure = new PatronDeparture(Bus, Cars);
         }
 
@@ -90,10 +94,10 @@ namespace UncannyValet.Tests.Integration
         {
             _departure.Dispose();
             Registry.Dispose();
-            Score.Dispose();
+            Blessings.Dispose();
             Object.DestroyImmediate(_clockObject);
             Object.DestroyImmediate(_config);
-            Object.DestroyImmediate(_tipConfig);
+            Object.DestroyImmediate(_blessingConfig);
         }
     }
 }

@@ -18,10 +18,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 1;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(1, 0, 0, 1, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 1;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(1, 0, 0, 1, BlessingZeroReason.None);
         }
 
         private sealed class FakeTuning : ITuning
@@ -89,7 +89,7 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void PickupWindowChange_ReachesRunningTimer()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live);
             var expired = 0;
             _bus.Subscribe<TicketTimerExpired>(e => expired++);
             var t = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f));
@@ -106,7 +106,7 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void ClearMinutesChange_AppliesToLaterTicketsOnly()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live, null, ModifierTestKit.Catalog());
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live, null, ModifierTestKit.Catalog());
             _tuning.Seed(TuningKey.ChargeMinutes, 20f);
             var charge = ModifierSet.Of(ModifierId.NeedsCharge);
             var first = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f, charge));
@@ -143,7 +143,7 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void ImpatientScaleChange_ReachesWaitingImpatientTicketsOnly()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live);
             var impatient = registry.Create(new CarId(1), new PatronRequest(10f, 20, true, 15f));
             var calm = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 25f));
             _tuning.Set(TuningKey.ImpatientWindowScale, 0.3f);

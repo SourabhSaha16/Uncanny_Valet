@@ -13,7 +13,6 @@ namespace UncannyValet.Lot
         public float ParkLengthOffset { get; private set; }
         public float ParkCooldown { get; private set; }
         public float ParkMinTravel { get; private set; }
-        public float ParkBonus { get; private set; }
 
         public PerfectTuning(PerfectSettings s)
         {
@@ -24,7 +23,6 @@ namespace UncannyValet.Lot
             ParkLengthOffset = s.ParkLengthOffset;
             ParkCooldown = s.ParkCooldownSeconds;
             ParkMinTravel = s.ParkMinTravel;
-            ParkBonus = s.ParkBonusDollars;
         }
 
         /// <summary>Writes the values into the tuning store as seeds (Bootstrap calls this).</summary>
@@ -37,7 +35,6 @@ namespace UncannyValet.Lot
             t.Seed(TuningKey.PerfectParkLengthOffset, ParkLengthOffset);
             t.Seed(TuningKey.PerfectParkCooldown, ParkCooldown);
             t.Seed(TuningKey.PerfectParkMinTravel, ParkMinTravel);
-            t.Seed(TuningKey.PerfectParkBonus, ParkBonus);
         }
 
         /// <summary>Takes the stored value of every key that has been seeded.</summary>
@@ -59,7 +56,6 @@ namespace UncannyValet.Lot
                 case TuningKey.PerfectParkLengthOffset: ParkLengthOffset = value; return true;
                 case TuningKey.PerfectParkCooldown: ParkCooldown = value; return true;
                 case TuningKey.PerfectParkMinTravel: ParkMinTravel = value; return true;
-                case TuningKey.PerfectParkBonus: ParkBonus = value; return true;
                 default: return false;
             }
         }

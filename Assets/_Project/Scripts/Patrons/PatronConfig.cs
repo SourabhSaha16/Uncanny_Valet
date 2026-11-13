@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.Patrons
 {
@@ -12,13 +13,13 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes a car stays parked before pickup is requested (min, max).")]
         [SerializeField] private Vector2 _stayRange = new Vector2(20f, 45f);
 
-        [SerializeField, Min(0)] private int _baseTip = 20;
+        [SerializeField, Min(0)] [FormerlySerializedAs("_baseTip")] private int _baseBlessing = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
         [Tooltip("Cars waiting at the arrival slots at once. Parked cars do not count.")]
         [SerializeField, Range(1, 3)] private int _maxWaitingCars = 3;
 
-        [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
+        [Tooltip("Game minutes to bring a requested car to the curb before the blessing drops to 0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
 
         [Tooltip("Impatient patrons wait this fraction of the pickup window (1 = same as everyone).")]
@@ -49,7 +50,7 @@ namespace UncannyValet.Patrons
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;
-        public int BaseTip => _baseTip;
+        public int BaseBlessing => _baseBlessing;
         public float ImpatientChance => _impatientChance;
         public float PickupWindowMinutes => _pickupWindowMinutes;
         public float ImpatientWindowScale => _impatientWindowScale;

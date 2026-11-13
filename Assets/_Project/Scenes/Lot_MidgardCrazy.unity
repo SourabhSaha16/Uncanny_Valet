@@ -1261,7 +1261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UncannyValet.Bootstrap::UncannyValet.Bootstrap.GameBootstrap
   _shiftConfig: {fileID: 11400000, guid: 8f87638a3bc04d149b3dbaebbbf6f27e, type: 2}
-  _tipConfig: {fileID: 11400000, guid: 43cb5ce001afbe24096260fda1c95a42, type: 2}
+  _blessingConfig: {fileID: 11400000, guid: 43cb5ce001afbe24096260fda1c95a42, type: 2}
   _carFactory: {fileID: 1942818625}
   _lot: {fileID: 1258142655}
   _clock: {fileID: 1235745379}

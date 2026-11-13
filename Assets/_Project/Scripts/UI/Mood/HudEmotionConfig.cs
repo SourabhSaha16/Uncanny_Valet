@@ -16,8 +16,8 @@ namespace UncannyValet.UI.Mood
         private float _impatientFrom = 0.6f;
         [SerializeField, Range(0f, 1f), Tooltip("From here the patron is angry (red). Seeds the F2 row 'Patron gets angry at'.")]
         private float _angryFrom = 0.8f;
-        [SerializeField, Range(0f, 1f), Tooltip("From here, or once the timer expired, the patron will not tip (dark red). Seeds the F2 row 'Patron will not tip at'.")]
-        private float _willNotTipFrom = 1f;
+        [SerializeField, Range(0f, 1f), Tooltip("From here, or once the timer expired, the patron will not bless (dark red). Seeds the F2 row 'Patron will not bless at'.")]
+        [FormerlySerializedAs("_willNotTipFrom")] private float _willNotBlessFrom = 1f;
 
         [Header("Flash speed (flashes per second)")]
         [SerializeField, Min(0.1f), Tooltip("Plate flash of a happy patron.")]
@@ -26,29 +26,29 @@ namespace UncannyValet.UI.Mood
         private float _impatientHz = 3f;
         [SerializeField, Min(0.1f), Tooltip("Plate flash of an angry patron.")]
         private float _angryHz = 7f;
-        [SerializeField, Min(0.1f), Tooltip("Plate flash of a patron who will not tip: slow, they have given up.")]
-        private float _willNotTipHz = 1f;
+        [SerializeField, Min(0.1f), Tooltip("Plate flash of a patron who will not bless: slow, they have given up.")]
+        [FormerlySerializedAs("_willNotTipHz")] private float _willNotBlessHz = 1f;
 
         [Header("Colours")]
         [SerializeField] private Color _happyColor = new Color32(0x4C, 0xCB, 0x5E, 255);
         [SerializeField] private Color _impatientColor = new Color32(0xFF, 0xE0, 0x3A, 255);
         [SerializeField] private Color _angryColor = new Color32(0xF0, 0x3A, 0x2A, 255);
-        [SerializeField] private Color _willNotTipColor = new Color32(0xA0, 0x28, 0x28, 255);
+        [SerializeField] [FormerlySerializedAs("_willNotTipColor")] private Color _willNotBlessColor = new Color32(0xA0, 0x28, 0x28, 255);
 
-        [Header("Tip pop over a boarding patron")]
-        [SerializeField] private TipPopSettings _tipPop = new TipPopSettings();
+        [Header("Blessing pop over a boarding patron")]
+        [SerializeField] [FormerlySerializedAs("_tipPop")] private BlessingPopSettings _blessingPop = new BlessingPopSettings();
 
         [Header("Power bar (right edge)")]
         [FormerlySerializedAs("_powerMeter")]
         [SerializeField] private PowerBarSettings _powerBar = new PowerBarSettings();
 
-        public TipPopSettings TipPop => _tipPop;
+        public BlessingPopSettings BlessingPop => _blessingPop;
         public PowerBarSettings PowerBar => _powerBar;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
-        public float WillNotTipFrom => _willNotTipFrom;
-        public float WillNotTipHz => _willNotTipHz;
-        public Color WillNotTipColor => _willNotTipColor;
+        public float WillNotBlessFrom => _willNotBlessFrom;
+        public float WillNotBlessHz => _willNotBlessHz;
+        public Color WillNotBlessColor => _willNotBlessColor;
         public float HappyHz => _happyHz;
         public float ImpatientHz => _impatientHz;
         public float AngryHz => _angryHz;

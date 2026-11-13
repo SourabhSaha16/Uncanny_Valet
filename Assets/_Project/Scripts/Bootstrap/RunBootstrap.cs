@@ -9,7 +9,7 @@ namespace UncannyValet.Bootstrap
 {
     /// <summary>
     /// Connects a lot scene to the run: finds (or, in the first scene, creates) the persistent <see cref="RunHost"/>,
-    /// registers the run services, links the scene's events to the run state and publishes LotStarted.
+    /// registers the run services (including the lot goal), links the scene's events to the run state and publishes LotStarted.
     /// </summary>
     public sealed class RunBootstrap : IDisposable
     {
@@ -35,6 +35,7 @@ namespace UncannyValet.Bootstrap
                 Debug.LogError("The run definition does not list lot " + lot.Id + " (scene " + lot.name + ").", lot);
             Services.Register<IRunProgress>(host.Progress);
             Services.Register<ILotPicker>(host);
+            Services.Register<ILotGoal>(new LotGoal(lot.Id, lot.BlessingThreshold));
             var link = new RunProgressLink(bus, host.Progress);
             var devPowers = Services.TryGet<ITuning>(out var tuning) ? new DevPowerLink(bus, tuning, host.Progress) : null;
             bus.Publish(new LotStarted(lot.Id));

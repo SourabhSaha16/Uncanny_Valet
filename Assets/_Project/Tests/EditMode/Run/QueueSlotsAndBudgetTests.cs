@@ -18,7 +18,7 @@ namespace UncannyValet.Tests.Run
         private RunFixtures _fx;
         private ShiftConfig _shift;
         private PatronConfig _patrons;
-        private TipConfig _tips;
+        private BlessingConfig _blessings;
 
         [SetUp]
         public void SetUp()
@@ -26,7 +26,7 @@ namespace UncannyValet.Tests.Run
             _fx = new RunFixtures();
             _shift = ScriptableObject.CreateInstance<ShiftConfig>();
             _patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            _tips = ScriptableObject.CreateInstance<TipConfig>();
+            _blessings = ScriptableObject.CreateInstance<BlessingConfig>();
         }
 
         [TearDown]
@@ -35,7 +35,7 @@ namespace UncannyValet.Tests.Run
             _fx.Dispose();
             Object.DestroyImmediate(_shift);
             Object.DestroyImmediate(_patrons);
-            Object.DestroyImmediate(_tips);
+            Object.DestroyImmediate(_blessings);
         }
 
         private LotDefinition Lot(float shift, float gapMin, float gapMax, int slots, int waiting)
@@ -114,9 +114,9 @@ namespace UncannyValet.Tests.Run
                 var none = new TuningStore(new EventBus());
                 var a = new TuningStore(new EventBus());
                 var b = new TuningStore(new EventBus());
-                TuningSeeder.Seed(none, _shift, _patrons, _tips, 6, director, profile, bus: new EventBus());
-                TuningSeeder.Seed(a, _shift, _patrons, _tips, 6, director, profile, bus: new EventBus(), lot: Lot(150f, 15f, 25f, 3, 2));
-                TuningSeeder.Seed(b, _shift, _patrons, _tips, 6, director, profile, bus: new EventBus(), lot: Lot(240f, 10f, 15f, 4, 4));
+                TuningSeeder.Seed(none, _shift, _patrons, _blessings, 6, director, profile, bus: new EventBus());
+                TuningSeeder.Seed(a, _shift, _patrons, _blessings, 6, director, profile, bus: new EventBus(), lot: Lot(150f, 15f, 25f, 3, 2));
+                TuningSeeder.Seed(b, _shift, _patrons, _blessings, 6, director, profile, bus: new EventBus(), lot: Lot(240f, 10f, 15f, 4, 4));
                 var shared = none.Get(TuningKey.DirArrivalBudget);
                 Assert.Less(a.Get(TuningKey.DirArrivalBudget), shared, "the training lot's own budget replaces the shared one");
                 Assert.Greater(b.Get(TuningKey.DirArrivalBudget), shared, "the crazy lot is no longer capped by the shared one");

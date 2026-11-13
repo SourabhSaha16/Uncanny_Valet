@@ -23,3 +23,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/Run/{ModifierChance,LotDefinition,LotDefinitionRules,DialPosition}.cs, Data/Run/Midgard{Training,Crazy}Lot.asset, Tests/EditMode/Run/*
 Why: Issue #121. A LotDefinition lists (modifier, chance) pairs, seeded with the other per-lot pacing values before the dials and validated (no duplicates, 0 to 1 each, total at most 1); both Midgard lots carry today's diner chances (needs charge 0.3 then Muddy 0.3). DialPosition no longer accepts the retired Car Mix slots.
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).

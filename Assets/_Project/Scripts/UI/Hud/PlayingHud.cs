@@ -24,8 +24,8 @@ namespace UncannyValet.UI.Hud
         private readonly NoticePainter _notices;
         private readonly WorldTicketPainter _world;
         private readonly PatronMoodPainter _mood;
-        private readonly TipPopTracker _tipPopTracker;
-        private readonly TipPopPainter _tipPops;
+        private readonly BlessingPopTracker _blessingPopTracker;
+        private readonly BlessingPopPainter _blessingPops;
         private readonly CurbHintTracker _curbHints;
         private readonly CurbHintPainter _hintPainter;
         private readonly OccupiedHintTracker _occupiedHints;
@@ -35,22 +35,22 @@ namespace UncannyValet.UI.Hud
         private readonly FreezeTracker _freezeTracker;
         private readonly FreezeVeilPainter _freezeVeil;
 
-        public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftScoreView score, ICarFactory cars, EmotionStyle style,
-            TipPopSettings tipPop, PowerBarSettings powerBar)
+        public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
+            BlessingPopSettings blessingPop, PowerBarSettings powerBar)
         {
             _powerTracker = new PowerBarTracker(bus, powerBar);
             _power = new PowerBarPainter(canvas, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
             _board = new TicketBoard(bus, Services.Get<IModifierCatalog>());
-            _hud = new HudPainter(canvas, clock, score);
+            _hud = new HudPainter(canvas, clock, blessings, goal);
             _keyBoard = new KeyBoardPainter(canvas, style);
             _notices = new NoticePainter(canvas);
             _world = new WorldTicketPainter(canvas, cars, style);
             _mood = new PatronMoodPainter(canvas, style);
-            var pops = new TipPops(tipPop);
-            _tipPopTracker = new TipPopTracker(bus, cars, pops, tipPop, UnscaledTime);
-            _tipPops = new TipPopPainter(canvas, pops, tipPop);
+            var pops = new BlessingPops(blessingPop);
+            _blessingPopTracker = new BlessingPopTracker(bus, cars, pops, blessingPop, UnscaledTime);
+            _blessingPops = new BlessingPopPainter(canvas, pops, blessingPop);
             _curbHints = new CurbHintTracker(bus);
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
@@ -66,7 +66,7 @@ namespace UncannyValet.UI.Hud
             _board.CollectRows(_rows);
             _world.Draw(_rows, camera, time);
             _mood.Draw(_rows, camera);
-            _tipPops.Draw(camera, Time.unscaledTime);
+            _blessingPops.Draw(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
             _hud.Draw(time);
@@ -79,7 +79,7 @@ namespace UncannyValet.UI.Hud
         public void Dispose()
         {
             _board.Dispose();
-            _tipPopTracker.Dispose();
+            _blessingPopTracker.Dispose();
             _powerTracker.Dispose();
             _freezeTracker.Dispose();
             _curbHints.Dispose();

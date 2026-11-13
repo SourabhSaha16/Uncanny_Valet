@@ -6,7 +6,7 @@ using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Owns every ticket. Reacts to park, tick, drive and curb events; pays out the tip on close.</summary>
+    /// <summary>Owns every ticket. Reacts to park, tick, drive and curb events; pays out the blessing on close.</summary>
     public sealed class TicketRegistry
     {
         private readonly IEventBus _bus;
@@ -17,7 +17,6 @@ namespace UncannyValet.Patrons
         private readonly StationService _stations;
         private readonly CurbCall _call;
         private readonly LiveTicketTuning _live;
-        private readonly PerfectBonusLedger _perfect;
         private readonly DamageLedger _damage;
         private readonly ReturnShifter _returns;
         private readonly StayStarter _stays;
@@ -31,29 +30,28 @@ namespace UncannyValet.Patrons
         /// <summary>Tickets whose car has not been parked yet.</summary>
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, IShiftScoreView score = null)
-            : this(bus, clock, tips, ServiceTuning.Default, score) { }
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, IShiftBlessingsView score = null)
+            : this(bus, clock, blessings, ServiceTuning.Default, score) { }
 
         /// <summary>Registry whose clear times and windows follow the live tuning. A null catalog uses the shipped modifiers.</summary>
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning,
-            IShiftScoreView score = null, IModifierCatalog catalog = null)
-            : this(bus, clock, tips, tuning.Service, score, null, catalog, tuning)
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, PatronTuning tuning,
+            IShiftBlessingsView score = null, IModifierCatalog catalog = null)
+            : this(bus, clock, blessings, tuning.Service, score, null, catalog, tuning)
         {
             _live = new LiveTicketTuning(bus, tuning, _book);
         }
 
         /// <param name="catalog">The modifier definitions; null uses the shipped Muddy and NeedsCharge numbers.</param>
         /// <param name="live">The live numbers the modifier clear times follow; null uses the definitions' values.</param>
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning,
-            IShiftScoreView score = null, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, ServiceTuning tuning,
+            IShiftBlessingsView score = null, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
             var modifiers = new ModifierFactory(catalog ?? ModifierDefaults.CreateCatalog(), live);
             _book = new TicketBook(tuning, modifiers, plates);
-            _perfect = new PerfectBonusLedger(bus);
             _damage = new DamageLedger(bus);
-            _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect, _damage);
+            _settler = new TicketSettler(bus, clock, blessings, _timers, _book, score, _damage);
             _stations = new StationService(bus, _book);
             _returns = new ReturnShifter(bus, clock, _book);
             _stays = new StayStarter(bus, clock, _book);
@@ -73,7 +71,6 @@ namespace UncannyValet.Patrons
             _stations.Dispose();
             _returns.Dispose();
             _stays.Dispose();
-            _perfect.Dispose();
             _damage.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
@@ -177,7 +174,7 @@ namespace UncannyValet.Patrons
             _book.ResetTags();
         }
 
-        /// <summary>Shift over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>
+        /// <summary>Shift over: every open ticket ends with wait 0 and blessing 0 (no BlessingEarned). Safe to repeat.</summary>
         private void CloseAllUnpaid()
         {
             _book.CopyTo(_scratch);

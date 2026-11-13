@@ -5,28 +5,28 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Director
 {
     /// <summary>
-    /// Rule system owning form F: a slow read (-1 struggling to +1 cruising) of the tip rate against the 3-star pace,
-    /// recent angry patrons and the combo. Updated every few seconds and moves only a limited step each time.
+    /// Rule system owning form F: a slow read (-1 struggling to +1 cruising) of the blessing rate against the pace target,
+    /// recent angry patrons and the favour. Updated every few seconds and moves only a limited step each time.
     /// </summary>
     public sealed class FormTracker : IDisposable
     {
         private readonly IEventBus _bus;
         private readonly FormSettings _settings;
         private readonly IGameClock _clock;
-        private readonly IShiftScoreView _score;
-        private readonly int _maxCombo;
-        private readonly RecentTips _tips = new RecentTips();
+        private readonly int _paceBlessings;
+        private readonly int _maxFavour;
+        private readonly RecentBlessings _blessings = new RecentBlessings();
         private float _lastUpdate;
-        private int _combo = 1;
+        private int _favour = 1;
 
-        /// <param name="score">Supplies the 3-star score for the pace; null means the tip term is 0.</param>
-        /// <param name="maxCombo">The highest combo multiplier.</param>
-        public FormTracker(IEventBus bus, FormSettings settings, IGameClock clock, IShiftScoreView score, int maxCombo)
+        /// <param name="paceBlessings">Blessings per shift that count as exactly on pace; 0 makes the blessing term 0.</param>
+        /// <param name="maxFavour">The highest favour multiplier.</param>
+        public FormTracker(IEventBus bus, FormSettings settings, IGameClock clock, int paceBlessings, int maxFavour)
         {
-            _bus = bus; _settings = settings; _clock = clock; _score = score; _maxCombo = maxCombo;
+            _bus = bus; _settings = settings; _clock = clock; _paceBlessings = paceBlessings; _maxFavour = maxFavour;
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
-            _bus.Subscribe<TipEarned>(OnTip);
-            _bus.Subscribe<ScoreChanged>(OnScore);
+            _bus.Subscribe<BlessingEarned>(OnBlessing);
+            _bus.Subscribe<BlessingsChanged>(OnScore);
         }
 
         /// <summary>Form F, -1..1. Starts each shift at 0.</summary>
@@ -35,8 +35,8 @@ namespace UncannyValet.Director
         public void Dispose()
         {
             _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
-            _bus.Unsubscribe<TipEarned>(OnTip);
-            _bus.Unsubscribe<ScoreChanged>(OnScore);
+            _bus.Unsubscribe<BlessingEarned>(OnBlessing);
+            _bus.Unsubscribe<BlessingsChanged>(OnScore);
         }
 
         /// <summary>Call every director tick; recomputes form when the update interval has passed.</summary>
@@ -53,10 +53,10 @@ namespace UncannyValet.Director
         {
             var window = _settings.WindowSeconds;
             var elapsed = lot.NowSeconds < window ? lot.NowSeconds : window;
-            var rate = elapsed > 0f ? _tips.SumWithin(lot.NowSeconds, window) / elapsed : 0f;
+            var rate = elapsed > 0f ? _blessings.SumWithin(lot.NowSeconds, window) / elapsed : 0f;
             var length = _clock.ShiftLengthSeconds;
-            var pace = _score != null && length > 0f ? _score.ThreeStarScore / length : 0f;
-            return FormMath.Target(rate, pace, lot.CountAngry(window), _combo, _maxCombo, _settings);
+            var pace = length > 0f ? _paceBlessings / length : 0f;
+            return FormMath.Target(rate, pace, lot.CountAngry(window), _favour, _maxFavour, _settings);
         }
 
         private float NowSeconds() => _clock.ShiftLengthSeconds - _clock.SecondsRemaining;
@@ -65,12 +65,12 @@ namespace UncannyValet.Director
         {
             Value = 0f;
             _lastUpdate = 0f;
-            _combo = 1;
-            _tips.Clear();
+            _favour = 1;
+            _blessings.Clear();
         }
 
-        private void OnTip(TipEarned e) => _tips.Add(NowSeconds(), e.Amount);
+        private void OnBlessing(BlessingEarned e) => _blessings.Add(NowSeconds(), e.Amount);
 
-        private void OnScore(ScoreChanged e) => _combo = e.ComboMultiplier;
+        private void OnScore(BlessingsChanged e) => _favour = e.FavourMultiplier;
     }
 }

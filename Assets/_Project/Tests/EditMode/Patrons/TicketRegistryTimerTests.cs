@@ -20,17 +20,17 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
             public int Calls;
-            public TipInput Last;
-            public int Calculate(in TipInput input) { Calls++; Last = input; return input.PickupExpired ? 0 : 25; }
-            public TipBreakdown Explain(in TipInput input) { var t = Calculate(input); return new TipBreakdown(t, 0, 0, t, TipZeroReason.None); }
+            public BlessingInput Last;
+            public int Calculate(in BlessingInput input) { Calls++; Last = input; return input.PickupExpired ? 0 : 25; }
+            public BlessingBreakdown Explain(in BlessingInput input) { var t = Calculate(input); return new BlessingBreakdown(t, 0, 0, t, BlessingZeroReason.None); }
         }
 
         private EventBus _bus;
         private FakeClock _clock;
-        private FakeTips _tips;
+        private FakeBlessings _blessings;
         private FakeCarFactory _cars;
         private PatronDeparture _departure;
         private TicketRegistry _registry;
@@ -40,9 +40,9 @@ namespace UncannyValet.Tests.Patrons
         [SetUp]
         public void SetUp()
         {
-            _bus = new EventBus(); _clock = new FakeClock(); _tips = new FakeTips();
+            _bus = new EventBus(); _clock = new FakeClock(); _blessings = new FakeBlessings();
             _cars = new FakeCarFactory(_bus);
-            _registry = new TicketRegistry(_bus, _clock, _tips);
+            _registry = new TicketRegistry(_bus, _clock, _blessings);
             _departure = new PatronDeparture(_bus, _cars);
             _log = new List<IGameEvent>();
             _bus.Subscribe<TicketTimerChanged>(e => _log.Add(e));
@@ -109,7 +109,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void PickupTimerExpiry_CarStillOwed_TipIsZero()
+        public void PickupTimerExpiry_CarStillOwed_BlessingIsZero()
         {
             var ticket = OpenTicket(_car);
             _bus.Publish(new CarParked(_car, 1));
@@ -123,8 +123,8 @@ namespace UncannyValet.Tests.Patrons
             Assert.AreEqual(TicketState.PickupRequested, ticket.State);
 
             _bus.Publish(new CarAtCurb(_car));
-            Assert.IsTrue(_tips.Last.PickupExpired);
-            Assert.AreEqual(0, ((TicketClosed)_log.Find(e => e is TicketClosed)).Tip);
+            Assert.IsTrue(_blessings.Last.PickupExpired);
+            Assert.AreEqual(0, ((TicketClosed)_log.Find(e => e is TicketClosed)).Blessing);
             Assert.AreEqual(1, Count<TicketTimerStopped>());
         }
 
@@ -137,7 +137,7 @@ namespace UncannyValet.Tests.Patrons
             Tick(20f); Tick(30f);
             _bus.Publish(new CarAtCurb(_car));
 
-            Assert.IsFalse(_tips.Last.PickupExpired);
+            Assert.IsFalse(_blessings.Last.PickupExpired);
             Assert.AreEqual(1, Count<TicketTimerStopped>());
             Tick(500f);
             Assert.AreEqual(0, Count<TicketTimerExpired>());

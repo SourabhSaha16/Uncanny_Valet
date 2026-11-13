@@ -97,7 +97,7 @@ namespace UncannyValet.EditorTools
 
             var so = new SerializedObject(bootstrap);
             so.FindProperty("_shiftConfig").objectReferenceValue = RequireAsset<ShiftConfig>(ProjectSetup.ShiftConfigPath);
-            so.FindProperty("_tipConfig").objectReferenceValue = Load<TipConfig>("Assets/_Project/Data/Economy/TipConfig.asset");
+            so.FindProperty("_blessingConfig").objectReferenceValue = Load<BlessingConfig>("Assets/_Project/Data/Economy/BlessingConfig.asset");
             so.FindProperty("_patronConfig").objectReferenceValue = patronConfig;
             so.FindProperty("_tuningPanel").objectReferenceValue = tuningPanel;
             so.FindProperty("_carFactory").objectReferenceValue = factory;

@@ -46,7 +46,7 @@ namespace UncannyValet.Patrons
         /// <summary>Game minute at which the patron was sent to the curb.</summary>
         public float SummonedMinute { get; private set; }
 
-        /// <summary>True once the pickup window ran out; the tip is then $0 but the car is still owed.</summary>
+        /// <summary>True once the pickup window ran out; the blessing is then 0 but the car is still owed.</summary>
         public bool PickupExpired => PickupTimer.IsExpired;
 
         public float StayMinutes => Request.StayMinutes;

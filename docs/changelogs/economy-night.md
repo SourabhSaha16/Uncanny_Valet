@@ -44,3 +44,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Night/ShiftPlanSource.cs, Data/Economy/TipConfig.asset, Tests/EditMode/Economy and Night
 Why: Issue #121. The tip pays each cleared modifier's own bonus (live key when tuned) as TipBreakdown.ModifierBonus; the old charge and clean bonuses move into the modifier definitions. The shift plan no longer carries the EV and wash chances (the lot owns them).
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).

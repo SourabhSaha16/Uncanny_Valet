@@ -6,8 +6,8 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// The corner HUD from the style guide's Scene 10: shift clock top centre, tips and the three-star bar top left,
-    /// combo badge top right. Strings are cached and rebuilt only when a number changes.
+    /// The corner HUD from the style guide's Scene 10: shift clock top centre, the blessing count with its bar and threshold top left,
+    /// favour badge top right. Strings are cached and rebuilt only when a number changes.
     /// </summary>
     public sealed class HudPainter
     {
@@ -15,32 +15,39 @@ namespace UncannyValet.UI.Hud
         private const int ClockWidth = 58;
         private const int ClockHeight = 22;
         private const int BigScale = 2;
-        private const int MinComboShown = 2;
+        private const int MinFavourShown = 2;
         private const float BlinkPeriod = 0.5f;
         private const float NeverRisen = -100f;
 
         private readonly PixelCanvas _canvas;
         private readonly IGameClock _clock;
-        private readonly IShiftScoreView _score;
+        private readonly IShiftBlessingsView _blessingsView;
+        private readonly ILotGoal _goal;
         private readonly StringBuilder _clockText = new StringBuilder(8);
-        private readonly CachedText _tips = new CachedText("$");
-        private readonly CachedText _combo = new CachedText("X");
+        private readonly CachedText _blessings = new CachedText(string.Empty);
+        private readonly StringBuilder _goalText = new StringBuilder(12);
+        private readonly CachedText _favour = new CachedText("X");
         private int _clockSeconds = -1;
-        private int _lastCombo = 1;
-        private float _comboRisenAt = NeverRisen;
+        private int _goalBlessings = -1;
+        private int _lastBlessings;
+        private float _gainedAt = NeverRisen;
+        private int _lastFavour = 1;
+        private float _favourRisenAt = NeverRisen;
 
-        public HudPainter(PixelCanvas canvas, IGameClock clock, IShiftScoreView score)
+        /// <param name="goal">The lot goal that sets the bar and the threshold; null draws the count only.</param>
+        public HudPainter(PixelCanvas canvas, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal)
         {
             _canvas = canvas;
             _clock = clock;
-            _score = score;
+            _blessingsView = blessings;
+            _goal = goal;
         }
 
         public void Draw(float time)
         {
             DrawClock(time);
-            DrawScore();
-            DrawCombo(time);
+            DrawBlessings(time);
+            DrawFavour(time);
         }
 
         private void DrawClock(float time)
@@ -61,45 +68,52 @@ namespace UncannyValet.UI.Hud
             _canvas.Text(_clockText, PixelTextLayout.Centered(x, ClockWidth, width), Margin + 4, color, BigScale);
         }
 
-        private void DrawScore()
+        private void DrawBlessings(float time)
         {
-            _tips.Set(_score.Score);
+            var total = _blessingsView.Blessings;
+            if (total > _lastBlessings) _gainedAt = time;
+            _lastBlessings = total;
+            _blessings.Set(total);
             var x = Margin;
             var y = Margin - 1;
-            _canvas.Panel(x, y, HudLayout.ScoreWidth, HudLayout.ScoreHeight, PixelPalette.PanelDark);
-            _canvas.Icon(PixelIcon.Coin, x + HudLayout.CoinX, y + HudLayout.CoinY, 1, Color.white);
-            _canvas.Text(_tips.Text, x + HudLayout.TipsX, y + HudLayout.TipsY, PixelPalette.Gold, HudLayout.TextScale);
-            DrawStarBar(x, y);
+            _canvas.Panel(x, y, HudLayout.BlessingsWidth, HudLayout.BlessingsHeight, PixelPalette.PanelDark);
+            _canvas.Icon(PixelIcon.Bolt, x + HudLayout.BoltX, y + HudLayout.BoltY, 1, Color.white);
+            _canvas.Text(_blessings.Text, x + HudLayout.CountX, y + HudLayout.CountY, PixelPalette.Gold, HudLayout.TextScale);
+            if (_goal != null) DrawBar(x, y, time);
         }
 
-        private void DrawStarBar(int panelX, int panelY)
+        private void DrawBar(int panelX, int panelY, float time)
         {
+            var threshold = _goal.BlessingThreshold;
+            var layout = new BlessingBarLayout(_lastBlessings, threshold, HudLayout.BarWidth);
             var left = panelX + HudLayout.BarX;
             var top = panelY + HudLayout.BarY;
-            var layout = new StarBarLayout(_score.Score, _score.OneStarScore, _score.TwoStarScore,
-                _score.ThreeStarScore, HudLayout.BarWidth);
+            var fill = layout.Reached ? PixelPalette.Green : PixelPalette.Gold;
+            fill = Color.Lerp(fill, PixelPalette.White, BlessingPulse.Strength(time - _gainedAt));
             _canvas.Fill(left - 1, top - 1, HudLayout.BarWidth + 2, HudLayout.BarHeight + 2, PixelPalette.Track);
-            _canvas.Fill(left, top, layout.Fill, HudLayout.BarHeight, PixelPalette.Gold);
-            for (var star = 0; star < StarBarLayout.Stars; star++)
+            _canvas.Fill(left, top, layout.Fill, HudLayout.BarHeight, fill);
+            _canvas.Fill(left + HudLayout.BarWidth - HudLayout.MarkerWidth, top - HudLayout.MarkerOverhang,
+                HudLayout.MarkerWidth, HudLayout.BarHeight + HudLayout.MarkerOverhang * 2, PixelPalette.Cream);
+            if (_goalBlessings != _lastBlessings)
             {
-                var icon = layout.IsLit(star) ? PixelIcon.StarLit : PixelIcon.StarUnlit;
-                var x = panelX + HudLayout.StarX(layout, star);
-                _canvas.Icon(icon, x, top + HudLayout.BarHeight / 2 - _canvas.IconHeight(icon) / 2, 1, Color.white);
+                _goalBlessings = _lastBlessings;
+                _goalText.Clear().Append(_lastBlessings).Append(" / ").Append(threshold);
             }
+            _canvas.Text(_goalText, panelX + HudLayout.BarX, panelY + HudLayout.GoalTextY, PixelPalette.Cream, HudLayout.TextScale);
         }
 
-        private void DrawCombo(float time)
+        private void DrawFavour(float time)
         {
-            var multiplier = _score.ComboMultiplier;
-            if (multiplier > _lastCombo) _comboRisenAt = time;
-            _lastCombo = multiplier;
-            if (multiplier < MinComboShown) return;
-            _combo.Set(multiplier);
-            var x = PixelGrid.Width - Margin - HudLayout.ComboWidth;
-            var y = Margin - 1 + ComboWobble.OffsetY(time - _comboRisenAt);
-            _canvas.Panel(x, y, HudLayout.ComboWidth, HudLayout.ComboHeight, PixelPalette.PanelCombo);
-            var width = PixelTextLayout.Width(_combo.Text.Length, HudLayout.TextScale);
-            _canvas.Text(_combo.Text, PixelTextLayout.Centered(x, HudLayout.ComboWidth, width), y + HudLayout.ComboTextY,
+            var multiplier = _blessingsView.FavourMultiplier;
+            if (multiplier > _lastFavour) _favourRisenAt = time;
+            _lastFavour = multiplier;
+            if (multiplier < MinFavourShown) return;
+            _favour.Set(multiplier);
+            var x = PixelGrid.Width - Margin - HudLayout.FavourWidth;
+            var y = Margin - 1 + FavourWobble.OffsetY(time - _favourRisenAt);
+            _canvas.Panel(x, y, HudLayout.FavourWidth, HudLayout.FavourHeight, PixelPalette.PanelFavour);
+            var width = PixelTextLayout.Width(_favour.Text.Length, HudLayout.TextScale);
+            _canvas.Text(_favour.Text, PixelTextLayout.Centered(x, HudLayout.FavourWidth, width), y + HudLayout.FavourTextY,
                 PixelPalette.Cream, HudLayout.TextScale);
         }
     }

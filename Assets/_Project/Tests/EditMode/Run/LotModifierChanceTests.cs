@@ -60,16 +60,16 @@ namespace UncannyValet.Tests.Run
         {
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             try
             {
                 Chances((ModifierId.NeedsCharge, 0.1f), (ModifierId.Muddy, 0.2f));
                 var withLot = new TuningStore(new EventBus());
-                TuningSeeder.Seed(withLot, shift, patrons, tips, 6, lot: _lot, modifiers: _lot.BuildModifierCatalog());
+                TuningSeeder.Seed(withLot, shift, patrons, blessings, 6, lot: _lot, modifiers: _lot.BuildModifierCatalog());
                 Assert.AreEqual(0.1f, withLot.Get(TuningKey.ModifierChanceNeedsCharge), 1e-5f);
                 Assert.AreEqual(0.2f, withLot.Get(TuningKey.ModifierChanceMuddy), 1e-5f);
                 var bare = new TuningStore(new EventBus());
-                TuningSeeder.Seed(bare, shift, patrons, tips, 6);
+                TuningSeeder.Seed(bare, shift, patrons, blessings, 6);
                 Assert.AreEqual(ModifierDefaults.NeedsChargeChance, bare.Get(TuningKey.ModifierChanceNeedsCharge), 1e-5f);
                 Assert.AreEqual(ModifierDefaults.MuddyChance, bare.Get(TuningKey.ModifierChanceMuddy), 1e-5f);
             }
@@ -77,7 +77,7 @@ namespace UncannyValet.Tests.Run
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
             }
         }
 
@@ -86,11 +86,11 @@ namespace UncannyValet.Tests.Run
         {
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             try
             {
                 var tuning = new TuningStore(new EventBus());
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, modifiers: _catalog);
+                TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, modifiers: _catalog);
                 Assert.AreEqual(15f, tuning.Get(TuningKey.WashMinutes));
                 Assert.AreEqual(20f, tuning.Get(TuningKey.ChargeMinutes));
                 Assert.AreEqual(15f, tuning.Get(TuningKey.CleanBonus));
@@ -100,7 +100,7 @@ namespace UncannyValet.Tests.Run
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
             }
         }
 

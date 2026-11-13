@@ -131,9 +131,9 @@ namespace UncannyValet.Tests.Director
         public void AngryPatronsAreCountedInsideTheWindow()
         {
             Clock.SetElapsed(10f);
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             Clock.SetElapsed(50f);
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             var snap = Tracker.Capture();
             Assert.AreEqual(1, snap.CountAngry(30f));
             Assert.AreEqual(2, snap.CountAngry(60f));
@@ -143,7 +143,7 @@ namespace UncannyValet.Tests.Director
         public void NewShiftClearsEverything()
         {
             Spawn();
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             Bus.Publish(new ShiftStarted());
             var snap = Tracker.Capture();
             Assert.AreEqual(0, snap.Cars.Count);

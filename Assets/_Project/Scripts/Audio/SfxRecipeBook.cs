@@ -16,7 +16,7 @@ namespace UncannyValet.Audio
                 case SfxId.CarEnter: return SfxActions.CarEnter(sampleRate);
                 case SfxId.CarExit: return SfxActions.CarExit(sampleRate);
                 case SfxId.CarParked: return SfxActions.CarParked(sampleRate);
-                case SfxId.TipEarned: return SfxActions.TipEarned(sampleRate);
+                case SfxId.BlessingEarned: return SfxActions.BlessingEarned(sampleRate);
                 case SfxId.PickupRequested: return SfxAlerts.PickupRequested(sampleRate);
                 case SfxId.CarVanished: return SfxAlerts.CarVanished(sampleRate);
                 case SfxId.CarArrives: return SfxAlerts.CarArrives(sampleRate);

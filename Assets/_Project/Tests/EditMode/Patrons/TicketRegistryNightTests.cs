@@ -18,10 +18,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 25;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(25, 0, 0, 25, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 25;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(25, 0, 0, 25, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -35,11 +35,11 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus = new EventBus(); _clock = new FakeClock();
             _cars = new FakeCarFactory(_bus);
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips());
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings());
             new PatronDeparture(_bus, _cars);
             _log = new List<IGameEvent>();
             _bus.Subscribe<TicketClosed>(e => _log.Add(e));
-            _bus.Subscribe<TipEarned>(e => _log.Add(e));
+            _bus.Subscribe<BlessingEarned>(e => _log.Add(e));
             _bus.Subscribe<TicketTimerStopped>(e => _log.Add(e));
             _bus.Subscribe<CarDeparted>(e => _log.Add(e));
         }
@@ -58,7 +58,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ShiftEnded_ClosesEveryOpenTicketWithZeroTipAndDepartsCars()
+        public void ShiftEnded_ClosesEveryOpenTicketWithZeroBlessingAndDepartsCars()
         {
             var waiting = Open(1);
             var parked = Open(2);
@@ -70,11 +70,11 @@ namespace UncannyValet.Tests.Patrons
             Assert.AreEqual(TicketState.Closed, parked.State);
             Assert.AreEqual(0, _registry.OpenCount);
             Assert.AreEqual(2, Count<TicketClosed>());
-            Assert.AreEqual(0, Count<TipEarned>());
+            Assert.AreEqual(0, Count<BlessingEarned>());
             Assert.AreEqual(2, Count<CarDeparted>());
             Assert.AreEqual(0, _cars.Alive);
             foreach (var e in _log)
-                if (e is TicketClosed c) { Assert.AreEqual(0, c.Tip); Assert.AreEqual(0f, c.WaitMinutes); }
+                if (e is TicketClosed c) { Assert.AreEqual(0, c.Blessing); Assert.AreEqual(0f, c.WaitMinutes); }
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarAtCurb(t.CarId));
 
             Assert.AreEqual(1, Count<TicketClosed>());
-            Assert.AreEqual(0, Count<TipEarned>());
+            Assert.AreEqual(0, Count<BlessingEarned>());
             Assert.AreEqual(1, Count<CarDeparted>());
         }
 
