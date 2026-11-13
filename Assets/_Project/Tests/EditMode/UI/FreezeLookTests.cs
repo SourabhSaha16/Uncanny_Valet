@@ -35,12 +35,11 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void Tracker_FollowsFreezeTimeOnly_AndClearsOnANewShift()
+        public void Tracker_FollowsFreezeTime_AndClearsOnANewShift()
         {
             var bus = new EventBus();
             var tracker = new FreezeTracker(bus, new FreezeFade(0.1f, 0.1f));
             tracker.Tick(0f);
-            bus.Publish(new PowerActivated(PowerKind.SpeedBoost));
             Assert.IsFalse(tracker.Fade.Frozen);
             bus.Publish(new PowerActivated(PowerKind.FreezeTime));
             tracker.Tick(1f);
@@ -86,8 +85,6 @@ namespace UncannyValet.Tests.UI
             var played = new List<SfxId>();
             var router = new SfxEventRouter(bus, played.Add);
             router.Subscribe();
-            bus.Publish(new PowerEnded(PowerKind.ParkSmash));
-            bus.Publish(new PowerEnded(PowerKind.SpeedBoost));
             bus.Publish(new PowerActivated(PowerKind.FreezeTime));
             bus.Publish(new PowerEnded(PowerKind.FreezeTime));
             CollectionAssert.AreEqual(new[] { SfxId.TimeStop, SfxId.TimeResume }, played);

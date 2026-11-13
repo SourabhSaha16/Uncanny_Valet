@@ -15,7 +15,7 @@ namespace UncannyValet.UI.Screens
         public const string TopMarks = "THREE STARS! TOP MARKS!";
         public const int MaxStars = 3;
 
-        public static ResultsContent Build(in ShiftResult result, int carsParked, int bestCombo, int perfectParks = 0, int smashTips = 0)
+        public static ResultsContent Build(in ShiftResult result, int carsParked, int bestCombo, int perfectParks = 0)
         {
             return new ResultsContent
             {
@@ -23,20 +23,19 @@ namespace UncannyValet.UI.Screens
                 Score = "$" + result.Score,
                 Stars = result.Stars,
                 Goal = NextGoal(result),
-                Stats = Stats(result, carsParked, bestCombo, perfectParks, smashTips),
+                Stats = Stats(result, carsParked, bestCombo, perfectParks),
             };
         }
 
-        private static StatLine[] Stats(in ShiftResult result, int carsParked, int bestCombo, int perfectParks, int smashTips)
+        private static StatLine[] Stats(in ShiftResult result, int carsParked, int bestCombo, int perfectParks)
         {
-            var lines = new List<StatLine>(5)
+            var lines = new List<StatLine>(4)
             {
                 new StatLine(PixelIcon.Tyre, "CARS PARKED", carsParked.ToString()),
                 new StatLine(PixelIcon.StarLit, "BEST COMBO", "X" + bestCombo),
                 new StatLine(PixelIcon.Bell, "COMPLAINTS", result.Complaints.ToString()),
                 new StatLine(PixelIcon.Car, "PERFECT PARKS", perfectParks.ToString()),
             };
-            if (smashTips > 0) lines.Add(new StatLine(PixelIcon.Coin, "SMASH TIPS", "$" + smashTips));
             return lines.ToArray();
         }
 

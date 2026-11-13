@@ -117,7 +117,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_traffic").objectReferenceValue = traffic;
             so.FindProperty("_trafficConfig").objectReferenceValue = trafficConfig;
             so.FindProperty("_powers").objectReferenceValue = powers;
-            so.FindProperty("_powerConfig").objectReferenceValue = RequireAsset<PowerMeterConfig>(ProjectSetup.PowerMeterConfigPath);
+            so.FindProperty("_powerConfig").objectReferenceValue = RequireAsset<PowerBarConfig>(ProjectSetup.PowerBarConfigPath);
             so.FindProperty("_lotDefinition").objectReferenceValue = definition;
             so.FindProperty("_runDefinition").objectReferenceValue = run;
             so.ApplyModifiedPropertiesWithoutUndo();

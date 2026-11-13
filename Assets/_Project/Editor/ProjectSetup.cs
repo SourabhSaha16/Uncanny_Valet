@@ -23,7 +23,7 @@ namespace UncannyValet.EditorTools
         public const string ShiftConfigPath = "Assets/_Project/Data/Shift/ShiftConfig.asset";
         public const string DirectorConfigPath = "Assets/_Project/Data/Director/DirectorConfig.asset";
         public const string DifficultyDialsPath = "Assets/_Project/Data/Director/DifficultyDialsConfig.asset";
-        public const string PowerMeterConfigPath = "Assets/_Project/Data/Powers/PowerMeterConfig.asset";
+        public const string PowerBarConfigPath = "Assets/_Project/Data/Powers/PowerBarConfig.asset";
         public const string DinerDirectorProfilePath = "Assets/_Project/Data/Director/DinerDirectorProfile.asset";
 
         [MenuItem("Uncanny Valet/Setup/Create Config Assets")]
@@ -36,7 +36,7 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<DirectorConfig>(DirectorConfigPath);
             CreateIfMissing<DirectorProfile>(DinerDirectorProfilePath);
             CreateIfMissing<DifficultyDialsConfig>(DifficultyDialsPath);
-            CreateIfMissing<PowerMeterConfig>(PowerMeterConfigPath);
+            CreateIfMissing<PowerBarConfig>(PowerBarConfigPath);
             WireDialsIntoDirectorConfig();
             RunAssetSetup.CreateIfMissing();
             AssetDatabase.SaveAssets();

@@ -29,6 +29,7 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(HandlingRows.Rows);
             all.AddRange(HandlingRows.TyreRows);
             all.AddRange(PowerRows.Rows);
+            all.AddRange(PowerRows.DeveloperRows);
             all.AddRange(PerfectRows.Rows);
             all.AddRange(EmotionRows.Rows);
             all.AddRange(DamageRows.Rows);

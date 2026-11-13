@@ -34,7 +34,7 @@ namespace UncannyValet.Bootstrap
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null,
+            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerBarConfig powers = null,
             PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
             LotDefinition lot = null)
         {
@@ -113,9 +113,9 @@ namespace UncannyValet.Bootstrap
             if (emotions == null) Object.DestroyImmediate(config);
         }
 
-        private static void SeedPowers(ITuning t, PowerMeterConfig powers)
+        private static void SeedPowers(ITuning t, PowerBarConfig powers)
         {
-            var config = powers != null ? powers : ScriptableObject.CreateInstance<PowerMeterConfig>();
+            var config = powers != null ? powers : ScriptableObject.CreateInstance<PowerBarConfig>();
             config.SeedInto(t);
             if (powers == null) Object.DestroyImmediate(config);
         }

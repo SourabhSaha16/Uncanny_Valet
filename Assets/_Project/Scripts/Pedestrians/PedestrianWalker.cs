@@ -73,9 +73,8 @@ namespace UncannyValet.Pedestrians
             _body = new WalkerBody(gameObject, config);
             _bounce.Configure(config.BounceDistance, config.BounceSeconds, config.BounceCooldown);
             _sprites = new WalkerSprites(transform, config);
-            _stumble = WalkerStumbler.For(config, _sprites, gameObject.GetInstanceID());
+            _stumble = new WalkerStumbler(config, _sprites);
             _stumble.Started += OnStumbleStarted;
-            _stumble.Subscribe();
         }
 
         /// <summary>Gives the person a new look and walking speed; <paramref name="patience01"/> (0..1) sets how long they wait when blocked.</summary>
@@ -95,10 +94,9 @@ namespace UncannyValet.Pedestrians
 
         /// <summary>Stops exempting the own car (the patron despawned).</summary>
         public void ReleaseCar() => _body.ReleaseCar();
-        private void OnEnable() { _body?.ReapplyIgnore(); _stumble?.Subscribe(); }
-        private void OnDisable() => _stumble?.Unsubscribe();
+        private void OnEnable() => _body?.ReapplyIgnore();
 
-        // The boosted valet ran through this person: stop walking and let the crowd play the bump sound.
+        // The person was knocked into a stumble: stop walking and let the crowd play the bump sound.
         private void OnStumbleStarted() { _moving = false; Bumped?.Invoke(this, 1f); }
 
         /// <summary>Places the person without walking.</summary>

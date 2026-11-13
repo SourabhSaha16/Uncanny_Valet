@@ -802,3 +802,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-ab668bba07086fc7d (LotDefinition QueueSlots, LotPacing arrival budget, LotGeometry/LotLayoutBuilder/LotDecor slot count, QueueSlotCheck, scene builder, Midgard lot assets and scenes, tests), docs/changelogs/lead.md
 Why: story epic 79, task 80 follow-up decisions: training lots have 3 queue slots and crazy lots 4 (so the crazy waiting cap of 4 is real); the Director's arrival budget is a per-lot value derived from shift length and mean gap (training 8, crazy 20) instead of the shared 14.
 Tests: 1371 of 1371 EditMode, 33 of 33 PlayMode after the merge.
+
+## lead: merge agent/powers shared power bar, remove speed boost and Park Smash (#86) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a9865e9ec0ff23d09 (PowerBar, PowerBarController, PowerBarConfig/Settings, PowerKeyMap, HUD PowerBar* with BoltGlyph, DevPowerLink, PowerRevoked event, RunProgress.RevokePower, F2 rows, removal of the speed boost, Park Smash and the old meter, tests), docs/changelogs/lead.md
+Why: story epic 79, task 86. One shared 0-100 power bar with three bolt buckets (open at 33.3, 66.7, 100; a use spends 33.3), filled by Perfect Park, perfect drop-off and drifting, shown and active only when a power is owned; keys 1 to 4 fire earned powers (only Freeze time has an effect); developer F2 row grants Freeze time. Retired TuningKey members renamed Retired..., SfxId gaps pinned. Open: per-lot fill overrides not built; WalkerStumbler needs a public entry for task 93.
+Tests: 1325 of 1325 EditMode, 28 of 28 PlayMode after the merge and RunBatch (scene fileID churn reverted to the merged versions).

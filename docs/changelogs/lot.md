@@ -127,3 +127,9 @@ Date: 2026-11-11
 Files: Lot/SmashRunner.cs, SmashPlan.cs, SmashRoster.cs, ParkingSpot.cs (Place, Release, settle guard), LotLayoutBuilder.cs, tests Lot/SmashPlanTests.cs and PlayMode/ParkSmashPlayModeTests.cs (edited by the powers agent for issue #43).
 Why: Park Smash (design.md A11) stands every waiting arrived car in a free bay on PowerActivated(ParkSmash) without a Perfect Park judgement.
 Tests: EditMode and PlayMode suites pass.
+
+## powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
+Date: 2026-11-13
+Files: Lot: removed SmashRunner, SmashPlan, SmashRoster; ParkingSpot (Place, Release removed), LotLayoutBuilder.
+Why: Park Smash deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
+Tests: SmashPlanTests and the Smash PlayMode tests removed; suites pass.

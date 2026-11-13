@@ -3,7 +3,7 @@ using UncannyValet.Core.Events;
 
 namespace UncannyValet.Powers
 {
-    /// <summary>Level 2: world time is scaled down (0 = frozen) for a few seconds. Provides <see cref="IWorldTime"/>.</summary>
+    /// <summary>World time is scaled down (0 = frozen) for a few seconds. Provides <see cref="IWorldTime"/>.</summary>
     public sealed class FreezeTimeEffect : IPowerEffect, IWorldTime
     {
         private readonly PowerSettings _settings;

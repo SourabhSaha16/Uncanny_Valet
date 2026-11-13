@@ -37,3 +37,9 @@ Date: 2026-11-11
 Files: Core (IPowerBoost, PedestrianId, ValetBargedPedestrian in PedestrianEvents, TuningKey PowerStumbleSeconds/PowerTrailPerSecond appended, PowerRows), Valet (ValetBoost, BoostMath, BargeRule, BargeScanner, TrailEmitter, SparklePool, SparkleSprite, ValetBoostFx, OnFootMover), Pedestrians (PedestrianStumbleRule, WalkerStumbler, PedestrianWalker, WalkerSprites, PedestrianConfig + asset), Powers (SpeedBoostEffect implements IPowerBoost and is registered, PowerMeterConfig, PowerSettings, PowerActivationController), Audio (SfxPowers, SfxId.SpeedBoost, SfxRecipeBook, SfxEventRouter), Editor/ValetSceneBuilder.cs, Scenes/Bootstrap.unity (rebuilt), tests (EditMode Valet/BoostTests, Pedestrians/StumbleTests, Powers/SpeedBoostContractTests; PlayMode ValetBargeTests and asmdef reference to Valet)
 Why: issue 41, power level 1 (valet_powers.md, car_handling_spec.md section 5 and row 8). On foot the valet walks at the multiplier read from IPowerBoost; while boosted its collider excludes the pedestrian layer, overlapped walkers get ValetBargedPedestrian and stumble (0.4 s, push and spin); rainbow outline, sparkle trail and a fanfare. Test it by lowering F2 "Meter per Perfect Park" and "Speed boost unlocks at".
 Tests: EditMode 1231/1231 passed, PlayMode 21/21 passed (incl. barge tests and BootstrapSceneSmokeTests). Refs #41
+
+## powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
+Date: 2026-11-13
+Files: Valet: removed BargeRule, BargeScanner, BoostMath, SparklePool, SparkleSprite, TrailEmitter, ValetBoost, ValetBoostFx; OnFootMover.
+Why: Speed boost deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
+Tests: BoostTests and ValetBargeTests removed; suites pass.

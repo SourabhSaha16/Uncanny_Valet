@@ -109,3 +109,9 @@ Date: 2026-11-11
 Files: Patrons/SmashSettler.cs, SmashTally.cs, TicketSettler.cs (PaySmash), ChargeRule.cs, WashRule.cs, ServiceProgress.cs (Complete), TicketRegistry.cs, test Patrons/ParkSmashTests.cs (edited by the powers agent for issue #43).
 Why: Park Smash (design.md A11, valet_powers.md Q5) pays every waiting patron a full tip with the combo not reset and closes the ticket so the car leaves.
 Tests: EditMode and PlayMode suites pass.
+
+## powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
+Date: 2026-11-13
+Files: Patrons: removed SmashSettler, SmashTally; TicketSettler (PaySmash), TicketRegistry, ChargeRule, WashRule, ServiceProgress (Complete).
+Why: Park Smash deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
+Tests: ParkSmashTests removed; suites pass.

@@ -12,22 +12,29 @@ namespace UncannyValet.Core.Events
         public PerfectDropOff(CarId car, TicketId ticket) { Car = car; Ticket = ticket; }
     }
 
-    /// <summary>The power meter changed. Level is 0 to 3 (0 = no power unlocked); Fill01 is the bar fill from 0 to 1.</summary>
-    public readonly struct PowerMeterChanged : IGameEvent
+    /// <summary>
+    /// The shared power bar changed. Value is 0 to 100; OpenBuckets is 0 to 3 (the bolts that can be spent); SpentBucket
+    /// is the bucket (1 to 3) a power just used, or 0 when the change was a fill or a reset.
+    /// </summary>
+    public readonly struct PowerBarChanged : IGameEvent
     {
-        public readonly int Level;
-        public readonly float Fill01;
-        public PowerMeterChanged(int level, float fill01) { Level = level; Fill01 = fill01; }
+        public readonly float Value;
+        public readonly int OpenBuckets;
+        public readonly int SpentBucket;
+        public PowerBarChanged(float value, int openBuckets, int spentBucket = 0)
+        {
+            Value = value; OpenBuckets = openBuckets; SpentBucket = spentBucket;
+        }
     }
 
-    /// <summary>The player spent the meter and a power started. Modules react by doing their part of it.</summary>
+    /// <summary>The player spent a bucket of the power bar and a power started. Modules react by doing their part of it.</summary>
     public readonly struct PowerActivated : IGameEvent
     {
         public readonly PowerKind Power;
         public PowerActivated(PowerKind power) { Power = power; }
     }
 
-    /// <summary>A timed power ran out. Park Smash is instant and never ends this way.</summary>
+    /// <summary>A timed power ran out.</summary>
     public readonly struct PowerEnded : IGameEvent
     {
         public readonly PowerKind Power;
