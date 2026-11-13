@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Run",
+    "rootNamespace": "UncannyValet.Run",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

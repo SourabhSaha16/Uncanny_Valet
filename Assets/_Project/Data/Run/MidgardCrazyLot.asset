@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ced1a29603721d4888685f7efd08c27, type: 3}
+  m_Name: MidgardCrazyLot
+  m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.LotDefinition
+  _id:
+    _world: 1
+    _kind: 2
+  _displayName: Fair Night at Grandma's
+  _sceneName: Lot_MidgardCrazy
+  _layout: 1
+  _pacing:
+    _shiftLengthSeconds: 240
+    _arrivalGapMinSeconds: 10
+    _arrivalGapMaxSeconds: 15
+    _maxWaitingCars: 4
+  _dials: []
+  _modifiers: []
+  _blessingThreshold: 5
+  _grant:
+    _power: 1
+    _level: 1

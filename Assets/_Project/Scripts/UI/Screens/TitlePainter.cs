@@ -20,6 +20,11 @@ namespace UncannyValet.UI.Screens
         private const int TagTop = 160;
         private const int TagCount = 5;
         private const int TagStep = 28;
+        private const int PickerTop = 184;
+        private const int PickerStep = 8;
+        private const int PickerRows = 5;
+        private const int PickerLeft = 24;
+        private const int PickerRight = 252;
         private const int PromptTop = 224;
         private const int PromptScale = 2;
         private const float BlinkPeriod = 1f;
@@ -32,13 +37,25 @@ namespace UncannyValet.UI.Screens
             _canvas = canvas;
         }
 
-        public void Draw(float time)
+        /// <param name="picker">The developer lot picker; null draws no list.</param>
+        public void Draw(float time, TitlePicker picker = null)
         {
             _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, Veil);
             DrawCentered(Line1, Line1Top, TitleScale, PixelPalette.Gold);
             DrawCentered(Line2, Line2Top, TitleScale, PixelPalette.OrangeRed);
             DrawTags();
+            if (picker != null) DrawPicker(picker);
             if (Blink.IsOn(time, BlinkPeriod)) DrawCentered(Prompt, PromptTop, PromptScale, PixelPalette.Cream);
+        }
+
+        // Two columns of up to five lines, between the key tags and the prompt.
+        private void DrawPicker(TitlePicker picker)
+        {
+            for (var i = 0; i < picker.Count; i++)
+            {
+                var x = i < PickerRows ? PickerLeft : PickerRight;
+                _canvas.Text(picker.Line(i), x, PickerTop + (i % PickerRows) * PickerStep, PixelPalette.Cream);
+            }
         }
 
         private void DrawTags()

@@ -40,6 +40,7 @@ namespace UncannyValet.UI
         private ResultsPainter _resultsPainter;
         private TitlePainter _titlePainter;
         private HowToPlayPainter _howToPlayPainter;
+        private TitlePicker _picker;
         private readonly HowToPlayGate _howToPlayGate = new HowToPlayGate();
         private int _phaseFrame = -1;
         private ResultsContent _results;
@@ -75,6 +76,7 @@ namespace UncannyValet.UI
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _howToPlayPainter = new HowToPlayPainter(_canvas);
+            _picker = Services.TryGet<ILotPicker>(out var lots) ? new TitlePicker(lots) : null;
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftResultReady>(OnResult);
             SetPhase(UiPhase.Title);
@@ -125,6 +127,7 @@ namespace UncannyValet.UI
             var waited = Time.unscaledTime - _phaseStartedAt;
             // A press that changed the phase this frame is consumed: the next screen needs a fresh press.
             if (_phaseFrame == Time.frameCount) return;
+            if (_phase == UiPhase.Title && _picker != null && waited >= _titleKeyDelaySeconds && _picker.TryPick()) return;
             if (_phase == UiPhase.Title && waited >= _titleKeyDelaySeconds && UiInput.AnyPressed()) DismissTitle();
             else if (_phase == UiPhase.HowToPlay && waited >= _titleKeyDelaySeconds && UiInput.AnyPressed()) StartPlaying();
             else if (_phase == UiPhase.Results && waited >= _resultsKeyDelaySeconds && UiInput.RetryPressed()) Retry();
@@ -175,7 +178,7 @@ namespace UncannyValet.UI
         private void DrawPhase()
         {
             var time = Time.unscaledTime;
-            if (_phase == UiPhase.Title) { _titlePainter.Draw(time); return; }
+            if (_phase == UiPhase.Title) { _titlePainter.Draw(time, _picker); return; }
             if (_phase == UiPhase.HowToPlay) { _howToPlayPainter.Draw(time); return; }
             _playing.Draw(ResolveCamera(), time, _prompt());
             if (_phase == UiPhase.Results && _results != null) _resultsPainter.Draw(_results, time - _phaseStartedAt);

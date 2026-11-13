@@ -38,6 +38,7 @@ namespace UncannyValet.EditorTools
             CreateIfMissing<DifficultyDialsConfig>(DifficultyDialsPath);
             CreateIfMissing<PowerMeterConfig>(PowerMeterConfigPath);
             WireDialsIntoDirectorConfig();
+            RunAssetSetup.CreateIfMissing();
             AssetDatabase.SaveAssets();
         }
 
@@ -56,6 +57,7 @@ namespace UncannyValet.EditorTools
         public static void RunBatch()
         {
             CreateConfigs();
+            AssetDatabase.Refresh(); // new assets must be imported before the scenes reference them
             BootstrapSceneBuilder.Build();
         }
 
