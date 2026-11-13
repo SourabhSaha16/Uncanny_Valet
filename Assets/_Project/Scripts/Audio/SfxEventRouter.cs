@@ -1,5 +1,6 @@
 using System;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Audio
@@ -110,12 +111,12 @@ namespace UncannyValet.Audio
 
         private void OnPowerActivated(PowerActivated e)
         {
-            if (e.Power == PowerKind.FreezeTime) _play(SfxId.TimeStop);
+            if (e.Power == StoryPower.FreezeTime) _play(SfxId.TimeStop);
         }
 
         private void OnPowerEnded(PowerEnded e)
         {
-            if (e.Power == PowerKind.FreezeTime) _play(SfxId.TimeResume);
+            if (e.Power == StoryPower.FreezeTime) _play(SfxId.TimeResume);
         }
 
         private void OnSlideStarted(CarSlideStarted e)

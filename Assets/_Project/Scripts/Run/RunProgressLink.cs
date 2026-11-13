@@ -6,7 +6,7 @@ namespace UncannyValet.Run
 {
     /// <summary>
     /// Feeds one scene's events into the persistent <see cref="RunProgress"/>: LotStarted sets the current lot,
-    /// LotCleared marks it cleared, ShiftResultReady records the best blessings, PowerGranted earns or upgrades a power, PowerRevoked takes one away (developer panel). Created per scene; dispose with the scene.
+    /// LotCleared marks it cleared, ShiftResultReady records the best blessings, PowerGranted earns or upgrades a power, PowerRevoked takes one away (developer panel), PowerIconFlashed remembers the HUD showed a new power. Created per scene; dispose with the scene.
     /// </summary>
     public sealed class RunProgressLink : IDisposable
     {
@@ -22,6 +22,7 @@ namespace UncannyValet.Run
             _bus.Subscribe<ShiftResultReady>(OnResult);
             _bus.Subscribe<PowerGranted>(OnGranted);
             _bus.Subscribe<PowerRevoked>(OnRevoked);
+            _bus.Subscribe<PowerIconFlashed>(OnFlashed);
         }
 
         public void Dispose()
@@ -31,6 +32,7 @@ namespace UncannyValet.Run
             _bus.Unsubscribe<ShiftResultReady>(OnResult);
             _bus.Unsubscribe<PowerGranted>(OnGranted);
             _bus.Unsubscribe<PowerRevoked>(OnRevoked);
+            _bus.Unsubscribe<PowerIconFlashed>(OnFlashed);
         }
 
         private void OnStarted(LotStarted e) => _progress.SetCurrentLot(e.Lot);
@@ -41,5 +43,6 @@ namespace UncannyValet.Run
         }
         private void OnGranted(PowerGranted e) => _progress.GrantPower(e.Power, e.Level);
         private void OnRevoked(PowerRevoked e) => _progress.RevokePower(e.Power);
+        private void OnFlashed(PowerIconFlashed e) => _progress.MarkFlashed(e.Power, e.Level);
     }
 }

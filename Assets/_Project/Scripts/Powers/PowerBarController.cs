@@ -10,7 +10,7 @@ namespace UncannyValet.Powers
     /// The bar works only while Thor owns at least one power (IRunProgress) and starts every shift empty.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class PowerBarController : MonoBehaviour
+    public sealed class PowerBarController : MonoBehaviour, IPowerBucket
     {
         [SerializeField] private PowerBarConfig _config;
 
@@ -70,6 +70,9 @@ namespace UncannyValet.Powers
             if (_drift == null || _drift.Active == 0 || !IsActive) return;
             Fill(_drift.Tick(Time.deltaTime));
         }
+
+        /// <summary>True when a power is owned and a bucket is open.</summary>
+        public bool CanSpend => IsActive && Bar != null && Bar.CanSpend;
 
         /// <summary>Spends one bucket if a power is owned and one is open. False, and nothing changes, otherwise.</summary>
         public bool TrySpend()

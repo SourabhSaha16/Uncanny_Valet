@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UncannyValet.UI.Hud
 {
-    /// <summary>Tunables of the power bar HUD. The freeze length only drives the countdown ring; the powers module owns the real one.</summary>
+    /// <summary>Tunables of the power bar HUD. The power numbers (durations, cooldowns) come from the powers module through IPowerView.</summary>
     [Serializable]
     public sealed class PowerBarSettings
     {
@@ -13,12 +13,12 @@ namespace UncannyValet.UI.Hud
         private float _pulseSeconds = 0.45f;
         [SerializeField, Range(0.1f, 2f), Tooltip("Seconds the bolt that was just spent flashes.")]
         private float _spentFlashSeconds = 0.5f;
-        [SerializeField, Min(0.1f), Tooltip("Countdown ring length of Freeze Time, seconds (match the powers config).")]
-        private float _freezeSeconds = 6f;
+        [SerializeField, Range(0.2f, 5f), Tooltip("Seconds a power icon flashes at the start of the first lot after the power (or its upgrade) was earned.")]
+        private float _iconFlashSeconds = 1.5f;
 
         public float FillSmoothing => _fillSmoothing;
         public float PulseSeconds => _pulseSeconds;
         public float SpentFlashSeconds => _spentFlashSeconds;
-        public float FreezeSeconds => _freezeSeconds;
+        public float IconFlashSeconds => _iconFlashSeconds;
     }
 }

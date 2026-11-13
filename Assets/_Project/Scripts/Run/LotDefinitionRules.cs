@@ -23,7 +23,7 @@ namespace UncannyValet.Run
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
-            return CheckPacing(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
+            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
         }
 
         private static string CheckPacing(LotDefinition lot)
@@ -37,6 +37,9 @@ namespace UncannyValet.Run
             if (p.ArrivalBudgetOverride < 0) return lot.name + ": the arrival budget cannot be negative (0 derives it)";
             return null;
         }
+
+        private static string CheckPowerFill(LotDefinition lot)
+            => lot.PowerFill != null && lot.PowerFill.IsSane ? null : lot.name + ": the power bar fill amounts must not be negative";
 
         private static string CheckModifierChances(LotDefinition lot)
         {

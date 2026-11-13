@@ -14,6 +14,7 @@ namespace UncannyValet.Run
         private readonly RunDefinition _run;
         private readonly List<StoryPower> _earned = new List<StoryPower>();
         private readonly Dictionary<StoryPower, int> _levels = new Dictionary<StoryPower, int>();
+        private readonly Dictionary<StoryPower, int> _flashed = new Dictionary<StoryPower, int>();
         private readonly HashSet<LotId> _cleared = new HashSet<LotId>();
         private readonly Dictionary<LotId, int> _best = new Dictionary<LotId, int>();
 
@@ -27,6 +28,8 @@ namespace UncannyValet.Run
         public IReadOnlyList<StoryPower> EarnedPowers => _earned;
 
         public int PowerLevel(StoryPower power) => _levels.TryGetValue(power, out var level) ? level : 0;
+
+        public int FlashedLevel(StoryPower power) => _flashed.TryGetValue(power, out var level) ? level : 0;
 
         public bool IsCleared(LotId lot) => _cleared.Contains(lot);
 
@@ -55,6 +58,13 @@ namespace UncannyValet.Run
         {
             if (!_levels.Remove(power)) return;
             _earned.Remove(power);
+            _flashed.Remove(power);
+        }
+
+        /// <summary>Remembers that the HUD flashed the power's icon at this level, so it flashes only once per level.</summary>
+        public void MarkFlashed(StoryPower power, int level)
+        {
+            if (power != StoryPower.None && level > FlashedLevel(power)) _flashed[power] = level;
         }
 
         /// <summary>Marks the lot cleared (kept for the rest of the run).</summary>
@@ -77,6 +87,7 @@ namespace UncannyValet.Run
             CurrentLot = default;
             _earned.Clear();
             _levels.Clear();
+            _flashed.Clear();
             _cleared.Clear();
             _best.Clear();
         }
