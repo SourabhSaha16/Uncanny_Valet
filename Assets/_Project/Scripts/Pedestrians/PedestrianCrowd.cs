@@ -47,7 +47,7 @@ namespace UncannyValet.Pedestrians
             _tuning = Services.Get<ITuning>();
             _bus = Services.Get<IEventBus>();
             _paths = Services.Get<IPedestrianPaths>();
-            _router = new WalkerRouter(_paths, Services.Get<ICarFactory>());
+            _router = new WalkerRouter(_paths, Services.Get<ICarFactory>(), _tuning);
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
             var pool = new List<PedestrianWalker>(_config.PatronPoolSize);
             for (var i = 0; i < _config.PatronPoolSize; i++) pool.Add(Create("Patron " + i, _config.Count + i));

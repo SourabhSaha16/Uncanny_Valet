@@ -38,6 +38,7 @@ MonoBehaviour:
     _driftCap: 4
   _modifiers: []
   _blessingThreshold: 300
+  _freePedestrianRoutes: 1
   _pedestrianCurses: 1
   _grant:
     _power: 1

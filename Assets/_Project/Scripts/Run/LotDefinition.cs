@@ -38,6 +38,8 @@ namespace UncannyValet.Run
         private int _blessingThreshold = 150;
         [SerializeField, Tooltip("Pedestrian collision curses: on, hitting a patron walker with the car you drive is a curse. Off in training lots (knockback, slowdown and yelp still happen).")]
         private bool _pedestrianCurses;
+        [SerializeField, Tooltip("On (crazy lots): pedestrians may walk any direct route to the diner, so they never queue at the crosswalk. Off (training lots): they keep to the crosswalks.")]
+        private bool _freePedestrianRoutes;
         [SerializeField, Tooltip("The power or upgrade clearing this lot grants (None for training lots).")]
         private PowerGrant _grant;
         [SerializeField, Tooltip("The colours of this lot's world; the props are drawn with it and the diner takes its wall and roof colours. Empty keeps the old look.")]
@@ -112,6 +114,9 @@ namespace UncannyValet.Run
 
         /// <summary>True when hitting a patron walker with the driven car is a curse in this lot.</summary>
         public bool PedestrianCurses => _pedestrianCurses;
+
+        /// <summary>True when pedestrians may walk any direct route to the diner (crazy lots) instead of the crosswalks.</summary>
+        public bool FreePedestrianRoutes => _freePedestrianRoutes;
 
         /// <summary>
         /// Seeds shift length, pacing, the arrival budget (see <see cref="LotPacing.SeedInto"/>), the modifier arrival chances and the power bar fill amounts;

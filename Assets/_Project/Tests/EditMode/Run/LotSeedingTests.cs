@@ -66,6 +66,23 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
+        public void Seed_SeedsTheFreePedestrianRoutesSwitchFromTheLot()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Crazy);
+            var so = new UnityEditor.SerializedObject(lot);
+            so.FindProperty("_freePedestrianRoutes").boolValue = false;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var off = new TuningStore(new EventBus());
+            TuningSeeder.Seed(off, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(0f, off.Get(TuningKey.PedestrianFreeRoutes));
+            so.FindProperty("_freePedestrianRoutes").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var on = new TuningStore(new EventBus());
+            TuningSeeder.Seed(on, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(1f, on.Get(TuningKey.PedestrianFreeRoutes));
+        }
+
+        [Test]
         public void Seed_WithoutALot_KeepsTheSharedDefaults()
         {
             var tuning = new TuningStore(new EventBus());

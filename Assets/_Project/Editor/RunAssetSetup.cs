@@ -90,6 +90,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_pacing._arrivalGapMaxSeconds").floatValue = gapMax;
             so.FindProperty("_pacing._maxWaitingCars").intValue = maxWaiting;
             so.FindProperty("_pedestrianCurses").boolValue = pedestrianCurses;
+            so.FindProperty("_freePedestrianRoutes").boolValue = id.Kind == LotKind.Crazy;
             so.FindProperty("_grant._power").intValue = (int)grant;
             so.FindProperty("_grant._level").intValue = 1;
             so.ApplyModifiedPropertiesWithoutUndo();

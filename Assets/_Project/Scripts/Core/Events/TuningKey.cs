@@ -431,5 +431,7 @@ namespace UncannyValet.Core.Events
         EscalationVolume,
         /// <summary>Volume of the world sounds (blessing chime, wash splash, mud squelch), 0..1.</summary>
         WorldSoundVolume,
+        /// <summary>Per-lot switch: 1 when pedestrians may walk any direct route to the diner (crazy lots), 0 when they keep to the crosswalks.</summary>
+        PedestrianFreeRoutes,
     }
 }
