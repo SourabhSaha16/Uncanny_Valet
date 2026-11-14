@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  12bbcc2
-Subject: lead: changelog for #85 merge, Refs #85 [Claude]
-Date:    2026-11-14 10:52:06 -0800
+Commit:  fe91760
+Subject: lead: changelog for camera fit merge, Refs #123 #127 [Claude]
+Date:    2026-11-14 15:27:09 -0800

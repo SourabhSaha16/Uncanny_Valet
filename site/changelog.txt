@@ -1,4 +1,25 @@
 === Last 50 commits ===
+fe91760  2026-11-14  lead: changelog for camera fit merge, Refs #123 #127 [Claude]
+31a0258  2026-11-14  lead: merge agent/integration camera fits taller lots [Claude]
+3999cf8  2026-11-14  integration: camera always shows the whole lot, floor beats zoom cap [Claude]
+32c71a9  2026-11-14  lead: changelog for bubble size and zoom merge, Refs #122 #123 [Claude]
+ad7f66b  2026-11-14  lead: merge agent/integration smaller speech bubbles and zoom out [Claude]
+0ba6a63  2026-11-14  integration: zoom the game camera out a little (Refs #123) [Claude]
+11716c5  2026-11-14  integration: smaller watcher speech bubbles, tunable scale (Refs #122) [Claude]
+a536200  2026-11-14  lead: changelog and design log for pedestrian fixes, Refs #124 #125 [Claude]
+63a9971  2026-11-14  lead: merge agent/pedestrians free routes and no rubber band [Claude]
+1725343  2026-11-14  pedestrians: free direct routes to the diner on crazy lots (Refs #124) [Claude]
+fa04683  2026-11-14  pedestrians: knocked pedestrians walk on from where they land (Refs #125) [Claude]
+41e8431  2026-11-14  lead: design.md for pickup spot and diner timer, wrapper memory pattern fix, Refs #127 #126 [Claude]
+be4c7a0  2026-11-14  lead: merge agent/lot valet pickup spot and diner-entry timer [Claude]
+d4c9f73  2026-11-14  lot: regenerate training scenes with four queue slots [Claude]
+812e012  2026-11-14  lot: valet pickup spot and queue, timer starts in diner [Claude]
+5e7d992  2026-11-14  lead: log 2026-11-14 playtest decisions, Refs #126 #127 [Claude]
+65075db  2026-11-14  lead: CLAUDE.md rule to clean up agent worktrees after merge [Claude]
+160d568  2026-11-14  lead: CLAUDE.md rule for run-unity wrapper, changelog [Claude]
+9b05226  2026-11-14  lead: merge agent/integration run-unity wrapper [Claude]
+c721236  2026-11-14  lead: rebuild site/ with the Midgard and Vanaheim story flow [Claude]
+8cc12b2  2026-11-14  integration: add run-unity wrapper (lock, commit guard, timeout) [Claude]
 12bbcc2  2026-11-14  lead: changelog for #85 merge, Refs #85 [Claude]
 2b22632  2026-11-14  lead: merge agent/integration god verdict on results [Claude]
 d9a3837  2026-11-14  integration: results screen shows the local god verdict, Refs #85 [Claude]
@@ -28,27 +49,6 @@ e0d4a8e  2026-11-13  lead: merge agent/watchers watching gods and speech bubbles
 9cb3c4b  2026-11-13  art: procedural prop toolkit, Midgard and Vanaheim props, lighting presets [Claude]
 2726ad6  2026-11-13  lead: merge agent/cars mud patches [Claude]
 986f003  2026-11-13  cars: mud patches slow cars and dull drifting [Claude]
-4035ae0  2026-11-13  lead: merge agent/pedestrians knockback, slowdown and patron curse [Claude]
-978a0c5  2026-11-13  pedestrians: comic knockback, car slowdown and patron curse [Claude]
-b4c1289  2026-11-13  lead: merge agent/valet Thunder stride [Claude]
-8e282ee  2026-11-13  valet: Thunder stride dash on foot and car boost with lightning, crack and kick [Claude]
-d62090f  2026-11-13  lead: merge agent/powers power framework [Claude]
-d48d0f9  2026-11-13  powers: power framework with PowerDefinition levels, cooldowns and HUD icons [Claude]
-4020868  2026-11-13  lead: merge agent/blessings half a blessing for a missed service [Claude]
-f510e50  2026-11-13  blessings: half a blessing when a needed service is missed [Claude]
-d9b05f8  2026-11-13  lead: merge agent/blessings tips become blessings, thresholds 150 and 300 [Claude]
-c30b57d  2026-11-13  blessings: tips become blessings, favour, curses, lot threshold [Claude]
-00b7d61  2026-11-13  lead: merge agent/services service modifiers [Claude]
-349542c  2026-11-13  services: one model for what a car needs (service modifiers) [Claude]
-cbeb85c  2026-11-13  lead: merge agent/powers shared power bar, remove old powers [Claude]
-0a6ac80  2026-11-13  powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
-0a9531e  2026-11-13  lead: merge agent/integration queue slots and arrival budget per lot [Claude]
-5e7a641  2026-11-13  integration: queue slots and arrival budget per lot [Claude]
-41a22ba  2026-11-13  lead: merge agent/integration run state, lots and lot scenes [Claude]
-97339ba  2026-11-13  integration: RunProgress, LotDefinition, lot scenes, picker [Claude]
-463779d  2026-11-12  lead: rebuild beta site (damage, screen shake) [Claude]
-29412a9  2026-11-12  lead: merge agent/integration screen shake on impact [Claude]
-a3b7461  2026-11-12  integration: screen shake on hard impacts [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -542,6 +542,30 @@ Date: 2026-11-14
 Files: Core/Story/{VerdictTier,VerdictRule,VerdictStory,TrainerStory,VerdictTextRules,StoryTextAsset,StoryTextRules}.cs, UI/Screens/{VerdictPicker,VerdictSpeech,ResultsContent,ResultsFormatter,ResultsPainter}.cs, UI/GameUi.cs, Editor/{VerdictTextDrafts,StoryAssetSetup}.cs, Data/UI/StoryText.asset, Tests/EditMode/Flow/VerdictTests.cs, Tests/EditMode/UncannyValet.Tests.EditMode.asmdef
 Why: Issue #85. Crazy lots and the finale show the god name and a failed, cleared or cleared-well speech line (cleared well at 1.5x the threshold, a field of the story text); training lots show a generic trainer line without a panel. Lines drafted for all nine gods and eight worlds in the editable story text asset (setup adds missing entries, never overwrites edits). Stats moved to two columns. GameUi reads the story text asset (Core), not the Run module. EditMode tests now reference the Editor assembly (for the drafts).
 Tests: EditMode 1772 passed (new VerdictTests); PlayMode 71 passed; RunBatch ok.
+
+## integration: run-unity wrapper guards Unity batch runs against commit exhaustion, Refs tooling [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.ps1, tools/run-tests.sh, tools/build-web.ps1
+Why: Windows commit memory hit 67.5 of 68.5 GB on 2026-11-14 (paging file error 1455, hung Unity.exe and bee_backend.exe). The wrapper adds a machine-wide single-run lock, an 8 GB free-commit guard, a timeout that kills the process tree it started, memory-crash diagnosis and cleanup in finally; the test and web build scripts launch Unity through it.
+Tests: tools/tests/test-run-unity.ps1 with fake executables (12 checks: dry run, exit code passthrough, memory diagnosis, headroom refusal, timeout tree kill, lock release, lock contention, lock wait give-up) all passed. Unity was not launched.
+
+## integration: smaller watcher speech bubbles, tunable scale (Refs #122) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs, SpeechBubblePainter.cs; Assets/_Project/Scripts/UI/Kit/PixelCanvas.cs; Assets/_Project/Scripts/UI/Mood/HudEmotionConfig.cs; Assets/_Project/Scripts/UI/Hud/PlayingHud.cs; Assets/_Project/Scripts/UI/GameUi.cs
+Why: owner playtest note (#122): the bubbles were too big. The bubble (panel, name, text, tail) is drawn at a tunable share of its size (HudEmotionConfig "Speech Bubble" Scale, Range 0.4 to 1, default 0.72 = about 28% smaller) by a zoom in PixelCanvas that shrinks towards the tail, so the clamped box stays on screen.
+Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: zoom the game camera out a little (Refs #123) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFollow.cs; Assets/_Project/Scenes/Bootstrap.unity, Lot_MidgardCrazy.unity, Lot_VanaheimCrazy.unity, Lot_VanaheimTraining.unity (only the _fitTightness line)
+Why: owner playtest note (#123): the view was too close. CameraFollow Fit Tightness 0.78 to 0.83 (size x1.064, about 13% more visible area); the play area is still never cropped, and the Max Orthographic Size cap (15) is unchanged. Scene values were updated by RunBatch; its pure fileID churn was reverted.
+Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: the camera always shows the whole lot, whatever the zoom cap (Refs #123 #127) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFit.cs, CameraFollow.cs (tooltip); Assets/_Project/Tests/EditMode/Integration/CameraFitTests.cs; Assets/_Project/Tests/PlayMode/CameraFramingPlayModeTests.cs (+ .meta)
+Why: root cause of the cut-off bottom of the taller lots (4th queue slot, #127): CameraFit clamped the zoom to Max Orthographic Size 15, which is below what the lot needs, so the play area was cropped. The play-area floor now wins over the cap (the cap only limits zoom-out for margin and decor). Zoom-out intent of #123 untouched (tightness 0.83 kept). PlayMode test asserts the valet, diner door, valet start and every queue slot are inside the camera view on all four lots at 16:9 and 16:10 (it failed before the fix on queue slot 3 at size 15).
+Tests: EditMode 1802 passed (new LotTallerThanTheCapStillFits), PlayMode 77 passed (4 new), RunBatch ok (scene fileID churn reverted).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1451,6 +1475,54 @@ Files: Core/Story verdict types, UI/Screens (VerdictPicker, ResultsFormatter, Re
 Why: #85 god verdict panel on the results screen.
 Tests: EditMode 1772/1772 (agent also ran PlayMode 71/71 and RunBatch).
 
+## lead: rebuild web site with the story flow for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of 12bbcc2)
+Why: Midgard and Vanaheim are playable end to end (epic #79): lot flow cards, blessings, powers, music, god verdicts.
+Tests: EditMode 1772/1772, PlayMode 71/71 on the source; Web build smoke test: title, how-to-play, Midgard intro card, shift with blessings counter, no console exceptions.
+
+## lead: merge agent/integration run-unity wrapper [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.*, tools/build-web.ps1, CLAUDE.md
+Why: Unity runs piled up and hung on 2026-11-14 and exhausted Windows commit memory; the wrapper serializes runs, checks headroom and kills hung process trees.
+Tests: agent ran tools/tests/test-run-unity.ps1, 12/12 passed (no Unity launched); the wrapper itself is not yet exercised by a real Unity run.
+
+## lead: CLAUDE.md rule to clean up agent worktrees after merge [Claude]
+Date: 2026-11-14
+Files: CLAUDE.md
+Why: finished agent worktrees (0.5 to 2 GB each) and orphan folders filled the disk; the lead now removes each worktree and branch right after merging.
+Tests: docs only.
+
+## lead: log 2026-11-14 playtest decisions in decisions.md [Claude]
+Date: 2026-11-14
+Files: docs/decisions.md, docs/changelogs/lead.md
+Why: playtest notes became issues #122 to #127; the valet pickup spot and timer decisions are recorded.
+Tests: docs only.
+
+## lead: merge agent/lot valet pickup spot and diner-entry timer [Claude]
+Date: 2026-11-14
+Files: Lot, Patrons, Cars (CarAutoDrive, CarFactory), Core (PatronStepsOut, PatronEnteredDiner, CarRepositioned, ICarFactory.TryDriveTo), lot scene builders, Bootstrap and Vanaheim training scenes, tests; tools/run-unity.ps1 (memory pattern tightened); docs/design.md (A2, A5, A9 updated)
+Why: issues #127 and #126: valet pickup spot and 4-car queue replace the curb flow; the patron timer starts when the patron enters the diner.
+Tests: EditMode 1790/1790, PlayMode 73/73, RunBatch ok (agent); wrapper self-test passes after the false-positive fix.
+
+## lead: merge agent/pedestrians free routes and no rubber band [Claude]
+Date: 2026-11-14
+Files: Pedestrians (WalkerRouteRule, WalkerRouter, PathFollower, PedestrianBounceRule), Core TuningKey.PedestrianFreeRoutes (appended), Run/LotDefinition, crazy lot assets, tests, docs/design.md
+Why: issues #124 (free routes on crazy lots) and #125 (no rubber band after a push).
+Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).
+
+## lead: merge agent/integration smaller speech bubbles and zoom out [Claude]
+Date: 2026-11-14
+Files: UI/Speech (SpeechBubbleSettings, bubble painter), PixelCanvas zoom, Bootstrap CameraFollow (_fitTightness 0.78 to 0.83), the four lot scenes
+Why: issues #122 (bubbles scale 0.72) and #123 (about 13% more visible area).
+Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).
+
+## lead: merge agent/integration camera fits taller lots [Claude]
+Date: 2026-11-14
+Files: Bootstrap/CameraFit.cs, CameraFollow tooltip, CameraFitTests, CameraFramingPlayModeTests
+Why: the 4th queue slot made the lots taller than the zoom cap, clipping the diner door and queue end (#123, #127); the play-area floor now beats the cap.
+Tests: EditMode 1802/1802, PlayMode 77/77 and RunBatch ok (agent).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1714,6 +1786,12 @@ Files: Core/Art (PaletteSlot, WorldPalette, PropShapeKind, PropShape, PropAnimat
 Why: issue #116 of epic #79. Every prop is a recipe asset drawn once per lot load on the 32 px grid from a world palette with a 1 px outline and an optional sprite override; lots get a LightingPreset (global light plus up to 16 point lights, no shadows). The diner is re-skinned tan with a green roof by a palette swap of the MetroCity building.
 Tests: EditMode 1489 passed (recipe validation, generator and outline rule per shipped recipe, cache, override, builder, lighting cap, recolour, allocation-free ticks, lot art rules); PlayMode 47 passed (new PropArtPlayModeTests plus the lot smoke tests); RunBatch clean.
 
+## lot: valet pickup spot and queue, patron timer starts in the diner [Claude]
+Date: 2026-11-14
+Files: Scenes Bootstrap.unity and Lot_VanaheimTraining.unity (regenerated), PlayMode BootstrapSceneSmokeTests (training lots have 4 slots). Core: Events/PickupEvents.cs (new: PatronStepsOut, PatronEnteredDiner, CarRepositioned), Events/{CarEvents,TicketEvents,TuningKey}.cs, Contracts/{ICarFactory,TuningCatalog,GameRows}.cs, removed Contracts/QueueRows.cs. Cars (flagged cross-module): CarAutoDrive.TryBeginAdvancing, CarFactory.TryDriveTo. Patrons: QueueAdvancer, QueueAdvanceRule, QueueSlotLocator, PatronExitGate, QueueMove, PickupQueueSettings (new); PatronSpawner, QueueSlotAllocator, StayStarter, Ticket, TicketBook, TicketRegistry, PatronConfig, PatronTuning, LiveTicketTuning; removed ServiceTuning. Pedestrians: PatronWalkers. Lot: LotConfig, LotQueueArt, LotCurbArt, LotLayoutBuilder, CurbArrowLayout; removed QueueClearRule, QueueClearRunner, QueueClearSettings. Run: LotDefinition (4 queue slots by default). Bootstrap: TuningSeeder, GameBootstrap. Editor: RunAssetSetup. Data: Midgard and Vanaheim training lot assets (4 queue slots). Tests: QueueAdvanceRuleTests, QueueAdvancerTests, StayStartTests (rewritten), QueueSlotAllocatorTests, PickupQueuePlayModeTests, and the registry, return, delivery and geometry tests that start the stay or count slots.
+Why: Issues #127 and #126 (Refs #127 #126, design.md A5). The first queue slot is the valet pickup spot (yellow outline, PICKUP label), the other three slots are the queue behind it, 4 cars in total on every lot; the yellow curb zone is the VALET DROP-OFF. A new car drives to the end of the queue and a full queue holds the arrival (the arrival gate no longer counts parked-pending tickets, only free queue positions). The patron stays in the car until the valet (on foot or driving) is within the approach range of the car in the pickup spot (PatronStepsOut), then walks to the diner; PatronEnteredDiner at the door starts the stay clock (StayStarter). When the pickup car leaves the spot the car behind drives forward into it (CarRepositioned when it stops), the others follow slot by slot, and the freed tail slot takes the next arrival. A queued car the valet takes anyway lets its patron out at once (no stall). Issue #78's queue-distance rule, the 3 game-minute fallback, CarClearedQueue, ServiceTuning and their F2 rows are deleted; TuningKey QueueClearDistance and QueueMaxWaitMinutes stay as RetiredQueue* (append-only).
+Tests: EditMode 1790/1790, PlayMode 73/73 (new PickupQueuePlayModeTests: the patron steps out only when the valet is at the pickup car; the car behind drives into the freed pickup spot), RunBatch run: Bootstrap.unity and Lot_VanaheimTraining.unity regenerated with 4 queue slots (the crazy scenes and CarHandlingConfig only had fileID churn and were reverted). The stay and queue-wait tests of #78 were replaced on purpose (StayStartTests, QueueClearRuleTests removed); tests that started the stay at park or CarClearedQueue now publish PatronEnteredDiner.
+
 === docs/changelogs/orders.md ===
 # Orders changelog
 
@@ -1890,6 +1968,18 @@ Date: 2026-11-13
 Files: Pedestrians: WalkerStumbler (no bus; TryStart for the knockback power), PedestrianWalker, PedestrianConfig, PedestrianStumbleRule comments.
 Why: Barge-specific listening removed; the stumble itself stays for task #93 (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
 Tests: StumbleTests updated; suites pass.
+
+## pedestrians: knocked pedestrians walk on from where they land [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/{PedestrianBounceRule,PedestrianStumbleRule,PathFollower,PedestrianWalker}.cs, Assets/_Project/Tests/EditMode/Pedestrians/{PedestrianBlockRuleTests,StumbleTests,PedestrianKnockbackTests,PathFollowerTests}.cs
+Why: issue #125. The bounce and stumble offsets used to ease back to zero against a frozen route point, so a pushed pedestrian snapped back to the crosswalk like a rubber band. Replaced on purpose: PedestrianBounceRule.Shape (peak and return) is now Slide (ease-out that lands and stays), the offset stays at the landing spot, and PathFollower.Displace re-points the walk straight at its destination from there. Shape and its test were deleted (no other users).
+Tests: new PathFollower Displace tests (off-route and standing); bounce, stumble and knockback rule tests changed to expect the landing offset; EditMode suite run.
+
+## pedestrians: free direct routes to the diner on crazy lots [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/{WalkerRouteRule,WalkerRouter,PedestrianCrowd}.cs, Core/Events/TuningKey.cs (append PedestrianFreeRoutes), Core/Contracts/PedestrianHitRows.cs, Run/LotDefinition.cs (_freePedestrianRoutes), Bootstrap/TuningSeeder.cs, Editor/{RunAssetSetup,VanaheimWorldSetup}.cs, Data/Run/{Midgard,Vanaheim}CrazyLot.asset, Tests/EditMode/Pedestrians/WalkerRouteRuleTests.cs, Tests/EditMode/Run/{LotSeedingTests,FreePedestrianRoutesAssetTests}.cs
+Why: issue #124. On crazy lots pedestrians queued behind each other at the crosswalk. A per-lot LotDefinition switch seeds the new tuning key PedestrianFreeRoutes (appended at the end of TuningKey); the pure WalkerRouteRule keeps only the first and last point of a road or to-door route when it is on, so people walk the straight line to the diner. Training lots keep the crosswalks. Additive Core change: one TuningKey, one row.
+Tests: WalkerRouteRuleTests (4), LotSeedingTests (1), FreePedestrianRoutesAssetTests (4 lots).
 
 === docs/changelogs/pivot-art.md ===
 # pivot-art changelog

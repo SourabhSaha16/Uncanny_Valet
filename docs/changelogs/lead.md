@@ -952,3 +952,9 @@ Date: 2026-11-14
 Files: Bootstrap/CameraFit.cs, CameraFollow tooltip, CameraFitTests, CameraFramingPlayModeTests
 Why: the 4th queue slot made the lots taller than the zoom cap, clipping the diner door and queue end (#123, #127); the play-area floor now beats the cap.
 Tests: EditMode 1802/1802, PlayMode 77/77 and RunBatch ok (agent).
+
+## lead: rebuild site/ with pickup spot, pedestrian fixes, smaller bubbles, camera fit [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of fe91760)
+Why: playtest batch #122 to #127 (valet pickup spot and diner-entry timer, pedestrian free routes and no rubber band, smaller speech bubbles, zoom out, camera fit for the taller lots).
+Tests: EditMode 1802/1802, PlayMode 77/77 on the source; Web smoke test at 16:9: title, how-to-play, Midgard intro, shift with the whole lot in frame (diner door, yellow pickup slot and 3 queue slots, 8 bays), a car queued into the pickup spot.
