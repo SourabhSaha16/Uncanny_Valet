@@ -2,6 +2,7 @@ using UncannyValet.Core.Contracts;
 using UncannyValet.Lot;
 using UncannyValet.Run;
 using UnityEditor;
+using Object = UnityEngine.Object;
 
 namespace UncannyValet.EditorTools
 {
@@ -22,6 +23,18 @@ namespace UncannyValet.EditorTools
                 entry.FindPropertyRelative("_size").floatValue = patches[i].Size;
             }
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Hands the definition's layout options (closed services, corner clearance) to the lot builder and the decor, which must agree on the geometry.</summary>
+        public static void ApplyLayout(LotLayoutBuilder lot, LotDecor decor, LotDefinition definition)
+        {
+            foreach (var target in new Object[] { lot, decor })
+            {
+                var so = new SerializedObject(target);
+                so.FindProperty("_options._servicesClosed").boolValue = definition.LayoutOptions.ServicesClosed;
+                so.FindProperty("_options._cornerClearance").floatValue = definition.LayoutOptions.CornerClearance;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         /// <summary>Hands the definition's world palette, props and lighting preset to the lot builder, and the palette to the decor (the diner re-skin); empty references clear them.</summary>

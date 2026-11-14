@@ -27,9 +27,9 @@ MonoBehaviour:
     _arrivalBudget: 0
   _modifierChances:
   - _modifier: {fileID: 11400000, guid: ba5303a9395f5a943bca97c240726119, type: 2}
-    _chance: 0.3
+    _chance: 0
   - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
-    _chance: 0.3
+    _chance: 0
   _dials: []
   _powerFill:
     _perfectPark: 18
@@ -47,6 +47,24 @@ MonoBehaviour:
   - _recipe: {fileID: 11400000, guid: 526dff6741db1a74aaad918215e28e1a, type: 2}
     _position: {x: -12.7, y: 2.1}
     _sortingOrder: 6
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: 3.7999995}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: -8.3}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: -11.700001}
+    _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: 2e788effbb8a7ba499f9d900d0391cd3, type: 2}
+  _layoutOptions:
+    _servicesClosed: 1
+    _cornerClearance: 0
+  _ambientTraffic: 0
+  _ambientPedestrians: 3
+  _gagLines: {fileID: 11400000, guid: 42941c4f45ce366418a573ea6b33cb9f, type: 2}
   _watcher: {fileID: 11400000, guid: f06006d6791b0414f86e73a959e322ef, type: 2}
   _watcherSpot: {x: -11, y: 7.4}

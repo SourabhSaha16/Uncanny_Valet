@@ -175,6 +175,6 @@ MonoBehaviour:
     _pivot: {x: 0, y: 0}
     _orderOffset: 0
   _spriteOverride: {fileID: 0}
-  _solid: 1
+  _solid: 0
   _colliderSize: {x: 2.7, y: 1.7}
   _glowMaterial: {fileID: 0}
