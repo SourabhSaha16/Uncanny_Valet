@@ -16,6 +16,20 @@ namespace UncannyValet.UI.Screens
                 || mouse != null && mouse.leftButton.wasPressedThisFrame;
         }
 
+        /// <summary>True the frame any keyboard key went down (not the mouse).</summary>
+        public static bool AnyKeyPressed()
+        {
+            var keyboard = Keyboard.current;
+            return keyboard != null && keyboard.anyKey.wasPressedThisFrame;
+        }
+
+        /// <summary>True while the developer key (F3) is held: the title screen then shows the lot picker.</summary>
+        public static bool DevKeyHeld()
+        {
+            var keyboard = Keyboard.current;
+            return keyboard != null && keyboard.f3Key.isPressed;
+        }
+
         /// <summary>True the frame a digit key went down; index is 0 for key 1 up to 8 for key 9, and 9 for key 0.</summary>
         public static bool TryDigitPressed(out int index)
         {

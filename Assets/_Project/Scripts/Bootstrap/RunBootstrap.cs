@@ -3,6 +3,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Run;
+using UncannyValet.UI.Flow;
 using UnityEngine;
 
 namespace UncannyValet.Bootstrap
@@ -18,7 +19,16 @@ namespace UncannyValet.Bootstrap
         private readonly RunFlow _flow;
         private readonly DevPowerLink _devPowers;
 
-        private RunBootstrap(RunProgressLink link, RunFlow flow, DevPowerLink devPowers) { _link = link; _flow = flow; _devPowers = devPowers; }
+        private RunBootstrap(RunHost host, FlowHost flowHost, RunProgressLink link, RunFlow flow, DevPowerLink devPowers)
+        {
+            Host = host; Flow = flowHost.Machine; _link = link; _flow = flow; _devPowers = devPowers;
+        }
+
+        /// <summary>The persistent run host: the run definition, the run state and the lot loader.</summary>
+        public RunHost Host { get; }
+
+        /// <summary>The story flow state, which survives every scene load.</summary>
+        public FlowMachine Flow { get; }
 
         /// <summary>
         /// The only lookup of the persistent host: a scene load destroys every scene object, so the host cannot be
@@ -31,6 +41,7 @@ namespace UncannyValet.Bootstrap
             {
                 host = new GameObject(HostName).AddComponent<RunHost>();
                 host.Initialize(run);
+                host.gameObject.AddComponent<FlowHost>().Initialize(() => StartLotRule.First(run, host.Progress));
             }
             if (host.Definition.IndexOf(lot.Id) < 0)
                 Debug.LogError("The run definition does not list lot " + lot.Id + " (scene " + lot.name + ").", lot);
@@ -42,7 +53,7 @@ namespace UncannyValet.Bootstrap
             var flow = new RunFlow(bus, host.Progress, host.Definition);
             var devPowers = Services.TryGet<ITuning>(out var tuning) ? new DevPowerLink(bus, tuning, host.Progress) : null;
             bus.Publish(new LotStarted(lot.Id));
-            return new RunBootstrap(link, flow, devPowers);
+            return new RunBootstrap(host, host.GetComponent<FlowHost>(), link, flow, devPowers);
         }
 
         public void Dispose()

@@ -2,6 +2,7 @@ using UncannyValet.Audio;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
+using UncannyValet.Core.Story;
 using UncannyValet.Director;
 using UncannyValet.EditorTools.Art;
 using UncannyValet.EditorTools.Watchers;
@@ -96,6 +97,7 @@ namespace UncannyValet.EditorTools
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
             AddHandling(root, factory, Load<LotConfig>(lotConfigPath));
             Set(ui, "_emotions", ArtAssetUtil.LoadOrCreate<HudEmotionConfig>(HudEmotionConfigPath));
+            Set(ui, "_story", RequireAsset<StoryTextAsset>(StoryAssetSetup.StoryTextPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
@@ -126,6 +128,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_watcherConfig").objectReferenceValue = RequireAsset<WatcherConfig>(WatcherAssetSetup.ConfigPath);
             so.FindProperty("_lotDefinition").objectReferenceValue = definition;
             so.FindProperty("_runDefinition").objectReferenceValue = run;
+            StoryAssetSetup.AssignPowerDefinitions(so.FindProperty("_powerDefinitions"));
             so.ApplyModifiedPropertiesWithoutUndo();
 
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(scenePath));

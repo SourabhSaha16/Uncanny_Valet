@@ -12,7 +12,6 @@ namespace UncannyValet.UI.Screens
         public const string BlessingsHeading = "BLESSINGS / THRESHOLD";
         public const string RetryLabel = "RETRY";
         public const string NextLotLabel = "NEXT LOT";
-        public const string SoonLabel = "SOON";
         public const string ReachedLine = "THRESHOLD REACHED!";
 
         public static ResultsContent Build(in ShiftResult result, int carsParked, int perfectParks = 0)
