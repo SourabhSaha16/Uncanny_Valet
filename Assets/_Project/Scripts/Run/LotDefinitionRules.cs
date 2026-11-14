@@ -25,7 +25,14 @@ namespace UncannyValet.Run
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
-            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot) ?? CheckArt(lot) ?? CheckWatcher(lot) ?? CheckWorld(lot);
+            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot) ?? CheckArt(lot) ?? CheckWatcher(lot) ?? CheckWorld(lot) ?? CheckAudio(lot);
+        }
+
+        private static string CheckAudio(LotDefinition lot)
+        {
+            if (lot.MusicTheme != null && !lot.MusicTheme.TryValidate(out var themeProblem)) return lot.name + ": " + themeProblem;
+            var ambience = lot.Ambience != null ? lot.Ambience.Check() : null;
+            return ambience == null ? null : lot.name + ": " + ambience;
         }
 
         private static string CheckWorld(LotDefinition lot)

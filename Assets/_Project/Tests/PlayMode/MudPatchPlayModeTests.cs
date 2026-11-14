@@ -102,6 +102,25 @@ namespace UncannyValet.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator EnteringMudPublishesCarEnteredMudOnceForThatCarOnly()
+        {
+            var entered = new List<CarId>();
+            Services.Get<IEventBus>().Subscribe<CarEnteredMud>(e => entered.Add(e.Car));
+            var muddy = Spawn(1, new Vector2(MudLaneX, 0f));
+            var clear = Spawn(2, new Vector2(ClearLaneX, 0f));
+            yield return null;
+            muddy.SetDriver(true);
+            clear.SetDriver(true);
+            for (var t = 0f; t < 2.2f; t += Time.fixedDeltaTime)
+            {
+                muddy.SetInput(1f, 0f);
+                clear.SetInput(1f, 0f);
+                yield return new WaitForFixedUpdate();
+            }
+            CollectionAssert.AreEqual(new[] { muddy.Id }, entered, "one entry, by the car that drove into the mud");
+        }
+
+        [UnityTest]
         public IEnumerator AGameDrivenCarIsSlowedByMudToo()
         {
             var muddy = Spawn(1, new Vector2(MudLaneX, 0f));

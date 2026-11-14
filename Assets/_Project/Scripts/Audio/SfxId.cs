@@ -24,6 +24,9 @@ namespace UncannyValet.Audio
         TimeStop = 18,
         TimeResume = 19,
         ThunderCrack = 25,
-        PedestrianYelp = 26
+        PedestrianYelp = 26,
+        BlessingChime = 27,
+        WashSplash = 28,
+        MudSquelch = 29
     }
 }

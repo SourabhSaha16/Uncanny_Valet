@@ -3,6 +3,7 @@ using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UncannyValet.Core.Modifiers;
+using UncannyValet.Core.Music;
 using UncannyValet.Core.Watchers;
 using UnityEngine;
 
@@ -61,6 +62,10 @@ namespace UncannyValet.Run
         private WatcherDefinition _watcher;
         [SerializeField, Tooltip("Where the watcher stands, in lot space: on a sidewalk or the lot edge, outside the drivable area.")]
         private Vector2 _watcherSpot;
+        [SerializeField, Tooltip("The lot's music theme. Empty keeps the funk loop.")]
+        private MusicThemeDefinition _musicTheme;
+        [SerializeField, Tooltip("The lot's ambience (crowd, drips, waterwheel...). Empty: none.")]
+        private AmbienceSetDefinition _ambience;
 
         /// <summary>Most queue slots a layout is built for.</summary>
         public const int MaxQueueSlots = 6;
@@ -90,6 +95,8 @@ namespace UncannyValet.Run
         public LightingPreset Lighting => _lighting;
         public WatcherDefinition Watcher => _watcher;
         public Vector2 WatcherSpot => _watcherSpot;
+        public MusicThemeDefinition MusicTheme => _musicTheme;
+        public AmbienceSetDefinition Ambience => _ambience;
         public LotLayoutOptions LayoutOptions => _layoutOptions;
         public GagLineAsset GagLines => _gagLines;
         public string BuildingSign => string.IsNullOrEmpty(_buildingSign) ? DefaultBuildingSign : _buildingSign;

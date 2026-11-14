@@ -49,3 +49,15 @@ Date: 2026-11-13
 Files: Audio: SfxThunder (new), SfxId.ThunderCrack = 25 (appended), SfxRecipeBook, SfxEventRouter (plays it on PowerActivated of Thunder stride). Part of the valet commit for issue #88.
 Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
 Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
+
+## audio: music theme and ambience data types in Core [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Music/*, Core/Contracts/ILotAudio.cs
+Why: Issue #117 (epic #79): data model of the per-lot themes; Audio reads it through ILotAudio.
+Tests: none yet (compiles with the following commits).
+
+## audio: procedural themes, ambience and world sounds with last-30-seconds escalation (unverified) [Claude]
+Date: 2026-11-14
+Files: Audio (ThemeContext, IThemePart, the nine instrument parts, ThemeParts, ThemeLoopBuilder, SeamlessNoise, Ambience*, EscalationLoops, EscalationRule, ThemeSession, WorldSoundTuning, SfxWorld, VoiceSpec vibrato, SfxId 27-29, SfxEventRouter, AudioConfig, AudioDirector), Core (TuningKey x3 appended, WorldSoundRows, TuningCatalog, CarEnteredMud event), Run (LotDefinition theme and ambience fields, rules), Cars (CarMudEffect publishes CarEnteredMud), Bootstrap (AudioBootstrap, TuningSeeder, GameBootstrap one line), Editor (AudioThemeAssets, ProjectSetup), Tests (EditMode MusicThemeTests, ThemeSoundTests, ThemeFixtures, LotAudioTests; PlayMode ThemedLotAudioPlayModeTests, mud entry test).
+Why: Issue #117 (epic #79): per-lot music themes, ambience, chime/splash/squelch and the +15% tempo escalation.
+Tests: NOT YET RUN: the D: disk was full (Unity could not build Library), so compile, RunBatch, EditMode and PlayMode are pending. The theme assets are not generated yet.

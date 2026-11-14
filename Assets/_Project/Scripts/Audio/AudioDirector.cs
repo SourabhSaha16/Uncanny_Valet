@@ -2,6 +2,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Modifiers;
+using UncannyValet.Core.Music;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,9 @@ namespace UncannyValet.Audio
         private SfxBank _bank;
         private TyreAudio _tyres;
         private TyreSoundTuning _tyreTuning;
+        private WorldSoundTuning _worldTuning;
+        private ThemeSession _session;
+        private MusicThemeDefinition _theme;
         private float _sfxGain;
         private AudioSource _music;
         private AudioSource[] _voices;
@@ -44,10 +48,20 @@ namespace UncannyValet.Audio
                 _config = ScriptableObject.CreateInstance<AudioConfig>();
             }
             _tyreTuning = new TyreSoundTuning(bus, _config.TyreVolume, _config.TyreSharpness, OnTyreTuned);
-            if (Services.TryGet<ITuning>(out var tuning)) _tyreTuning.Load(tuning);
+            _worldTuning = new WorldSoundTuning(bus, _config.AmbienceVolume, _config.EscalationVolume, _config.WorldSoundVolume, ApplyVolumes);
+            if (Services.TryGet<ITuning>(out var tuning))
+            {
+                _tyreTuning.Load(tuning);
+                _worldTuning.Load(tuning);
+            }
+            Services.TryGet<ILotAudio>(out var lotAudio);
+            _theme = lotAudio != null ? lotAudio.Theme : null;
             BuildAudio();
+            _session = new ThemeSession(bus, gameObject, _theme, lotAudio != null ? lotAudio.Ambience : null,
+                _config.SampleRate, _config.TempoSmoothingSeconds, _worldTuning);
+            ApplyVolumes();
             Services.TryGet<IModifierCatalog>(out var modifiers);
-            _router = new SfxEventRouter(bus, Play, () => Time.unscaledTime, modifiers);
+            _router = new SfxEventRouter(bus, Play, () => Time.unscaledTime, modifiers, lotAudio);
             _pending = new PendingCarTracker(bus);
             _urgency = new UrgencyRule(_config.MinTempoMultiplier, _config.MaxTempoMultiplier,
                 _config.PendingForMaxTempo, _config.TempoSmoothingSeconds);
@@ -55,6 +69,8 @@ namespace UncannyValet.Audio
             _router.Subscribe();
             _pending.Subscribe();
             _tyreTuning.Subscribe();
+            _worldTuning.Subscribe();
+            _session.Subscribe();
         }
 
         private void OnEnable()
@@ -62,6 +78,8 @@ namespace UncannyValet.Audio
             _router?.Subscribe();
             _pending?.Subscribe();
             _tyreTuning?.Subscribe();
+            _worldTuning?.Subscribe();
+            _session?.Subscribe();
         }
 
         private void OnDisable()
@@ -69,13 +87,16 @@ namespace UncannyValet.Audio
             _router?.Unsubscribe();
             _pending?.Unsubscribe();
             _tyreTuning?.Unsubscribe();
+            _worldTuning?.Unsubscribe();
+            _session?.Unsubscribe();
         }
 
         private void Update()
         {
             if (_music == null) return;
             _tyres.Tick(Time.unscaledDeltaTime, Time.timeScale <= 0f);
-            _music.pitch = _urgency.Step(_pending.Count, Time.unscaledDeltaTime);
+            var escalated = _session.Tick(Time.unscaledDeltaTime);
+            _music.pitch = _theme != null ? escalated : _urgency.Step(_pending.Count, Time.unscaledDeltaTime);
             var keyboard = Keyboard.current;
             if (keyboard == null || !keyboard.mKey.wasPressedThisFrame) return;
             _mute.Toggle();
@@ -85,9 +106,8 @@ namespace UncannyValet.Audio
         private void BuildAudio()
         {
             var settings = new LoopSettings(_config.SampleRate, _config.TempoBpm, _config.RootMidiNote, _config.Swing);
-            float[] loop = FunkLoopBuilder.Build(settings);
             _music = gameObject.AddComponent<AudioSource>();
-            _music.clip = ClipFactory.Create("FunkLoop", loop, settings.SampleRate, false);
+            _music.clip = MusicClip(settings);
             _music.loop = true;
             _music.playOnAwake = false;
             _bank = new SfxBank(settings.SampleRate, _tyreTuning.Sharpness);
@@ -102,6 +122,14 @@ namespace UncannyValet.Audio
             _tyres = new TyreAudio(gameObject.AddComponent<AudioSource>(), SquealClip(), squeal);
             ApplyVolumes();
             _music.Play();
+        }
+
+        // The theme's clip override, else the theme rendered by the synth; no theme keeps the funk loop.
+        private AudioClip MusicClip(in LoopSettings funk)
+        {
+            if (_theme == null) return ClipFactory.Create("FunkLoop", FunkLoopBuilder.Build(funk), funk.SampleRate, false);
+            if (_theme.ClipOverride != null) return _theme.ClipOverride;
+            return ClipFactory.Create(_theme.name, ThemeLoopBuilder.Build(_theme, funk.SampleRate), funk.SampleRate, false);
         }
 
         private AudioClip SquealClip()
@@ -119,7 +147,8 @@ namespace UncannyValet.Audio
         private void ApplyVolumes()
         {
             float master = _mute.Apply(_config.MasterVolume);
-            _music.volume = master * _config.MusicVolume;
+            _music.volume = master * _config.MusicVolume * (_theme != null ? _theme.MusicVolume : 1f);
+            _session?.SetGain(master * _config.SfxVolume);
             _sfxGain = master * _config.SfxVolume;
             for (int i = 0; i < _voices.Length; i++) _voices[i].volume = _sfxGain;
             _tyres.SetGain(_sfxGain * _tyreTuning.Volume);
@@ -130,7 +159,9 @@ namespace UncannyValet.Audio
             var source = _voices[_nextVoice];
             _nextVoice = (_nextVoice + 1) % _voices.Length;
             var tyre = id == SfxId.TyreChirp || id == SfxId.TyreScreech;
-            source.volume = tyre ? _sfxGain * _tyreTuning.Volume * _config.TyreOneShotVolume : _sfxGain;
+            var world = id == SfxId.BlessingChime || id == SfxId.WashSplash || id == SfxId.MudSquelch;
+            source.volume = tyre ? _sfxGain * _tyreTuning.Volume * _config.TyreOneShotVolume
+                : world ? _sfxGain * _worldTuning.WorldSound : _sfxGain;
             source.clip = _bank.Get(id);
             source.Play();
         }
