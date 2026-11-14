@@ -21,6 +21,7 @@ namespace UncannyValet.Audio
                 float t = (float)i / rate;
                 double hz = spec.Frequency;
                 if (gliding) hz *= Math.Exp(glide * Math.Min(t / spec.Duration, 1.0));
+                if (spec.VibratoDepth > 0f) hz *= 1.0 + spec.VibratoDepth * Math.Sin(2.0 * Math.PI * spec.VibratoRate * t);
                 phase += hz / rate;
                 float v = Oscillator.Sample(spec.WaveA, phase) * (1f - spec.MixB)
                         + Oscillator.Sample(spec.WaveB, phase) * spec.MixB;

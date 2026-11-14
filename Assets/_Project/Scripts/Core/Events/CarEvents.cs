@@ -132,4 +132,11 @@ namespace UncannyValet.Core.Events
         public readonly CarId Car;
         public CarHardBraked(CarId car) { Car = car; }
     }
+
+    /// <summary>A car (driven or game-driven) drove into a mud patch: its mud weight rose above zero from zero. Published by Cars.</summary>
+    public readonly struct CarEnteredMud : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarEnteredMud(CarId car) { Car = car; }
+    }
 }

@@ -143,6 +143,9 @@ namespace UncannyValet.Bootstrap
             var config = audio != null ? audio : ScriptableObject.CreateInstance<AudioConfig>();
             t.Seed(TuningKey.TyreSoundVolume, config.TyreVolume);
             t.Seed(TuningKey.TyreSoundSharpness, config.TyreSharpness);
+            t.Seed(TuningKey.AmbienceVolume, config.AmbienceVolume);
+            t.Seed(TuningKey.EscalationVolume, config.EscalationVolume);
+            t.Seed(TuningKey.WorldSoundVolume, config.WorldSoundVolume);
             if (audio == null) Object.DestroyImmediate(config);
         }
 

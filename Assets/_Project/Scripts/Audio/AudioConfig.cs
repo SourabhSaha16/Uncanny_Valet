@@ -67,6 +67,16 @@ namespace UncannyValet.Audio
         [SerializeField, Range(0f, 1f), Tooltip("Volume of the tyre chirp and braking screech as a share of the effect volume.")]
         private float _tyreOneShotVolume = 0.6f;
 
+        [Header("Lot themes")]
+        [SerializeField, Range(0f, 1f), Tooltip("Starting value of the 'Ambience volume' F2 key: scales the lot's background sounds.")]
+        private float _ambienceVolume = 1f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Starting value of the 'Last 30 seconds layer volume' F2 key: scales the fireworks or rolling thunder.")]
+        private float _escalationVolume = 1f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Starting value of the 'Chime, splash and squelch volume' F2 key: scales the blessing chime, wash splash and mud squelch.")]
+        private float _worldSoundVolume = 1f;
+
         [Header("Synthesis")]
         [SerializeField, Range(11025, 44100), Tooltip("Sample rate of generated clips. 22050 keeps Web generation cheap.")]
         private int _sampleRate = 22050;
@@ -93,6 +103,9 @@ namespace UncannyValet.Audio
         public float SquealMaxPitch => _squealMaxPitch;
         public float SquealFadeSeconds => _squealFadeSeconds;
         public float SquealAttackSeconds => _squealAttackSeconds;
+        public float AmbienceVolume => _ambienceVolume;
+        public float EscalationVolume => _escalationVolume;
+        public float WorldSoundVolume => _worldSoundVolume;
         public int SampleRate => _sampleRate;
         public int SfxVoices => _sfxVoices;
     }

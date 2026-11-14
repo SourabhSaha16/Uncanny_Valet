@@ -424,5 +424,12 @@ namespace UncannyValet.Core.Events
         MudGripLossKept,
         /// <summary>Mud patches: seconds the slowdown takes to fade after leaving a puddle.</summary>
         MudReleaseSeconds,
+        // Themed lot audio volumes (Audio owns). Issue 117.
+        /// <summary>Volume of the lot's ambience layers, 0..1 (on top of the theme's own ambience level).</summary>
+        AmbienceVolume,
+        /// <summary>Volume of the last-30-seconds layer (fireworks, thunder), 0..1.</summary>
+        EscalationVolume,
+        /// <summary>Volume of the world sounds (blessing chime, wash splash, mud squelch), 0..1.</summary>
+        WorldSoundVolume,
     }
 }

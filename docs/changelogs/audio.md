@@ -55,3 +55,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Core/Music/*, Core/Contracts/ILotAudio.cs
 Why: Issue #117 (epic #79): data model of the per-lot themes; Audio reads it through ILotAudio.
 Tests: none yet (compiles with the following commits).
+
+## audio: procedural themes, ambience and world sounds with last-30-seconds escalation (unverified) [Claude]
+Date: 2026-11-14
+Files: Audio (ThemeContext, IThemePart, the nine instrument parts, ThemeParts, ThemeLoopBuilder, SeamlessNoise, Ambience*, EscalationLoops, EscalationRule, ThemeSession, WorldSoundTuning, SfxWorld, VoiceSpec vibrato, SfxId 27-29, SfxEventRouter, AudioConfig, AudioDirector), Core (TuningKey x3 appended, WorldSoundRows, TuningCatalog, CarEnteredMud event), Run (LotDefinition theme and ambience fields, rules), Cars (CarMudEffect publishes CarEnteredMud), Bootstrap (AudioBootstrap, TuningSeeder, GameBootstrap one line), Editor (AudioThemeAssets, ProjectSetup), Tests (EditMode MusicThemeTests, ThemeSoundTests, ThemeFixtures, LotAudioTests; PlayMode ThemedLotAudioPlayModeTests, mud entry test).
+Why: Issue #117 (epic #79): per-lot music themes, ambience, chime/splash/squelch and the +15% tempo escalation.
+Tests: NOT YET RUN: the D: disk was full (Unity could not build Library), so compile, RunBatch, EditMode and PlayMode are pending. The theme assets are not generated yet.

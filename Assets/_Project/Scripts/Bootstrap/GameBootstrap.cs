@@ -111,6 +111,7 @@ namespace UncannyValet.Bootstrap
             Services.Register<IBlessingCalculator>(new BlessingCalculator(_blessingConfig, null, modifiers));
             Services.Register<IShiftBlessingsView>(_blessings);
             Services.Register<IPlayerFocus>(new TransformPlayerFocus(_valet.transform));
+            AudioBootstrap.Register(_lotDefinition);
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);

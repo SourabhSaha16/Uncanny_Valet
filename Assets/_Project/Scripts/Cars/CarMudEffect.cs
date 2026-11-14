@@ -1,5 +1,6 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
 using UnityEngine;
 
 namespace UncannyValet.Cars
@@ -19,6 +20,7 @@ namespace UncannyValet.Cars
         private MudModifier _modifier;
         private IMudPatches _patches;
         private ITuning _tuning;
+        private IEventBus _bus;
 
         /// <summary>1 clear of mud; the top speed multiplier while in mud (fading back after leaving).</summary>
         public float SpeedScale => _modifier != null ? _modifier.SpeedScale : 1f;
@@ -38,6 +40,7 @@ namespace UncannyValet.Cars
         {
             Services.TryGet(out _patches);
             Services.TryGet(out _tuning);
+            Services.TryGet(out _bus);
         }
 
         private void OnDestroy() => _driver.Modifiers.Remove(_modifier);
@@ -48,7 +51,9 @@ namespace UncannyValet.Cars
             var settings = MudSettings.Read(_tuning);
             _modifier.Settings = settings;
             var inside = CarMudProbe.IsInMud(_patches, _body.position, transform.up, _driver.Definition.Size);
+            var before = _blend.Weight;
             _blend.Step(inside, Time.fixedDeltaTime, settings.ReleaseSeconds);
+            if (before <= 0f && _blend.Weight > 0f && _bus != null) _bus.Publish(new CarEnteredMud(_driver.Id));
         }
     }
 }

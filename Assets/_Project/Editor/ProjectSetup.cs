@@ -47,6 +47,7 @@ namespace UncannyValet.EditorTools
             ArtAssetSetup.CreateIfMissing();
             MidgardWorldSetup.CreateIfMissing();
             VanaheimWorldSetup.CreateIfMissing();
+            AudioThemeAssets.CreateIfMissing();
             AssetDatabase.SaveAssets();
         }
 
