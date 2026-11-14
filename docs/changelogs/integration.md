@@ -193,3 +193,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs, SpeechBubblePainter.cs; Assets/_Project/Scripts/UI/Kit/PixelCanvas.cs; Assets/_Project/Scripts/UI/Mood/HudEmotionConfig.cs; Assets/_Project/Scripts/UI/Hud/PlayingHud.cs; Assets/_Project/Scripts/UI/GameUi.cs
 Why: owner playtest note (#122): the bubbles were too big. The bubble (panel, name, text, tail) is drawn at a tunable share of its size (HudEmotionConfig "Speech Bubble" Scale, Range 0.4 to 1, default 0.72 = about 28% smaller) by a zoom in PixelCanvas that shrinks towards the tail, so the clamped box stays on screen.
 Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: zoom the game camera out a little (Refs #123) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFollow.cs; Assets/_Project/Scenes/Bootstrap.unity, Lot_MidgardCrazy.unity, Lot_VanaheimCrazy.unity, Lot_VanaheimTraining.unity (only the _fitTightness line)
+Why: owner playtest note (#123): the view was too close. CameraFollow Fit Tightness 0.78 to 0.83 (size x1.064, about 13% more visible area); the play area is still never cropped, and the Max Orthographic Size cap (15) is unchanged. Scene values were updated by RunBatch; its pure fileID churn was reverted.
+Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
