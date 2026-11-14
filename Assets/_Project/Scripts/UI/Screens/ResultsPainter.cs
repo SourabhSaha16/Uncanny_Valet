@@ -5,18 +5,18 @@ namespace UncannyValet.UI.Screens
 {
     /// <summary>
     /// The results screen: a dimmed lot, one big panel, the verdict (CLEARED or FAILED), the blessings against the
-    /// threshold with the bolt, stats lines, and Retry / Next Lot buttons (the god's panel is task 85's)
-    /// (Next Lot is disabled and marked Soon).
+    /// threshold with the bolt, stats lines, and Retry and Next Lot buttons (the god's verdict panel is task 85's: it replaces or shrinks the stats block, which is the one place with room).
     /// </summary>
     public sealed class ResultsPainter
     {
         /// <summary>The Retry button, in canvas pixels. Clicks are tested against it.</summary>
         public static readonly PixelRect RetryButton = new PixelRect(96, 224, 128, 24);
 
-        private static readonly PixelRect NextButton = new PixelRect(256, 224, 128, 24);
+        /// <summary>The Next Lot button, in canvas pixels. Clicks are tested against it.</summary>
+        public static readonly PixelRect NextButton = new PixelRect(256, 224, 128, 24);
         private static readonly PixelRect Card = new PixelRect(48, 12, 384, 252);
 
-        private const string RetryHint = "ENTER TO RETRY";
+        private const string KeyHint = "ENTER: RETRY   ANY OTHER KEY: NEXT LOT";
         private const int TitleScale = 2;
         private const int VerdictScale = 4;
         private const int VerdictTop = 44;
@@ -74,11 +74,8 @@ namespace UncannyValet.UI.Screens
         private void DrawButtons()
         {
             DrawButton(RetryButton, ResultsFormatter.RetryLabel, PixelPalette.Green, PixelPalette.Ink);
-            DrawButton(NextButton, ResultsFormatter.NextLotLabel, PixelPalette.Grey, PixelPalette.Track);
-            var tag = PixelTextLayout.Width(ResultsFormatter.SoonLabel.Length, 1);
-            _canvas.Text(ResultsFormatter.SoonLabel, NextButton.X + NextButton.Width - tag - 6, NextButton.Y - 10,
-                PixelPalette.Amber);
-            DrawCentered(RetryHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
+            DrawButton(NextButton, ResultsFormatter.NextLotLabel, PixelPalette.Gold, PixelPalette.Ink);
+            DrawCentered(KeyHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
         }
 
         private void DrawButton(PixelRect rect, string label, Color fill, Color text)

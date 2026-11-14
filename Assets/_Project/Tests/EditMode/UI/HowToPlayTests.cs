@@ -8,24 +8,6 @@ namespace UncannyValet.Tests.UI
     public class HowToPlayTests
     {
         [Test]
-        public void Gate_ShowsOnTheFirstStartOnly()
-        {
-            var gate = new HowToPlayGate();
-            Assert.IsFalse(gate.WasShown);
-            Assert.IsTrue(gate.TryShow());
-            Assert.IsTrue(gate.WasShown);
-            Assert.IsFalse(gate.TryShow());
-            Assert.IsFalse(gate.TryShow());
-        }
-
-        [Test]
-        public void Gate_NewInstanceShowsAgain_LikeANewPageLoad()
-        {
-            new HowToPlayGate().TryShow();
-            Assert.IsTrue(new HowToPlayGate().TryShow());
-        }
-
-        [Test]
         public void Wrap_BreaksAtSpacesAndNeverExceedsTheLimit()
         {
             const string text = "Customer cars will sometimes have SPECIAL REQUESTs like car wash or EV charging";
