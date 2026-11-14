@@ -97,7 +97,7 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
-        public void BounceGoesAwayPeaksSmallAndSettlesBackToZero()
+        public void BounceGoesAwayAndStaysWhereItLands()
         {
             var bounce = new PedestrianBounceRule();
             bounce.Configure(0.2f, 0.25f, 0.6f);
@@ -114,7 +114,7 @@ namespace UncannyValet.Tests.Pedestrians
             Assert.LessOrEqual(peak, 0.2f + 1e-4f);
             Assert.Greater(peak, 0.1f);
             Assert.IsFalse(bounce.Active);
-            Assert.AreEqual(Vector2.zero, bounce.Offset);
+            Assert.AreEqual(0.2f, bounce.Offset.x, 1e-4f, "no pull back to the route after the bounce");
         }
 
         [Test]
@@ -140,11 +140,12 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
-        public void BounceShapeStartsAndEndsAtZero()
+        public void BounceSlideLeavesFastAndNeverReturns()
         {
-            Assert.AreEqual(0f, PedestrianBounceRule.Shape(0f), 1e-5f);
-            Assert.AreEqual(0f, PedestrianBounceRule.Shape(1f), 1e-5f);
-            Assert.Greater(PedestrianBounceRule.Shape(0.3f), PedestrianBounceRule.Shape(0.7f));
+            Assert.AreEqual(0f, PedestrianBounceRule.Slide(0f), 1e-5f);
+            Assert.AreEqual(1f, PedestrianBounceRule.Slide(1f), 1e-5f);
+            Assert.Greater(PedestrianBounceRule.Slide(0.3f), 0.3f);
+            Assert.LessOrEqual(PedestrianBounceRule.Slide(0.7f), PedestrianBounceRule.Slide(0.8f));
         }
 
         [Test]

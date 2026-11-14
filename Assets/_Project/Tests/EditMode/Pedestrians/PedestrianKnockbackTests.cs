@@ -49,7 +49,7 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
-        public void Stumble_UsesTheGivenDistanceAndTimeAndSettles()
+        public void Stumble_UsesTheGivenDistanceAndTimeAndLandsThere()
         {
             var rule = new PedestrianStumbleRule();
             rule.Configure(0.1f, 1f);
@@ -60,7 +60,7 @@ namespace UncannyValet.Tests.Pedestrians
             Assert.LessOrEqual(rule.Offset.x, 4f);
             rule.Step(1f);
             Assert.IsFalse(rule.Active);
-            Assert.AreEqual(Vector2.zero, rule.Offset);
+            Assert.AreEqual(4f, rule.Offset.x, 0.0001f);
         }
 
         [Test]

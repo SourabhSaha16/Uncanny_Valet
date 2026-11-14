@@ -4,7 +4,7 @@ namespace UncannyValet.Pedestrians
 {
     /// <summary>
     /// Pure rule for the stumble of a pedestrian who is knocked over: a stronger, longer version of the bounce
-    /// (a bigger push away from whatever hit them) with a spin, that settles back to the route point.
+    /// (a bigger push away from whatever hit them) with a spin. They stay where they land; the walker carries on from there.
     /// </summary>
     public sealed class PedestrianStumbleRule
     {
@@ -18,7 +18,7 @@ namespace UncannyValet.Pedestrians
         /// <summary>True while the stumble plays.</summary>
         public bool Active { get; private set; }
 
-        /// <summary>Current displacement from the route point (zero when not stumbling).</summary>
+        /// <summary>Current displacement from the route point; after the stumble ends it stays at the landing offset until the next one.</summary>
         public Vector2 Offset { get; private set; }
 
         /// <summary>Current spin of the sprites in degrees (zero when not stumbling).</summary>
@@ -53,7 +53,7 @@ namespace UncannyValet.Pedestrians
             _elapsed += deltaSeconds;
             Active = _elapsed < _seconds;
             var progress = Mathf.Clamp01(_elapsed / _seconds);
-            Offset = Active ? _direction * (_peak * PedestrianBounceRule.Shape(progress)) : Vector2.zero;
+            Offset = _direction * (_peak * PedestrianBounceRule.Slide(progress));
             SpinDegrees = Active ? 360f * _spins * progress : 0f;
         }
     }

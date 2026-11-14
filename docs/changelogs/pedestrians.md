@@ -19,3 +19,9 @@ Date: 2026-11-13
 Files: Pedestrians: WalkerStumbler (no bus; TryStart for the knockback power), PedestrianWalker, PedestrianConfig, PedestrianStumbleRule comments.
 Why: Barge-specific listening removed; the stumble itself stays for task #93 (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
 Tests: StumbleTests updated; suites pass.
+
+## pedestrians: knocked pedestrians walk on from where they land [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/{PedestrianBounceRule,PedestrianStumbleRule,PathFollower,PedestrianWalker}.cs, Assets/_Project/Tests/EditMode/Pedestrians/{PedestrianBlockRuleTests,StumbleTests,PedestrianKnockbackTests,PathFollowerTests}.cs
+Why: issue #125. The bounce and stumble offsets used to ease back to zero against a frozen route point, so a pushed pedestrian snapped back to the crosswalk like a rubber band. Replaced on purpose: PedestrianBounceRule.Shape (peak and return) is now Slide (ease-out that lands and stays), the offset stays at the landing spot, and PathFollower.Displace re-points the walk straight at its destination from there. Shape and its test were deleted (no other users).
+Tests: new PathFollower Displace tests (off-route and standing); bounce, stumble and knockback rule tests changed to expect the landing offset; EditMode suite run.

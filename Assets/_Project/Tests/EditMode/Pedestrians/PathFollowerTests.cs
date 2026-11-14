@@ -63,5 +63,34 @@ namespace UncannyValet.Tests.Pedestrians
             Assert.IsTrue(walker.Advance(5f));
             Assert.AreEqual(1f, walker.Position.x, 1e-4f);
         }
+
+        [Test]
+        public void DisplacedWalkerGoesStraightToTheDestinationWithoutReturningToTheRoute()
+        {
+            var walker = new PathFollower();
+            walker.Begin(L());
+            walker.Advance(2f);
+            var landing = new Vector2(2f, -3f); // knocked off the route
+            walker.Displace(landing);
+            Assert.AreEqual(landing, walker.Position);
+            Assert.IsTrue(walker.Walking);
+            walker.Advance(0.5f);
+            var toDestination = (new Vector2(4f, 3f) - landing).normalized;
+            Assert.AreEqual(toDestination.x, walker.Heading.x, 1e-4f);
+            Assert.AreEqual(toDestination.y, walker.Heading.y, 1e-4f);
+            Assert.AreEqual(Vector2.Distance(landing, new Vector2(4f, 3f)) - 0.5f, walker.Remaining, 1e-4f);
+            Assert.IsTrue(walker.Advance(100f));
+            Assert.AreEqual(new Vector2(4f, 3f), walker.Position);
+        }
+
+        [Test]
+        public void DisplacedStandingWalkerJustStaysAtTheNewSpot()
+        {
+            var walker = new PathFollower();
+            walker.Begin(new List<Vector2> { Vector2.zero });
+            walker.Displace(Vector2.one);
+            Assert.IsFalse(walker.Walking);
+            Assert.AreEqual(Vector2.one, walker.Position);
+        }
     }
 }
