@@ -199,3 +199,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Bootstrap/CameraFollow.cs; Assets/_Project/Scenes/Bootstrap.unity, Lot_MidgardCrazy.unity, Lot_VanaheimCrazy.unity, Lot_VanaheimTraining.unity (only the _fitTightness line)
 Why: owner playtest note (#123): the view was too close. CameraFollow Fit Tightness 0.78 to 0.83 (size x1.064, about 13% more visible area); the play area is still never cropped, and the Max Orthographic Size cap (15) is unchanged. Scene values were updated by RunBatch; its pure fileID churn was reverted.
 Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: the camera always shows the whole lot, whatever the zoom cap (Refs #123 #127) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFit.cs, CameraFollow.cs (tooltip); Assets/_Project/Tests/EditMode/Integration/CameraFitTests.cs; Assets/_Project/Tests/PlayMode/CameraFramingPlayModeTests.cs (+ .meta)
+Why: root cause of the cut-off bottom of the taller lots (4th queue slot, #127): CameraFit clamped the zoom to Max Orthographic Size 15, which is below what the lot needs, so the play area was cropped. The play-area floor now wins over the cap (the cap only limits zoom-out for margin and decor). Zoom-out intent of #123 untouched (tightness 0.83 kept). PlayMode test asserts the valet, diner door, valet start and every queue slot are inside the camera view on all four lots at 16:9 and 16:10 (it failed before the fix on queue slot 3 at size 15).
+Tests: EditMode 1802 passed (new LotTallerThanTheCapStillFits), PlayMode 77 passed (4 new), RunBatch ok (scene fileID churn reverted).
