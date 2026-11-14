@@ -181,3 +181,9 @@ Date: 2026-11-14
 Files: Core/Story/{VerdictTier,VerdictRule,VerdictStory,TrainerStory,VerdictTextRules,StoryTextAsset,StoryTextRules}.cs, UI/Screens/{VerdictPicker,VerdictSpeech,ResultsContent,ResultsFormatter,ResultsPainter}.cs, UI/GameUi.cs, Editor/{VerdictTextDrafts,StoryAssetSetup}.cs, Data/UI/StoryText.asset, Tests/EditMode/Flow/VerdictTests.cs, Tests/EditMode/UncannyValet.Tests.EditMode.asmdef
 Why: Issue #85. Crazy lots and the finale show the god name and a failed, cleared or cleared-well speech line (cleared well at 1.5x the threshold, a field of the story text); training lots show a generic trainer line without a panel. Lines drafted for all nine gods and eight worlds in the editable story text asset (setup adds missing entries, never overwrites edits). Stats moved to two columns. GameUi reads the story text asset (Core), not the Run module. EditMode tests now reference the Editor assembly (for the drafts).
 Tests: EditMode 1772 passed (new VerdictTests); PlayMode 71 passed; RunBatch ok.
+
+## integration: run-unity wrapper guards Unity batch runs against commit exhaustion, Refs tooling [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.ps1, tools/run-tests.sh, tools/build-web.ps1
+Why: Windows commit memory hit 67.5 of 68.5 GB on 2026-11-14 (paging file error 1455, hung Unity.exe and bee_backend.exe). The wrapper adds a machine-wide single-run lock, an 8 GB free-commit guard, a timeout that kills the process tree it started, memory-crash diagnosis and cleanup in finally; the test and web build scripts launch Unity through it.
+Tests: tools/tests/test-run-unity.ps1 with fake executables (12 checks: dry run, exit code passthrough, memory diagnosis, headroom refusal, timeout tree kill, lock release, lock contention, lock wait give-up) all passed. Unity was not launched.

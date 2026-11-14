@@ -1,6 +1,7 @@
 # Builds the Web player locally (Windows) and copies it into site/, which GitHub Pages publishes.
 # Close the Unity editor first. Needs the WebGL Build Support module for the project's editor version.
-# Usage: pwsh tools/build-web.ps1            Build: build/WebGL/WebGL    Publish folder: site/
+# Unity runs through tools/run-unity.ps1 (single-run lock, commit guard, timeout).
+# Usage: powershell -NoProfile -File tools/build-web.ps1    Build: build/WebGL/WebGL    Publish folder: site/
 # Then commit site/ (plus a docs/changelogs entry) and push main.
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -10,12 +11,12 @@ if (-not (Test-Path $unity)) { throw "Unity $version not found at $unity" }
 if (-not (Test-Path "$(Split-Path -Parent $unity)\Data\PlaybackEngines\WebGLSupport")) {
     throw "WebGL Build Support is not installed for Unity $version."
 }
-$unityArgs = @("-batchmode", "-nographics", "-projectPath", "`"$root`"",
+$unityArgs = @("-batchmode", "-nographics", "-projectPath", $root,
                "-executeMethod", "UncannyValet.EditorTools.WebBuild.BuildFromCommandLine",
-               "-logFile", "`"$root/build/web-build.log`"")
+               "-logFile", "$root/build/web-build.log")
 New-Item -ItemType Directory -Force -Path "$root/build" | Out-Null
-$p = Start-Process -FilePath $unity -ArgumentList $unityArgs -Wait -PassThru -NoNewWindow
-if ($p.ExitCode -ne 0) { throw "Build failed (exit $($p.ExitCode)). See build/web-build.log" }
+& powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot/run-unity.ps1" -TimeoutMinutes 45 -- @unityArgs
+if ($LASTEXITCODE -ne 0) { throw "Build failed (exit $LASTEXITCODE). See build/web-build.log" }
 
 $built = "$root/build/WebGL/WebGL"
 if (-not (Test-Path "$built/index.html")) { throw "No index.html in $built" }
