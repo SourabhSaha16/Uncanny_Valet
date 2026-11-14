@@ -22,6 +22,7 @@ namespace UncannyValet.Cars
         private CarDriver _driver;
         private Collider2D _collider;
         private CarInteraction _interaction;
+        private CarMudEffect _mud;
         private CarAutoDriveStyle _style;
         private Action _onLeft;
         private Mode _mode;
@@ -79,7 +80,8 @@ namespace UncannyValet.Cars
             _trip.Begin(trips, tripId);
             SetAutoDriving(true, true);
             _mode = Mode.TripArriving;
-            if (_trip.Advance(0f, out TripPose first) == TripStatus.Running) Place(first);
+            _tripSpeed = 0f;
+            if (_trip.Advance(0f, out TripPose first) == TripStatus.Running) Snap(first.Position, first.HeadingDegrees);
         }
 
         /// <summary>
@@ -111,6 +113,7 @@ namespace UncannyValet.Cars
             if (_driver == null) _driver = GetComponent<CarDriver>();
             if (_collider == null) _collider = GetComponent<Collider2D>();
             if (_interaction == null) _interaction = GetComponent<CarInteraction>();
+            if (_mud == null) _mud = GetComponent<CarMudEffect>();
         }
 
         private void SetAutoDriving(bool on, bool solid = false)
@@ -125,7 +128,8 @@ namespace UncannyValet.Cars
 
         private void FixedUpdate()
         {
-            var dt = _world.Scaled(Time.fixedDeltaTime); // freeze time stops cars that drive themselves
+            // Freeze time stops cars that drive themselves; mud slows them like it slows a driven car.
+            var dt = _world.Scaled(Time.fixedDeltaTime) * (_mud != null ? _mud.SpeedScale : 1f);
             if (_mode == Mode.Arriving) StepArrive(dt);
             else if (_mode == Mode.Departing) StepDepart(dt);
             else if (_mode != Mode.Idle) StepTrip(dt);
@@ -153,12 +157,6 @@ namespace UncannyValet.Cars
             }
             _mode = Mode.Idle;
             _onLeft?.Invoke();
-        }
-
-        private void Place(TripPose pose)
-        {
-            _tripSpeed = 0f;
-            Snap(pose.Position, pose.HeadingDegrees);
         }
 
         private void Snap(Vector2 position, float rotationDegrees)

@@ -416,5 +416,13 @@ namespace UncannyValet.Core.Events
         PedestrianCurseLockout,
         /// <summary>Per-lot switch: 1 when hitting a patron walker with the driven car is a curse, 0 when it never is.</summary>
         PedestrianCurses,
+        /// <summary>Mud patches: top speed multiplier of a car in mud (1 = no slowdown).</summary>
+        MudTopSpeedScale,
+        /// <summary>Mud patches: acceleration multiplier of a car in mud (1 = unchanged).</summary>
+        MudAccelerationScale,
+        /// <summary>Mud patches: share of the normal grip loss (drifting) a car keeps in mud (1 = unchanged).</summary>
+        MudGripLossKept,
+        /// <summary>Mud patches: seconds the slowdown takes to fade after leaving a puddle.</summary>
+        MudReleaseSeconds,
     }
 }
