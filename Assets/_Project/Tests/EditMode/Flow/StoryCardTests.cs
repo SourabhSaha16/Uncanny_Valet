@@ -103,7 +103,7 @@ namespace UncannyValet.Tests.Flow
             while (_m.State != target) _m.Advance();
         }
 
-        private static void AssertFits(StoryCard card)
+        internal static void AssertFits(StoryCard card)
         {
             for (var i = 0; i < card.Lines.Count; i++)
             {

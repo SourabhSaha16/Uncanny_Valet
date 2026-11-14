@@ -16,9 +16,9 @@ namespace UncannyValet.UI.Flow
         private const int FarewellScale = 1;
         private const int IconGap = 6;
         private const int NameGap = 6;
-        private const int DescriptionGap = 8;
-        private const int KeyGap = 8;
-        private const int FarewellGap = 12;
+        private const int DescriptionGap = 6;
+        private const int KeyGap = 6;
+        private const int FarewellGap = 8;
         private const int AttributionGap = 2;
         private const string Quote = "'";
         private const string Dash = "- ";

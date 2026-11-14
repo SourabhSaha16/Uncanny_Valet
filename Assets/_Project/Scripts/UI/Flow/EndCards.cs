@@ -14,8 +14,8 @@ namespace UncannyValet.UI.Flow
         private const int LineScale = 2;
         private const int ListHeadingScale = 1;
         private const int PowerScale = 2;
-        private const int LineGap = 10;
-        private const int ListGap = 14;
+        private const int LineGap = 6;
+        private const int ListGap = 10;
         private const int PowerGap = 3;
 
         public static void FillSentBack(StoryCardLayout layout, StoryCard card, StoryTextAsset text, IStoryFacts facts, IRunProgress progress)
