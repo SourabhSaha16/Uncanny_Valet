@@ -50,10 +50,10 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void QueueSlots_DefaultToThree_AndValidateBetweenOneAndTheMaximum()
+        public void QueueSlots_DefaultToFour_AndValidateBetweenOneAndTheMaximum()
         {
             var lot = _fx.Lot(World.Midgard, LotKind.Training);
-            Assert.AreEqual(3, lot.QueueSlots);
+            Assert.AreEqual(4, lot.QueueSlots);
             RunFixtures.Set(lot, "_queueSlots", 0);
             Assert.IsFalse(lot.TryValidate(out _));
             RunFixtures.Set(lot, "_queueSlots", LotDefinition.MaxQueueSlots + 1);

@@ -29,7 +29,6 @@ namespace UncannyValet.Bootstrap
         /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
         /// <param name="powers">The valet power config; null seeds the config defaults.</param>
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
-        /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
         /// <param name="emotions">The pickup emotion levels (angry, will not bless); null seeds the config defaults.</param>
         /// <param name="lot">The lot's overrides (shift length, arrival pacing, modifier chances, dial positions); null keeps the shared defaults.</param>
         /// <param name="modifiers">The modifier definitions; they seed the clear time and bonus keys. Null uses the shipped defaults.</param>
@@ -37,7 +36,7 @@ namespace UncannyValet.Bootstrap
         public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, BlessingConfig blessings, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
             IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerBarConfig powers = null,
-            PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null,
+            PerfectSettings perfect = null, HudEmotionConfig emotions = null,
             LotDefinition lot = null, IModifierCatalog modifiers = null)
         {
             SeedEmotions(t, emotions);
@@ -53,7 +52,6 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.GameMinutesPerSecond, shift.GameMinutesPerSecond);
             t.Seed(TuningKey.ShiftLengthSeconds, shift.ShiftLengthSeconds);
 
-            var service = patrons.Tuning;
             t.Seed(TuningKey.PickupWindowMinutes, patrons.PickupWindowMinutes);
             t.Seed(TuningKey.StayMinMinutes, patrons.StayRange.x);
             t.Seed(TuningKey.StayMaxMinutes, patrons.StayRange.y);
@@ -61,8 +59,6 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ArrivalGapMaxMinutes, patrons.ArrivalIntervalRange.y);
             t.Seed(TuningKey.ImpatientChance, patrons.ImpatientChance);
             t.Seed(TuningKey.ImpatientWindowScale, patrons.ImpatientWindowScale);
-            t.Seed(TuningKey.QueueMaxWaitMinutes, service.QueueWaitMinutes);
-            t.Seed(TuningKey.QueueClearDistance, (queueClear ?? new QueueClearSettings()).ClearDistance);
 
             t.Seed(TuningKey.BaseBlessing, patrons.BaseBlessing);
             SeedModifiers(t, modifiers ?? ModifierDefaults.CreateCatalog());

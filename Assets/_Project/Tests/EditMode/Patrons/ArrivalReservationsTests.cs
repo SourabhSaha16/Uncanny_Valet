@@ -31,6 +31,7 @@ namespace UncannyValet.Tests.Patrons
             public IDrivable Spawn(CarId id, Vector2 position, float rotationDegrees) => null;
             public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees, int arrivalSlot) => null;
             public void DriveAwayAndDespawn(CarId id) => DriveAways++;
+            public bool TryDriveTo(CarId id, Vector2 target, float speed) => false;
             public bool TryGet(CarId id, out IDrivable car) { car = null; return false; }
             public void Despawn(CarId id) => Despawns++;
         }

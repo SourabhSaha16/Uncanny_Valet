@@ -50,6 +50,7 @@ namespace UncannyValet.Tests.Patrons
             _cars.Spawn(_car, UnityEngine.Vector2.zero, 0f);
             _registry.Open(_car, new PatronRequest(Stay, 20, false, 60f));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
         }
 
         private void Tick(float minute)

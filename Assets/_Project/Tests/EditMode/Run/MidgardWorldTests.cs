@@ -68,7 +68,7 @@ namespace UncannyValet.Tests.Run
             Assert.AreEqual(3f, tuning.Get(TuningKey.PedestrianCount));
             Assert.IsFalse(lot.PedestrianCurses);
             Assert.IsTrue(lot.Grant.IsNone);
-            Assert.AreEqual(3, lot.QueueSlots);
+            Assert.AreEqual(4, lot.QueueSlots, "the pickup spot plus three queue slots");
         }
 
         [Test]

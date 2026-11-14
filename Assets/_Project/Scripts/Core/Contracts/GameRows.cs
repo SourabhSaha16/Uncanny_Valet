@@ -19,7 +19,7 @@ namespace UncannyValet.Core.Contracts
 
         public static readonly TuningInfo[] Rest =
         {
-            new TuningInfo(TuningKey.PlanMaxWaitingCars, "Shift plan", "Most cars waiting at the curb", 1, 3, 1),
+            new TuningInfo(TuningKey.PlanMaxWaitingCars, "Shift plan", "Most cars waiting in the queue", 1, 4, 1),
             new TuningInfo(TuningKey.PlanArrivalGapScale, "Shift plan", "Arrival gap scale (lower = busier)", 0.2f, 6f, 0.05f),
             new TuningInfo(TuningKey.PlanActiveSpots, "Shift plan", "Open parking spots", 2, 8, 1),
             new TuningInfo(TuningKey.ModifierChanceNeedsCharge, "Shift plan", "Chance a car arrives needing a charge", 0f, 1f, 0.05f,

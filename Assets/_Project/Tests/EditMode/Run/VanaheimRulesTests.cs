@@ -39,7 +39,7 @@ namespace UncannyValet.Tests.Run
             Assert.AreEqual(15f, p.ArrivalGapMinSeconds);
             Assert.AreEqual(25f, p.ArrivalGapMaxSeconds);
             Assert.AreEqual(2, p.MaxWaitingCars);
-            Assert.AreEqual(3, lot.QueueSlots);
+            Assert.AreEqual(4, lot.QueueSlots);
             Assert.AreEqual(150f, p.ShiftLengthSeconds);
             Assert.AreEqual(0, p.ArrivalBudgetOverride, "the arrival budget is derived");
             Assert.AreEqual(150, lot.BlessingThreshold);

@@ -138,10 +138,10 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void QueueIsAColumnOfThreeUnderTheCurb()
+        public void QueueIsAColumnOfFourUnderTheCurb_ThePickupSpotThenThree()
         {
-            Assert.AreEqual(3, _geo.QueueSlots.Length);
-            for (var i = 1; i < 3; i++)
+            Assert.AreEqual(4, _geo.QueueSlots.Length);
+            for (var i = 1; i < 4; i++)
             {
                 Assert.AreEqual(_geo.QueueSlots[0].x, _geo.QueueSlots[i].x, 0.001f);
                 Assert.Less(_geo.QueueSlots[i].y, _geo.QueueSlots[i - 1].y, "later slots are lower");

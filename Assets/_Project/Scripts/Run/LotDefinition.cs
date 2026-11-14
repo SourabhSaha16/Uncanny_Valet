@@ -23,7 +23,7 @@ namespace UncannyValet.Run
         private string _sceneName;
         [SerializeField, Tooltip("Which parametric layout the lot is built from.")]
         private LotLayoutKind _layout = LotLayoutKind.Diner;
-        [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Training lots 3, crazy lots 4. The lot grows taller for more.")]
+        [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Every lot has 4: the valet pickup spot plus 3 queue slots. The lot grows taller for more.")]
         private int _queueSlots = DefaultQueueSlots;
         [SerializeField] private LotPacing _pacing = new LotPacing();
         [SerializeField, Tooltip("The service modifiers cars of this lot arrive with and the chance of each; the list order is the roll order.")]
@@ -69,8 +69,8 @@ namespace UncannyValet.Run
 
         /// <summary>Most queue slots a layout is built for.</summary>
         public const int MaxQueueSlots = 6;
-        /// <summary>Slots of a new lot (the training diner).</summary>
-        public const int DefaultQueueSlots = 3;
+        /// <summary>Slots of a new lot: the valet pickup spot plus three queue slots.</summary>
+        public const int DefaultQueueSlots = 4;
         /// <summary>Most ambient pedestrians a lot can have (the size of the pedestrian pool).</summary>
         public const int MaxAmbientPedestrians = 10;
         /// <summary>The sign on the building of a new lot.</summary>

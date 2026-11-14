@@ -45,7 +45,7 @@ namespace UncannyValet.Tests.Patrons
             _bus = new EventBus();
             _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings());
             _scan = new FakeScan();
-            _slots = new QueueSlotAllocator(_bus, _registry, _scan, new PatronPlan(Cap));
+            _slots = new QueueSlotAllocator(_bus, _registry, _scan, Cap);
         }
 
         [TearDown]
@@ -156,7 +156,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _slots.Dispose();
             _scan.Occupied.Add(false);
-            _slots = new QueueSlotAllocator(_bus, _registry, _scan, new PatronPlan(4));
+            _slots = new QueueSlotAllocator(_bus, _registry, _scan, 4);
             for (var expected = 0; expected < 4; expected++)
             {
                 Send(out var slot);
@@ -166,12 +166,25 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void FullWaitingCap_GivesNoSlot()
+        public void FullQueue_GivesNoSlot_SoTheArrivalWaits()
         {
             Send(out _);
             Send(out _);
             Send(out _);
             Assert.AreEqual(ArrivalGate.NoSlot, _slots.ChooseForSpawn());
+        }
+
+        [Test]
+        public void FullQueueOfFour_HoldsTheArrival_UntilTheTailSlotFrees_ThenItIsTheTailSlot()
+        {
+            _slots.Dispose();
+            _scan.Occupied.Add(false);
+            _slots = new QueueSlotAllocator(_bus, _registry, _scan, 4);
+            for (var i = 0; i < 4; i++) { Send(out _); _scan.Occupied[i] = true; }
+            for (var i = 0; i < 4; i++) _bus.Publish(new CarArrived(new CarId(i + 1)));
+            Assert.AreEqual(ArrivalGate.NoSlot, _slots.ChooseForSpawn(), "all four positions hold a car");
+            _scan.Occupied[3] = false;
+            Assert.AreEqual(3, _slots.ChooseForSpawn(), "the queue moved up; the freed tail slot takes the next car");
         }
     }
 }

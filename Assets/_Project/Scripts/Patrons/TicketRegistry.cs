@@ -31,25 +31,25 @@ namespace UncannyValet.Patrons
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
         public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, IShiftBlessingsView score = null)
-            : this(bus, clock, blessings, ServiceTuning.Default, score) { }
+            : this(bus, clock, blessings, score, null, null, null) { }
 
         /// <summary>Registry whose clear times and windows follow the live tuning. A null catalog uses the shipped modifiers.</summary>
         public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, PatronTuning tuning,
             IShiftBlessingsView score = null, IModifierCatalog catalog = null)
-            : this(bus, clock, blessings, tuning.Service, score, null, catalog, tuning)
+            : this(bus, clock, blessings, score, null, catalog, tuning)
         {
             _live = new LiveTicketTuning(bus, tuning, _book);
         }
 
         /// <param name="catalog">The modifier definitions; null uses the shipped Muddy and NeedsCharge numbers.</param>
         /// <param name="live">The live numbers the modifier clear times follow; null uses the definitions' values.</param>
-        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, ServiceTuning tuning,
-            IShiftBlessingsView score = null, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings,
+            IShiftBlessingsView score, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
             var modifiers = new ModifierFactory(catalog ?? ModifierDefaults.CreateCatalog(), live);
-            _book = new TicketBook(tuning, modifiers, plates);
+            _book = new TicketBook(modifiers, plates);
             _damage = new DamageLedger(bus);
             _settler = new TicketSettler(bus, clock, blessings, _timers, _book, score, _damage);
             _stations = new StationService(bus, _book);

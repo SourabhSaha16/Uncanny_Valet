@@ -113,7 +113,7 @@ namespace UncannyValet.Tests.Run
             RunFixtures.Set(_lot, "_pacing._maxWaitingCars", 4f);
             var tuning = new TuningStore(new EventBus());
             _lot.SeedPacing(tuning, 2f);
-            Assert.AreEqual(3f, tuning.Get(TuningKey.PlanMaxWaitingCars));
+            Assert.AreEqual(4f, tuning.Get(TuningKey.PlanMaxWaitingCars));
             Assert.AreEqual(_lot.Pacing.ArrivalGapMinSeconds * 2f, tuning.Get(TuningKey.ArrivalGapMinMinutes), 0.0001f);
             Assert.AreEqual(1, _lot.Pacing.EffectiveMaxWaiting(0));
         }

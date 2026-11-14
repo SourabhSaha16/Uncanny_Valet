@@ -33,6 +33,7 @@ namespace UncannyValet.Tests.Cars
             public IDrivable Spawn(CarId id, Vector2 position, float rotationDegrees) => null;
             public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees, int arrivalSlot) => null;
             public void DriveAwayAndDespawn(CarId id) { }
+            public bool TryDriveTo(CarId id, Vector2 target, float speed) => false;
             public bool TryGet(CarId id, out IDrivable car) { car = Car; return Car != null; }
             public void Despawn(CarId id) { }
         }

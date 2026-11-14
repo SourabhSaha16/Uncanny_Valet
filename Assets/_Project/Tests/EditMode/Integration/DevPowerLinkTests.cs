@@ -97,7 +97,7 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(fill + 11, (int)TuningKey.PerfectDropOffAngle);
             var target = (int)TuningKey.TrafficTargetOnScreen;
             Assert.AreEqual(target + 1, (int)TuningKey.RetiredPowerStumbleSeconds);
-            Assert.AreEqual(target + 3, (int)TuningKey.QueueClearDistance);
+            Assert.AreEqual(target + 3, (int)TuningKey.RetiredQueueClearDistance);
             Assert.AreEqual((int)TuningKey.ShakeFullForce + 1, (int)TuningKey.DevOwnFreezeTime, "appended at the end");
             Assert.AreEqual(3, (int)StoryPower.FreezeTime, "story power ids are stored in assets");
             Assert.AreEqual((int)TuningKey.ModifierChanceNeedsCharge + 1, (int)TuningKey.DevOwnThunderStride, "issue 87 keys appended at the end");

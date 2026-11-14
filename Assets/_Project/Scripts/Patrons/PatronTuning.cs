@@ -29,9 +29,6 @@ namespace UncannyValet.Patrons
 
         public float ImpatientChance => Read(TuningKey.ImpatientChance, _config.ImpatientChance);
 
-        /// <summary>The queue wait for tickets created from now on.</summary>
-        public ServiceTuning Service => new ServiceTuning(Read(TuningKey.QueueMaxWaitMinutes, _config.QueueWaitMinutes));
-
         /// <summary>The live clear time of a modifier in game minutes (the definition's own value until its key is seeded).</summary>
         public float ClearMinutes(ServiceModifierDefinition def) => Read(def.ClearMinutesKey, def.ClearMinutes);
 

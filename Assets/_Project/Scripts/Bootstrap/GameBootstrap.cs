@@ -149,7 +149,7 @@ namespace UncannyValet.Bootstrap
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
+                emotions: _ui.Emotions, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
         }
 
         private void StartDirector(IEventBus bus, ITuning tuning)

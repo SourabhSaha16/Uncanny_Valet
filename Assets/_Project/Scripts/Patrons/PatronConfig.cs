@@ -16,8 +16,8 @@ namespace UncannyValet.Patrons
         [SerializeField, Min(0)] [FormerlySerializedAs("_baseTip")] private int _baseBlessing = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
-        [Tooltip("Cars waiting at the arrival slots at once. Parked cars do not count.")]
-        [SerializeField, Range(1, 3)] private int _maxWaitingCars = 3;
+        [Tooltip("The shift plan's starting cap on cars waiting to be parked, which the Patron Director reads. The queue itself holds up to Pickup.MaxQueuedCars.")]
+        [SerializeField, Range(1, 4)] private int _maxWaitingCars = 3;
 
         [Tooltip("Game minutes to bring a requested car to the curb before the blessing drops to 0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
@@ -25,9 +25,8 @@ namespace UncannyValet.Patrons
         [Tooltip("Impatient patrons wait this fraction of the pickup window (1 = same as everyone).")]
         [SerializeField, Range(0.3f, 1f)] private float _impatientWindowScale = 0.6f;
 
-        [Header("Stay start")]
-        [SerializeField, Min(0.5f), Tooltip("Game minutes a car may sit in the arrival queue before the patron's stay starts anyway. Normally the stay starts when the car first rests clear of the queue.")]
-        private float _queueWaitMinutes = ServiceTuning.DefaultQueueWaitMinutes;
+        [Header("Valet pickup spot and queue")]
+        [SerializeField] private PickupQueueSettings _pickup = new PickupQueueSettings();
 
         [Header("Late arrivals")]
         [SerializeField, Min(0f), Tooltip("Game minutes before the end of the shift by which a patron must be asking for the car, so every parked car gets its patron back. A stay that would run later is cut short.")]
@@ -45,8 +44,7 @@ namespace UncannyValet.Patrons
         public float LateStayLeadMinutes => _lateStayLeadMinutes;
         public float LateStayFloorMinutes => _lateStayFloorMinutes;
         public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;
-        public float QueueWaitMinutes => _queueWaitMinutes;
-        public ServiceTuning Tuning => new ServiceTuning(_queueWaitMinutes);
+        public PickupQueueSettings Pickup => _pickup;
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;
