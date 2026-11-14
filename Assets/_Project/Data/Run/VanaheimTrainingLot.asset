@@ -292,3 +292,5 @@ MonoBehaviour:
   _gagLines: {fileID: 11400000, guid: 9fb53c6fb230b8f4a81b8704883c7160, type: 2}
   _watcher: {fileID: 11400000, guid: 14e66b6d8ea68a343988385ef4850af2, type: 2}
   _watcherSpot: {x: -11, y: 7.4}
+  _musicTheme: {fileID: 11400000, guid: 955e5133d99bb8045861d8e5238f2f2b, type: 2}
+  _ambience: {fileID: 11400000, guid: 4517f2b4b1c25a74c80b11ba44d092e7, type: 2}

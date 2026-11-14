@@ -104,3 +104,5 @@ MonoBehaviour:
   _gagLines: {fileID: 11400000, guid: c818d2581c269f94ab6b51f4a3e3f206, type: 2}
   _watcher: {fileID: 11400000, guid: 57e582cca5227ca4db7190d6f48f5980, type: 2}
   _watcherSpot: {x: -11, y: 7.4}
+  _musicTheme: {fileID: 11400000, guid: 01d6b1b6dc5c23a48bea4a07d00ecbf5, type: 2}
+  _ambience: {fileID: 11400000, guid: a30f1bda6f9056c44b21fbc3372f8a0f, type: 2}

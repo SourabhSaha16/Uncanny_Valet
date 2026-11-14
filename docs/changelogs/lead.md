@@ -892,3 +892,9 @@ Date: 2026-11-14
 Files: UI flow (FlowMachine, FlowController, UiInput), flow tests, docs/changelogs/integration.md
 Why: #84 follow-up: Retry disabled after a failed crazy lot or finale; lot picker moved to F4 (decided with the owner).
 Tests: EditMode 1723/1723 passed.
+
+## lead: merge audio themes, generate theme assets, fix PlayMode asmdef [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Data/Audio/Themes/*, Data/Run/*Lot.asset (theme links), .meta files, Tests/PlayMode asmdef (adds UncannyValet.Audio)
+Why: #117 procedural music themes and ambience; RunBatch generated the theme assets, the PlayMode test assembly lacked the Audio reference.
+Tests: EditMode 1751/1751, PlayMode 71/71 passed.

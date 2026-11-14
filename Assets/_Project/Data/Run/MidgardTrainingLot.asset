@@ -63,8 +63,15 @@ MonoBehaviour:
   _layoutOptions:
     _servicesClosed: 1
     _cornerClearance: 0
+    _washTroughs: 0
+    _extensionWidth: 0
+    _troughDistance: 0
+  _buildingSign: DINER
+  _groundColour: {r: 0, g: 0, b: 0, a: 0}
   _ambientTraffic: 0
   _ambientPedestrians: 3
   _gagLines: {fileID: 11400000, guid: 42941c4f45ce366418a573ea6b33cb9f, type: 2}
   _watcher: {fileID: 11400000, guid: f06006d6791b0414f86e73a959e322ef, type: 2}
   _watcherSpot: {x: -11, y: 7.4}
+  _musicTheme: {fileID: 11400000, guid: fdf4262569a4e0445a90a4f1d4619579, type: 2}
+  _ambience: {fileID: 0}
