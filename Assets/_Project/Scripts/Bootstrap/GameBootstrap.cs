@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
@@ -66,6 +67,8 @@ namespace UncannyValet.Bootstrap
 
         [SerializeField, Tooltip("This scene's lot: shift length, pacing, dial positions, layout and blessing threshold.")]
         private LotDefinition _lotDefinition;
+        [SerializeField, Tooltip("The power definitions the reward card reads names and descriptions from.")]
+        private List<PowerDefinition> _powerDefinitions = new List<PowerDefinition>();
         [SerializeField, Tooltip("Every lot of the run, in play order; feeds the title-screen picker and the run state.")]
         private RunDefinition _runDefinition;
 
@@ -93,7 +96,7 @@ namespace UncannyValet.Bootstrap
             var bus = new EventBus();
             _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
-            Func<bool> inputBlocked = () => _tuningPanel.IsTyping || _ui.IsTitleShowing;
+            Func<bool> inputBlocked = () => _tuningPanel.IsTyping || _ui.IsFlowScreenShowing;
             var input = new GatedInputSource(keyboard, inputBlocked);
             var tuning = new TuningStore(bus);
             _blessings = new ShiftBlessings(bus, _shiftConfig, () => Services.TryGet<ILotGoal>(out var goal) ? goal : null);
@@ -129,16 +132,12 @@ namespace UncannyValet.Bootstrap
             StartDirector(bus, tuning);
             _spawner.gameObject.SetActive(true);
             _runBoot = RunBootstrap.Start(bus, _runDefinition, _lotDefinition); // before the UI, which reads the lot picker
-            StartUi();
+            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
+            StartUi(bus);
             WatcherBootstrap.Start(_lotDefinition, _watcherConfig, _pedestrians, _lot.transform);
             _tuningPanel.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
-            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
         }
-
-        // The shift (and with it the clock and the patrons) starts only when the title screen is dismissed. By then
-        // every component activated above has run Start (StationSwitch subscribes to ShiftPlanChanged there).
-        private void OnTitleDismissed() => _flow?.StartFirstShift();
 
         // Seeds before any module is active so none reads an unseeded key. Called again once the lot knows its
         // spot count, which only matters when the plan says 0 ("all spots open").
@@ -165,17 +164,16 @@ namespace UncannyValet.Bootstrap
             if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }
 
-        private void StartUi()
+        private void StartUi(IEventBus bus)
         {
             var interactor = _valet.GetComponent<Interactor>();
             _ui.Configure(() => interactor.CurrentPrompt);
-            _ui.TitleDismissed += OnTitleDismissed;
+            FlowBootstrap.Wire(_ui, _runBoot, bus, _flow, _powerDefinitions);
             _ui.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
         {
-            if (_ui != null) _ui.TitleDismissed -= OnTitleDismissed;
             _flow?.Dispose();
             _directorBoot?.Dispose();
             _trafficLink?.Dispose();

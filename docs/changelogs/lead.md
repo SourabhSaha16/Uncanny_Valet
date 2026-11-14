@@ -880,3 +880,9 @@ Date: 2026-11-14
 Files: merge of worktree-agent-a73c363af3a1468ad (NextLotChosen and RunCompleted events, RunOutcome and RunEnd enums, IRunFlowState, NextLotRules, LotDecision, RunFlow, RunProgress flow state, RunBootstrap wiring, tests), docs/changelogs/lead.md
 Why: story epic 79, task 83. Pure rules: clearing a lot advances to the next (skipping already cleared training lots), failing a training lot restarts it, failing a crazy lot or the finale sends Thor back to Midgard's crazy lot keeping powers and cleared flags, powers are granted once, clearing the last lot of the RunDefinition completes the run with EndOfContent (the finale with Finale). Rules and events only; screens and scene loading are task 84.
 Tests: 1672 of 1672 EditMode, 64 of 64 PlayMode after the merge.
+
+## lead: merge agent/integration between-lot flow cards (#84) [Claude]
+Date: 2026-11-14
+Files: merge of worktree-agent-a1f36045156e2782a (UI/Flow FlowMachine, FlowController, card builders and painters; Core Story StoryTextAsset, IStoryFacts; Bootstrap FlowHost, FlowActions, FlowBootstrap, RunStoryFacts, StartLotRule; GameUi on the flow state; results Next Lot button; title lot picker behind F3; StoryText.asset and drafts; tests), docs/changelogs/lead.md
+Why: story epic 79, task 84. Title, how-to-play (once per page load), intro card, shift, results, reward card per power earned, thrown-back card after a failed crazy lot, end card (TO BE CONTINUED for the demo, THOR IS HOME for the finale), driven by the run rules of task 83; cards use the pixel panel with per-world accent colours and text from one editable StoryTextAsset; any key advances after a 0.3 s delay.
+Tests: 1721 of 1721 EditMode, 66 of 66 PlayMode after the merge and RunBatch (scene churn reverted to the merged versions).
