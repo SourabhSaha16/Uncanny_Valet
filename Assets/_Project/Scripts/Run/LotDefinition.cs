@@ -47,6 +47,10 @@ namespace UncannyValet.Run
         private LightingPreset _lighting;
         [SerializeField, Tooltip("Layout parameters of the parametric builder: closed services (no wash slot, no EV bay, 8 regular bays) and the free corner height a corner prop needs.")]
         private LotLayoutOptions _layoutOptions;
+        [SerializeField, Tooltip("The word on the building's sign (DINER, BARN). Uppercase.")]
+        private string _buildingSign = DefaultBuildingSign;
+        [SerializeField, Tooltip("A ground colour of this lot's own (a dirt lot) for inside the walls. Alpha 0 keeps the art's asphalt.")]
+        private Color _groundColour;
         [SerializeField, Tooltip("Off: no ambient road cars (the F2 target and minimum on screen start at 0); patron cars still drive in and out.")]
         private bool _ambientTraffic = true;
         [SerializeField, Range(0, MaxAmbientPedestrians), Tooltip("Ambient pedestrians walking the lot (the crowd size; the F2 slider can change it live).")]
@@ -64,6 +68,8 @@ namespace UncannyValet.Run
         public const int DefaultQueueSlots = 3;
         /// <summary>Most ambient pedestrians a lot can have (the size of the pedestrian pool).</summary>
         public const int MaxAmbientPedestrians = 10;
+        /// <summary>The sign on the building of a new lot.</summary>
+        public const string DefaultBuildingSign = "DINER";
         /// <summary>Crowd size of a new lot.</summary>
         public const int DefaultAmbientPedestrians = 3;
 
@@ -86,6 +92,10 @@ namespace UncannyValet.Run
         public Vector2 WatcherSpot => _watcherSpot;
         public LotLayoutOptions LayoutOptions => _layoutOptions;
         public GagLineAsset GagLines => _gagLines;
+        public string BuildingSign => string.IsNullOrEmpty(_buildingSign) ? DefaultBuildingSign : _buildingSign;
+
+        /// <summary>The lot's own ground colour (alpha 0: none, the art's asphalt is used).</summary>
+        public Color GroundColour => _groundColour;
 
         /// <summary>True when ambient road cars drive past in this lot.</summary>
         public bool AmbientTraffic => _ambientTraffic;

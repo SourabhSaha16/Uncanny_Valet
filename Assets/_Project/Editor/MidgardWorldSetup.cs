@@ -105,7 +105,7 @@ namespace UncannyValet.EditorTools
             AddProps(so, new List<PropPlacement> { new PropPlacement(ferris, new Vector2(FerrisX, g.Bounds.yMin + FerrisFromBottom), FerrisOrder) });
         }
 
-        private static void AddProps(SerializedObject so, List<PropPlacement> placements)
+        internal static void AddProps(SerializedObject so, List<PropPlacement> placements)
         {
             var props = so.FindProperty("_props");
             var first = props.arraySize;

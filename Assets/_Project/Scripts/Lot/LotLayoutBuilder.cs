@@ -25,6 +25,8 @@ namespace UncannyValet.Lot
         private int _queueSlots;
         [SerializeField, Tooltip("Whether the lot has the wash slot and the EV bay, and how much corner room it keeps under the bays (from the lot definition). Set by the scene builder.")]
         private LotLayoutOptions _options;
+        [SerializeField, Tooltip("A ground colour of this lot's own (a dirt lot) that replaces the asphalt inside the walls; alpha 0 keeps the art's asphalt. Set by the scene builder.")]
+        private Color _groundColour;
         [SerializeField, Tooltip("The lot's mud puddles in lot space (from its mud modifier). Set by the scene builder; empty means no mud.")]
         private MudPatch[] _mudPatches = System.Array.Empty<MudPatch>();
 
@@ -50,7 +52,8 @@ namespace UncannyValet.Lot
         public QueueClearSettings QueueClear => _config.QueueClear;
         public int RegularSpotCount { get; private set; }
         public int ChargingSpotCount { get; private set; }
-        public bool HasWashStation { get; private set; }
+        public bool HasWashStation => WashStationCount > 0;
+        public int WashStationCount { get; private set; }
 
         /// <summary>Ids of the open spots: the regular spots the plan opens plus the charging spots while charging is open.</summary>
         public IReadOnlyList<int> SpotIds => _expander != null ? _expander.OpenIds : (IReadOnlyList<int>)System.Array.Empty<int>();
@@ -72,10 +75,10 @@ namespace UncannyValet.Lot
             _arrivalSlots = g.QueueSlots;
             RegularSpotCount = g.Spots.Length;
             ChargingSpotCount = g.ChargingSpots.Length;
-            HasWashStation = g.HasWash;
+            WashStationCount = g.WashStations.Length;
             _road = new RoadLayout(g, c.Site, transform.position);
-            new LotFrame(rects, transform, c.WallThickness,
-                _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
+            var ground = GroundColour();
+            new LotFrame(rects, transform, c.WallThickness, ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
             BuildDiner(g);
             MudPatchBuilder.Build(transform, _mudPatches);
             BuildArt();
@@ -85,7 +88,7 @@ namespace UncannyValet.Lot
             gameObject.AddComponent<QueueClearRunner>().Init(c, c.QueueClear);
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
             LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
-            if (g.HasWash) gameObject.AddComponent<StationSwitch>().Init(StationBuilder.BuildWash(rects, transform, c, g.Wash));
+            BuildWashStations(rects, g);
 
             var ids = new List<int>();
             for (var i = 1; i <= g.Spots.Length + g.ChargingSpots.Length; i++) ids.Add(i);
@@ -96,11 +99,22 @@ namespace UncannyValet.Lot
                 var charging = i >= g.Spots.Length;
                 var area = charging ? g.ChargingSpots[i - g.Spots.Length] : g.Spots[i];
                 spots[i] = SpotBuilder.Build(rects, transform, c, i + 1, area, charging, _occupancy,
-                    _art != null ? _art.AsphaltColor : (Color?)null, judge);
+                    _groundColour.a > 0f ? _groundColour : _art != null ? _art.AsphaltColor : (Color?)null, judge);
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
+        }
+
+        private Color GroundColour() => _groundColour.a > 0f ? _groundColour : _art != null ? _art.AsphaltColor : Ground;
+
+        // The wash slot of the classic grid, or the troughs: one station each, all opened and closed together by the night plan.
+        private void BuildWashStations(RectFactory rects, LotGeometry g)
+        {
+            if (g.WashStations.Length == 0) return;
+            var station = gameObject.AddComponent<StationSwitch>();
+            for (var i = 0; i < g.WashStations.Length; i++)
+                station.Init(StationBuilder.BuildWash(rects, transform, _config, g.WashStations[i], i + 1));
         }
 
         // The props (drawn once from their recipes) and the lighting of the lot; both are optional.

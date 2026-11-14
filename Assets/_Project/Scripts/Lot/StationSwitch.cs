@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UncannyValet.Core;
 using UncannyValet.Core.Events;
 using UnityEngine;
@@ -5,15 +6,15 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Shows and hides the wash slot to match the night plan. Closing it first releases the cars in it
-    /// (so CarLeftStation is published) and then deactivates it. It starts closed.
+    /// Shows and hides the wash stations (the wash slot, or every trough) to match the night plan. Closing them first releases the cars in
+    /// them (so CarLeftStation is published) and then deactivates them. They start closed.
     /// </summary>
     public sealed class StationSwitch : MonoBehaviour
     {
-        private StationZone _wash;
+        private readonly List<StationZone> _washes = new List<StationZone>();
         private IEventBus _bus;
 
-        public void Init(StationZone wash) => _wash = wash;
+        public void Init(StationZone wash) => _washes.Add(wash);
 
         private void Start()
         {
@@ -34,9 +35,12 @@ namespace UncannyValet.Lot
         private void OnPlan(ShiftPlanChanged e)
         {
             var open = e.Plan.WashOpen;
-            if (_wash.gameObject.activeSelf == open) return;
-            if (!open) _wash.ReleaseAll();
-            _wash.gameObject.SetActive(open);
+            for (var i = 0; i < _washes.Count; i++)
+            {
+                if (_washes[i].gameObject.activeSelf == open) continue;
+                if (!open) _washes[i].ReleaseAll();
+                _washes[i].gameObject.SetActive(open);
+            }
         }
     }
 }

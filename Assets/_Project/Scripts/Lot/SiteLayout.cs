@@ -27,6 +27,9 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0f), Tooltip("Open asphalt between the last bay column and the strip, room to swing out of the end bays.")]
         private float _stripGap = 3.5f;
 
+        [SerializeField, Min(0f), Tooltip("Gap between two wash troughs stacked at the far end of a widened lot.")]
+        private float _troughStackGap = 1f;
+
         [Header("Walkways")]
         [SerializeField, Range(0.1f, 0.9f), Tooltip("Where the north-south crosswalk sits in the corridor between curb and bays (0 = curb, 1 = bays).")]
         private float _crossingShare = 0.4f;
@@ -53,6 +56,7 @@ namespace UncannyValet.Lot
         public float DoorDepth => _doorDepth;
         public float StripWidth => _stripWidth;
         public float StripGap => _stripGap;
+        public float TroughStackGap => _troughStackGap;
         public float CrossingShare => _crossingShare;
         public float WalkwayWidth => _walkwayWidth;
         public float LaneWidth => _laneWidth;

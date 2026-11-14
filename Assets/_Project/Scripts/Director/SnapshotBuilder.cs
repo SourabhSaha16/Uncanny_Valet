@@ -46,7 +46,7 @@ namespace UncannyValet.Director
         private void BuildSlots(CarBook book)
         {
             _slots.Clear();
-            if (book.WashOpen && book.HasWash) AddSlots(book.WashOccupants, 1, StationKind.Wash, book);
+            if (book.WashOpen && book.HasWash) AddSlots(book.WashOccupants, book.WashStations, StationKind.Wash, book);
             if (book.ChargingOpen) AddSlots(book.BayOccupants, book.ChargingBays, StationKind.Charging, book);
         }
 

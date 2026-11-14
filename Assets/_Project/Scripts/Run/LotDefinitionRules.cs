@@ -33,6 +33,10 @@ namespace UncannyValet.Run
             if (lot.AmbientPedestrians < 0 || lot.AmbientPedestrians > LotDefinition.MaxAmbientPedestrians)
                 return lot.name + ": the crowd size must be 0 to " + LotDefinition.MaxAmbientPedestrians;
             if (lot.LayoutOptions.CornerClearance < 0f) return lot.name + ": the corner clearance cannot be negative";
+            var options = lot.LayoutOptions;
+            if (options.WashTroughs > 0 && !options.ServicesClosed) return lot.name + ": wash troughs need closed services (the grid's wash slot would be a second wash)";
+            if (options.WashTroughs > 1 && options.ExtensionWidth <= 0f) return lot.name + ": more than one wash trough needs a widened lot";
+            if (options.ExtensionWidth > 0f && options.TroughDistance <= 0f && options.WashTroughs > 0) return lot.name + ": troughs at the far end need a distance from the bays";
             return lot.GagLines != null ? lot.GagLines.Check() : null;
         }
 

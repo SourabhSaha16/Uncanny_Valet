@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e084bd1fe7a04c468d5920f4c1e269f, type: 3}
+  m_Name: VanaheimMudPatches
+  m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.MudPatchModifier
+  _displayName: Mud patches
+  _patches:
+  - _center: {x: 13.999999, y: -4.9}
+    _size: 3.5
+  - _center: {x: 18.5, y: -4.9}
+    _size: 4
+  - _center: {x: 22, y: -2.3}
+    _size: 3
+  - _center: {x: 22, y: -7.5000005}
+    _size: 3
+  - _center: {x: 21.5, y: -12.900002}
+    _size: 3.5
+  _topSpeedScale: 0.6
+  _accelerationScale: 0.6
+  _gripLossKept: 0.4
+  _releaseSeconds: 0.3

@@ -21,7 +21,7 @@ namespace UncannyValet.EditorTools.Watchers
         public const string FreyjaPath = Folder + "/Freyja.asset";
         public const string FarmhandPath = Folder + "/VanirFarmhand.asset";
 
-        /// <summary>Where the Midgard watchers stand, in lot space: on the open ground beside the diner's side door, clear of the curb and the exit lane.</summary>
+        /// <summary>Where every watcher stands (Midgard and Vanaheim: the diner or the barn door), in lot space: on the open ground beside the diner's side door, clear of the curb and the exit lane.</summary>
         public static readonly Vector2 MidgardSpot = new Vector2(-11f, 7.4f);
 
         public static void CreateIfMissing()
@@ -31,10 +31,12 @@ namespace UncannyValet.EditorTools.Watchers
                 AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<WatcherConfig>(), ConfigPath);
             var okafor = Character(MrsOkaforPath, World.Midgard, WatcherKind.God, OkaforWatcher.Speaker, OkaforWatcher.Look(), OkaforWatcher.Text());
             var grandma = Character(GrandmaPath, World.Midgard, WatcherKind.Trainer, GrandmaWatcher.Speaker, GrandmaWatcher.Look(), GrandmaWatcher.Text());
-            Character(FreyjaPath, World.Vanaheim, WatcherKind.God, FreyjaWatcher.Speaker, FreyjaWatcher.Look(), FreyjaWatcher.Text());
-            Character(FarmhandPath, World.Vanaheim, WatcherKind.Trainer, FarmhandWatcher.Speaker, FarmhandWatcher.Look(), FarmhandWatcher.Text());
+            var freyja = Character(FreyjaPath, World.Vanaheim, WatcherKind.God, FreyjaWatcher.Speaker, FreyjaWatcher.Look(), FreyjaWatcher.Text());
+            var farmhand = Character(FarmhandPath, World.Vanaheim, WatcherKind.Trainer, FarmhandWatcher.Speaker, FarmhandWatcher.Look(), FarmhandWatcher.Text());
             Assign(RunAssetSetup.MidgardCrazyPath, okafor);
             Assign(RunAssetSetup.MidgardTrainingPath, grandma);
+            Assign(RunAssetSetup.VanaheimCrazyPath, freyja);
+            Assign(RunAssetSetup.VanaheimTrainingPath, farmhand);
         }
 
         // Creates the text next to the definition and the definition itself, once.
@@ -49,7 +51,7 @@ namespace UncannyValet.EditorTools.Watchers
             return definition;
         }
 
-        // Names the watcher in a lot that has none yet, with the Midgard spot.
+        // Names the watcher in a lot that has none yet, with the shared spot beside the building door.
         private static void Assign(string lotPath, WatcherDefinition watcher)
         {
             var lot = AssetDatabase.LoadAssetAtPath<LotDefinition>(lotPath);

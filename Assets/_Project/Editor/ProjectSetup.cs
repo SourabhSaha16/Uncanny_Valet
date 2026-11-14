@@ -46,6 +46,7 @@ namespace UncannyValet.EditorTools
             WatcherAssetSetup.CreateIfMissing();
             ArtAssetSetup.CreateIfMissing();
             MidgardWorldSetup.CreateIfMissing();
+            VanaheimWorldSetup.CreateIfMissing();
             AssetDatabase.SaveAssets();
         }
 

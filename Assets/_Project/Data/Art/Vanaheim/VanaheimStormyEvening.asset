@@ -15,33 +15,51 @@ MonoBehaviour:
   _globalColour: {r: 0.5529412, g: 0.60784316, b: 0.72156864, a: 1}
   _globalIntensity: 0.62
   _lights:
-  - _position: {x: -17.5, y: 8.4}
-    _radius: 4
-    _colour: {r: 1, g: 0.70980394, b: 0.3529412, a: 1}
-    _intensity: 0.8
+  - _position: {x: 1.0999999, y: 6.2}
+    _radius: 4.2
+    _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
+    _intensity: 0.85
     _flicker: 0.35
     _flickerSpeed: 2
-  - _position: {x: -9.2, y: 8.4}
-    _radius: 4
-    _colour: {r: 1, g: 0.70980394, b: 0.3529412, a: 1}
-    _intensity: 0.8
+  - _position: {x: 5.6, y: 6.2}
+    _radius: 4.2
+    _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
+    _intensity: 0.85
     _flicker: 0.35
     _flickerSpeed: 2.3
-  - _position: {x: -0.8999996, y: 8.4}
-    _radius: 4
-    _colour: {r: 1, g: 0.70980394, b: 0.3529412, a: 1}
-    _intensity: 0.8
+  - _position: {x: 10.1, y: 6.2}
+    _radius: 4.2
+    _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
+    _intensity: 0.85
     _flicker: 0.35
     _flickerSpeed: 2.6
-  - _position: {x: 7.4000006, y: 8.4}
-    _radius: 4
-    _colour: {r: 1, g: 0.70980394, b: 0.3529412, a: 1}
-    _intensity: 0.8
+  - _position: {x: 14.6, y: 6.2}
+    _radius: 4.2
+    _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
+    _intensity: 0.85
     _flicker: 0.35
     _flickerSpeed: 2.9
-  - _position: {x: 15.700001, y: 8.4}
-    _radius: 4
-    _colour: {r: 1, g: 0.70980394, b: 0.3529412, a: 1}
-    _intensity: 0.8
+  - _position: {x: 19.1, y: 6.2}
+    _radius: 4.2
+    _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
+    _intensity: 0.85
     _flicker: 0.35
     _flickerSpeed: 3.2
+  - _position: {x: 26, y: 0.29999995}
+    _radius: 3.6
+    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
+    _intensity: 0.55
+    _flicker: 0
+    _flickerSpeed: 0
+  - _position: {x: 26, y: -10.1}
+    _radius: 3.6
+    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
+    _intensity: 0.55
+    _flicker: 0
+    _flickerSpeed: 0
+  - _position: {x: 26, y: -15.500001}
+    _radius: 3.6
+    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
+    _intensity: 0.55
+    _flicker: 0
+    _flickerSpeed: 0
