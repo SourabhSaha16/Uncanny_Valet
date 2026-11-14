@@ -922,3 +922,9 @@ Date: 2026-11-14
 Files: CLAUDE.md
 Why: finished agent worktrees (0.5 to 2 GB each) and orphan folders filled the disk; the lead now removes each worktree and branch right after merging.
 Tests: docs only.
+
+## lead: log 2026-11-14 playtest decisions in decisions.md [Claude]
+Date: 2026-11-14
+Files: docs/decisions.md, docs/changelogs/lead.md
+Why: playtest notes became issues #122 to #127; the valet pickup spot and timer decisions are recorded.
+Tests: docs only.
