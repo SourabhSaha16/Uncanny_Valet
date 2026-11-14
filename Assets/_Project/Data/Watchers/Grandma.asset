@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 204175eebb5f1c84ead4764886092486, type: 3}
+  m_Name: Grandma
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherDefinition
+  _world: 1
+  _kind: 2
+  _speakerName: GRANDMA
+  _look:
+    _skin: 0
+    _hair: 1
+    _outfit: 0
+    _skinTint: {r: 1, g: 1, b: 1, a: 1}
+    _hairTint: {r: 1, g: 1, b: 1, a: 1}
+    _outfitTint: {r: 0.62, g: 0.66, b: 1, a: 1}
+    _accessories:
+    - _label: Bun
+      _centerPixels: {x: 15.5, y: 3}
+      _sizePixels: {x: 6, y: 3}
+      _color: {r: 0.9, g: 0.9, b: 0.95, a: 1}
+      _order: 0
+    - _label: Lens Left
+      _centerPixels: {x: 12.5, y: 10}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.2, g: 0.2, b: 0.3, a: 1}
+      _order: 0
+    - _label: Lens Right
+      _centerPixels: {x: 18.5, y: 10}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.2, g: 0.2, b: 0.3, a: 1}
+      _order: 0
+    - _label: Glasses Bridge
+      _centerPixels: {x: 15.5, y: 10}
+      _sizePixels: {x: 3, y: 1}
+      _color: {r: 0.2, g: 0.2, b: 0.3, a: 1}
+      _order: 0
+    - _label: Apron
+      _centerPixels: {x: 15.5, y: 24}
+      _sizePixels: {x: 9, y: 8}
+      _color: {r: 0.98, g: 0.95, b: 0.88, a: 1}
+      _order: 0
+    - _label: Apron Flower
+      _centerPixels: {x: 15.5, y: 23}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.95, g: 0.4, b: 0.5, a: 1}
+      _order: 1
+    - _label: Spoon Handle
+      _centerPixels: {x: 24, y: 22}
+      _sizePixels: {x: 1, y: 9}
+      _color: {r: 0.6, g: 0.4, b: 0.2, a: 1}
+      _order: 0
+    - _label: Spoon Bowl
+      _centerPixels: {x: 24, y: 16.5}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.6, g: 0.4, b: 0.2, a: 1}
+      _order: 0
+    _bobHeight: 0.03
+    _bobSpeed: 1.2
+  _text: {fileID: 11400000, guid: 8bfddaafe273d1641bfd7cf3be252e2a, type: 2}

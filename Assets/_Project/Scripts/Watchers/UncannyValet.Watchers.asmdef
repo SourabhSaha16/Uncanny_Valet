@@ -1,0 +1,6 @@
+{
+    "name": "UncannyValet.Watchers",
+    "rootNamespace": "UncannyValet.Watchers",
+    "references": ["UncannyValet.Core"],
+    "autoReferenced": true
+}

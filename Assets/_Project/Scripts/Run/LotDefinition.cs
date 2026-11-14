@@ -3,6 +3,7 @@ using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UncannyValet.Core.Modifiers;
+using UncannyValet.Core.Watchers;
 using UnityEngine;
 
 namespace UncannyValet.Run
@@ -44,6 +45,10 @@ namespace UncannyValet.Run
         private List<PropPlacement> _props = new List<PropPlacement>();
         [SerializeField, Tooltip("The lot's lighting: global light plus up to 16 point lights. Empty keeps the default lighting.")]
         private LightingPreset _lighting;
+        [SerializeField, Tooltip("The character who watches this lot from the side (the local god in a crazy lot, the trainer in a training lot). Empty: nobody watches.")]
+        private WatcherDefinition _watcher;
+        [SerializeField, Tooltip("Where the watcher stands, in lot space: on a sidewalk or the lot edge, outside the drivable area.")]
+        private Vector2 _watcherSpot;
 
         /// <summary>Most queue slots a layout is built for.</summary>
         public const int MaxQueueSlots = 6;
@@ -65,6 +70,8 @@ namespace UncannyValet.Run
         public WorldPalette Palette => _palette;
         public IReadOnlyList<PropPlacement> Props => _props;
         public LightingPreset Lighting => _lighting;
+        public WatcherDefinition Watcher => _watcher;
+        public Vector2 WatcherSpot => _watcherSpot;
 
         /// <summary>True when hitting a patron walker with the driven car is a curse in this lot.</summary>
         public bool PedestrianCurses => _pedestrianCurses;

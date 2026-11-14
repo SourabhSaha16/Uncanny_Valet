@@ -17,6 +17,7 @@ using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
+using UncannyValet.Watchers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -60,6 +61,8 @@ namespace UncannyValet.Bootstrap
         private PerfectFeedback _powers;
         [SerializeField, Tooltip("Seeds the power keys of the F2 panel.")]
         private PowerBarConfig _powerConfig;
+        [SerializeField, Tooltip("Speech bubble timings and the thresholds of what makes a watcher speak.")]
+        private WatcherConfig _watcherConfig;
 
         [SerializeField, Tooltip("This scene's lot: shift length, pacing, dial positions, layout and blessing threshold.")]
         private LotDefinition _lotDefinition;
@@ -114,7 +117,7 @@ namespace UncannyValet.Bootstrap
             Services.Register<IRoadLayout>(_lot.Road);
             QueueSlotCheck.Verify(_lotDefinition, _lot, this);
             SeedTuning(tuning, _lot.RegularSpotCount);
-            StartTraffic(bus);
+            _trafficLink = TrafficBootstrap.Start(bus, _traffic, this); // after the lot registered the road
             if (!LotBounds.TryFrame(_lot.gameObject, _decor, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
             PedestrianBootstrap.Start(_pedestrians, _decor);
             _powers.gameObject.SetActive(true);
@@ -127,6 +130,7 @@ namespace UncannyValet.Bootstrap
             _spawner.gameObject.SetActive(true);
             _runBoot = RunBootstrap.Start(bus, _runDefinition, _lotDefinition); // before the UI, which reads the lot picker
             StartUi();
+            WatcherBootstrap.Start(_lotDefinition, _watcherConfig, _pedestrians, _lot.transform);
             _tuningPanel.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
             _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
@@ -146,19 +150,6 @@ namespace UncannyValet.Bootstrap
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
                 emotions: _ui.Emotions, queueClear: _lot.QueueClear, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
-        }
-
-        // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
-        private void StartTraffic(IEventBus bus)
-        {
-            if (_traffic == null)
-            {
-                Debug.LogError("GameBootstrap has no TrafficModule: rebuild with Uncanny Valet/Setup/Build Everything. Cars drive in and out without a road.", this);
-                return;
-            }
-            _trafficLink = new TrafficTuningLink(bus, _traffic.SetMinOnScreen, _traffic.SetSpeedScale,
-                _traffic.SetEntrySpeed, _traffic.SetExitSpeed, _traffic.SetTargetOnScreen);
-            _traffic.gameObject.SetActive(true);
         }
 
         private void StartDirector(IEventBus bus, ITuning tuning)

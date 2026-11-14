@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60fdf7af48f0c04bb5b0a365447b174, type: 3}
+  m_Name: MrsOkaforText
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherTextAsset
+  _tips:
+  - _situation: 0
+    _text: KEYS IN, CAR OUT. I TIME EVERYTHING.
+  - _situation: 1
+    _text: THAT ONE NEEDS A WASH, VALET.
+  - _situation: 2
+    _text: RUNNING ON FUMES. CHARGE IT, VALET.
+  - _situation: 3
+    _text: THAT PATRON IS ABOUT TO BLOW. MOVE!
+  - _situation: 4
+    _text: QUEUE'S FULL. CLEAR IT, I'M WATCHING.
+  - _situation: 5
+    _text: DENTS COST BLESSINGS. EASY ON THE WALLS.
+  _curse:
+  - THAT'S A CURSE ON THE HOUSE, VALET.
+  - I SAW THAT. SHAMEFUL.
+  - ANGRY PATRONS ARE BAD FOR BUSINESS.
+  _perfectPark:
+  - NOT A LINE OUT OF PLACE. HMM.
+  - NEAT. I'VE SEEN WORSE. MUCH WORSE.
+  - NICE PARKING. I SUPPOSE.
+  _perfectDropOff:
+  - SWIFT, SMOOTH, AT THE CURB. GOOD.
+  - THE PATRON IS PLEASED. SO AM I.
+  - THAT'S HOW A DROP-OFF IS DONE.
+  _bigCrash:
+  - MY INSURANCE WILL HEAR ABOUT THIS.
+  - A CAR OR A BATTERING RAM?
+  - OH, THE NOISE. THE PAPERWORK!
+  _halfwayToGoal:
+  - HALF THE BLESSINGS ARE IN. WELL DONE.
+  - HALFWAY. DON'T GET COMFY.
+  - HALFWAY. I'M ALMOST IMPRESSED.
+  _goalReached:
+  - ENOUGH BLESSINGS. SPLENDID.
+  - GOAL MET. I HAD MY DOUBTS.
+  - THAT'LL DO, VALET. THAT'LL DO.
+  _last30Seconds:
+  - THIRTY SECONDS. MAKE THEM COUNT.
+  - CLOSING TIME SOON. FINISH STRONG.
+  - TICK TOCK, VALET.
+  _verdictFailed:
+  - NOT ENOUGH. I EXPECTED MORE.
+  - THE FAIR IS DISAPPOINTED.
+  - TRY AGAIN. I'M NOT GOING ANYWHERE.
+  _verdictCleared:
+  - ADEQUATE. YOU MAY CONTINUE.
+  - THE BLESSINGS WILL DO. THIS TIME.
+  - YOU'LL GO FAR, VALET.
+  _verdictClearedWell:
+  - REMARKABLE. YOU HAVE MY ATTENTION.
+  - I'M SURPRISED. PLEASANTLY.
+  - FINE WORK. ALMOST GODLIKE.
