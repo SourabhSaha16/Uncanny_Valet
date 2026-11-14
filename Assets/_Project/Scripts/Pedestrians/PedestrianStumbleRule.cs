@@ -9,6 +9,7 @@ namespace UncannyValet.Pedestrians
     public sealed class PedestrianStumbleRule
     {
         private float _distance = 0.7f;
+        private float _peak = 0.7f;
         private float _spins = 1f;
         private float _seconds;
         private float _elapsed;
@@ -31,9 +32,13 @@ namespace UncannyValet.Pedestrians
         }
 
         /// <summary>Starts a stumble away along <paramref name="push"/> lasting <paramref name="seconds"/>. False while already stumbling or when the push or time is empty.</summary>
-        public bool TryStart(Vector2 push, float seconds)
+        public bool TryStart(Vector2 push, float seconds) => TryStart(push, seconds, _distance);
+
+        /// <summary>Starts a stumble that peaks at <paramref name="distance"/> world units away along <paramref name="push"/>. False while already stumbling or when the push, time or distance is empty.</summary>
+        public bool TryStart(Vector2 push, float seconds, float distance)
         {
-            if (Active || seconds <= 0f || push.sqrMagnitude < Mathf.Epsilon) return false;
+            if (Active || seconds <= 0f || distance <= 0f || push.sqrMagnitude < Mathf.Epsilon) return false;
+            _peak = distance;
             _direction = push.normalized;
             _seconds = seconds;
             _elapsed = 0f;
@@ -48,7 +53,7 @@ namespace UncannyValet.Pedestrians
             _elapsed += deltaSeconds;
             Active = _elapsed < _seconds;
             var progress = Mathf.Clamp01(_elapsed / _seconds);
-            Offset = Active ? _direction * (_distance * PedestrianBounceRule.Shape(progress)) : Vector2.zero;
+            Offset = Active ? _direction * (_peak * PedestrianBounceRule.Shape(progress)) : Vector2.zero;
             SpinDegrees = Active ? 360f * _spins * progress : 0f;
         }
     }

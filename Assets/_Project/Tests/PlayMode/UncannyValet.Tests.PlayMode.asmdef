@@ -9,6 +9,8 @@
         "UncannyValet.Patrons",
         "UncannyValet.Powers",
         "UncannyValet.Night",
+        "UncannyValet.Economy",
+        "UncannyValet.Pedestrians",
         "UncannyValet.Valet",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap",

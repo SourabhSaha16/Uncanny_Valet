@@ -109,6 +109,9 @@ namespace UncannyValet.Pedestrians
         private void OnBumped(PedestrianWalker walker, float strength)
             => _bus.Publish(new PedestrianBumped(walker.Position.x, walker.Position.y, strength));
 
+        private void OnCarHit(PedestrianWalker walker, IDrivable car, Vector2 point, float speed)
+            => _bus.Publish(WalkerKnockback.ToEvent(walker, car, speed));
+
         private PedestrianWalker CreateAmbient(int index)
         {
             var walker = Create("Pedestrian " + index, index);
@@ -128,6 +131,7 @@ namespace UncannyValet.Pedestrians
                 PedestrianPlan.Speed(index, _config.MinSpeed, _config.MaxSpeed), PedestrianPlan.Hash01(index * 3 + 1));
             walker.RouteFinished += OnRouteFinished;
             walker.Bumped += OnBumped;
+            walker.CarHit += OnCarHit;
             walker.SetVisible(false);
             return walker;
         }

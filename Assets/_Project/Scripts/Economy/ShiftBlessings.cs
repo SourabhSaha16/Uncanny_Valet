@@ -1,8 +1,10 @@
 using System;
+using UncannyValet.Core;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UnityEngine;
 
 namespace UncannyValet.Economy
 {
@@ -19,7 +21,11 @@ namespace UncannyValet.Economy
         private readonly ShiftConfig _config;
         private readonly FavourTracker _favour;
         private readonly Func<ILotGoal> _goal;
+        private readonly PedestrianCurseRule _pedestrianCurses = new PedestrianCurseRule();
         private bool _open;
+
+        /// <summary>Seconds clock the pedestrian curse lockout reads (the game time by default; tests replace it).</summary>
+        public Func<float> Clock { get; set; } = () => Time.time;
 
         public int Blessings { get; private set; }
         public int Curses { get; private set; }
@@ -37,6 +43,7 @@ namespace UncannyValet.Economy
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
             _bus.Subscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
+            _bus.Subscribe<PedestrianHit>(OnPedestrianHit);
         }
 
         public void Dispose()
@@ -45,6 +52,7 @@ namespace UncannyValet.Economy
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
             _bus.Unsubscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
+            _bus.Unsubscribe<PedestrianHit>(OnPedestrianHit);
         }
 
         /// <summary>
@@ -68,6 +76,7 @@ namespace UncannyValet.Economy
             _favour.Reset();
             PeakFavour = 1;
             _open = true;
+            _pedestrianCurses.Reset();
             Publish();
         }
 
@@ -107,6 +116,17 @@ namespace UncannyValet.Economy
 
         // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.
         private void OnTimerExpired(TicketTimerExpired e) => ApplyCurse(e.Ticket, _config.DefaultCurse);
+
+        // The driven car hit a patron walker: a curse of the tuned size where the lot allows it (no ticket belongs to it).
+        private void OnPedestrianHit(PedestrianHit e)
+        {
+            if (!_open || !Services.TryGet<ITuning>(out var tuning)) return;
+            var on = tuning.TryGet(TuningKey.PedestrianCurses, out var switchValue) && switchValue >= 0.5f;
+            var lockout = tuning.TryGet(TuningKey.PedestrianCurseLockout, out var l) ? l : PedestrianHitRows.CurseLockout;
+            if (!_pedestrianCurses.TryCurse(e, Clock(), on, lockout)) return;
+            var amount = tuning.TryGet(TuningKey.PedestrianCurseAmount, out var a) ? a : PedestrianHitRows.CurseAmount;
+            ApplyCurse(TicketId.None, Mathf.RoundToInt(amount));
+        }
 
         private void Publish() => _bus.Publish(new BlessingsChanged(Blessings, FavourMultiplier, Curses));
     }

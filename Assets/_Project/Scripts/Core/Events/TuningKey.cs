@@ -394,5 +394,27 @@ namespace UncannyValet.Core.Events
         PowerMjolnirRecallL1Secondary,
         /// <summary>Mjolnir recall level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
         PowerMjolnirRecallL2Secondary,
+        /// <summary>Pedestrian knockback: distance at the slowest hit, world units.</summary>
+        PedestrianKnockbackNear,
+        /// <summary>Pedestrian knockback: distance at the car's top speed, world units.</summary>
+        PedestrianKnockbackFar,
+        /// <summary>Pedestrian knockback: the hit speed that gives the near distance and tumble.</summary>
+        PedestrianKnockbackNearSpeed,
+        /// <summary>Pedestrian knockback: the hit speed that gives the far distance and tumble.</summary>
+        PedestrianKnockbackFarSpeed,
+        /// <summary>Pedestrian tumble length at the slowest hit, seconds.</summary>
+        PedestrianTumbleNear,
+        /// <summary>Pedestrian tumble length at the fastest hit, seconds.</summary>
+        PedestrianTumbleFar,
+        /// <summary>Share of the car's speed lost when it hits a pedestrian (0..1).</summary>
+        PedestrianCarSlowdown,
+        /// <summary>The slowdown never takes the car below this share of its top speed (0..1).</summary>
+        PedestrianCarSlowFloor,
+        /// <summary>Blessings a curse for hitting a patron walker takes off.</summary>
+        PedestrianCurseAmount,
+        /// <summary>Seconds after a patron was hit during which hitting them again is not a curse.</summary>
+        PedestrianCurseLockout,
+        /// <summary>Per-lot switch: 1 when hitting a patron walker with the driven car is a curse, 0 when it never is.</summary>
+        PedestrianCurses,
     }
 }

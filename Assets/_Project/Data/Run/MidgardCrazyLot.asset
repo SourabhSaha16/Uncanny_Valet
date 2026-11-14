@@ -33,6 +33,7 @@ MonoBehaviour:
   _dials: []
   _modifiers: []
   _blessingThreshold: 300
+  _pedestrianCurses: 1
   _grant:
     _power: 1
     _level: 1

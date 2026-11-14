@@ -838,3 +838,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a8f0e534158c093f2 (ThunderStridePower, ThunderDash/DashRule/DashDirection, ThunderStreaks/BoltShape, ThunderBoostModifier/Link, DriveInput scales, SfxThunder (SfxId 25), ThunderKickLink, ThunderStrideStarted event, PowerField.Secondary and eight appended TuningKeys, spec values in PowerDefaults and ThunderStrideDefinition, tests), docs/changelogs/lead.md
 Why: story epic 79, task 88. Thunder stride: on foot a 0.2 s straight dash (5 units, 8 at level 2) that stops at solids and passes pedestrians; in a car a boost (1.5 s, 2.2 s at level 2) of top speed x1.5 and acceleration x2 through the drive modifier seam; one bucket and one 4 s cooldown; lightning streak, thunder crack, camera kick. The ThunderDash component is in Bootstrap.unity (real change).
 Tests: 1409 of 1409 EditMode, 37 of 37 PlayMode after the merge and RunBatch (scene churn reverted to the merged version, which holds the ThunderDash component).
+
+## lead: merge agent/pedestrians comic knockback, car slowdown and patron curse (#93) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a008fbb1a42b53c44 (PedestrianHit event, KnockbackCurve, WalkerKnockback, PedestrianWalker.TryKnockback, CarPedestrianSlow and PedestrianSlowRule, PedestrianCurseRule in ShiftBlessings, SfxYelp (SfxId 26), PedestrianHitRows with 11 appended TuningKeys, LotDefinition pedestrian curses switch, Midgard lot assets, tests), docs/changelogs/lead.md
+Why: story epic 79, task 93. Any pedestrian hit knocks the walker away 0.7 to 4 units by speed with a tumble and a comic yelp and slows the driven car 15% without a bounce; only the valet's driven car hitting a patron walker is a curse of 5 (3 s per-patron lockout, resets favour); a per-lot switch (on for Midgard crazy, off for training).
+Tests: 1429 of 1429 EditMode, 40 of 40 PlayMode after the merge and RunBatch (scene churn reverted).

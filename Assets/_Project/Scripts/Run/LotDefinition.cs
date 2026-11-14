@@ -33,6 +33,8 @@ namespace UncannyValet.Run
         private List<LotModifier> _modifiers = new List<LotModifier>();
         [SerializeField, Min(1), Tooltip("Blessings needed to clear the lot. Placeholder until the blessing task tunes it.")]
         private int _blessingThreshold = 150;
+        [SerializeField, Tooltip("Pedestrian collision curses: on, hitting a patron walker with the car you drive is a curse. Off in training lots (knockback, slowdown and yelp still happen).")]
+        private bool _pedestrianCurses;
         [SerializeField, Tooltip("The power or upgrade clearing this lot grants (None for training lots).")]
         private PowerGrant _grant;
 
@@ -53,6 +55,9 @@ namespace UncannyValet.Run
         public IReadOnlyList<LotModifier> Modifiers => _modifiers;
         public int BlessingThreshold => _blessingThreshold;
         public PowerGrant Grant => _grant;
+
+        /// <summary>True when hitting a patron walker with the driven car is a curse in this lot.</summary>
+        public bool PedestrianCurses => _pedestrianCurses;
 
         /// <summary>
         /// Seeds shift length, pacing, the arrival budget (see <see cref="LotPacing.SeedInto"/>), the modifier arrival chances and the power bar fill amounts;

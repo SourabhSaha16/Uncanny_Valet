@@ -50,6 +50,22 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
+        public void Seed_SeedsThePedestrianCurseSwitchFromTheLot()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Crazy);
+            var off = new TuningStore(new EventBus());
+            TuningSeeder.Seed(off, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(0f, off.Get(TuningKey.PedestrianCurses), "the switch defaults to off");
+            var so = new UnityEditor.SerializedObject(lot);
+            so.FindProperty("_pedestrianCurses").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var on = new TuningStore(new EventBus());
+            TuningSeeder.Seed(on, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(1f, on.Get(TuningKey.PedestrianCurses));
+            Assert.AreEqual(5f, on.Get(TuningKey.PedestrianCurseAmount));
+        }
+
+        [Test]
         public void Seed_WithoutALot_KeepsTheSharedDefaults()
         {
             var tuning = new TuningStore(new EventBus());
