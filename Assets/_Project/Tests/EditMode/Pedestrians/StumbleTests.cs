@@ -8,7 +8,7 @@ namespace UncannyValet.Tests.Pedestrians
     public class StumbleTests
     {
         [Test]
-        public void Rule_PushesAwayAndSpinsThenSettlesAfterTheTime()
+        public void Rule_PushesAwayAndSpinsThenStaysWhereItLands()
         {
             var rule = new PedestrianStumbleRule();
             rule.Configure(1f, 1f);
@@ -20,7 +20,7 @@ namespace UncannyValet.Tests.Pedestrians
             Assert.AreEqual(90f, rule.SpinDegrees, 0.01f);
             rule.Step(0.31f);
             Assert.IsFalse(rule.Active);
-            Assert.AreEqual(Vector2.zero, rule.Offset);
+            Assert.AreEqual(1f, rule.Offset.x, 0.0001f, "stays at the landing spot, no pull back");
             Assert.AreEqual(0f, rule.SpinDegrees);
         }
 

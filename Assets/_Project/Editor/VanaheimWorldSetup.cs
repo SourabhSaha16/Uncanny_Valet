@@ -63,6 +63,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_ambientTraffic").boolValue = true;
             so.FindProperty("_ambientPedestrians").intValue = crazy ? CrazyPedestrians : TrainingPedestrians;
             so.FindProperty("_pedestrianCurses").boolValue = false;
+            so.FindProperty("_freePedestrianRoutes").boolValue = crazy;
             so.FindProperty("_buildingSign").stringValue = BuildingSign;
             so.FindProperty("_groundColour").colorValue = crazy ? CrazyGround : TrainingGround;
             so.FindProperty("_palette").objectReferenceValue = AssetDatabase.LoadAssetAtPath<WorldPalette>(VanaheimArt.PalettePath);

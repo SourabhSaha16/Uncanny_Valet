@@ -39,6 +39,7 @@ MonoBehaviour:
   _modifiers:
   - {fileID: 11400000, guid: ac3d58131c5fff34bb2506f29fed5965, type: 2}
   _blessingThreshold: 300
+  _freePedestrianRoutes: 1
   _pedestrianCurses: 0
   _grant:
     _power: 2

@@ -9,12 +9,15 @@ namespace UncannyValet.Pedestrians
     {
         private readonly IPedestrianPaths _paths;
         private readonly ICarFactory _cars;
+        private readonly ITuning _tuning;
         private readonly List<Vector2> _route = new List<Vector2>(12);
 
-        public WalkerRouter(IPedestrianPaths paths, ICarFactory cars)
+        /// <summary>The lot's free-route switch is read from <paramref name="tuning"/> at the start of every walk (null: crosswalks only).</summary>
+        public WalkerRouter(IPedestrianPaths paths, ICarFactory cars, ITuning tuning = null)
         {
             _paths = paths;
             _cars = cars;
+            _tuning = tuning;
         }
 
         /// <summary>Applies the walker's current brain phase and remembers it as applied.</summary>
@@ -39,6 +42,7 @@ namespace UncannyValet.Pedestrians
         private void StartRoad(PedestrianWalker w, bool leaving)
         {
             _paths.RoadRoute(w.RouteIndex, leaving, _route);
+            WalkerRouteRule.Choose(WalkerRouteRule.FreeRoutes(_tuning), _route);
             w.SetVisible(true);
             w.Walk(_route, w.StartFraction);
             w.StartFraction = 0f;
@@ -47,6 +51,7 @@ namespace UncannyValet.Pedestrians
         private void StartToDoor(PedestrianWalker w)
         {
             _paths.RouteToDoor(w.Position, _route);
+            WalkerRouteRule.Choose(WalkerRouteRule.FreeRoutes(_tuning), _route);
             w.SetVisible(true);
             w.Walk(_route);
         }

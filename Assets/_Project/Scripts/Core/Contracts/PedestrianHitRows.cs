@@ -41,10 +41,12 @@ namespace UncannyValet.Core.Contracts
                 "Hitting the same patron again within this time costs nothing."),
             new TuningInfo(TuningKey.PedestrianCurses, Group, "Hitting patrons is a curse (1 yes, 0 no)", 0f, 1f, 1f,
                 "Set per lot: on in crazy lots, off in training lots. Knockback, slowdown and the yelp always happen."),
+            new TuningInfo(TuningKey.PedestrianFreeRoutes, Group, "Pedestrians walk any direct route (1 yes, 0 crosswalks only)", 0f, 1f, 1f,
+                "Set per lot: on in crazy lots so people never queue at the crosswalk, off in training lots. Applies to the next walk."),
         };
 
-        /// <summary>Seeds every key with its default; <paramref name="cursesOn"/> is the lot's switch.</summary>
-        public static void Seed(ITuning t, bool cursesOn)
+        /// <summary>Seeds every key with its default; <paramref name="cursesOn"/> and <paramref name="freeRoutes"/> are the lot's switches.</summary>
+        public static void Seed(ITuning t, bool cursesOn, bool freeRoutes = false)
         {
             t.Seed(TuningKey.PedestrianKnockbackNear, NearDistance);
             t.Seed(TuningKey.PedestrianKnockbackFar, FarDistance);
@@ -57,6 +59,7 @@ namespace UncannyValet.Core.Contracts
             t.Seed(TuningKey.PedestrianCurseAmount, CurseAmount);
             t.Seed(TuningKey.PedestrianCurseLockout, CurseLockout);
             t.Seed(TuningKey.PedestrianCurses, cursesOn ? 1f : 0f);
+            t.Seed(TuningKey.PedestrianFreeRoutes, freeRoutes ? 1f : 0f);
         }
     }
 }

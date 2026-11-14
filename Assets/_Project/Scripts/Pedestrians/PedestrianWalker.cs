@@ -27,14 +27,12 @@ namespace UncannyValet.Pedestrians
         private WalkerSprites _sprites;
         private WalkFacing _facing = WalkFacing.Down;
         private Vector2 _lookAt;
-        private bool _hasLookAt;
-        private bool _moving;
+        private bool _hasLookAt, _moving;
         private float _speed;
         private readonly WorldTimeReader _world = new WorldTimeReader();
         private float _walkSeconds;
         private int _shownColumn = -1;
         private bool _shownFlip;
-
         /// <summary>The state machine that decides this person's next phase.</summary>
         public PedestrianBrain Brain { get; } = new PedestrianBrain();
 
@@ -105,21 +103,17 @@ namespace UncannyValet.Pedestrians
         /// <summary>Places the person without walking.</summary>
         public void PlaceAt(Vector2 position)
         {
-            _single.Clear();
-            _single.Add(position);
+            _single.Clear(); _single.Add(position);
             _path.Begin(_single);
-            _hasLookAt = false;
-            _moving = false;
-            _body.Teleport(position);
-            _body.SetSolid(_config.StandingSolid);
+            _hasLookAt = _moving = false;
+            _body.Teleport(position); _body.SetSolid(_config.StandingSolid);
             Show();
         }
 
         /// <summary>Makes a standing person turn to face <paramref name="point"/> (cleared by the next walk or placement).</summary>
         public void FaceToward(Vector2 point)
         {
-            _lookAt = point;
-            _hasLookAt = true;
+            _lookAt = point; _hasLookAt = true;
             Show();
         }
 
@@ -129,8 +123,7 @@ namespace UncannyValet.Pedestrians
             _path.Begin(route, startFraction);
             _hasLookAt = false; _moving = _path.Walking;
             _block.Reset();
-            _body.Teleport(_path.Position);
-            _body.SetSolid(true);
+            _body.Teleport(_path.Position); _body.SetSolid(true);
             Show();
         }
 
@@ -163,8 +156,8 @@ namespace UncannyValet.Pedestrians
         private void FixedUpdate()
         {
             var dt = Time.fixedDeltaTime;
-            if (_stumble.Active) { _stumble.Step(dt); _body.MoveTo(_path.Position + _stumble.Offset); return; }
-            if (_bounce.Active) { _bounce.Step(dt); _body.MoveTo(_path.Position + _bounce.Offset); return; }
+            if (_stumble.Active) { _stumble.Step(dt); MoveDisplaced(_stumble.Offset, _stumble.Active); return; }
+            if (_bounce.Active) { _bounce.Step(dt); MoveDisplaced(_bounce.Offset, _bounce.Active); return; }
             _bounce.Step(dt);
             if (!_path.Walking) return;
             var walkDt = _world.Scaled(dt); // bumps and stumbles stay real time: the player can still push people
@@ -183,6 +176,13 @@ namespace UncannyValet.Pedestrians
             RouteFinished?.Invoke(this);
         }
 
+        // A knock or bump moves the person off the route; where they land becomes the new start of the walk to the same destination.
+        private void MoveDisplaced(Vector2 offset, bool stillActive)
+        {
+            _body.MoveTo(_path.Position + offset);
+            if (!stillActive) _path.Displace(_path.Position + offset);
+        }
+
         private void Show()
         {
             _facing = _hasLookAt && !_path.Walking
@@ -192,8 +192,7 @@ namespace UncannyValet.Pedestrians
             var column = _config.GroupStart(_facing) + frame;
             var flip = _config.Flip(_facing);
             if (column == _shownColumn && flip == _shownFlip) return;
-            _shownColumn = column;
-            _shownFlip = flip;
+            _shownColumn = column; _shownFlip = flip;
             _sprites.Show(_look, column, flip);
         }
     }
