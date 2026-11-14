@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UncannyValet.Core.Events;
 using UncannyValet.UI.Kit;
 
@@ -14,7 +15,7 @@ namespace UncannyValet.UI.Screens
         public const string NextLotLabel = "NEXT LOT";
         public const string ReachedLine = "THRESHOLD REACHED!";
 
-        public static ResultsContent Build(in ShiftResult result, int carsParked, int perfectParks = 0)
+        public static ResultsContent Build(in ShiftResult result, int carsParked, int perfectParks = 0, VerdictSpeech speech = default)
         {
             return new ResultsContent
             {
@@ -24,7 +25,20 @@ namespace UncannyValet.UI.Screens
                 Blessings = result.Blessings + " / " + result.Threshold,
                 Goal = Goal(result),
                 Stats = Stats(result, carsParked, perfectParks),
+                Speaker = speech.Speaker ?? string.Empty,
+                SpeechLines = Wrap(speech.Line),
             };
+        }
+
+        /// <summary>The verdict line broken to the width of the speech panel.</summary>
+        public static string[] Wrap(string line)
+        {
+            if (string.IsNullOrEmpty(line)) return System.Array.Empty<string>();
+            var spans = new List<WordWrap.Span>();
+            WordWrap.Wrap(line, ResultsPainter.SpeechChars, spans);
+            var lines = new string[spans.Count];
+            for (var i = 0; i < lines.Length; i++) lines[i] = line.Substring(spans[i].Start, spans[i].Length);
+            return lines;
         }
 
         private static StatLine[] Stats(in ShiftResult result, int carsParked, int perfectParks)

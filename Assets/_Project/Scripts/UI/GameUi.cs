@@ -132,7 +132,7 @@ namespace UncannyValet.UI
 
         private void OnShiftStarted(ShiftStarted e) => _results = null;
 
-        private void OnResult(ShiftResultReady e) => _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.PerfectParks);
+        private void OnResult(ShiftResultReady e) => _results = ResultsFormatter.Build(e.Result, _stats.CarsParked, _stats.PerfectParks, VerdictPicker.Pick(_story, _machine.LoadedLot, e.Result));
 
         // Used by the PlayMode tests (by reflection) to skip every card and start the shift.
         private void StartPlaying() => _flow.SkipToPlaying();

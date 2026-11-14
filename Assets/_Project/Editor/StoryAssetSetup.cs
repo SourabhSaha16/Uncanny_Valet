@@ -11,9 +11,17 @@ namespace UncannyValet.EditorTools
 
         public static void CreateIfMissing()
         {
-            if (AssetDatabase.LoadAssetAtPath<StoryTextAsset>(StoryTextPath) != null) return;
+            var existing = AssetDatabase.LoadAssetAtPath<StoryTextAsset>(StoryTextPath);
+            if (existing != null)
+            {
+                if (!existing.AddMissingVerdicts(VerdictTextDrafts.Verdicts(), VerdictTextDrafts.Trainers())) return;
+                EditorUtility.SetDirty(existing);
+                AssetDatabase.SaveAssets();
+                return;
+            }
             Directory.CreateDirectory(Path.GetDirectoryName(StoryTextPath));
-            var text = StoryTextAsset.Create("StoryText", StoryTextDrafts.Worlds(), StoryTextDrafts.Lots(), StoryTextDrafts.Powers());
+            var text = StoryTextAsset.Create("StoryText", StoryTextDrafts.Worlds(), StoryTextDrafts.Lots(), StoryTextDrafts.Powers(),
+                VerdictTextDrafts.Verdicts(), VerdictTextDrafts.Trainers());
             AssetDatabase.CreateAsset(text, StoryTextPath);
         }
 
