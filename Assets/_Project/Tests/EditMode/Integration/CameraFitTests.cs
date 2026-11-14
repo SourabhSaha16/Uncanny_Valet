@@ -37,8 +37,16 @@ namespace UncannyValet.Tests.Integration
         [Test]
         public void ResultIsClampedToTheLimits()
         {
-            Assert.AreEqual(10f, CameraFit.Size(View, View, Aspect, 1f, 1f, 8.5f, 10f), 1e-4f);
+            Assert.AreEqual(11.5f, CameraFit.Size(View, Lot, Aspect, 1f, 1f, 8.5f, 11.5f), 1e-4f);
             Assert.AreEqual(30f, CameraFit.Size(new Rect(0, 0, 4, 4), new Rect(0, 0, 4, 4), Aspect, 1f, 1f, 30f, 12.5f), 1e-4f);
+        }
+
+        [Test]
+        public void LotTallerThanTheCapStillFits()
+        {
+            var tall = new Rect(-12f, -17f, 24f, 34f);
+            var size = CameraFit.Size(tall, tall, Aspect, 1f, 0.83f, 8.5f, 15f);
+            Assert.AreEqual(17f, size, 1e-4f);
         }
     }
 }

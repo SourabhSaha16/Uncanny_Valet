@@ -16,7 +16,7 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private Transform _target;
         [SerializeField, Min(1f), Tooltip("Smallest zoom (half the visible height). Also the zoom used when no bounds are set.")]
         private float _orthographicSize = DefaultOrthographicSize;
-        [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot. Beyond this the camera follows instead of showing everything.")]
+        [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot view (margin and decor). The lot itself is always fully shown, even when it needs a bigger zoom than this.")]
         private float _maxOrthographicSize = 15f;
         [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
         private float _boundsMargin = 1f;

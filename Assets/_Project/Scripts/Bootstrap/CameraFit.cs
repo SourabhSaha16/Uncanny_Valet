@@ -7,8 +7,9 @@ namespace UncannyValet.Bootstrap
     {
         /// <summary>
         /// Half the visible height. The view bounds (plus margin) are fitted first and then tightened by
-        /// <paramref name="tightness"/> (1 = no tightening); the result never drops below what shows the whole
-        /// <paramref name="mustShow"/> rectangle, and is clamped between <paramref name="min"/> and <paramref name="max"/>.
+        /// <paramref name="tightness"/> (1 = no tightening); the result is clamped between <paramref name="min"/> and
+        /// <paramref name="max"/>, but never drops below what shows the whole <paramref name="mustShow"/> rectangle
+        /// (a lot taller than <paramref name="max"/> still fits; the cap only limits the zoom-out for the margin and decor).
         /// </summary>
         public static float Size(Rect view, Rect mustShow, float aspect, float margin, float tightness, float min, float max)
         {
@@ -16,7 +17,7 @@ namespace UncannyValet.Bootstrap
             var fit = Mathf.Max(view.height * 0.5f + margin, (view.width * 0.5f + margin) / safeAspect);
             var floor = Mathf.Max(mustShow.height * 0.5f, mustShow.width * 0.5f / safeAspect);
             var wanted = Mathf.Max(fit * Mathf.Clamp(tightness, 0.1f, 1f), floor);
-            return Mathf.Clamp(wanted, min, Mathf.Max(min, max));
+            return Mathf.Max(floor, Mathf.Clamp(wanted, min, Mathf.Max(min, max)));
         }
     }
 }
