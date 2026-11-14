@@ -946,3 +946,9 @@ Date: 2026-11-14
 Files: UI/Speech (SpeechBubbleSettings, bubble painter), PixelCanvas zoom, Bootstrap CameraFollow (_fitTightness 0.78 to 0.83), the four lot scenes
 Why: issues #122 (bubbles scale 0.72) and #123 (about 13% more visible area).
 Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).
+
+## lead: merge agent/integration camera fits taller lots [Claude]
+Date: 2026-11-14
+Files: Bootstrap/CameraFit.cs, CameraFollow tooltip, CameraFitTests, CameraFramingPlayModeTests
+Why: the 4th queue slot made the lots taller than the zoom cap, clipping the diner door and queue end (#123, #127); the play-area floor now beats the cap.
+Tests: EditMode 1802/1802, PlayMode 77/77 and RunBatch ok (agent).
