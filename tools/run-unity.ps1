@@ -29,7 +29,7 @@ for ($i = 0; $i -lt $args.Count; $i++) {
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $GB = 1GB
-$memoryPattern = 'Could not allocate|paging file|OutOfMemory|1455'
+$memoryPattern = 'Could not allocate|paging file is too small|GetLastError: 1455|OutOfMemoryException|Out of memory'
 $infoFile = Join-Path $env:TEMP 'UncannyValetUnityRun.info'
 
 function Get-Commit {

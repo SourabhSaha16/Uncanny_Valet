@@ -928,3 +928,9 @@ Date: 2026-11-14
 Files: docs/decisions.md, docs/changelogs/lead.md
 Why: playtest notes became issues #122 to #127; the valet pickup spot and timer decisions are recorded.
 Tests: docs only.
+
+## lead: merge agent/lot valet pickup spot and diner-entry timer [Claude]
+Date: 2026-11-14
+Files: Lot, Patrons, Cars (CarAutoDrive, CarFactory), Core (PatronStepsOut, PatronEnteredDiner, CarRepositioned, ICarFactory.TryDriveTo), lot scene builders, Bootstrap and Vanaheim training scenes, tests; tools/run-unity.ps1 (memory pattern tightened); docs/design.md (A2, A5, A9 updated)
+Why: issues #127 and #126: valet pickup spot and 4-car queue replace the curb flow; the patron timer starts when the patron enters the diner.
+Tests: EditMode 1790/1790, PlayMode 73/73, RunBatch ok (agent); wrapper self-test passes after the false-positive fix.
