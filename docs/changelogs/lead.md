@@ -934,3 +934,9 @@ Date: 2026-11-14
 Files: Lot, Patrons, Cars (CarAutoDrive, CarFactory), Core (PatronStepsOut, PatronEnteredDiner, CarRepositioned, ICarFactory.TryDriveTo), lot scene builders, Bootstrap and Vanaheim training scenes, tests; tools/run-unity.ps1 (memory pattern tightened); docs/design.md (A2, A5, A9 updated)
 Why: issues #127 and #126: valet pickup spot and 4-car queue replace the curb flow; the patron timer starts when the patron enters the diner.
 Tests: EditMode 1790/1790, PlayMode 73/73, RunBatch ok (agent); wrapper self-test passes after the false-positive fix.
+
+## lead: merge agent/pedestrians free routes and no rubber band [Claude]
+Date: 2026-11-14
+Files: Pedestrians (WalkerRouteRule, WalkerRouter, PathFollower, PedestrianBounceRule), Core TuningKey.PedestrianFreeRoutes (appended), Run/LotDefinition, crazy lot assets, tests, docs/design.md
+Why: issues #124 (free routes on crazy lots) and #125 (no rubber band after a push).
+Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).

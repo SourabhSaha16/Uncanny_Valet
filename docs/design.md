@@ -248,6 +248,7 @@ Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 
 
 # Part B. Pre-pivot design (superseded, kept for history)
 | 2026-11-14 | Valet pickup spot and diner-entry timer merged (#127, #126): queue of 4 whose first slot is the VALET PICKUP spot, the curb zone is the VALET DROP-OFF; the patron stays in the car until Thor approaches it (`PatronStepsOut`); queued cars advance (`CarRepositioned`, `ICarFactory.TryDriveTo`) and a full queue holds arrivals; the stay clock starts on `PatronEnteredDiner` (issue #78's queue-distance rule and 3-minute fallback are removed; the tuning keys are kept as retired); new tunables in `PatronConfig.Pickup` (MaxQueuedCars 4, ApproachRange 4, AdvanceSpeed 5). Supersedes the queue of 3 and the pickup labelling in `docs/redesign/lot_v2_layout.md` |
+| 2026-11-14 | Pedestrian fixes merged (#124, #125): on crazy lots (`LotDefinition.FreePedestrianRoutes`, seeded as `TuningKey.PedestrianFreeRoutes`) walkers take a straight route to the door instead of the crosswalk path, so they no longer queue at the crosswalk; a pushed or bumped pedestrian now stays where they land and walks on from there (`PathFollower.Displace`; the old return-to-route bounce curve is replaced by `PedestrianBounceRule.Slide`) |
 
 ## 1. Overview
 
