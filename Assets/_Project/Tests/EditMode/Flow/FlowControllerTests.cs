@@ -125,6 +125,18 @@ namespace UncannyValet.Tests.Flow
         }
 
         [Test]
+        public void Results_EnterContinuesInsteadOfRetrying_AfterAFailedCrazyLot()
+        {
+            _machine.ShiftStarted();
+            _machine.ShiftEnded();
+            _machine.NextLotChosen(MC, RunOutcome.SentBack);
+            Tick(false);
+            Tick(true, ResultsDelay + 0.1f, retry: true);
+            Assert.AreEqual(FlowState.SentBack, _machine.State);
+            CollectionAssert.IsEmpty(_actions.Calls);
+        }
+
+        [Test]
         public void TheNextLotButton_ContinuesTheFlowAndRetryTheShift()
         {
             _machine.ShiftStarted();

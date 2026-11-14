@@ -41,7 +41,7 @@ namespace UncannyValet.UI.Flow
             if (_machine.State == FlowState.Results)
             {
                 if (!keyPressed || now - _enteredAt < _resultsDelay) return;
-                if (retryPressed) Retry(); else Continue();
+                if (retryPressed && _machine.CanRetry) Retry(); else Continue();
                 return;
             }
             if (anyPressed && now - _enteredAt >= _cardDelay) Perform(_machine.Advance());

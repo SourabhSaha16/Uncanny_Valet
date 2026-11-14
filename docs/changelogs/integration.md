@@ -169,3 +169,9 @@ Date: 2026-11-14
 Files: UI/GameUi.cs, UI/Flow/StoryCardCache.cs, Tests/PlayMode/StoryFlowPlayModeTests.cs
 Why: Issue #84. GameUi was over the 200-line limit; the once-per-screen card building moved into a small cache class.
 Tests: EditMode 1721 passed; PlayMode 66 passed.
+
+## integration: no retry after a failed crazy lot, lot picker on F4 [Claude]
+Date: 2026-11-14
+Files: UI/Flow/{FlowMachine,FlowController}.cs, UI/GameUi.cs, UI/Screens/{ResultsPainter,UiInput}.cs, Tests/EditMode/Flow/{FlowMachineTests,FlowControllerTests}.cs
+Why: Issue #84 owner decisions. After a failed crazy lot or finale the results screen offers only the continue path (Retry button greyed, Enter continues, hint reads ANY KEY: NEXT LOT); Retry stays for failed training and cleared lots. The title's lot picker is shown while F4 is held (F4 is unused elsewhere); F3 stays the Director overlay toggle.
+Tests: new EditMode tests FlowMachine Retry_IsOffAfterAFailedCrazyLot and FlowController Results_EnterContinuesInsteadOfRetrying; NOT run, see the report (Unity batch mode hung on a stuck bee_backend).

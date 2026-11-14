@@ -181,7 +181,7 @@ namespace UncannyValet.UI
                 case FlowState.Playing:
                 case FlowState.Results:
                     _playing.Draw(ResolveCamera(), time, _prompt());
-                    if (_machine.State == FlowState.Results && _results != null) _resultsPainter.Draw(_results);
+                    if (_machine.State == FlowState.Results && _results != null) _resultsPainter.Draw(_results, _machine.CanRetry);
                     return;
                 default:
                     var card = _cards.Current;

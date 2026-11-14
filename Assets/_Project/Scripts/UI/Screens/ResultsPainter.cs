@@ -17,6 +17,7 @@ namespace UncannyValet.UI.Screens
         private static readonly PixelRect Card = new PixelRect(48, 12, 384, 252);
 
         private const string KeyHint = "ENTER: RETRY   ANY OTHER KEY: NEXT LOT";
+        private const string NextOnlyHint = "ANY KEY: NEXT LOT";
         private const int TitleScale = 2;
         private const int VerdictScale = 4;
         private const int VerdictTop = 44;
@@ -36,7 +37,7 @@ namespace UncannyValet.UI.Screens
             _canvas = canvas;
         }
 
-        public void Draw(ResultsContent content)
+        public void Draw(ResultsContent content, bool canRetry)
         {
             _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, PixelPalette.Dim);
             _canvas.Panel(Card.X, Card.Y, Card.Width, Card.Height, PixelPalette.PanelDark);
@@ -46,7 +47,7 @@ namespace UncannyValet.UI.Screens
             DrawBlessings(content.Blessings);
             DrawStats(content);
             DrawCentered(content.Goal, GoalTop, 1, PixelPalette.Cream);
-            DrawButtons();
+            DrawButtons(canRetry);
         }
 
         private void DrawBlessings(string blessings)
@@ -71,11 +72,11 @@ namespace UncannyValet.UI.Screens
             }
         }
 
-        private void DrawButtons()
+        private void DrawButtons(bool canRetry)
         {
-            DrawButton(RetryButton, ResultsFormatter.RetryLabel, PixelPalette.Green, PixelPalette.Ink);
+            DrawButton(RetryButton, ResultsFormatter.RetryLabel, canRetry ? PixelPalette.Green : PixelPalette.Grey, canRetry ? PixelPalette.Ink : PixelPalette.Track);
             DrawButton(NextButton, ResultsFormatter.NextLotLabel, PixelPalette.Gold, PixelPalette.Ink);
-            DrawCentered(KeyHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
+            DrawCentered(canRetry ? KeyHint : NextOnlyHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
         }
 
         private void DrawButton(PixelRect rect, string label, Color fill, Color text)
