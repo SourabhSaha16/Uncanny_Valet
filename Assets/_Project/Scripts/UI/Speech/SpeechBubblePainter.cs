@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Screens;
 using UnityEngine;
@@ -16,11 +17,13 @@ namespace UncannyValet.UI.Speech
 
         private readonly PixelCanvas _canvas;
         private readonly SpeechBubbleTracker _tracker;
+        private readonly float _scale;
 
-        public SpeechBubblePainter(PixelCanvas canvas, SpeechBubbleTracker tracker)
+        public SpeechBubblePainter(PixelCanvas canvas, SpeechBubbleTracker tracker, SpeechBubbleSettings settings = null)
         {
             _canvas = canvas;
             _tracker = tracker;
+            _scale = settings != null ? settings.Scale : SpeechBubbleSettings.DefaultScale;
         }
 
         public void Draw(Camera camera, float now)
@@ -37,12 +40,19 @@ namespace UncannyValet.UI.Speech
             var tipY = _canvas.Grid.VirtualY(_canvas.ScreenHeight - screen.y);
             var x = SpeechBubbleLayout.Clamp(tipX - width / 2, width, PixelGrid.Width);
             var y = SpeechBubbleLayout.Clamp(tipY - SpeechBubbleLayout.TailHeight - height, height, PixelGrid.Height);
+            _canvas.BeginZoom(x + width / 2, y + height, _scale); // shrinks towards the tail, so the box stays inside what was clamped
+            Paint(request.Speaker, request.Text, lines, x, y, width, height, tipX);
+            _canvas.EndZoom();
+        }
+
+        private void Paint(string speaker, string text, IReadOnlyList<WordWrap.Span> lines, int x, int y, int width, int height, int tipX)
+        {
             _canvas.Panel(x, y, width, height, Cream);
             DrawTail(Mathf.Clamp(tipX, x + SpeechBubbleLayout.Padding, x + width - SpeechBubbleLayout.Padding), y + height);
             var left = x + SpeechBubbleLayout.Padding;
-            _canvas.Text(request.Speaker, left, y + SpeechBubbleLayout.Padding, NameColor, 1, false);
+            _canvas.Text(speaker, left, y + SpeechBubbleLayout.Padding, NameColor, 1, false);
             var top = y + SpeechBubbleLayout.Padding + PixelGlyphs.Height + SpeechBubbleLayout.NameGap;
-            for (var i = 0; i < lines.Count; i++) DrawLine(request.Text, lines[i], left, top + i * PixelTextLayout.LineHeight(1));
+            for (var i = 0; i < lines.Count; i++) DrawLine(text, lines[i], left, top + i * PixelTextLayout.LineHeight(1));
         }
 
         // One glyph at a time, so no substring is allocated per frame.

@@ -1,4 +1,5 @@
 using UncannyValet.UI.Hud;
+using UncannyValet.UI.Speech;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -42,6 +43,10 @@ namespace UncannyValet.UI.Mood
         [FormerlySerializedAs("_powerMeter")]
         [SerializeField] private PowerBarSettings _powerBar = new PowerBarSettings();
 
+        [Header("Watcher speech bubble")]
+        [SerializeField] private SpeechBubbleSettings _speechBubble = new SpeechBubbleSettings();
+
+        public SpeechBubbleSettings SpeechBubble => _speechBubble;
         public BlessingPopSettings BlessingPop => _blessingPop;
         public PowerBarSettings PowerBar => _powerBar;
         public float ImpatientFrom => _impatientFrom;
