@@ -23,5 +23,26 @@ namespace UncannyValet.EditorTools
             }
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+
+        /// <summary>Hands the definition's world palette, props and lighting preset to the lot builder, and the palette to the decor (the diner re-skin); empty references clear them.</summary>
+        public static void ApplyArt(LotLayoutBuilder lot, LotDecor decor, LotDefinition definition)
+        {
+            var so = new SerializedObject(lot);
+            so.FindProperty("_palette").objectReferenceValue = definition.Palette;
+            so.FindProperty("_lighting").objectReferenceValue = definition.Lighting;
+            var props = so.FindProperty("_props");
+            props.arraySize = definition.Props.Count;
+            for (var i = 0; i < definition.Props.Count; i++)
+            {
+                var entry = props.GetArrayElementAtIndex(i);
+                entry.FindPropertyRelative("_recipe").objectReferenceValue = definition.Props[i].Recipe;
+                entry.FindPropertyRelative("_position").vector2Value = definition.Props[i].Position;
+                entry.FindPropertyRelative("_sortingOrder").intValue = definition.Props[i].SortingOrder;
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var decorSo = new SerializedObject(decor);
+            decorSo.FindProperty("_palette").objectReferenceValue = definition.Palette;
+            decorSo.ApplyModifiedPropertiesWithoutUndo();
+        }
     }
 }

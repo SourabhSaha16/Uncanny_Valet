@@ -1,3 +1,4 @@
+using UncannyValet.Core.Art;
 using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Run
@@ -23,7 +24,16 @@ namespace UncannyValet.Run
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
-            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot);
+            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot) ?? CheckArt(lot);
+        }
+
+        private static string CheckArt(LotDefinition lot)
+        {
+            if (lot.Palette != null && !lot.Palette.TryValidate(out var paletteProblem)) return lot.name + ": " + paletteProblem;
+            if (lot.Props.Count > 0 && lot.Palette == null) return lot.name + ": it has props but no world palette";
+            for (var i = 0; i < lot.Props.Count; i++)
+                if (!PropRecipeRules.TryValidate(lot.Props[i].Recipe, out var propProblem)) return lot.name + ": prop " + i + ": " + propProblem;
+            return lot.Lighting != null && !lot.Lighting.TryValidate(out var lightProblem) ? lot.name + ": " + lightProblem : null;
         }
 
         private static string CheckPacing(LotDefinition lot)

@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157897eb05ca8e64b9c0c2d53a875c96, type: 3}
+  m_Name: MidgardOpenSign
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Art.PropRecipe
+  _sizeUnits: {x: 2, y: 1}
+  _layers:
+  - _name: Board
+    _shapes:
+    - _kind: 0
+      _area:
+        x: 0
+        y: 4
+        width: 64
+        height: 24
+      _colour: 6
+      _text: 
+    _outlined: 1
+    _glows: 0
+    _animation: 0
+    _speed: 0
+    _pivot: {x: 0, y: 0}
+    _orderOffset: 0
+  - _name: Neon
+    _shapes:
+    - _kind: 0
+      _area:
+        x: 3
+        y: 7
+        width: 58
+        height: 1
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 3
+        y: 24
+        width: 58
+        height: 1
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 3
+        y: 7
+        width: 1
+        height: 18
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 60
+        y: 7
+        width: 1
+        height: 18
+      _colour: 4
+      _text: 
+    - _kind: 6
+      _area:
+        x: 20
+        y: 13
+        width: 23
+        height: 7
+      _colour: 4
+      _text: OPEN
+    _outlined: 0
+    _glows: 1
+    _animation: 2
+    _speed: 1.2
+    _pivot: {x: 0, y: 0}
+    _orderOffset: 1
+  _spriteOverride: {fileID: 0}
+  _solid: 0
+  _colliderSize: {x: 0, y: 0}
+  _glowMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}

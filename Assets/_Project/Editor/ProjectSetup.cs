@@ -3,6 +3,7 @@ using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Director;
+using UncannyValet.EditorTools.Art;
 using UncannyValet.Lot;
 using UncannyValet.Patrons;
 using UncannyValet.Powers;
@@ -41,6 +42,7 @@ namespace UncannyValet.EditorTools
             WireDialsIntoDirectorConfig();
             ModifierAssetSetup.CreateIfMissing();
             RunAssetSetup.CreateIfMissing();
+            ArtAssetSetup.CreateIfMissing();
             AssetDatabase.SaveAssets();
         }
 

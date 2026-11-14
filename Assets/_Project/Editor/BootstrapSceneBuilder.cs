@@ -88,6 +88,7 @@ namespace UncannyValet.EditorTools
             SetInt(lot, "_queueSlots", definition.QueueSlots);
             LotWorldSceneSetup.Apply(lot, definition);
             SetInt(decor, "_queueSlots", definition.QueueSlots);
+            LotWorldSceneSetup.ApplyArt(lot, decor, definition);
             Set(factory, "_art", carArt);
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
             AddHandling(root, factory, Load<LotConfig>(lotConfigPath));

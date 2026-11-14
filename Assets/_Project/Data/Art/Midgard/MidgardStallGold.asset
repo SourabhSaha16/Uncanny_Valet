@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157897eb05ca8e64b9c0c2d53a875c96, type: 3}
+  m_Name: MidgardStallGold
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Art.PropRecipe
+  _sizeUnits: {x: 3, y: 2}
+  _layers:
+  - _name: Stall
+    _shapes:
+    - _kind: 0
+      _area:
+        x: 4
+        y: 0
+        width: 88
+        height: 22
+      _colour: 9
+      _text: 
+    - _kind: 0
+      _area:
+        x: 6
+        y: 22
+        width: 4
+        height: 34
+      _colour: 9
+      _text: 
+    - _kind: 0
+      _area:
+        x: 86
+        y: 22
+        width: 4
+        height: 34
+      _colour: 9
+      _text: 
+    - _kind: 0
+      _area:
+        x: 4
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 12
+        y: 36
+        width: 8
+        height: 24
+      _colour: 11
+      _text: 
+    - _kind: 0
+      _area:
+        x: 20
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 28
+        y: 36
+        width: 8
+        height: 24
+      _colour: 11
+      _text: 
+    - _kind: 0
+      _area:
+        x: 36
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 44
+        y: 36
+        width: 8
+        height: 24
+      _colour: 11
+      _text: 
+    - _kind: 0
+      _area:
+        x: 52
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 60
+        y: 36
+        width: 8
+        height: 24
+      _colour: 11
+      _text: 
+    - _kind: 0
+      _area:
+        x: 68
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 76
+        y: 36
+        width: 8
+        height: 24
+      _colour: 11
+      _text: 
+    - _kind: 0
+      _area:
+        x: 84
+        y: 36
+        width: 8
+        height: 24
+      _colour: 5
+      _text: 
+    - _kind: 0
+      _area:
+        x: 14
+        y: 14
+        width: 8
+        height: 6
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 28
+        y: 14
+        width: 8
+        height: 6
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 42
+        y: 14
+        width: 8
+        height: 6
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 56
+        y: 14
+        width: 8
+        height: 6
+      _colour: 4
+      _text: 
+    - _kind: 0
+      _area:
+        x: 70
+        y: 14
+        width: 8
+        height: 6
+      _colour: 4
+      _text: 
+    _outlined: 1
+    _glows: 0
+    _animation: 0
+    _speed: 0
+    _pivot: {x: 0, y: 0}
+    _orderOffset: 0
+  _spriteOverride: {fileID: 0}
+  _solid: 1
+  _colliderSize: {x: 2.7, y: 1.7}
+  _glowMaterial: {fileID: 0}

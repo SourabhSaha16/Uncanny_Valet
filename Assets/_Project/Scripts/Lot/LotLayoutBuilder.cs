@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UnityEngine;
 
@@ -24,6 +25,13 @@ namespace UncannyValet.Lot
         private int _queueSlots;
         [SerializeField, Tooltip("The lot's mud puddles in lot space (from its mud modifier). Set by the scene builder; empty means no mud.")]
         private MudPatch[] _mudPatches = System.Array.Empty<MudPatch>();
+
+        [SerializeField, Tooltip("The world palette the props are drawn with (from the lot definition). Set by the scene builder.")]
+        private WorldPalette _palette;
+        [SerializeField, Tooltip("The lot's props in lot space (from the lot definition). Set by the scene builder; empty means none.")]
+        private PropPlacement[] _props = System.Array.Empty<PropPlacement>();
+        [SerializeField, Tooltip("The lot's lighting (from the lot definition). Set by the scene builder; empty keeps the default lighting.")]
+        private LightingPreset _lighting;
 
         private LotExpander _expander;
         private SpotOccupancy _occupancy;
@@ -66,6 +74,7 @@ namespace UncannyValet.Lot
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
             BuildDiner(g);
             MudPatchBuilder.Build(transform, _mudPatches);
+            BuildArt();
             var judge = gameObject.AddComponent<PerfectRunner>();
             var curb = BuildCurb(rects);
             judge.Init(c, curb);
@@ -89,6 +98,17 @@ namespace UncannyValet.Lot
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
+        }
+
+        // The props (drawn once from their recipes) and the lighting of the lot; both are optional.
+        private void BuildArt()
+        {
+            if (_props.Length > 0)
+            {
+                if (_palette == null) Debug.LogError("The lot " + name + " has props but no world palette; rebuild with Setup/Build Everything.", this);
+                else new PropBuilder(_palette).Build(transform, _props);
+            }
+            LotLighting.Apply(transform, _lighting);
         }
 
         // The diner is a solid block: cars and the valet cannot drive into the building.
