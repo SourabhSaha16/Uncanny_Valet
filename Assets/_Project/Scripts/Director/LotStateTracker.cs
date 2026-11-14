@@ -25,10 +25,11 @@ namespace UncannyValet.Director
         /// <param name="regularSpots">Regular (non-charging) parking spots in the lot.</param>
         /// <param name="chargingBays">EV charging bays in the lot.</param>
         /// <param name="hasWash">False for a lot without a wash slot: no wash station slot is reported.</param>
-        public LotStateTracker(IEventBus bus, IGameClock clock, ITuning tuning, IModifierCatalog catalog, int regularSpots, int chargingBays, bool hasWash = true)
+        /// <param name="washStations">Wash stations a lot with a wash has (troughs); the wash slot is one.</param>
+        public LotStateTracker(IEventBus bus, IGameClock clock, ITuning tuning, IModifierCatalog catalog, int regularSpots, int chargingBays, bool hasWash = true, int washStations = 1)
         {
             _bus = bus; _clock = clock; _tuning = tuning;
-            _book = new CarBook(catalog, regularSpots, chargingBays, hasWash);
+            _book = new CarBook(catalog, regularSpots, chargingBays, hasWash, washStations);
             Subscribe();
         }
 

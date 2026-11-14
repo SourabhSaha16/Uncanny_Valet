@@ -1,0 +1,294 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ced1a29603721d4888685f7efd08c27, type: 3}
+  m_Name: VanaheimTrainingLot
+  m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.LotDefinition
+  _id:
+    _world: 2
+    _kind: 1
+  _displayName: Freyr's Harvest Barn
+  _sceneName: Lot_VanaheimTraining
+  _layout: 1
+  _queueSlots: 3
+  _pacing:
+    _shiftLengthSeconds: 150
+    _arrivalGapMinSeconds: 15
+    _arrivalGapMaxSeconds: 25
+    _maxWaitingCars: 2
+    _arrivalBudget: 0
+  _modifierChances:
+  - _modifier: {fileID: 11400000, guid: ba5303a9395f5a943bca97c240726119, type: 2}
+    _chance: 0
+  - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
+    _chance: 0.3
+  _dials: []
+  _powerFill:
+    _perfectPark: 18
+    _perfectDropOff: 10
+    _driftPerSecond: 0.6
+    _driftCap: 4
+  _modifiers: []
+  _blessingThreshold: 150
+  _pedestrianCurses: 0
+  _grant:
+    _power: 0
+    _level: 1
+  _palette: {fileID: 11400000, guid: 437ebdaf4106d614783ded5e5783e489, type: 2}
+  _props:
+  - _recipe: {fileID: 11400000, guid: bf761fd642ecc9849a223346d79eb0e8, type: 2}
+    _position: {x: -15.5, y: 5.5}
+    _sortingOrder: 6
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -3.15, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -2.15, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -1.1500001, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -0.1500001, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 0.8499999, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 1.8499999, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 2.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 3.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 4.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 5.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 6.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 7.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 8.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 9.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 10.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 11.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 12.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -3.15, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -2.15, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -1.1500001, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -0.1500001, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 0.8499999, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 1.8499999, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 2.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 3.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 4.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 5.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 6.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 7.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 8.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 9.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 10.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 11.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 12.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -3.15, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -2.15, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -1.1500001, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -0.1500001, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 0.8499999, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 1.8499999, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 2.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 3.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 4.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 5.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 6.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 7.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 8.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 9.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 10.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 11.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 12.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -3.15, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -2.15, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -1.1500001, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: -0.1500001, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 0.8499999, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 1.8499999, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 2.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 3.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 4.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 5.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 6.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 7.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 8.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 9.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 10.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 11.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 12.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: -2.15, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: -0.1500001, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: 1.8499999, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: 3.85, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: 5.85, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
+    _position: {x: 7.85, y: 3.9}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
+    _position: {x: 11.95, y: 3.5}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
+    _position: {x: 13.05, y: 3.5}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
+    _position: {x: 12.45, y: 0.29999995}
+    _sortingOrder: 3
+  _lighting: {fileID: 11400000, guid: db5a7dbe51205a54788a7d56dd3d6d74, type: 2}
+  _layoutOptions:
+    _servicesClosed: 1
+    _cornerClearance: 0
+    _washTroughs: 1
+    _extensionWidth: 0
+    _troughDistance: 0
+  _buildingSign: BARN
+  _groundColour: {r: 0.63, g: 0.48, b: 0.29, a: 1}
+  _ambientTraffic: 1
+  _ambientPedestrians: 4
+  _gagLines: {fileID: 11400000, guid: 9fb53c6fb230b8f4a81b8704883c7160, type: 2}
+  _watcher: {fileID: 11400000, guid: 14e66b6d8ea68a343988385ef4850af2, type: 2}
+  _watcherSpot: {x: -11, y: 7.4}

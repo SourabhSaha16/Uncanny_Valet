@@ -16,13 +16,15 @@ namespace UncannyValet.Lot
         private const int DoorOrder = 4;
         private const int SignOrder = 5;
         private const int SpriteOrder = 4;
-        private const string DinerText = "DINER";
+        /// <summary>The sign of a diner.</summary>
+        public const string DinerText = "DINER";
         private const string BusText = "BUS";
         private const float DinerLabelSize = 0.7f;
         private const float BusLabelSize = 0.5f;
 
+        /// <param name="signText">The word on the sign above the building.</param>
         /// <param name="palette">When set, the building is re-skinned with its Wall and Roof colours (see <see cref="DinerSkin"/>).</param>
-        public static void BuildDiner(Transform parent, RectFactory rects, LotGeometry g, LotArtConfig art, LotConfig config, WorldPalette palette = null)
+        public static void BuildDiner(Transform parent, RectFactory rects, LotGeometry g, LotArtConfig art, LotConfig config, WorldPalette palette = null, string signText = DinerText)
         {
             var d = g.Diner;
             if (art.DinerBuilding == null)
@@ -41,7 +43,7 @@ namespace UncannyValet.Lot
             Door(parent, rects, "Main Door", g.MainDoor, d.xMax, art);
             var sign = new Vector2(d.center.x, d.yMin + facadeHeight + art.SignSize.y);
             rects.Make(parent, "Diner Sign", sign, art.SignSize, art.SignColor, SignOrder);
-            SpotLabel.Create(parent, DinerText, sign, config, SignOrder + 1, DinerLabelSize);
+            SpotLabel.Create(parent, string.IsNullOrEmpty(signText) ? DinerText : signText, sign, config, SignOrder + 1, DinerLabelSize);
         }
 
         public static void BuildBusStop(Transform parent, RectFactory rects, DecorLayout layout, LotArtConfig art, LotConfig config)

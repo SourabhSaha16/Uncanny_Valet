@@ -17,16 +17,20 @@ namespace UncannyValet.Director
         private readonly List<CarRecord> _bayOccupants = new List<CarRecord>();
         private readonly IModifierCatalog _catalog;
 
-        public CarBook(IModifierCatalog catalog, int regularSpots, int chargingBays, bool hasWash = true)
+        public CarBook(IModifierCatalog catalog, int regularSpots, int chargingBays, bool hasWash = true, int washStations = 1)
         {
             _catalog = catalog;
             RegularSpots = regularSpots;
             ChargingBays = chargingBays;
             HasWash = hasWash;
+            WashStations = hasWash ? washStations : 0;
         }
 
         /// <summary>False in a lot with no wash slot: the plan's wash flag then opens nothing.</summary>
         public bool HasWash { get; }
+
+        /// <summary>Wash stations the lot has (the troughs, or 1 for the wash slot); 0 without a wash.</summary>
+        public int WashStations { get; }
 
         public int RegularSpots { get; }
         public int ChargingBays { get; }

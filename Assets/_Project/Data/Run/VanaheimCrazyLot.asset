@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ced1a29603721d4888685f7efd08c27, type: 3}
+  m_Name: VanaheimCrazyLot
+  m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.LotDefinition
+  _id:
+    _world: 2
+    _kind: 2
+  _displayName: Storm-Soaked Harvest Feast
+  _sceneName: Lot_VanaheimCrazy
+  _layout: 1
+  _queueSlots: 4
+  _pacing:
+    _shiftLengthSeconds: 240
+    _arrivalGapMinSeconds: 10
+    _arrivalGapMaxSeconds: 15
+    _maxWaitingCars: 4
+    _arrivalBudget: 0
+  _modifierChances:
+  - _modifier: {fileID: 11400000, guid: ba5303a9395f5a943bca97c240726119, type: 2}
+    _chance: 0
+  - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
+    _chance: 0.6
+  _dials: []
+  _powerFill:
+    _perfectPark: 18
+    _perfectDropOff: 10
+    _driftPerSecond: 0.6
+    _driftCap: 4
+  _modifiers:
+  - {fileID: 11400000, guid: ac3d58131c5fff34bb2506f29fed5965, type: 2}
+  _blessingThreshold: 300
+  _pedestrianCurses: 0
+  _grant:
+    _power: 2
+    _level: 1
+  _palette: {fileID: 11400000, guid: 437ebdaf4106d614783ded5e5783e489, type: 2}
+  _props:
+  - _recipe: {fileID: 11400000, guid: bf761fd642ecc9849a223346d79eb0e8, type: 2}
+    _position: {x: -15.5, y: 5.5}
+    _sortingOrder: 6
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: -1.1500001, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 3.35, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 7.85, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 12.35, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 16.85, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 21.35, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 1.0999999, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 5.6, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 10.1, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 14.6, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 19.1, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
+    _position: {x: 26, y: 0.29999995}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
+    _position: {x: 26, y: -10.1}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
+    _position: {x: 26, y: -15.500001}
+    _sortingOrder: 3
+  _lighting: {fileID: 11400000, guid: f578e7b872709cf4d9fcf846f9468968, type: 2}
+  _layoutOptions:
+    _servicesClosed: 1
+    _cornerClearance: 0
+    _washTroughs: 3
+    _extensionWidth: 13.5
+    _troughDistance: 14
+  _buildingSign: BARN
+  _groundColour: {r: 0.4, g: 0.3, b: 0.21, a: 1}
+  _ambientTraffic: 1
+  _ambientPedestrians: 8
+  _gagLines: {fileID: 11400000, guid: c818d2581c269f94ab6b51f4a3e3f206, type: 2}
+  _watcher: {fileID: 11400000, guid: 57e582cca5227ca4db7190d6f48f5980, type: 2}
+  _watcherSpot: {x: -11, y: 7.4}

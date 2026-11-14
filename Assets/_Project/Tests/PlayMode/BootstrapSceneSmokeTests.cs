@@ -24,6 +24,8 @@ namespace UncannyValet.Tests.PlayMode
         private const string ScenePath = "Assets/_Project/Scenes/Bootstrap.unity";
         private const string CrazyScenePath = "Assets/_Project/Scenes/Lot_MidgardCrazy.unity";
         private const string CrazySceneName = "Lot_MidgardCrazy";
+        private const string VanaheimTrainingPath = "Assets/_Project/Scenes/Lot_VanaheimTraining.unity";
+        private const string VanaheimCrazyPath = "Assets/_Project/Scenes/Lot_VanaheimCrazy.unity";
         private const float PlaySeconds = 4f;
         private const int SwitchFrames = 10;
         private const string StartPlaying = "StartPlaying";
@@ -57,6 +59,20 @@ namespace UncannyValet.Tests.PlayMode
             PlayScene(CrazyScenePath, new LotId(World.Midgard, LotKind.Crazy));
 
         [UnityTest]
+        public IEnumerator VanaheimTrainingScene_StartsAndPlaysWithoutErrors() =>
+            PlayScene(VanaheimTrainingPath, new LotId(World.Vanaheim, LotKind.Training));
+
+        [UnityTest]
+        public IEnumerator VanaheimCrazyScene_StartsAndPlaysWithoutErrors() =>
+            PlayScene(VanaheimCrazyPath, new LotId(World.Vanaheim, LotKind.Crazy));
+
+        [UnityTest]
+        public IEnumerator VanaheimTrainingLot_HasThreeQueueSlots_AndAllowsTwoWaiting() => CheckQueue(VanaheimTrainingPath, 3, 2, 3, 8);
+
+        [UnityTest]
+        public IEnumerator VanaheimCrazyLot_HasFourQueueSlots_AndFourCarsCanWait() => CheckQueue(VanaheimCrazyPath, 4, 4, 4, 20);
+
+        [UnityTest]
         public IEnumerator PickerSwitchesToTheCrazyLot_KeepingTheRunState()
         {
             Application.logMessageReceived += OnLog;
@@ -64,7 +80,7 @@ namespace UncannyValet.Tests.PlayMode
             var progress = Services.Get<IRunProgress>();
             Assert.AreEqual(new LotId(World.Midgard, LotKind.Training), progress.CurrentLot);
             var picker = Services.Get<ILotPicker>();
-            Assert.AreEqual(2, picker.Choices.Count);
+            Assert.AreEqual(4, picker.Choices.Count, "both Midgard and both Vanaheim lots");
 
             Assert.IsTrue(picker.TryChoose(1));
             for (var i = 0; i < SwitchFrames; i++) yield return null;

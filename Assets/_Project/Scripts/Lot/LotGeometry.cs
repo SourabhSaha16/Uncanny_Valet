@@ -18,6 +18,10 @@ namespace UncannyValet.Lot
         public Rect Wash { get; }
         /// <summary>False in a lot with its services closed: no wash slot and no charging bay, eight regular bays.</summary>
         public bool HasWash { get; }
+        /// <summary>The wash troughs outside the bay grid (empty in a lot without troughs), top to bottom.</summary>
+        public Rect[] Troughs { get; }
+        /// <summary>Every wash station of the lot: the wash slot of the classic grid, or the troughs.</summary>
+        public Rect[] WashStations { get; }
         public Rect Curb { get; }
         /// <summary>The open ground between the diner wall and the curb zone, where waiting patrons stand (same height as the curb).</summary>
         public Rect CurbGap { get; }
@@ -73,12 +77,15 @@ namespace UncannyValet.Lot
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
 
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
+            Troughs = TroughLayout.Place(c, options, Curb.yMax, baysRight);
+            WashStations = HasWash ? new[] { Wash } : Troughs;
             var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - c.AisleWidth * (BayPlan.Rows - 1);
+            var lowest = LowestEdge(Troughs, bottomRow);
             var sideY = Curb.yMax + s.SideDoorRise;
             var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
-            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin - options.CornerClearance);
-            Strip = new Rect(baysRight + s.StripGap, bottom, s.StripWidth, top - bottom);
+            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, lowest - c.Margin - options.CornerClearance);
+            Strip = new Rect(baysRight + s.StripGap + options.ExtensionWidth, bottom, s.StripWidth, top - bottom);
             var dinerRight = Curb.xMin - s.CurbGap;
             Bounds = Rect.MinMaxRect(dinerRight - s.DinerWidth, bottom, Strip.xMax, top);
             Diner = Rect.MinMaxRect(Bounds.xMin, bottom + s.DinerInset, dinerRight, top - s.DinerInset);
@@ -100,6 +107,13 @@ namespace UncannyValet.Lot
         }
 
         public static Rect Box(Vector2 center, Vector2 size) => new Rect(center - size * 0.5f, size);
+
+        private static float LowestEdge(Rect[] rects, float fallback)
+        {
+            var lowest = fallback;
+            for (var i = 0; i < rects.Length; i++) lowest = Mathf.Min(lowest, rects[i].yMin);
+            return lowest;
+        }
 
         private Rect[] Cells(LotConfig c, float left, Vector2Int[] plan)
         {

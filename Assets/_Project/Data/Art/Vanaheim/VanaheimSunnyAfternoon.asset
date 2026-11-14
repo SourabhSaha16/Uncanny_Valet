@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: VanaheimSunnyAfternoon
   m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Art.LightingPreset
   _globalColour: {r: 1, g: 0.8862745, b: 0.65882355, a: 1}
-  _globalIntensity: 1.05
+  _globalIntensity: 1
   _lights: []

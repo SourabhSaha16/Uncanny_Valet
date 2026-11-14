@@ -34,7 +34,7 @@ namespace UncannyValet.EditorTools.Art
             ArtAssets.Ensure(TroughPath, Trough);
             ArtAssets.Ensure(BannerPath, Banner);
             ArtAssets.Ensure(StallPath, Stall);
-            ArtAssets.Ensure(SunnyPath, () => LightingPreset.Create("VanaheimSunnyAfternoon", Hex("#ffe2a8"), 1.05f, new PointLightSpec[0]));
+            ArtAssets.Ensure(SunnyPath, () => LightingPreset.Create("VanaheimSunnyAfternoon", Hex("#ffe2a8"), 1f, new PointLightSpec[0]));
             ArtAssets.Ensure(StormyPath, () => Stormy(lotBounds));
         }
 

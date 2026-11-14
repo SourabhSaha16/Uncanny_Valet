@@ -33,8 +33,17 @@ namespace UncannyValet.EditorTools
                 var so = new SerializedObject(target);
                 so.FindProperty("_options._servicesClosed").boolValue = definition.LayoutOptions.ServicesClosed;
                 so.FindProperty("_options._cornerClearance").floatValue = definition.LayoutOptions.CornerClearance;
+                so.FindProperty("_options._washTroughs").intValue = definition.LayoutOptions.WashTroughs;
+                so.FindProperty("_options._extensionWidth").floatValue = definition.LayoutOptions.ExtensionWidth;
+                so.FindProperty("_options._troughDistance").floatValue = definition.LayoutOptions.TroughDistance;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
+            var lotSo = new SerializedObject(lot);
+            lotSo.FindProperty("_groundColour").colorValue = definition.GroundColour;
+            lotSo.ApplyModifiedPropertiesWithoutUndo();
+            var decorSo = new SerializedObject(decor);
+            decorSo.FindProperty("_buildingSign").stringValue = definition.BuildingSign;
+            decorSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Hands the definition's world palette, props and lighting preset to the lot builder, and the palette to the decor (the diner re-skin); empty references clear them.</summary>
