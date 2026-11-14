@@ -54,7 +54,7 @@ namespace UncannyValet.Tests.PlayMode
             (FlowController)typeof(GameUi).GetField("_flow", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Object.FindFirstObjectByType<GameUi>());
 
         private static StoryCard Card() =>
-            (StoryCard)typeof(GameUi).GetField("_card", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Object.FindFirstObjectByType<GameUi>());
+            ((StoryCardCache)typeof(GameUi).GetField("_cards", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Object.FindFirstObjectByType<GameUi>())).Current;
 
         // Waits out the key delay, then presses any key (the frame number differs from the one the screen appeared in).
         private static IEnumerator Press(float wait = CardWait)

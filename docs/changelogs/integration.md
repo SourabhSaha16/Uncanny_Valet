@@ -163,3 +163,9 @@ Date: 2026-11-14
 Files: UI/Flow/{RewardCards,EndCards}.cs (tighter gaps), Tests/EditMode/Flow/{ShippedCardsTests,StoryCardTests}.cs
 Why: Issue #84. A test builds every intro, reward (both levels), thrown-back and end card from the shipped story text, run and power definitions and checks each line sits inside the panel and above the prompt; the finale end card with four powers overflowed by one row and its gaps were tightened.
 Tests: EditMode 1721 passed; PlayMode 66 passed (incl. StoryFlowPlayModeTests, BootstrapSceneSmokeTests).
+
+## integration: GameUi hands card building to StoryCardCache [Claude]
+Date: 2026-11-14
+Files: UI/GameUi.cs, UI/Flow/StoryCardCache.cs, Tests/PlayMode/StoryFlowPlayModeTests.cs
+Why: Issue #84. GameUi was over the 200-line limit; the once-per-screen card building moved into a small cache class.
+Tests: EditMode 1721 passed; PlayMode 66 passed.

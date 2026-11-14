@@ -47,8 +47,7 @@ namespace UncannyValet.UI
         private IStoryFacts _facts;
         private FlowController _flow;
         private FlowEventLink _flowLink;
-        private StoryCard _card;
-        private int _cardVersion = -1;
+        private StoryCardCache _cards;
         private ResultsContent _results;
         private Camera _camera;
 
@@ -100,6 +99,7 @@ namespace UncannyValet.UI
             _titlePainter = new TitlePainter(_canvas);
             _howToPlayPainter = new HowToPlayPainter(_canvas);
             _cardPainter = new StoryCardPainter(_canvas);
+            _cards = new StoryCardCache(_machine, _story, _facts, Services.Get<IRunProgress>());
             _flow = new FlowController(_machine, _actions, _titleKeyDelaySeconds, _resultsKeyDelaySeconds);
             _flowLink = new FlowEventLink(_bus, _machine);
             _picker = Services.TryGet<ILotPicker>(out var lots) ? new TitlePicker(new DevLotPicker(lots, _flow)) : null;
@@ -142,15 +142,6 @@ namespace UncannyValet.UI
             var devKey = _machine.State == FlowState.Title && UiInput.DevKeyHeld();
             if (devKey && _flow.SecondsOnScreen(Time.unscaledTime) >= _titleKeyDelaySeconds && _picker != null && _picker.TryPick()) return;
             _flow.Update(Time.unscaledTime, Time.frameCount, !devKey && UiInput.AnyPressed(), UiInput.AnyKeyPressed(), UiInput.RetryPressed());
-            if (_machine.Version != _cardVersion) RebuildCard();
-        }
-
-        private void RebuildCard()
-        {
-            _cardVersion = _machine.Version;
-            var state = _machine.State;
-            var isCard = state == FlowState.LotIntro || state == FlowState.Reward || state == FlowState.SentBack || state == FlowState.EndCard;
-            _card = isCard ? StoryCardBuilder.Build(_machine, _story, _facts, Services.Get<IRunProgress>()) : null;
         }
 
         private void OnGUI()
@@ -193,7 +184,8 @@ namespace UncannyValet.UI
                     if (_machine.State == FlowState.Results && _results != null) _resultsPainter.Draw(_results);
                     return;
                 default:
-                    if (_card != null) _cardPainter.Draw(_card, time);
+                    var card = _cards.Current;
+                    if (card != null) _cardPainter.Draw(card, time);
                     return;
             }
         }
