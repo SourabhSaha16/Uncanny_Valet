@@ -139,3 +139,9 @@ Date: 2026-11-13
 Files: Assets/_Project/Scripts/Lot/SlotTint.cs
 Why: Issue #121. The slot tint follows ModifierProgressChanged and ModifierCleared of the modifier its station kind clears (read from the catalog) instead of the four wash and charge events.
 Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## art: procedural prop toolkit, Midgard and Vanaheim props, lighting presets [Claude]
+Date: 2026-11-13
+Files: Core/Art (PaletteSlot, WorldPalette, PropShapeKind, PropShape, PropAnimation, PropLayer, PropRecipe, PropRecipeRules, PropPlacement, PointLightSpec, LightingPreset); Lot (ShapeRaster, PropPixels, PropSpriteCache, PropBuilder, PropAnimator, PropMotion, LotLighting, LightFlicker, PixelRecolour, DinerSkin, PixelFont O and P, LotDinerArt, LotDecor, LotLayoutBuilder, UncannyValet.Lot.asmdef); Run (LotDefinition palette, props and lighting fields, LotDefinitionRules); Editor (Art/RecipeKit, ArtAssets, MidgardArt, VanaheimArt, ArtAssetSetup, LotWorldSceneSetup.ApplyArt, ProjectSetup, BootstrapSceneBuilder); Data/Art (2 palettes, 13 recipes, 4 presets); both Midgard lot assets and scenes; tests (EditMode Lot and Run, PlayMode PropArtPlayModeTests, test asmdefs).
+Why: issue #116 of epic #79. Every prop is a recipe asset drawn once per lot load on the 32 px grid from a world palette with a 1 px outline and an optional sprite override; lots get a LightingPreset (global light plus up to 16 point lights, no shadows). The diner is re-skinned tan with a green roof by a palette swap of the MetroCity building.
+Tests: EditMode 1489 passed (recipe validation, generator and outline rule per shipped recipe, cache, override, builder, lighting cap, recolour, allocation-free ticks, lot art rules); PlayMode 47 passed (new PropArtPlayModeTests plus the lot smoke tests); RunBatch clean.

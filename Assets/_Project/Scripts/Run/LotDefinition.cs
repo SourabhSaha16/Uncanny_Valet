@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UncannyValet.Core.Modifiers;
@@ -37,6 +38,12 @@ namespace UncannyValet.Run
         private bool _pedestrianCurses;
         [SerializeField, Tooltip("The power or upgrade clearing this lot grants (None for training lots).")]
         private PowerGrant _grant;
+        [SerializeField, Tooltip("The colours of this lot's world; the props are drawn with it and the diner takes its wall and roof colours. Empty keeps the old look.")]
+        private WorldPalette _palette;
+        [SerializeField, Tooltip("The props of this lot (recipe and centre in lot space), drawn once when the lot loads. Needs the palette.")]
+        private List<PropPlacement> _props = new List<PropPlacement>();
+        [SerializeField, Tooltip("The lot's lighting: global light plus up to 16 point lights. Empty keeps the default lighting.")]
+        private LightingPreset _lighting;
 
         /// <summary>Most queue slots a layout is built for.</summary>
         public const int MaxQueueSlots = 6;
@@ -55,6 +62,9 @@ namespace UncannyValet.Run
         public IReadOnlyList<LotModifier> Modifiers => _modifiers;
         public int BlessingThreshold => _blessingThreshold;
         public PowerGrant Grant => _grant;
+        public WorldPalette Palette => _palette;
+        public IReadOnlyList<PropPlacement> Props => _props;
+        public LightingPreset Lighting => _lighting;
 
         /// <summary>True when hitting a patron walker with the driven car is a curse in this lot.</summary>
         public bool PedestrianCurses => _pedestrianCurses;

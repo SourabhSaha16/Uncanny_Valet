@@ -31,9 +31,20 @@ MonoBehaviour:
   - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
     _chance: 0.3
   _dials: []
+  _powerFill:
+    _perfectPark: 18
+    _perfectDropOff: 10
+    _driftPerSecond: 0.6
+    _driftCap: 4
   _modifiers: []
   _blessingThreshold: 150
   _pedestrianCurses: 0
   _grant:
     _power: 0
     _level: 1
+  _palette: {fileID: 11400000, guid: 4d54ee916fde2774fb2f1ba28ab178f8, type: 2}
+  _props:
+  - _recipe: {fileID: 11400000, guid: 526dff6741db1a74aaad918215e28e1a, type: 2}
+    _position: {x: -12.7, y: 2.1}
+    _sortingOrder: 6
+  _lighting: {fileID: 11400000, guid: 2e788effbb8a7ba499f9d900d0391cd3, type: 2}

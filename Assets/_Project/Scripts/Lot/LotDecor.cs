@@ -1,3 +1,4 @@
+using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ namespace UncannyValet.Lot
 
         [SerializeField] private LotConfig _config;
         [SerializeField] private LotArtConfig _art;
+        [SerializeField, Tooltip("Optional world palette: the diner building is re-skinned with its Wall and Roof colours. Set by the scene builder.")]
+        private WorldPalette _palette;
         [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot; 0 uses the LotConfig's count. Must match the lot builder's.")]
         private int _queueSlots;
 
@@ -66,7 +69,7 @@ namespace UncannyValet.Lot
             LotRoadArt.Build(transform, rects, l, l.Lot, _art);
             BuildStrip(rects, l);
             LotWalkwayArt.Build(transform, rects, new WalkwayLayout(Geometry, _config.Site.WalkwayWidth), _art.Walkway, _art.CrosswalkColor);
-            LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config);
+            LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config, _palette);
         }
 
 

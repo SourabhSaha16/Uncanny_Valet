@@ -14,6 +14,7 @@
         "UncannyValet.Valet",
         "UncannyValet.UI",
         "UncannyValet.Bootstrap",
+        "Unity.RenderPipelines.Universal.2D.Runtime",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
