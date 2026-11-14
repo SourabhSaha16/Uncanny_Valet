@@ -175,3 +175,9 @@ Date: 2026-11-14
 Files: UI/Flow/{FlowMachine,FlowController}.cs, UI/GameUi.cs, UI/Screens/{ResultsPainter,UiInput}.cs, Tests/EditMode/Flow/{FlowMachineTests,FlowControllerTests}.cs
 Why: Issue #84 owner decisions. After a failed crazy lot or finale the results screen offers only the continue path (Retry button greyed, Enter continues, hint reads ANY KEY: NEXT LOT); Retry stays for failed training and cleared lots. The title's lot picker is shown while F4 is held (F4 is unused elsewhere); F3 stays the Director overlay toggle.
 Tests: new EditMode tests FlowMachine Retry_IsOffAfterAFailedCrazyLot and FlowController Results_EnterContinuesInsteadOfRetrying; NOT run, see the report (Unity batch mode hung on a stuck bee_backend).
+
+## integration: results screen shows the local god verdict, Refs #85 [Claude]
+Date: 2026-11-14
+Files: Core/Story/{VerdictTier,VerdictRule,VerdictStory,TrainerStory,VerdictTextRules,StoryTextAsset,StoryTextRules}.cs, UI/Screens/{VerdictPicker,VerdictSpeech,ResultsContent,ResultsFormatter,ResultsPainter}.cs, UI/GameUi.cs, Editor/{VerdictTextDrafts,StoryAssetSetup}.cs, Data/UI/StoryText.asset, Tests/EditMode/Flow/VerdictTests.cs, Tests/EditMode/UncannyValet.Tests.EditMode.asmdef
+Why: Issue #85. Crazy lots and the finale show the god name and a failed, cleared or cleared-well speech line (cleared well at 1.5x the threshold, a field of the story text); training lots show a generic trainer line without a panel. Lines drafted for all nine gods and eight worlds in the editable story text asset (setup adds missing entries, never overwrites edits). Stats moved to two columns. GameUi reads the story text asset (Core), not the Run module. EditMode tests now reference the Editor assembly (for the drafts).
+Tests: EditMode 1772 passed (new VerdictTests); PlayMode 71 passed; RunBatch ok.

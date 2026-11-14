@@ -13,5 +13,9 @@ namespace UncannyValet.UI.Screens
         /// <summary>What is left to do, or the reached line.</summary>
         public string Goal;
         public StatLine[] Stats;
+        /// <summary>The god's name for the speech panel; empty on a training lot.</summary>
+        public string Speaker = string.Empty;
+        /// <summary>The verdict line, already wrapped to the panel; empty when there is none.</summary>
+        public string[] SpeechLines = System.Array.Empty<string>();
     }
 }

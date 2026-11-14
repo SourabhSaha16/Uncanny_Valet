@@ -18,6 +18,7 @@
         "UncannyValet.UI",
         "UncannyValet.Watchers",
         "UncannyValet.Bootstrap",
+        "UncannyValet.Editor",
         "Unity.RenderPipelines.Universal.2D.Runtime",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

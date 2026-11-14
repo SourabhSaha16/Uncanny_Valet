@@ -5,7 +5,7 @@ namespace UncannyValet.UI.Screens
 {
     /// <summary>
     /// The results screen: a dimmed lot, one big panel, the verdict (CLEARED or FAILED), the blessings against the
-    /// threshold with the bolt, stats lines, and Retry and Next Lot buttons (the god's verdict panel is task 85's: it replaces or shrinks the stats block, which is the one place with room).
+    /// threshold with the bolt, the stats in two columns, the local god's speech panel (a trainer line without a panel on a training lot), and the Retry and Next Lot buttons.
     /// </summary>
     public sealed class ResultsPainter
     {
@@ -24,11 +24,25 @@ namespace UncannyValet.UI.Screens
         private const int HeadingTop = 82;
         private const int ScoreTop = 92;
         private const int ScoreGap = 6;
-        private const int StatsLeft = 76;
         private const int StatsTop = 124;
-        private const int StatsRight = 292;
         private const int StatStep = 16;
-        private const int GoalTop = 200;
+        private const int StatColumns = 2;
+        private const int StatColumnWidth = 180;
+        private const int StatsLeft = 72;
+        private const int StatValueRight = 152;
+        private const int GoalTop = 160;
+        private const int TrainerTop = 184;
+        private const int SpeechStep = 9;
+        private const int SpeechPad = 8;
+        private const int SpeechNameTop = 5;
+        private const int SpeechTextTop = 17;
+        private static readonly PixelRect SpeechPanel = new PixelRect(72, 174, 336, 44);
+
+        /// <summary>Longest line of the speech, in characters, that fits the panel.</summary>
+        public const int SpeechChars = 50;
+
+        /// <summary>Most lines of the speech the panel holds.</summary>
+        public const int MaxSpeechLines = 3;
 
         private readonly PixelCanvas _canvas;
 
@@ -47,6 +61,7 @@ namespace UncannyValet.UI.Screens
             DrawBlessings(content.Blessings);
             DrawStats(content);
             DrawCentered(content.Goal, GoalTop, 1, PixelPalette.Cream);
+            DrawSpeech(content);
             DrawButtons(canRetry);
         }
 
@@ -64,11 +79,30 @@ namespace UncannyValet.UI.Screens
             for (var i = 0; i < content.Stats.Length; i++)
             {
                 var line = content.Stats[i];
-                var y = StatsTop + i * StatStep;
-                _canvas.Icon(line.Icon, StatsLeft, y, 1, Color.white);
-                _canvas.Text(line.Label, StatsLeft + 16, y + 1, PixelPalette.Cream);
+                var left = StatsLeft + i % StatColumns * StatColumnWidth;
+                var y = StatsTop + i / StatColumns * StatStep;
+                _canvas.Icon(line.Icon, left, y, 1, Color.white);
+                _canvas.Text(line.Label, left + 16, y + 1, PixelPalette.Cream);
                 var width = PixelTextLayout.Width(line.Value.Length, 1);
-                _canvas.Text(line.Value, StatsRight - width, y + 1, PixelPalette.Gold);
+                _canvas.Text(line.Value, left + StatValueRight + 16 - width, y + 1, PixelPalette.Gold);
+            }
+        }
+
+        private void DrawSpeech(ResultsContent content)
+        {
+            if (content.SpeechLines.Length == 0) return;
+            var godPanel = content.Speaker.Length > 0;
+            var top = godPanel ? SpeechPanel.Y + SpeechTextTop : TrainerTop;
+            if (godPanel)
+            {
+                _canvas.Panel(SpeechPanel.X, SpeechPanel.Y, SpeechPanel.Width, SpeechPanel.Height, PixelPalette.Ink);
+                _canvas.Text(content.Speaker + ":", SpeechPanel.X + SpeechPad, SpeechPanel.Y + SpeechNameTop, PixelPalette.Gold);
+            }
+            for (var i = 0; i < content.SpeechLines.Length; i++)
+            {
+                var line = content.SpeechLines[i];
+                var x = godPanel ? SpeechPanel.X + SpeechPad : PixelTextLayout.Centered(0, PixelGrid.Width, PixelTextLayout.Width(line.Length, 1));
+                _canvas.Text(line, x, top + i * SpeechStep, PixelPalette.Cream);
             }
         }
 

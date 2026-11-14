@@ -49,7 +49,8 @@ namespace UncannyValet.Core.Story
             return CheckLine(story.Farewell, "farewell of " + power, WrappedLength) ?? (string.IsNullOrEmpty(story.Description) ? null : CheckLine(story.Description, "description of " + power, WrappedLength));
         }
 
-        private static string CheckLine(string line, string where, int maxLength)
+        /// <summary>Null when the line is non-empty, within <paramref name="maxLength"/> and only uses pixel font characters, otherwise the fault.</summary>
+        public static string CheckLine(string line, string where, int maxLength)
         {
             if (string.IsNullOrWhiteSpace(line)) return "empty line in " + where;
             var shown = line.Replace(Placeholder, string.Empty);
