@@ -35,6 +35,7 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(DamageRows.Rows);
             all.AddRange(ShakeRows.Rows);
             all.AddRange(PedestrianHitRows.Rows);
+            all.AddRange(MudRows.Rows);
             return all;
         }
     }

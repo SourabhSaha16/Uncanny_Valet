@@ -134,6 +134,7 @@ namespace UncannyValet.Cars
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def, Kit.Live);
             go.AddComponent<CarAutoDrive>();
+            go.AddComponent<CarMudEffect>();
             go.AddComponent<CarCollisionResponse>().Initialize(Kit);
             go.AddComponent<CarDamage>().Initialize(Kit.Live);
             go.AddComponent<CarPedestrianSlow>().Initialize(Kit);

@@ -22,6 +22,8 @@ namespace UncannyValet.Lot
         private LotArtConfig _art;
         [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot (the lot definition's); 0 uses the LotConfig's count. Set by the scene builder.")]
         private int _queueSlots;
+        [SerializeField, Tooltip("The lot's mud puddles in lot space (from its mud modifier). Set by the scene builder; empty means no mud.")]
+        private MudPatch[] _mudPatches = System.Array.Empty<MudPatch>();
 
         private LotExpander _expander;
         private SpotOccupancy _occupancy;
@@ -63,6 +65,7 @@ namespace UncannyValet.Lot
             new LotFrame(rects, transform, c.WallThickness,
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
             BuildDiner(g);
+            MudPatchBuilder.Build(transform, _mudPatches);
             var judge = gameObject.AddComponent<PerfectRunner>();
             var curb = BuildCurb(rects);
             judge.Init(c, curb);

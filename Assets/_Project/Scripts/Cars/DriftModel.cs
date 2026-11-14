@@ -8,24 +8,28 @@ namespace UncannyValet.Cars
     /// </summary>
     public static class DriftModel
     {
-        /// <summary>Grip for this step: 1 up to GripLowSpeed, blending to GripAtSpeed at GripHighSpeed, scaled while the handbrake is held.</summary>
-        public static float Grip(float speed, bool drift, in DriftSettings s)
+        /// <summary>
+        /// Grip for this step: 1 up to GripLowSpeed, blending to GripAtSpeed at GripHighSpeed, scaled while the handbrake is held.
+        /// <paramref name="gripLossScale"/> scales the loss (1 minus grip): 1 changes nothing, 0.4 keeps 40% of the loss.
+        /// </summary>
+        public static float Grip(float speed, bool drift, in DriftSettings s, float gripLossScale = 1f)
         {
             var blend = Mathf.InverseLerp(s.GripLowSpeed, s.GripHighSpeed, speed);
             var grip = Mathf.Lerp(1f, s.GripAtSpeed, blend);
-            return drift && speed > s.DriftMinSpeed ? grip * s.DriftGripScale : grip;
+            var normal = drift && speed > s.DriftMinSpeed ? grip * s.DriftGripScale : grip;
+            return gripLossScale == 1f ? normal : 1f - (1f - normal) * gripLossScale;
         }
 
         /// <summary>
         /// One step: damps the sideways part of <paramref name="velocity"/> (relative to the unit <paramref name="facing"/>)
         /// and hands part of the speed that removal costs back along the direction of travel.
         /// </summary>
-        public static Vector2 Step(Vector2 velocity, Vector2 facing, bool drift, in DriftSettings s, float dt)
+        public static Vector2 Step(Vector2 velocity, Vector2 facing, bool drift, in DriftSettings s, float dt, float gripLossScale = 1f)
         {
             var right = new Vector2(facing.y, -facing.x);
             var forward = Vector2.Dot(velocity, facing);
             var sideways = Vector2.Dot(velocity, right);
-            var grip = Grip(velocity.magnitude, drift, s);
+            var grip = Grip(velocity.magnitude, drift, s, gripLossScale);
             var kept = sideways * Mathf.Exp(-s.LateralFriction * grip * dt);
             // Damping the sideways part lowers the speed (hypot); ForwardGrip of that loss is handed back along the
             // travel direction. 1 keeps the speed exactly (a slide turns into a curve), 0 scrubs it.

@@ -69,6 +69,15 @@ namespace UncannyValet.Run
             _powerFill.SeedInto(tuning);
             for (var i = 0; i < _modifierChances.Count; i++)
                 tuning.Seed(_modifierChances[i].Modifier.ChanceKey, _modifierChances[i].Chance);
+            for (var i = 0; i < _modifiers.Count; i++) _modifiers[i].SeedInto(tuning);
+        }
+
+        /// <summary>What the lot's mechanics add to the world (the mud patch list); the scene builder hands it to the lot builder.</summary>
+        public LotWorldSpec BuildWorldSpec()
+        {
+            var spec = new LotWorldSpec();
+            for (var i = 0; i < _modifiers.Count; i++) _modifiers[i].Describe(spec);
+            return spec;
         }
 
         /// <summary>The definitions of the lot's modifiers in roll order (the modifier catalog of the lot).</summary>

@@ -76,6 +76,7 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
             PedestrianHitRows.Seed(t, lot != null && lot.PedestrianCurses);
+            MudRows.SeedDefaults(t); // a lot's mud modifier overrides these in SeedPacing below
             lot?.SeedPacing(t, shift.GameMinutesPerSecond); // the lot's numbers and arrival budget win over the shared defaults
             return SeedDials(t, director, bus, lot);
         }

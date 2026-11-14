@@ -99,7 +99,8 @@ namespace UncannyValet.Cars
             var input = HasDriver ? Modifiers.Apply(new DriveInput(_throttle, _steer, _drift)) : default;
             Vector2 up = transform.up;
             Observe(_body.linearVelocity, up, input);
-            var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime);
+            var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime,
+                input.GripLossScale);
             var forward = Vector2.Dot(velocity, up);
             var drive = _handling.DriveFor(_definition);
             var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, drive.Acceleration * input.AccelerationScale,

@@ -844,3 +844,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a008fbb1a42b53c44 (PedestrianHit event, KnockbackCurve, WalkerKnockback, PedestrianWalker.TryKnockback, CarPedestrianSlow and PedestrianSlowRule, PedestrianCurseRule in ShiftBlessings, SfxYelp (SfxId 26), PedestrianHitRows with 11 appended TuningKeys, LotDefinition pedestrian curses switch, Midgard lot assets, tests), docs/changelogs/lead.md
 Why: story epic 79, task 93. Any pedestrian hit knocks the walker away 0.7 to 4 units by speed with a tumble and a comic yelp and slows the driven car 15% without a bounce; only the valet's driven car hitting a patron walker is a curse of 5 (3 s per-patron lockout, resets favour); a per-lot switch (on for Midgard crazy, off for training).
 Tests: 1429 of 1429 EditMode, 40 of 40 PlayMode after the merge and RunBatch (scene churn reverted).
+
+## lead: merge agent/cars mud patches slow cars and dull drifting (#94) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a2cf5ff2576594298 (MudPatch/IMudPatches/LotWorldSpec, LotModifier virtuals, MudPatchModifier, MudPatchBuilder/MudBlobArt, CarMudEffect/MudModifier/MudBlend/CarMudProbe, DriveInput.GripLossScale and DriftModel grip scale, CarAutoDrive scaling, MudRows with four appended TuningKeys, LotWorldSceneSetup, tests), docs/changelogs/lead.md
+Why: story epic 79, task 94. Mud patches are a lot modifier: any car with its centre or a wheel point inside a patch gets top speed and acceleration x0.6 and keeps 40% of its normal grip loss, releasing over 0.3 s; the valet on foot, pedestrians and service modifiers are unaffected; patches are brown pixel blobs. The Vanaheim lots (task 107) will list a MudPatchModifier asset and set the Muddy chances.
+Tests: 1455 of 1455 EditMode, 44 of 44 PlayMode after the merge and RunBatch (scene churn reverted).
