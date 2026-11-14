@@ -67,7 +67,7 @@ namespace UncannyValet.Tests.PlayMode
             PlayScene(VanaheimCrazyPath, new LotId(World.Vanaheim, LotKind.Crazy));
 
         [UnityTest]
-        public IEnumerator VanaheimTrainingLot_HasThreeQueueSlots_AndAllowsTwoWaiting() => CheckQueue(VanaheimTrainingPath, 3, 2, 3, 8);
+        public IEnumerator VanaheimTrainingLot_HasFourQueueSlots_AndTheDirectorPacesTwoWaiting() => CheckQueue(VanaheimTrainingPath, 4, 2, 4, 8);
 
         [UnityTest]
         public IEnumerator VanaheimCrazyLot_HasFourQueueSlots_AndFourCarsCanWait() => CheckQueue(VanaheimCrazyPath, 4, 4, 4, 20);
@@ -95,7 +95,7 @@ namespace UncannyValet.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator TrainingLot_HasThreeQueueSlots_AndAllowsTwoWaiting() => CheckQueue(ScenePath, 3, 2, 3, 8);
+        public IEnumerator TrainingLot_HasFourQueueSlots_AndTheDirectorPacesTwoWaiting() => CheckQueue(ScenePath, 4, 2, 4, 8);
 
         [UnityTest]
         public IEnumerator CrazyLot_HasFourQueueSlots_AndFourCarsCanWait() => CheckQueue(CrazyScenePath, 4, 4, 4, 20);

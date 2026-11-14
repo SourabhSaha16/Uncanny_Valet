@@ -48,8 +48,6 @@ namespace UncannyValet.Lot
         public Vector2 ValetStartPoint { get; private set; }
         /// <summary>Starting Perfect Park and drop-off thresholds, for Bootstrap to seed into the tuning store.</summary>
         public PerfectSettings Perfect => _config.Perfect;
-        /// <summary>Starting queue-clear distance for the stay start rule, for Bootstrap to seed into the tuning store.</summary>
-        public QueueClearSettings QueueClear => _config.QueueClear;
         public int RegularSpotCount { get; private set; }
         public int ChargingSpotCount { get; private set; }
         public bool HasWashStation => WashStationCount > 0;
@@ -85,9 +83,8 @@ namespace UncannyValet.Lot
             var judge = gameObject.AddComponent<PerfectRunner>();
             var curb = BuildCurb(rects);
             judge.Init(c, curb);
-            gameObject.AddComponent<QueueClearRunner>().Init(c, c.QueueClear);
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
-            LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
+            LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white, c);
             BuildWashStations(rects, g);
 
             var ids = new List<int>();

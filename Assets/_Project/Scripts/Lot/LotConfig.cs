@@ -7,7 +7,6 @@ namespace UncannyValet.Lot
     public class LotConfig : ScriptableObject
     {
         [SerializeField] private PerfectSettings _perfect = new PerfectSettings();
-        [SerializeField] private QueueClearSettings _queueClear = new QueueClearSettings();
 
         [Header("Spots")]
         [SerializeField, Tooltip("Size of one tall bay (width, length). The bay grid itself is fixed by BayPlan: two rows of four.")]
@@ -45,8 +44,8 @@ namespace UncannyValet.Lot
         [SerializeField] private float _valetStartOffset = 1.5f;
 
         [Header("Arrival queue")]
-        [Range(1, 8), Tooltip("Number of waiting slots stacked in a column under the curb; slot 0 is the arrival point, nearest the curb. The queue cap is 3.")]
-        [SerializeField] private int _queueSlotCount = 3;
+        [Range(1, 8), Tooltip("Number of waiting slots stacked in a column under the curb; slot 0 is the arrival point and the valet pickup spot, nearest the curb. The lot definition sets the real count (4).")]
+        [SerializeField] private int _queueSlotCount = 4;
         [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
         [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
         [Min(0f), Tooltip("Gap between the sides of neighbouring waiting cars.")]
@@ -86,11 +85,19 @@ namespace UncannyValet.Lot
 
         [Header("Labels")]
         [Min(0.1f), Tooltip("Size of the vertical curb text; the longest word's letters must fit inside the curb height (about 1.15 lines per size).")]
-        [SerializeField] private float _curbLabelSize = 0.65f;
+        [SerializeField] private float _curbLabelSize = 0.52f;
         [Tooltip("Words written vertically (one column each, left to right) on the curb zone.")]
-        [SerializeField] private string[] _curbLabelWords = { "VALET", "PICKUP" };
+        [SerializeField] private string[] _curbLabelWords = { "VALET", "DROP-OFF" };
         [Min(0.1f), Tooltip("Distance between the columns of the curb text.")]
         [SerializeField] private float _curbLabelColumnSpacing = 0.95f;
+        [Min(0.1f), Tooltip("Size of the vertical text on the valet pickup spot (the first queue slot).")]
+        [SerializeField] private float _pickupLabelSize = 0.5f;
+        [Tooltip("Words written vertically (one column each) on the valet pickup spot.")]
+        [SerializeField] private string[] _pickupLabelWords = { "VALET", "PICKUP" };
+        [Min(0.1f), Tooltip("Distance between the columns of the pickup spot text.")]
+        [SerializeField] private float _pickupLabelColumnSpacing = 0.8f;
+        [Tooltip("Colour of the dashed outline of the valet pickup spot (the other queue slots use the crosswalk colour).")]
+        [SerializeField] private Color _pickupSlotColor = new Color(1f, 0.85f, 0.2f, 1f);
         [SerializeField] private float _labelSize = 1.6f;
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);
 
@@ -103,6 +110,10 @@ namespace UncannyValet.Lot
         public float LabelSize => _labelSize;
         public Color LabelColor => _labelColor;
         public float CurbLabelSize => _curbLabelSize;
+        public float PickupLabelSize => _pickupLabelSize;
+        public string[] PickupLabelWords => _pickupLabelWords;
+        public float PickupLabelColumnSpacing => _pickupLabelColumnSpacing;
+        public Color PickupSlotColor => _pickupSlotColor;
         public string[] CurbLabelWords => _curbLabelWords;
         public float CurbLabelColumnSpacing => _curbLabelColumnSpacing;
         public int QueueSlotCount => Mathf.Max(1, _queueSlotCount);
@@ -127,7 +138,6 @@ namespace UncannyValet.Lot
         public float CurbFacingToleranceDegrees => _curbFacingToleranceDegrees;
         public CurbArrowStyle CurbArrow => _curbArrow;
         public PerfectSettings Perfect => _perfect;
-        public QueueClearSettings QueueClear => _queueClear;
         public float SettleSeconds => _settleSeconds;
         public float StoppedSpeed => _stoppedSpeed;
         public float Margin => _margin;

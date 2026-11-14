@@ -7,7 +7,8 @@ using UnityEngine;
 namespace UncannyValet.Pedestrians
 {
     /// <summary>
-    /// The patrons on foot, from a pool of people. A patron gets out of the arrived car and walks to the diner, comes
+    /// The patrons on foot, from a pool of people. A patron gets out of the car in the pickup spot when the valet comes
+    /// up to it (PatronStepsOut), walks to the diner (PatronEnteredDiner at the door), comes
     /// out again when summoned and waits at the curb (announcing PatronReachedCurb), then boards the delivered car
     /// (PatronBoarded) or vanishes quietly if the ticket ends without a delivery. One person per car at most.
     /// </summary>
@@ -32,7 +33,7 @@ namespace UncannyValet.Pedestrians
             _bus = bus; _paths = paths; _cars = cars; _router = router; _config = config;
             _slotTaken = new bool[Mathf.Max(1, paths.CurbSlotCount)];
             foreach (var walker in pool) _free.Push(walker);
-            _bus.Subscribe<CarArrived>(OnCarArrived);
+            _bus.Subscribe<PatronStepsOut>(OnStepsOut);
             _bus.Subscribe<PatronSummoned>(OnSummoned);
             _bus.Subscribe<CarDelivered>(OnDelivered);
             _bus.Subscribe<TicketClosed>(OnClosed);
@@ -41,7 +42,7 @@ namespace UncannyValet.Pedestrians
 
         public void Dispose()
         {
-            _bus.Unsubscribe<CarArrived>(OnCarArrived);
+            _bus.Unsubscribe<PatronStepsOut>(OnStepsOut);
             _bus.Unsubscribe<PatronSummoned>(OnSummoned);
             _bus.Unsubscribe<CarDelivered>(OnDelivered);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
@@ -69,13 +70,15 @@ namespace UncannyValet.Pedestrians
         /// <summary>A patron's walk ended: move on, and tell the game when they reach the curb.</summary>
         public void OnRouteFinished(PedestrianWalker walker)
         {
+            var wasToDoor = walker.Brain.Phase == PedestrianPhase.ToDoor;
             walker.Brain.ReachedRouteEnd();
             _router.Apply(walker);
+            if (wasToDoor) _bus.Publish(new PatronEnteredDiner(walker.Car));
             if (walker.Brain.Phase != PedestrianPhase.Waiting) return;
             _bus.Publish(new PatronReachedCurb(walker.Car));
         }
 
-        private void OnCarArrived(CarArrived e)
+        private void OnStepsOut(PatronStepsOut e)
         {
             if (_byCar.ContainsKey(e.Car) || !_cars.TryGet(e.Car, out var car) || car.Transform == null) return;
             var walker = Rent(e.Car);

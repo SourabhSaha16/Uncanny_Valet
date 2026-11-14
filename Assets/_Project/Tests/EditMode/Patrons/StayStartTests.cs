@@ -6,11 +6,10 @@ using UncannyValet.Patrons;
 
 namespace UncannyValet.Tests.Patrons
 {
-    /// <summary>The stay clock starts at the first rest clear of the queue, a bay park, or the queue wait limit (issue 78).</summary>
+    /// <summary>The stay clock starts only when the patron walks into the diner (issue 126; replaces the queue-distance and fallback rules of issue 78).</summary>
     public class StayStartTests
     {
         private const float Stay = 30f;
-        private static readonly float Wait = ServiceTuning.DefaultQueueWaitMinutes;
 
         private sealed class FakeClock : IGameClock
         {
@@ -55,50 +54,60 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ACarLeftInTheQueue_IsNotAskedForBeforeTheLimitPlusTheStay()
+        public void StayStartsWhenThePatronEntersTheDiner_NotBefore()
+        {
+            var t = Arrive(1, 1f);
+            Tick(10f);
+            Assert.IsFalse(t.StayStarted);
+            _clock.ElapsedMinutes = 12f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.IsTrue(t.StayStarted);
+            Assert.AreEqual(12f + Stay, t.ReturnMinute);
+            Assert.AreEqual(1, _started.Count);
+            Assert.AreEqual(12f, _started[0].Minute);
+        }
+
+        [Test]
+        public void ACarThatStaysInTheQueue_NeverStartsItsStay_AndNeverFallsBackToATimer()
         {
             var requested = 0;
             _bus.Subscribe<PickupRequested>(e => requested++);
             var t = Arrive(1, 0f);
-            for (var m = 0.5f; m < Wait + Stay; m += 0.5f) Tick(m);
-            Assert.AreEqual(0, requested, "handing it back fast is no longer possible");
-            Tick(Wait + Stay);
-            Assert.AreEqual(TicketState.PickupRequested, t.State);
-        }
-
-        [Test]
-        public void StayStartsAtTheFirstRestClearOfTheQueue_AndMovingBackDoesNotRestartIt()
-        {
-            var t = Arrive(1, 1f);
-            _clock.ElapsedMinutes = 2f;
-            _bus.Publish(new CarClearedQueue(t.CarId));
-            _clock.ElapsedMinutes = 4f;
-            _bus.Publish(new CarClearedQueue(t.CarId));
-            Assert.AreEqual(2f + Stay, t.ReturnMinute);
-            Assert.AreEqual(1, _started.Count);
-            Assert.AreEqual(2f, _started[0].Minute);
-        }
-
-        [Test]
-        public void QueueWaitLimit_StartsTheStayAtArrivalPlusTheLimit_AndOnlyOnce()
-        {
-            var t = Arrive(1, 5f);
-            Tick(5f + Wait - 0.1f);
+            for (var m = 0.5f; m < 500f; m += 0.5f) Tick(m);
             Assert.IsFalse(t.StayStarted);
-            Tick(5f + Wait);
-            Assert.IsTrue(t.StayStarted);
-            Assert.AreEqual(5f + Wait + Stay, t.ReturnMinute);
-            Tick(5f + Wait + 1f);
-            Assert.AreEqual(1, _started.Count);
+            Assert.AreEqual(0, _started.Count);
+            Assert.AreEqual(0, requested);
         }
 
         [Test]
-        public void ParkingInABay_StartsTheStayEvenWithoutAClearReport()
+        public void ParkingTheCar_DoesNotStartTheStay_BeforeThePatronIsInside()
         {
             var t = Arrive(1, 0f);
             _clock.ElapsedMinutes = 1f;
             _bus.Publish(new CarParked(t.CarId, 3));
-            Assert.AreEqual(1f + Stay, t.ReturnMinute);
+            Assert.IsFalse(t.StayStarted, "the car was handed over but the patron has not reached the diner");
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(4f + Stay, t.ReturnMinute);
+        }
+
+        [Test]
+        public void EnteringTwice_StartsTheStayOnlyOnce()
+        {
+            var t = Arrive(1, 1f);
+            _clock.ElapsedMinutes = 2f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(2f + Stay, t.ReturnMinute);
+            Assert.AreEqual(1, _started.Count);
+        }
+
+        [Test]
+        public void ADinerEntryForAnUnknownCar_IsIgnored()
+        {
+            _bus.Publish(new PatronEnteredDiner(new CarId(99)));
+            Assert.AreEqual(0, _started.Count);
         }
 
         [Test]
@@ -109,7 +118,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<PatronReturnShifted>(e => shifted++);
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(0, shifted);
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(1, shifted);
         }
@@ -119,7 +128,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var t = new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1");
             Assert.IsFalse(t.StayEnded(1000f));
-            Assert.IsFalse(t.QueueWaitOver(1000f, Wait), "never arrived, so no queue wait");
+            Assert.IsTrue(float.IsPositiveInfinity(t.ReturnMinute));
         }
     }
 }

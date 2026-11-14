@@ -33,7 +33,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus(); _clock = new FakeClock();
-            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), ServiceTuning.Default, null, null, ModifierTestKit.Catalog());
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), null, null, ModifierTestKit.Catalog());
             _charges = 0; _expired = 0;
             _bus.Subscribe<ModifierProgressChanged>(e => _charges++);
             _bus.Subscribe<TicketTimerExpired>(e => _expired++);

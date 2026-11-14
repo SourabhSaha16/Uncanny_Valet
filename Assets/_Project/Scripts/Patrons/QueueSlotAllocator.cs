@@ -17,14 +17,15 @@ namespace UncannyValet.Patrons
         private readonly IEventBus _bus;
         private readonly TicketRegistry _registry;
         private readonly IArrivalScan _scan;
-        private readonly PatronPlan _plan;
+        private readonly int _capacity;
         private readonly ArrivalReservations _reservations = new ArrivalReservations();
         private readonly QueueSlotChooser _chooser = new QueueSlotChooser();
         private readonly List<bool> _ahead = new List<bool>();
 
-        public QueueSlotAllocator(IEventBus bus, TicketRegistry registry, IArrivalScan scan, PatronPlan plan)
+        /// <param name="capacity">Cars the queue holds at once, the pickup spot included (slot 0 is the pickup spot).</param>
+        public QueueSlotAllocator(IEventBus bus, TicketRegistry registry, IArrivalScan scan, int capacity)
         {
-            _bus = bus; _registry = registry; _scan = scan; _plan = plan;
+            _bus = bus; _registry = registry; _scan = scan; _capacity = capacity;
             _bus.Subscribe<CarArrived>(OnCarArrived);
             _bus.Subscribe<TicketClosed>(OnTicketClosed);
             _bus.Subscribe<ShiftStarted>(OnShiftEdge);
@@ -42,14 +43,13 @@ namespace UncannyValet.Patrons
         /// <summary>Cars currently holding a slot reservation.</summary>
         public int ReservedCount => _reservations.Count;
 
-        /// <summary>The slot for a car sent now, or <see cref="ArrivalGate.NoSlot"/> (cap reached or no reachable free slot).</summary>
+        /// <summary>The slot for a car sent now, or <see cref="ArrivalGate.NoSlot"/> when the queue is full (every position holds or is promised a car).</summary>
         public int ChooseForSpawn()
         {
-            if (_registry.AwaitingParkCount >= _plan.MaxWaitingCars) return ArrivalGate.NoSlot;
             _reservations.Prune(_registry);
-            var occupied = _scan.Scan(_plan.MaxWaitingCars);
+            var occupied = _scan.Scan(_capacity);
             FillAhead(occupied.Count, new CarId(int.MaxValue));
-            return _chooser.Choose(occupied, _ahead, _plan.MaxWaitingCars);
+            return _chooser.Choose(occupied, _ahead, _capacity);
         }
 
         /// <summary>Records that <paramref name="car"/> was sent to <paramref name="slot"/>.</summary>
@@ -60,9 +60,9 @@ namespace UncannyValet.Patrons
         {
             _reservations.Prune(_registry);
             if (!_reservations.TryHolder(currentSlot, out var car)) return currentSlot;
-            var occupied = _scan.Scan(_plan.MaxWaitingCars);
+            var occupied = _scan.Scan(_capacity);
             FillAhead(occupied.Count, car);
-            var target = _chooser.Choose(occupied, _ahead, _plan.MaxWaitingCars);
+            var target = _chooser.Choose(occupied, _ahead, _capacity);
             if (target == ArrivalGate.NoSlot || target >= currentSlot || _reservations.IsReserved(target)) return currentSlot;
             _reservations.Move(car, target);
             return target;

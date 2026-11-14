@@ -100,6 +100,12 @@ namespace UncannyValet.Cars
             drive.BeginDeparting(car.Definition, () => Despawn(id));
         }
 
+        public bool TryDriveTo(CarId id, Vector2 target, float speed)
+        {
+            if (!_cars.TryGetValue(id, out var car) || car == null || car.HasDriver) return false;
+            return car.GetComponent<CarAutoDrive>().TryBeginAdvancing(car.Definition, target, speed);
+        }
+
         public bool TryGet(CarId id, out IDrivable car)
         {
             var found = _cars.TryGetValue(id, out var driver);

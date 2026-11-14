@@ -125,7 +125,7 @@ namespace UncannyValet.Core.Events
         public PatronReachedCurb(CarId car) { Car = car; }
     }
 
-    /// <summary>The patron's stay clock started (the car came to rest clear of the queue, was parked, or waited too long in it). Minute is the game minute.</summary>
+    /// <summary>The patron's stay clock started: the patron walked into the diner (<see cref="PatronEnteredDiner"/>). Minute is the game minute.</summary>
     public readonly struct StayStarted : IGameEvent
     {
         public readonly TicketId Ticket;

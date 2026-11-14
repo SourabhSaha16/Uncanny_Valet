@@ -17,15 +17,11 @@ namespace UncannyValet.Patrons
         private int _nextId = 1;
 
         /// <param name="plates">Plate source; null uses a pool seeded with <see cref="DefaultPlateSeed"/>.</param>
-        public TicketBook(ServiceTuning tuning, ModifierFactory modifiers, PlatePool plates = null)
+        public TicketBook(ModifierFactory modifiers, PlatePool plates = null)
         {
-            Tuning = tuning;
             _modifiers = modifiers;
             _plates = plates ?? new PlatePool(new SeededPatronRandom(DefaultPlateSeed));
         }
-
-        /// <summary>Service numbers given to tickets created from now on.</summary>
-        public ServiceTuning Tuning { get; set; }
 
         public int Count => _byTicket.Count;
 

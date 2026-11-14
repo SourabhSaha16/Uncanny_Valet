@@ -38,7 +38,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus();
-            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings(), ServiceTuning.Default, null,
+            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings(), null,
                 new PlatePool(new ConstantRandom()));
             _plates = new List<CarPlateAssigned>();
             _order = new List<IGameEvent>();

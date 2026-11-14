@@ -48,13 +48,14 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void TheDefaultQueueIsAColumnOfThreeThatGrowsDownTheScreen()
+        public void TheDefaultQueueIsAColumnOfFourThatGrowsDownTheScreen()
         {
             var slots = DefaultSlots();
-            Assert.AreEqual(3, slots.Length);
-            Assert.AreEqual(slots[0].x, slots[2].x, 0.0001f);
+            Assert.AreEqual(4, slots.Length, "the valet pickup spot plus three queue slots");
+            Assert.AreEqual(slots[0].x, slots[3].x, 0.0001f);
             Assert.Less(slots[1].y, slots[0].y);
             Assert.Less(slots[2].y, slots[1].y);
+            Assert.Less(slots[3].y, slots[2].y);
         }
 
         [Test]

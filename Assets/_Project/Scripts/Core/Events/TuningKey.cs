@@ -264,11 +264,11 @@ namespace UncannyValet.Core.Events
         RetiredPowerStumbleSeconds,
         /// <summary>Retired: sparkle trail of the removed speed boost. Reserved slot, never reuse or remove.</summary>
         RetiredPowerTrailPerSecond,
-        // Patron stay start: when a queued car's clock starts (Lot and Patrons own). Issue 78.
-        /// <summary>World units a resting car must be from the nearest queue slot centre for the patron's stay to start.</summary>
-        QueueClearDistance,
-        /// <summary>Game minutes after arrival at which a car still in the queue gets its stay started anyway.</summary>
-        QueueMaxWaitMinutes,
+        // Retired queue stay-start keys (issue 78, replaced by issue 126: the stay starts when the patron enters the diner).
+        /// <summary>Retired: the queue clear distance of issue 78. Reserved slot, never reuse or remove.</summary>
+        RetiredQueueClearDistance,
+        /// <summary>Retired: the queue maximum wait of issue 78. Reserved slot, never reuse or remove.</summary>
+        RetiredQueueMaxWaitMinutes,
         // Car damage (Cars owns). Issue 19.
         /// <summary>Smallest impact force (speed change, units per second) that damages a car.</summary>
         DamageMinForce,

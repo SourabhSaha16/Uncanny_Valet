@@ -40,7 +40,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus(); _clock = new FakeClock(); _blessings = new FakeBlessings();
-            _registry = new TicketRegistry(_bus, _clock, _blessings, ServiceTuning.Default, null, null, ModifierTestKit.Catalog());
+            _registry = new TicketRegistry(_bus, _clock, _blessings, null, null, ModifierTestKit.Catalog());
             _log = new List<IGameEvent>();
             _bus.Subscribe<CarSpawned>(e => _log.Add(e));
             _bus.Subscribe<TicketOpened>(e => _log.Add(e));
@@ -59,7 +59,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var t = _registry.Create(_car, new PatronRequest(10f, 20, false, 60f, modifiers));
             _registry.AnnounceArrival(t);
-            _bus.Publish(new CarClearedQueue(_car));
+            _bus.Publish(new PatronEnteredDiner(_car));
             return t;
         }
 

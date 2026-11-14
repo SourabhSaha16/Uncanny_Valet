@@ -61,6 +61,7 @@ namespace UncannyValet.Tests.Patrons
         public void DeliveredClose_PublishesCarDeliveredThenTicketClosed()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Tick(20f);
             _bus.Publish(new CarAtCurb(_car));
 
@@ -74,6 +75,7 @@ namespace UncannyValet.Tests.Patrons
         public void LatePickupClose_PublishesCarDeliveredThenTicketClosed()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Tick(20f);
             Tick(90f);
             _bus.Publish(new CarAtCurb(_car));
@@ -94,6 +96,7 @@ namespace UncannyValet.Tests.Patrons
         public void NightEndWhileParkedOrRequested_ClosesWithoutCarDelivered()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Tick(20f);
             _bus.Publish(new ShiftEnded());
             AssertClosedWithoutDelivery();

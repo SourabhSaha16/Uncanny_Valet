@@ -19,6 +19,7 @@ namespace UncannyValet.Patrons
         private ICarFactory _cars;
         private ILotLayout _lot;
         private QueueSlotAllocator _slots;
+        private QueueAdvancer _queue;
         private PatronTuning _tuning;
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
@@ -54,8 +55,10 @@ namespace UncannyValet.Patrons
             Registry = new TicketRegistry(_bus, _clock, Services.Get<IBlessingCalculator>(), tuning, score, _catalog);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
             Services.Register<IPickupAcceptance>(new PickupAcceptance(Registry));
-            _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);
+            var capacity = Mathf.Min(_config.Pickup.MaxQueuedCars, _lot.ArrivalSlots.Count);
+            _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), capacity);
             Services.Register<IQueueSlotSource>(_slots);
+            _queue = new QueueAdvancer(_bus, _cars, _lot, new ArrivalSlotScanner(_config.Pickup.AdvanceClearSize, _lot), _config.Pickup);
             _departure = new PatronDeparture(_bus, _cars, _clock, _config.BoardingTimeoutMinutes);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -74,12 +77,20 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<PatronScheduled>(OnPatronScheduled);
             Registry.Dispose();
             _slots.Dispose();
+            _queue.Dispose();
             _departure.Dispose();
         }
 
+        private void Update()
+        {
+            if (_queue == null) return;
+            if (_queue.Focus == null && Services.TryGet<IPlayerFocus>(out var focus)) _queue.Focus = focus;
+            _queue.Tick();
+        }
+
         /// <summary>
-        /// The single entry point for a patron arrival (story cards call this too). Fails when the waiting
-        /// cap is reached or no queue slot is clear; the caller may retry later.
+        /// The single entry point for a patron arrival (story cards call this too). Fails when the queue is
+        /// full (every position holds a car); the caller may retry later.
         /// </summary>
         public bool TrySpawn(PatronRequest request, out Ticket ticket)
         {

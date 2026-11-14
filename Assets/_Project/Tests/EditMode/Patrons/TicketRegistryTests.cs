@@ -52,9 +52,10 @@ namespace UncannyValet.Tests.Patrons
         public void WholeTicket_OpenParkWaitPickupClose()
         {
             var ticket = _registry.Open(_car, new PatronRequest(30f, 20, true));
-            _bus.Publish(new CarClearedQueue(_car));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Tick(10f);
             _bus.Publish(new CarParked(_car, 3));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Assert.AreEqual(TicketState.Parked, ticket.State);
 
             Tick(29f);
@@ -81,6 +82,7 @@ namespace UncannyValet.Tests.Patrons
             var ticket = _registry.Open(_car, new PatronRequest(30f, 20, false));
             _bus.Publish(new CarAtCurb(_car));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             _bus.Publish(new CarAtCurb(_car));
 
             Assert.AreEqual(TicketState.Parked, ticket.State);
@@ -92,6 +94,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var ticket = _registry.Open(_car, new PatronRequest(10f, 20, false));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             _bus.Publish(new CarAtCurb(_car));
             Tick(10f);
 
@@ -106,6 +109,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var ticket = _registry.Open(_car, new PatronRequest(10f, 20, false));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             _bus.Publish(new CarAtCurb(_car));
             _bus.Publish(new CarEntered(_car));
             Tick(10f);
@@ -118,6 +122,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _registry.Open(_car, new PatronRequest(5f, 20, false));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
             _bus.Subscribe<PickupRequested>(e => _registry.Open(new CarId(2), new PatronRequest(5f, 20, false)));
 
             Assert.DoesNotThrow(() => Tick(5f));
@@ -128,7 +133,7 @@ namespace UncannyValet.Tests.Patrons
         public void ShiftTick_BeforePark_StillRequestsPickupWhenTheStayEnds()
         {
             var ticket = _registry.Open(_car, new PatronRequest(5f, 20, false));
-            _bus.Publish(new CarClearedQueue(_car));
+            _bus.Publish(new PatronEnteredDiner(_car));
             Tick(4f);
             Assert.AreEqual(TicketState.AwaitingPark, ticket.State);
             Tick(10f);

@@ -23,14 +23,8 @@ namespace UncannyValet.Patrons
         /// <summary>Game minute the stay clock started (see <see cref="StartStay"/>); meaningless until <see cref="StayStarted"/>.</summary>
         public float StayStartMinute { get; private set; }
 
-        /// <summary>True once the stay clock started: the car first rested clear of the queue, was parked, or waited out the queue limit.</summary>
+        /// <summary>True once the stay clock started: the patron walked into the diner (issue 126).</summary>
         public bool StayStarted { get; private set; }
-
-        /// <summary>Game minute the car arrived in the queue; meaningless until <see cref="HasArrived"/>.</summary>
-        public float ArrivedMinute { get; private set; }
-
-        /// <summary>True once the car finished driving in.</summary>
-        public bool HasArrived { get; private set; }
 
         /// <summary>Game minute the stay ends and the patron wants the car, wherever it is; infinity while the stay has not started.</summary>
         public float ReturnMinute => StayStarted ? StayStartMinute + StayMinutes + StayShiftMinutes : float.PositiveInfinity;
@@ -125,18 +119,6 @@ namespace UncannyValet.Patrons
             StayStartMinute = minute;
             return true;
         }
-
-        /// <summary>The car finished driving in; remembered for the queue wait limit. Only the first call counts.</summary>
-        public void MarkArrived(float minute)
-        {
-            if (HasArrived) return;
-            HasArrived = true;
-            ArrivedMinute = minute;
-        }
-
-        /// <summary>True when the car has sat in the queue for <paramref name="maxWaitMinutes"/> without the stay starting.</summary>
-        public bool QueueWaitOver(float minute, float maxWaitMinutes)
-            => !StayStarted && HasArrived && IsBeforePickup && minute >= ArrivedMinute + maxWaitMinutes;
 
         public void MarkParked()
         {

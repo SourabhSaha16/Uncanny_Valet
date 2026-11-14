@@ -18,7 +18,7 @@ namespace UncannyValet.Lot
             Edge(rects, parent, area, art);
         }
 
-        /// <summary>The curb zone's text: each configured word written vertically in its own column (VALET PICKUP).</summary>
+        /// <summary>The curb zone's text: each configured word written vertically in its own column (VALET DROP-OFF).</summary>
         public static void BuildLabel(Transform parent, LotConfig config)
         {
             var words = config.CurbLabelWords;

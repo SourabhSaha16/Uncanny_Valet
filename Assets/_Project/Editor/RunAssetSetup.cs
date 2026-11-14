@@ -27,8 +27,8 @@ namespace UncannyValet.EditorTools
         // Placeholder blessing thresholds (the old one- and two-star scores) until the owner tunes them.
         private const int TrainingThreshold = 150;
         private const int CrazyThreshold = 300;
-        // Slots of the arrival queue: the crazy lot is a little taller so four cars can really wait.
-        private const int TrainingQueueSlots = 3;
+        // Slots of the arrival queue: the valet pickup spot plus three queue slots on every lot.
+        private const int TrainingQueueSlots = 4;
         private const int CrazyQueueSlots = 4;
 
         public static void CreateIfMissing()
