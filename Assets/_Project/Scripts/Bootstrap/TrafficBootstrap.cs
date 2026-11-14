@@ -1,3 +1,5 @@
+using UncannyValet.Core;
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Traffic;
 using UnityEngine;
@@ -20,8 +22,17 @@ namespace UncannyValet.Bootstrap
             }
             var link = new TrafficTuningLink(bus, traffic.SetMinOnScreen, traffic.SetSpeedScale,
                 traffic.SetEntrySpeed, traffic.SetExitSpeed, traffic.SetTargetOnScreen);
+            PassSeededDensity(traffic);
             traffic.gameObject.SetActive(true);
             return link;
+        }
+
+        // The lot may seed its own density (a lot without ambient cars seeds 0); the module starts from its config, so hand it the seeded values.
+        private static void PassSeededDensity(TrafficModule traffic)
+        {
+            if (!Services.TryGet<ITuning>(out var tuning)) return;
+            if (tuning.TryGet(TuningKey.TrafficMinOnScreen, out var min)) traffic.SetMinOnScreen(min);
+            if (tuning.TryGet(TuningKey.TrafficTargetOnScreen, out var target)) traffic.SetTargetOnScreen(target);
         }
     }
 }

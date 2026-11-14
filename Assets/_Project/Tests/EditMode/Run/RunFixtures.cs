@@ -7,7 +7,7 @@ using UnityEngine;
 namespace UncannyValet.Tests.Run
 {
     /// <summary>Builds in-memory LotDefinition and RunDefinition assets for the run tests; destroys them on <see cref="Dispose"/>.</summary>
-    public sealed class RunFixtures
+    public sealed class RunFixtures : System.IDisposable
     {
         private readonly List<Object> _made = new List<Object>();
 

@@ -56,8 +56,8 @@ namespace UncannyValet.Tests.PlayMode
             Assert.IsTrue(catalog.TryGet(ModifierId.Muddy, out _));
             Assert.IsTrue(catalog.TryGet(ModifierId.NeedsCharge, out _));
             var tuning = Services.Get<ITuning>();
-            Assert.AreEqual(0.3f, tuning.Get(TuningKey.ModifierChanceMuddy), 1e-5f);
-            Assert.AreEqual(0.3f, tuning.Get(TuningKey.ModifierChanceNeedsCharge), 1e-5f);
+            Assert.AreEqual(0f, tuning.Get(TuningKey.ModifierChanceMuddy), 1e-5f, "no services in Midgard");
+            Assert.AreEqual(0f, tuning.Get(TuningKey.ModifierChanceNeedsCharge), 1e-5f, "no services in Midgard");
             Application.logMessageReceived -= OnLog;
             Assert.IsEmpty(_problems, string.Join("\n---\n", _problems));
         }

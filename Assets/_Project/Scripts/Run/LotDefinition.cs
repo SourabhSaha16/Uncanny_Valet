@@ -45,6 +45,14 @@ namespace UncannyValet.Run
         private List<PropPlacement> _props = new List<PropPlacement>();
         [SerializeField, Tooltip("The lot's lighting: global light plus up to 16 point lights. Empty keeps the default lighting.")]
         private LightingPreset _lighting;
+        [SerializeField, Tooltip("Layout parameters of the parametric builder: closed services (no wash slot, no EV bay, 8 regular bays) and the free corner height a corner prop needs.")]
+        private LotLayoutOptions _layoutOptions;
+        [SerializeField, Tooltip("Off: no ambient road cars (the F2 target and minimum on screen start at 0); patron cars still drive in and out.")]
+        private bool _ambientTraffic = true;
+        [SerializeField, Range(0, MaxAmbientPedestrians), Tooltip("Ambient pedestrians walking the lot (the crowd size; the F2 slider can change it live).")]
+        private int _ambientPedestrians = DefaultAmbientPedestrians;
+        [SerializeField, Tooltip("The floating gag lines pedestrians pop when the valet passes close. Empty: none.")]
+        private GagLineAsset _gagLines;
         [SerializeField, Tooltip("The character who watches this lot from the side (the local god in a crazy lot, the trainer in a training lot). Empty: nobody watches.")]
         private WatcherDefinition _watcher;
         [SerializeField, Tooltip("Where the watcher stands, in lot space: on a sidewalk or the lot edge, outside the drivable area.")]
@@ -54,6 +62,10 @@ namespace UncannyValet.Run
         public const int MaxQueueSlots = 6;
         /// <summary>Slots of a new lot (the training diner).</summary>
         public const int DefaultQueueSlots = 3;
+        /// <summary>Most ambient pedestrians a lot can have (the size of the pedestrian pool).</summary>
+        public const int MaxAmbientPedestrians = 10;
+        /// <summary>Crowd size of a new lot.</summary>
+        public const int DefaultAmbientPedestrians = 3;
 
         public LotId Id => _id;
         public string DisplayName => _displayName;
@@ -72,6 +84,14 @@ namespace UncannyValet.Run
         public LightingPreset Lighting => _lighting;
         public WatcherDefinition Watcher => _watcher;
         public Vector2 WatcherSpot => _watcherSpot;
+        public LotLayoutOptions LayoutOptions => _layoutOptions;
+        public GagLineAsset GagLines => _gagLines;
+
+        /// <summary>True when ambient road cars drive past in this lot.</summary>
+        public bool AmbientTraffic => _ambientTraffic;
+
+        /// <summary>The crowd size: ambient pedestrians that walk (0 to <see cref="MaxAmbientPedestrians"/>).</summary>
+        public int AmbientPedestrians => _ambientPedestrians;
 
         /// <summary>True when hitting a patron walker with the driven car is a curse in this lot.</summary>
         public bool PedestrianCurses => _pedestrianCurses;
@@ -87,6 +107,7 @@ namespace UncannyValet.Run
             for (var i = 0; i < _modifierChances.Count; i++)
                 tuning.Seed(_modifierChances[i].Modifier.ChanceKey, _modifierChances[i].Chance);
             for (var i = 0; i < _modifiers.Count; i++) _modifiers[i].SeedInto(tuning);
+            LotWorldSeeding.Seed(tuning, this);
         }
 
         /// <summary>What the lot's mechanics add to the world (the mud patch list); the scene builder hands it to the lot builder.</summary>

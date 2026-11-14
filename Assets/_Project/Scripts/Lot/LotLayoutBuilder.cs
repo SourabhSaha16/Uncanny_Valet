@@ -23,6 +23,8 @@ namespace UncannyValet.Lot
         private LotArtConfig _art;
         [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot (the lot definition's); 0 uses the LotConfig's count. Set by the scene builder.")]
         private int _queueSlots;
+        [SerializeField, Tooltip("Whether the lot has the wash slot and the EV bay, and how much corner room it keeps under the bays (from the lot definition). Set by the scene builder.")]
+        private LotLayoutOptions _options;
         [SerializeField, Tooltip("The lot's mud puddles in lot space (from its mud modifier). Set by the scene builder; empty means no mud.")]
         private MudPatch[] _mudPatches = System.Array.Empty<MudPatch>();
 
@@ -48,6 +50,7 @@ namespace UncannyValet.Lot
         public QueueClearSettings QueueClear => _config.QueueClear;
         public int RegularSpotCount { get; private set; }
         public int ChargingSpotCount { get; private set; }
+        public bool HasWashStation { get; private set; }
 
         /// <summary>Ids of the open spots: the regular spots the plan opens plus the charging spots while charging is open.</summary>
         public IReadOnlyList<int> SpotIds => _expander != null ? _expander.OpenIds : (IReadOnlyList<int>)System.Array.Empty<int>();
@@ -65,10 +68,11 @@ namespace UncannyValet.Lot
         {
             var rects = new RectFactory();
             var c = _config;
-            var g = new LotGeometry(c, _queueSlots);
+            var g = new LotGeometry(c, _queueSlots, _options);
             _arrivalSlots = g.QueueSlots;
             RegularSpotCount = g.Spots.Length;
             ChargingSpotCount = g.ChargingSpots.Length;
+            HasWashStation = g.HasWash;
             _road = new RoadLayout(g, c.Site, transform.position);
             new LotFrame(rects, transform, c.WallThickness,
                 _art != null ? _art.AsphaltColor : Ground, _art != null ? _art.HedgeColor : Wall).Apply(g.Bounds, g.EntryGap, g.ExitGap);
@@ -81,8 +85,7 @@ namespace UncannyValet.Lot
             gameObject.AddComponent<QueueClearRunner>().Init(c, c.QueueClear);
             var style = _art != null ? _art.Walkway : new WalkwayStyle();
             LotQueueArt.Build(transform, rects, g.QueueCars, style, _art != null ? _art.CrosswalkColor : Color.white);
-            var wash = StationBuilder.BuildWash(rects, transform, c, g.Wash);
-            gameObject.AddComponent<StationSwitch>().Init(wash);
+            if (g.HasWash) gameObject.AddComponent<StationSwitch>().Init(StationBuilder.BuildWash(rects, transform, c, g.Wash));
 
             var ids = new List<int>();
             for (var i = 1; i <= g.Spots.Length + g.ChargingSpots.Length; i++) ids.Add(i);

@@ -99,10 +99,10 @@ MonoBehaviour:
     _intensity: 0.9
     _flicker: 0.2
     _flickerSpeed: 2.3
-  - _position: {x: 10.5, y: -21.45}
-    _radius: 4.5
-    _colour: {r: 1, g: 0.78431374, b: 0.4392157, a: 1}
-    _intensity: 0.9
+  - _position: {x: 12, y: -18.55}
+    _radius: 6
+    _colour: {r: 1, g: 0.72, b: 0.31, a: 1}
+    _intensity: 1.1
     _flicker: 0.2
     _flickerSpeed: 2.5
   - _position: {x: 16.2, y: -21.45}

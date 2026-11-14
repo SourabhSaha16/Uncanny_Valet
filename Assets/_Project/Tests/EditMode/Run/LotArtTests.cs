@@ -69,8 +69,7 @@ namespace UncannyValet.Tests.Run
             foreach (var lot in new[] { training, crazy })
             {
                 Assert.IsTrue(lot.TryValidate(out var problem), problem);
-                Assert.AreEqual(1, lot.Props.Count);
-                Assert.AreEqual("MidgardOpenSign", lot.Props[0].Recipe.name);
+                Assert.AreEqual("MidgardOpenSign", lot.Props[0].Recipe.name, "the OPEN sign is the first prop; the world props follow");
             }
         }
     }

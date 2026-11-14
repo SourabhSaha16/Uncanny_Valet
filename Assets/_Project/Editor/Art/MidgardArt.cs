@@ -64,7 +64,7 @@ namespace UncannyValet.EditorTools.Art
             return PropRecipe.Create("MidgardTree", new Vector2Int(2, 2), new[] { PropLayer.Create("Tree", shapes) });
         }
 
-        // A fair stall: posts, striped awning, counter with goods. Solid so cars keep out.
+        // A fair stall: posts, striped awning, counter with goods. Decor on the sidewalk, not solid (only the diner and the Ferris wheel are).
         private static PropRecipe Stall(string name, PaletteSlot stripeA, PaletteSlot stripeB, PaletteSlot goods)
         {
             var shapes = new List<PropShape>
@@ -73,8 +73,7 @@ namespace UncannyValet.EditorTools.Art
             };
             for (var i = 0; i < 11; i++) shapes.Add(Rect(4 + i * 8, 36, 8, 24, i % 2 == 0 ? stripeA : stripeB));
             for (var i = 0; i < 5; i++) shapes.Add(Rect(14 + i * 14, 14, 8, 6, goods));
-            return PropRecipe.Create(name, new Vector2Int(3, 2), new[] { PropLayer.Create("Stall", shapes.ToArray()) },
-                true, new Vector2(2.7f, 1.7f));
+            return PropRecipe.Create(name, new Vector2Int(3, 2), new[] { PropLayer.Create("Stall", shapes.ToArray()) });
         }
 
         // Stand, turning wheel with baskets and a ring of glowing bulbs. Solid.

@@ -21,7 +21,7 @@ namespace UncannyValet.Core.Contracts
         {
             new TuningInfo(TuningKey.PlanMaxWaitingCars, "Shift plan", "Most cars waiting at the curb", 1, 3, 1),
             new TuningInfo(TuningKey.PlanArrivalGapScale, "Shift plan", "Arrival gap scale (lower = busier)", 0.2f, 6f, 0.05f),
-            new TuningInfo(TuningKey.PlanActiveSpots, "Shift plan", "Open parking spots", 2, 6, 1),
+            new TuningInfo(TuningKey.PlanActiveSpots, "Shift plan", "Open parking spots", 2, 8, 1),
             new TuningInfo(TuningKey.ModifierChanceNeedsCharge, "Shift plan", "Chance a car arrives needing a charge", 0f, 1f, 0.05f,
                 "The lot's chance for the Needs charge modifier."),
             new TuningInfo(TuningKey.ModifierChanceMuddy, "Shift plan", "Chance a car arrives Muddy", 0f, 1f, 0.05f,

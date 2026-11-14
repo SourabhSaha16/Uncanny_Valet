@@ -19,6 +19,16 @@ namespace UncannyValet.Lot
             new Vector2Int(1, 1), new Vector2Int(3, 1)
         };
 
+        /// <summary>
+        /// Cells of regular spots 1..8 in a lot whose services are closed: the EV bay and the wash slot become two more regular bays, so both
+        /// rows are four regular bays in reading order.
+        /// </summary>
+        public static readonly Vector2Int[] RegularWithoutServices =
+        {
+            new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(2, 0), new Vector2Int(3, 0),
+            new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(2, 1), new Vector2Int(3, 1)
+        };
+
         /// <summary>Cells of the EV charging bays (ids after the regular spots).</summary>
         public static readonly Vector2Int[] Charging = { new Vector2Int(0, 1) };
 

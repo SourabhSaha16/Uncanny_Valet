@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -13,8 +14,10 @@ namespace UncannyValet.Lot
         public Rect[] Spots { get; }
         /// <summary>Charging bays; their ids continue after the regular spots.</summary>
         public Rect[] ChargingSpots { get; }
-        /// <summary>The wash slot.</summary>
+        /// <summary>The wash slot; an empty rect when <see cref="HasWash"/> is false.</summary>
         public Rect Wash { get; }
+        /// <summary>False in a lot with its services closed: no wash slot and no charging bay, eight regular bays.</summary>
+        public bool HasWash { get; }
         public Rect Curb { get; }
         /// <summary>The open ground between the diner wall and the curb zone, where waiting patrons stand (same height as the curb).</summary>
         public Rect CurbGap { get; }
@@ -55,14 +58,16 @@ namespace UncannyValet.Lot
         public int FirstChargingId => Spots.Length + 1;
 
         /// <param name="queueSlots">Arrival queue slots for this lot; 0 or less uses the config's count.</param>
-        public LotGeometry(LotConfig c, int queueSlots = 0)
+        /// <param name="options">Whether the services exist and how much corner room the lot keeps under the bays; the default is today's diner.</param>
+        public LotGeometry(LotConfig c, int queueSlots = 0, LotLayoutOptions options = default)
         {
             var s = c.Site;
             Curb = Box(c.CurbPosition, c.CurbSize);
             var spotsLeft = Curb.xMax + c.CurbToSpotsGap;
-            Spots = Cells(c, spotsLeft, BayPlan.Regular);
-            ChargingSpots = Cells(c, spotsLeft, BayPlan.Charging);
-            Wash = Cells(c, spotsLeft, new[] { BayPlan.Wash })[0];
+            HasWash = !options.ServicesClosed;
+            Spots = Cells(c, spotsLeft, HasWash ? BayPlan.Regular : BayPlan.RegularWithoutServices);
+            ChargingSpots = HasWash ? Cells(c, spotsLeft, BayPlan.Charging) : new Rect[0];
+            Wash = HasWash ? Cells(c, spotsLeft, new[] { BayPlan.Wash })[0] : default;
             AisleY = Curb.yMax - c.SpotSize.y - c.AisleWidth * 0.5f;
             QueueSlots = QueueSlotsFor(c, queueSlots > 0 ? queueSlots : c.QueueSlotCount);
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
@@ -72,7 +77,7 @@ namespace UncannyValet.Lot
             var sideY = Curb.yMax + s.SideDoorRise;
             var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
-            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin);
+            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin - options.CornerClearance);
             Strip = new Rect(baysRight + s.StripGap, bottom, s.StripWidth, top - bottom);
             var dinerRight = Curb.xMin - s.CurbGap;
             Bounds = Rect.MinMaxRect(dinerRight - s.DinerWidth, bottom, Strip.xMax, top);

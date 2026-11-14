@@ -106,7 +106,7 @@ namespace UncannyValet.Tests.Watchers
         {
             var lot = AssetDatabase.LoadAssetAtPath<LotDefinition>(lotPath);
             var config = AssetDatabase.LoadAssetAtPath<LotConfig>(LotConfigPath);
-            var g = new LotGeometry(config, lot.QueueSlots);
+            var g = new LotGeometry(config, lot.QueueSlots, lot.LayoutOptions);
             var spot = lot.WatcherSpot;
             Assert.IsTrue(g.Bounds.Contains(spot), "inside the lot frame");
             foreach (var r in DrivableAreas(g)) Assert.IsFalse(Inflate(r, Margin).Contains(spot), "spot " + spot + " is inside " + r);
@@ -117,7 +117,7 @@ namespace UncannyValet.Tests.Watchers
         {
             yield return g.Curb;
             yield return g.Corridor;
-            yield return g.Wash;
+            if (g.HasWash) yield return g.Wash;
             foreach (var r in g.Spots) yield return r;
             foreach (var r in g.ChargingSpots) yield return r;
             foreach (var r in g.QueueCars) yield return r;

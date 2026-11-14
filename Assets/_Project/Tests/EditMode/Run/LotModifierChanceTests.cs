@@ -133,15 +133,15 @@ namespace UncannyValet.Tests.Run
 
         [TestCase(RunAssetSetupPaths.Training)]
         [TestCase(RunAssetSetupPaths.Crazy)]
-        public void TheShippedMidgardLots_CarryTodaysDinerChances(string path)
+        public void TheShippedMidgardLots_ListBothModifiers_WithChanceZero_NoServicesInMidgard(string path)
         {
             var lot = AssetDatabase.LoadAssetAtPath<LotDefinition>(path);
             Assert.IsNotNull(lot, path);
             Assert.AreEqual(2, lot.ModifierChances.Count);
             Assert.AreEqual(ModifierId.NeedsCharge, lot.ModifierChances[0].Modifier.Id);
-            Assert.AreEqual(0.3f, lot.ModifierChances[0].Chance, 1e-5f);
+            Assert.AreEqual(0f, lot.ModifierChances[0].Chance, 1e-5f);
             Assert.AreEqual(ModifierId.Muddy, lot.ModifierChances[1].Modifier.Id);
-            Assert.AreEqual(0.3f, lot.ModifierChances[1].Chance, 1e-5f);
+            Assert.AreEqual(0f, lot.ModifierChances[1].Chance, 1e-5f);
             Assert.IsTrue(lot.TryValidate(out var problem), problem);
         }
 
