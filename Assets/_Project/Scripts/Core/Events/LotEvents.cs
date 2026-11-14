@@ -25,6 +25,25 @@ namespace UncannyValet.Core.Events
         public LotFailed(LotId lot) { Lot = lot; }
     }
 
+    /// <summary>
+    /// The run decided which lot comes next after a lot ended. HasNext is false (and Next is meaningless) when Reason is
+    /// RunComplete. Nothing loads a scene from it; the between-lot flow reacts.
+    /// </summary>
+    public readonly struct NextLotChosen : IGameEvent
+    {
+        public readonly LotId Next;
+        public readonly RunOutcome Reason;
+        public bool HasNext => Reason != RunOutcome.RunComplete;
+        public NextLotChosen(LotId next, RunOutcome reason) { Next = next; Reason = reason; }
+    }
+
+    /// <summary>The run is over: the finale was cleared, or the last lot of the run definition was (end of content).</summary>
+    public readonly struct RunCompleted : IGameEvent
+    {
+        public readonly RunEnd Reason;
+        public RunCompleted(RunEnd reason) { Reason = reason; }
+    }
+
     /// <summary>A story power was earned (level 1) or upgraded (level 2).</summary>
     public readonly struct PowerGranted : IGameEvent
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Run
@@ -9,7 +10,7 @@ namespace UncannyValet.Run
     /// The run state: the current lot, the powers earned and their levels, the cleared lots (per LotId, so a world's
     /// training and crazy lots are separate) and the best result per lot. Plain C#, in memory for the browser session.
     /// </summary>
-    public sealed class RunProgress : IRunProgress
+    public sealed class RunProgress : IRunProgress, IRunFlowState
     {
         private readonly RunDefinition _run;
         private readonly List<StoryPower> _earned = new List<StoryPower>();
@@ -22,6 +23,12 @@ namespace UncannyValet.Run
         {
             _run = run ?? throw new ArgumentNullException(nameof(run));
         }
+
+        public bool IsRunComplete { get; private set; }
+        public RunEnd EndReason { get; private set; }
+        public bool HasNextLot { get; private set; }
+        public LotId NextLot { get; private set; }
+        public RunOutcome LastOutcome { get; private set; }
 
         public bool HasCurrentLot { get; private set; }
         public LotId CurrentLot { get; private set; }
@@ -80,11 +87,26 @@ namespace UncannyValet.Run
         public bool TryGetNextLot(out LotDefinition next) =>
             HasCurrentLot ? _run.TryGetNext(CurrentLot, out next) : _run.TryGetFirst(out next);
 
+        /// <summary>Stores the rules' answer: the next lot, or the completed run.</summary>
+        public void SetDecision(LotDecision decision)
+        {
+            LastOutcome = decision.Reason;
+            HasNextLot = !decision.IsRunComplete;
+            NextLot = decision.Next;
+            IsRunComplete = decision.IsRunComplete;
+            EndReason = decision.End;
+        }
+
         /// <summary>Forgets everything: powers, upgrades, cleared lots and best results (a fresh run).</summary>
         public void StartNewRun()
         {
             HasCurrentLot = false;
             CurrentLot = default;
+            IsRunComplete = false;
+            EndReason = RunEnd.None;
+            HasNextLot = false;
+            NextLot = default;
+            LastOutcome = RunOutcome.Advanced;
             _earned.Clear();
             _levels.Clear();
             _flashed.Clear();

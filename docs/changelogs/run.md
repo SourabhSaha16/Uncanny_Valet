@@ -35,3 +35,9 @@ Date: 2026-11-13
 Files: see docs/changelogs/powers.md (this module's part: LotPowerFill, LotDefinition, LotDefinitionRules, RunProgress.FlashedLevel and MarkFlashed, RunProgressLink).
 Why: Issue #87 of epic #79: per-lot power bar fill amounts as LotDefinition overrides, and the run state remembers which power icon flashed.
 Tests: see docs/changelogs/powers.md.
+
+## run: roguelite run rules, NextLotChosen and RunCompleted [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Events/{LotEvents,RunOutcome,RunEnd}.cs, Scripts/Core/Contracts/IRunFlowState.cs, Scripts/Run/{LotDecision,NextLotRules,RunFlow,RunProgress}.cs, Scripts/Bootstrap/RunBootstrap.cs, Tests/EditMode/Run/RunFlow*.cs
+Why: Issue #83 of epic #79. NextLotRules turns LotCleared/LotFailed into the next lot (skip cleared training, restart failed training, send failed crazy or finale back to Midgard crazy, EndOfContent or Finale completes the run); RunFlow grants each crazy lot power once and publishes NextLotChosen and RunCompleted; RunProgress exposes IRunFlowState. Nothing loads scenes.
+Tests: RunFlowTests (real 4-lot run) and RunFlowFullOrderTests (fake 17-lot order); EditMode 1672 pass.

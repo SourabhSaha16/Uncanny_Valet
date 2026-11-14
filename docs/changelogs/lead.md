@@ -874,3 +874,9 @@ Date: 2026-11-13
 Files: merge of worktree-agent-a30f08f255db785b8 (two Vanaheim LotDefinitions and scenes added to the RunDefinition, LotLayoutOptions wash troughs/extension/trough distance, TroughLayout, ILotLayout.WashStationCount and multi-station director support, BuildingSign and GroundColour, Vanaheim mud patches, props and lanterns, watchers and gag lines, VanaheimWorldSetup, RunAssetSetup.AppendMissing, tests), docs/changelogs/lead.md
 Why: story epic 79, task 107. Vanaheim: 8 bays, one wash trough (training) and three troughs 14 units from the bays in a lot widened by 13.5 units (crazy), Muddy 30% and 60%, 5 mud patches, crowd 4 and 8, traffic on, curses off, Freyja and a farmhand by the barn door, clearing crazy grants Storm wind (record only; effect is task 89). The title picker lists the new lots as 3 and 4.
 Tests: 1657 of 1657 EditMode, 64 of 64 PlayMode after the merge and RunBatch (pure scene churn reverted to the merged versions).
+
+## lead: merge agent/run roguelite run rules (#83) [Claude]
+Date: 2026-11-14
+Files: merge of worktree-agent-a73c363af3a1468ad (NextLotChosen and RunCompleted events, RunOutcome and RunEnd enums, IRunFlowState, NextLotRules, LotDecision, RunFlow, RunProgress flow state, RunBootstrap wiring, tests), docs/changelogs/lead.md
+Why: story epic 79, task 83. Pure rules: clearing a lot advances to the next (skipping already cleared training lots), failing a training lot restarts it, failing a crazy lot or the finale sends Thor back to Midgard's crazy lot keeping powers and cleared flags, powers are granted once, clearing the last lot of the RunDefinition completes the run with EndOfContent (the finale with Finale). Rules and events only; screens and scene loading are task 84.
+Tests: 1672 of 1672 EditMode, 64 of 64 PlayMode after the merge.
