@@ -898,3 +898,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Data/Audio/Themes/*, Data/Run/*Lot.asset (theme links), .meta files, Tests/PlayMode asmdef (adds UncannyValet.Audio)
 Why: #117 procedural music themes and ambience; RunBatch generated the theme assets, the PlayMode test assembly lacked the Audio reference.
 Tests: EditMode 1751/1751, PlayMode 71/71 passed.
+
+## lead: merge agent/integration god verdict on results [Claude]
+Date: 2026-11-14
+Files: Core/Story verdict types, UI/Screens (VerdictPicker, ResultsFormatter, ResultsPainter), Editor verdict drafts, StoryText.asset, tests
+Why: #85 god verdict panel on the results screen.
+Tests: EditMode 1772/1772 (agent also ran PlayMode 71/71 and RunBatch).
