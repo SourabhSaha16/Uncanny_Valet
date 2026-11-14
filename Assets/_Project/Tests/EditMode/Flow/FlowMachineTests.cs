@@ -222,6 +222,20 @@ namespace UncannyValet.Tests.Flow
         }
 
         [Test]
+        public void Retry_IsOffAfterAFailedCrazyLot_ButOnForFailedTrainingAndClearedLots()
+        {
+            _m.Advance(); _m.Advance(); StartShift(MT);
+            EndShift(MT, RunOutcome.SentBack, MC);
+            Assert.IsFalse(_m.CanRetry);
+            Assert.IsFalse(_m.Retry());
+            Assert.AreEqual(FlowState.Results, _m.State);
+            _m.NextLotChosen(MT, RunOutcome.RestartedTraining);
+            Assert.IsTrue(_m.CanRetry);
+            _m.NextLotChosen(MC, RunOutcome.Advanced);
+            Assert.IsTrue(_m.CanRetry);
+        }
+
+        [Test]
         public void PowerGrantedOutsideAShift_GetsNoRewardCard()
         {
             _m.PowerGranted(StoryPower.ThunderStride, 1);

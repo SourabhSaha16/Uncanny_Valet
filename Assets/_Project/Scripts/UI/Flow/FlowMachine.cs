@@ -69,11 +69,14 @@ namespace UncannyValet.UI.Flow
 
         /// <summary>The developer picker chose a lot: its intro card, in a fresh scene of it.</summary>
         public FlowStep DevStart(LotId lot) => EnterIntro(lot);
-
+        /// <summary>True on the results screen unless the lot was a failed crazy lot or finale (those only continue to the thrown-back card).</summary>
         /// <summary>The player retries from the results screen: back to a shift of the same lot, no cards.</summary>
+        public bool CanRetry => State == FlowState.Results && !(HasNextLot && Outcome == RunOutcome.SentBack);
+
+        /// <summary>The player retries from the results screen: back to a shift of the same lot, no cards. Not after a failed crazy lot or finale.</summary>
         public bool Retry()
         {
-            if (State != FlowState.Results) return false;
+            if (!CanRetry) return false;
             ShiftStarted();
             return true;
         }
