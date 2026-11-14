@@ -29,9 +29,9 @@ namespace UncannyValet.EditorTools
         public static void CreateIfMissing()
         {
             var training = CreateLot(MidgardTrainingPath, new LotId(World.Midgard, LotKind.Training), "Grandma's Diner",
-                TrainingScene, TrainingThreshold, 150f, 15f, 25f, 2, TrainingQueueSlots, StoryPower.None);
+                TrainingScene, TrainingThreshold, 150f, 15f, 25f, 2, TrainingQueueSlots, StoryPower.None, false);
             var crazy = CreateLot(MidgardCrazyPath, new LotId(World.Midgard, LotKind.Crazy), "Fair Night at Grandma's",
-                CrazyScene, CrazyThreshold, 240f, 10f, 15f, 4, CrazyQueueSlots, StoryPower.ThunderStride);
+                CrazyScene, CrazyThreshold, 240f, 10f, 15f, 4, CrazyQueueSlots, StoryPower.ThunderStride, true);
             ModifierAssetSetup.EnsureChances(training);
             ModifierAssetSetup.EnsureChances(crazy);
             if (AssetDatabase.LoadAssetAtPath<RunDefinition>(RunPath) != null) return;
@@ -47,7 +47,7 @@ namespace UncannyValet.EditorTools
         }
 
         private static LotDefinition CreateLot(string path, LotId id, string displayName, string scene, int threshold,
-            float shiftSeconds, float gapMin, float gapMax, int maxWaiting, int queueSlots, StoryPower grant)
+            float shiftSeconds, float gapMin, float gapMax, int maxWaiting, int queueSlots, StoryPower grant, bool pedestrianCurses)
         {
             var existing = AssetDatabase.LoadAssetAtPath<LotDefinition>(path);
             if (existing != null) return existing;
@@ -65,6 +65,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_pacing._arrivalGapMinSeconds").floatValue = gapMin;
             so.FindProperty("_pacing._arrivalGapMaxSeconds").floatValue = gapMax;
             so.FindProperty("_pacing._maxWaitingCars").intValue = maxWaiting;
+            so.FindProperty("_pedestrianCurses").boolValue = pedestrianCurses;
             so.FindProperty("_grant._power").intValue = (int)grant;
             so.FindProperty("_grant._level").intValue = 1;
             so.ApplyModifiedPropertiesWithoutUndo();

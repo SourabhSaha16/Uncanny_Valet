@@ -75,6 +75,7 @@ namespace UncannyValet.Bootstrap
             if (lot == null) SeedDefaultChances(t);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
+            PedestrianHitRows.Seed(t, lot != null && lot.PedestrianCurses);
             lot?.SeedPacing(t, shift.GameMinutesPerSecond); // the lot's numbers and arrival budget win over the shared defaults
             return SeedDials(t, director, bus, lot);
         }

@@ -13,6 +13,7 @@ namespace UncannyValet.Audio
         private readonly Func<float> _clock;
         private readonly IModifierCatalog _modifiers;
         private readonly SfxRateLimiter _bumpLimit = new SfxRateLimiter(BumpMinInterval);
+        private readonly SfxRateLimiter _yelpLimit = new SfxRateLimiter(YelpMinInterval);
         private readonly SfxRateLimiter _carBumpLimit = new SfxRateLimiter(CarBumpMinInterval);
         private readonly SfxRateLimiter _chirpLimit = new SfxRateLimiter(ChirpMinInterval);
         private readonly SfxRateLimiter _screechLimit = new SfxRateLimiter(ScreechMinInterval);
@@ -20,6 +21,9 @@ namespace UncannyValet.Audio
 
         /// <summary>Fewest seconds between two pedestrian bump sounds.</summary>
         public const float BumpMinInterval = 0.15f;
+
+        /// <summary>Fewest seconds between two pedestrian yelps.</summary>
+        public const float YelpMinInterval = 0.2f;
 
         /// <summary>Fewest seconds between two car-on-car bump sounds (the Cars module already limits each pair).</summary>
         public const float CarBumpMinInterval = 0.1f;
@@ -56,6 +60,7 @@ namespace UncannyValet.Audio
             _bus.Subscribe<ModifierCleared>(OnModifierCleared);
             _bus.Subscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Subscribe<PedestrianBumped>(OnPedestrianBumped);
+            _bus.Subscribe<PedestrianHit>(OnPedestrianHit);
             _bus.Subscribe<CarsCollided>(OnCarsCollided);
             _bus.Subscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Subscribe<CarHardBraked>(OnHardBraked);
@@ -81,6 +86,7 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<ModifierCleared>(OnModifierCleared);
             _bus.Unsubscribe<CarEnteredStation>(OnCarEnteredStation);
             _bus.Unsubscribe<PedestrianBumped>(OnPedestrianBumped);
+            _bus.Unsubscribe<PedestrianHit>(OnPedestrianHit);
             _bus.Unsubscribe<CarsCollided>(OnCarsCollided);
             _bus.Unsubscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Unsubscribe<CarHardBraked>(OnHardBraked);
@@ -133,6 +139,11 @@ namespace UncannyValet.Audio
         private void OnCarsCollided(CarsCollided e)
         {
             if (_clock == null || _carBumpLimit.TryPass(_clock())) _play(SfxId.CarBump);
+        }
+
+        private void OnPedestrianHit(PedestrianHit e)
+        {
+            if (_clock == null || _yelpLimit.TryPass(_clock())) _play(SfxId.PedestrianYelp);
         }
 
         private void OnPedestrianBumped(PedestrianBumped e)

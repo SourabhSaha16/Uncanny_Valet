@@ -37,6 +37,14 @@ namespace UncannyValet.Pedestrians
             return true;
         }
 
+        /// <summary>Starts a stumble that throws the person <paramref name="distance"/> units away along <paramref name="push"/> and lasts <paramref name="seconds"/>.</summary>
+        public bool TryStart(Vector2 push, float distance, float seconds)
+        {
+            if (!_rule.TryStart(push, seconds, distance)) return false;
+            Started?.Invoke();
+            return true;
+        }
+
         /// <summary>Advances the stumble by one physics step and spins the sprites to match.</summary>
         public void Step(float deltaSeconds)
         {

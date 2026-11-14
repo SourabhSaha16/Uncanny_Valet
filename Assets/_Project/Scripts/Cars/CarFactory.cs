@@ -136,6 +136,7 @@ namespace UncannyValet.Cars
             go.AddComponent<CarAutoDrive>();
             go.AddComponent<CarCollisionResponse>().Initialize(Kit);
             go.AddComponent<CarDamage>().Initialize(Kit.Live);
+            go.AddComponent<CarPedestrianSlow>().Initialize(Kit);
             go.AddComponent<CarInteraction>();
             go.AddComponent<SkidEmitter>().Initialize(Kit, Decals, _slip);
             var art = AttachBodyArt(go, id, def, renderer);
