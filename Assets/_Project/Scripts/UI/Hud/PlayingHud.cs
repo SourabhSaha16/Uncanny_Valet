@@ -39,7 +39,7 @@ namespace UncannyValet.UI.Hud
         private readonly SpeechBubblePainter _speechPainter;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
-            BlessingPopSettings blessingPop, PowerBarSettings powerBar)
+            BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null)
         {
             _powerTracker = new PowerBarTracker(bus, powerBar);
             _power = new PowerBarPainter(canvas, _powerTracker);
@@ -59,7 +59,7 @@ namespace UncannyValet.UI.Hud
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
             _occupiedPainter = new OccupiedHintPainter(canvas, _occupiedHints);
             _speech = new SpeechBubbleTracker(bus, UnscaledTime);
-            _speechPainter = new SpeechBubblePainter(canvas, _speech);
+            _speechPainter = new SpeechBubblePainter(canvas, _speech, speechBubble);
         }
 
         private static float UnscaledTime() => Time.unscaledTime;

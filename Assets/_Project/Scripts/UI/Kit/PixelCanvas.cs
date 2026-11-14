@@ -11,6 +11,9 @@ namespace UncannyValet.UI.Kit
     {
         private readonly PixelKit _kit;
         private PixelGrid _grid;
+        private float _zoom = 1f;
+        private int _anchorX;
+        private int _anchorY;
 
         public PixelCanvas(PixelKit kit)
         {
@@ -29,6 +32,20 @@ namespace UncannyValet.UI.Kit
         }
 
         public void End() => GUI.color = Color.white;
+
+        /// <summary>
+        /// Draws everything until <see cref="EndZoom"/> at <paramref name="factor"/> times its size, shrinking towards the virtual point
+        /// (<paramref name="anchorX"/>, <paramref name="anchorY"/>). The pixels are then smaller than a whole canvas pixel.
+        /// </summary>
+        public void BeginZoom(int anchorX, int anchorY, float factor)
+        {
+            _anchorX = anchorX;
+            _anchorY = anchorY;
+            _zoom = Mathf.Clamp(factor, 0.1f, 1f);
+        }
+
+        /// <summary>Back to whole canvas pixels.</summary>
+        public void EndZoom() => _zoom = 1f;
 
         public int IconWidth(PixelIcon icon) => _kit.Icon(icon).width;
 
@@ -116,7 +133,11 @@ namespace UncannyValet.UI.Kit
         }
 
         private Rect ScreenRect(int x, int y, int width, int height)
-            => new Rect(_grid.ScreenX(x), _grid.ScreenY(y), width * _grid.Scale, height * _grid.Scale);
+        {
+            if (_zoom >= 1f) return new Rect(_grid.ScreenX(x), _grid.ScreenY(y), width * _grid.Scale, height * _grid.Scale);
+            var unit = _grid.Scale * _zoom;
+            return new Rect(_grid.ScreenX(_anchorX) + (x - _anchorX) * unit, _grid.ScreenY(_anchorY) + (y - _anchorY) * unit, width * unit, height * unit);
+        }
 
         private void Blit(Texture2D texture, int x, int y, int width, int height, int srcX, int srcY, int srcW, int srcH)
         {
