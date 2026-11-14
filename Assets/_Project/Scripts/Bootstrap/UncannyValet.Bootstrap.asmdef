@@ -15,7 +15,8 @@
         "UncannyValet.Powers",
         "UncannyValet.Traffic",
         "UncannyValet.Run",
-        "UncannyValet.UI"
+        "UncannyValet.UI",
+        "UncannyValet.Watchers"
     ],
     "autoReferenced": true
 }

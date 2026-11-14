@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 204175eebb5f1c84ead4764886092486, type: 3}
+  m_Name: MrsOkafor
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherDefinition
+  _world: 1
+  _kind: 1
+  _speakerName: MRS. OKAFOR
+  _look:
+    _skin: 3
+    _hair: 1
+    _outfit: 0
+    _skinTint: {r: 1, g: 1, b: 1, a: 1}
+    _hairTint: {r: 0.92, g: 0.88, b: 1, a: 1}
+    _outfitTint: {r: 1, g: 0.42, b: 0.28, a: 1}
+    _accessories:
+    - _label: Dots Left
+      _centerPixels: {x: 12, y: 21}
+      _sizePixels: {x: 2, y: 2}
+      _color: {r: 1, g: 0.85, b: 0.25, a: 1}
+      _order: 0
+    - _label: Dots Right
+      _centerPixels: {x: 19, y: 20}
+      _sizePixels: {x: 2, y: 2}
+      _color: {r: 1, g: 0.85, b: 0.25, a: 1}
+      _order: 0
+    - _label: Dots Low
+      _centerPixels: {x: 15.5, y: 25}
+      _sizePixels: {x: 2, y: 2}
+      _color: {r: 1, g: 0.85, b: 0.25, a: 1}
+      _order: 0
+    - _label: Lens Left
+      _centerPixels: {x: 12.5, y: 10}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.1, g: 0.08, b: 0.14, a: 1}
+      _order: 0
+    - _label: Lens Right
+      _centerPixels: {x: 18.5, y: 10}
+      _sizePixels: {x: 3, y: 3}
+      _color: {r: 0.1, g: 0.08, b: 0.14, a: 1}
+      _order: 0
+    - _label: Glasses Bridge
+      _centerPixels: {x: 15.5, y: 10}
+      _sizePixels: {x: 3, y: 1}
+      _color: {r: 0.1, g: 0.08, b: 0.14, a: 1}
+      _order: 0
+    - _label: Clipboard
+      _centerPixels: {x: 25, y: 21}
+      _sizePixels: {x: 6, y: 9}
+      _color: {r: 0.55, g: 0.36, b: 0.18, a: 1}
+      _order: 0
+    - _label: Clipboard Paper
+      _centerPixels: {x: 25, y: 21.5}
+      _sizePixels: {x: 4, y: 7}
+      _color: {r: 0.97, g: 0.96, b: 0.9, a: 1}
+      _order: 1
+    - _label: Clipboard Clip
+      _centerPixels: {x: 25, y: 17}
+      _sizePixels: {x: 3, y: 1}
+      _color: {r: 0.75, g: 0.75, b: 0.8, a: 1}
+      _order: 2
+    _bobHeight: 0.03
+    _bobSpeed: 1.2
+  _text: {fileID: 11400000, guid: 74007485510cade4394f8973471560af, type: 2}

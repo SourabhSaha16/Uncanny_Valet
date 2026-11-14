@@ -5,7 +5,7 @@ namespace UncannyValet.UI.Screens
 {
     /// <summary>
     /// The results screen: a dimmed lot, one big panel, the verdict (CLEARED or FAILED), the blessings against the
-    /// threshold with the bolt, stats lines, a placeholder box for Mrs. Okafor, and Retry / Next Lot buttons
+    /// threshold with the bolt, stats lines, and Retry / Next Lot buttons (the god's panel is task 85's)
     /// (Next Lot is disabled and marked Soon).
     /// </summary>
     public sealed class ResultsPainter
@@ -15,7 +15,6 @@ namespace UncannyValet.UI.Screens
 
         private static readonly PixelRect NextButton = new PixelRect(256, 224, 128, 24);
         private static readonly PixelRect Card = new PixelRect(48, 12, 384, 252);
-        private static readonly PixelRect BossBox = new PixelRect(324, 84, 88, 100);
 
         private const string RetryHint = "ENTER TO RETRY";
         private const int TitleScale = 2;
@@ -46,7 +45,6 @@ namespace UncannyValet.UI.Screens
             DrawCentered(ResultsFormatter.BlessingsHeading, HeadingTop, 1, PixelPalette.Cream);
             DrawBlessings(content.Blessings);
             DrawStats(content);
-            DrawBoss();
             DrawCentered(content.Goal, GoalTop, 1, PixelPalette.Cream);
             DrawButtons();
         }
@@ -71,14 +69,6 @@ namespace UncannyValet.UI.Screens
                 var width = PixelTextLayout.Width(line.Value.Length, 1);
                 _canvas.Text(line.Value, StatsRight - width, y + 1, PixelPalette.Gold);
             }
-        }
-
-        private void DrawBoss()
-        {
-            _canvas.Panel(BossBox.X, BossBox.Y, BossBox.Width, BossBox.Height, PixelPalette.PanelCream);
-            var width = PixelTextLayout.Width(ResultsFormatter.BossName.Length, 1);
-            _canvas.Text(ResultsFormatter.BossName, PixelTextLayout.Centered(BossBox.X, BossBox.Width, width),
-                BossBox.Y + BossBox.Height / 2 - 3, PixelPalette.Ink, 1, false);
         }
 
         private void DrawButtons()

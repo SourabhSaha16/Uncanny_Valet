@@ -48,3 +48,5 @@ MonoBehaviour:
     _position: {x: -12.7, y: 2.1}
     _sortingOrder: 6
   _lighting: {fileID: 11400000, guid: d09d53a49d1e52242aa333aadc376e1d, type: 2}
+  _watcher: {fileID: 11400000, guid: 37365786b3ef3bf4d95ad7d18f59727c, type: 2}
+  _watcherSpot: {x: -11, y: 7.4}

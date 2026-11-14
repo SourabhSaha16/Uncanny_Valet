@@ -1,5 +1,6 @@
 using UncannyValet.Core.Art;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Watchers;
 
 namespace UncannyValet.Run
 {
@@ -24,7 +25,7 @@ namespace UncannyValet.Run
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";
-            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot) ?? CheckArt(lot);
+            return CheckPacing(lot) ?? CheckPowerFill(lot) ?? CheckModifierChances(lot) ?? CheckDials(lot) ?? CheckModifiers(lot) ?? CheckGrant(lot) ?? CheckArt(lot) ?? CheckWatcher(lot);
         }
 
         private static string CheckArt(LotDefinition lot)
@@ -34,6 +35,15 @@ namespace UncannyValet.Run
             for (var i = 0; i < lot.Props.Count; i++)
                 if (!PropRecipeRules.TryValidate(lot.Props[i].Recipe, out var propProblem)) return lot.name + ": prop " + i + ": " + propProblem;
             return lot.Lighting != null && !lot.Lighting.TryValidate(out var lightProblem) ? lot.name + ": " + lightProblem : null;
+        }
+
+        private static string CheckWatcher(LotDefinition lot)
+        {
+            var watcher = lot.Watcher;
+            if (watcher == null) return null;
+            if (watcher.World != lot.Id.World) return lot.name + ": the watcher " + watcher.name + " belongs to another world";
+            var expected = lot.Id.Kind == LotKind.Training ? WatcherKind.Trainer : WatcherKind.God;
+            return watcher.Kind == expected ? null : lot.name + ": the watcher must be a " + expected + " in this lot";
         }
 
         private static string CheckPacing(LotDefinition lot)

@@ -26,6 +26,9 @@ namespace UncannyValet.Pedestrians
         private readonly WorldTimeReader _world = new WorldTimeReader();
         private int _serial;
 
+        /// <summary>The sprite sets and sizes the people are drawn with; null when not wired.</summary>
+        public PedestrianConfig Config => _config;
+
         /// <summary>How many ambient pedestrians exist.</summary>
         public int Count => _ambient.Count;
 

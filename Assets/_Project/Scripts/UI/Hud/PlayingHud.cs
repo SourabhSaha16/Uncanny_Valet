@@ -6,6 +6,7 @@ using UncannyValet.Core.Events;
 using UncannyValet.Core.Modifiers;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Mood;
+using UncannyValet.UI.Speech;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
@@ -34,6 +35,8 @@ namespace UncannyValet.UI.Hud
         private readonly PowerBarPainter _power;
         private readonly FreezeTracker _freezeTracker;
         private readonly FreezeVeilPainter _freezeVeil;
+        private readonly SpeechBubbleTracker _speech;
+        private readonly SpeechBubblePainter _speechPainter;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
             BlessingPopSettings blessingPop, PowerBarSettings powerBar)
@@ -55,6 +58,8 @@ namespace UncannyValet.UI.Hud
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
             _occupiedPainter = new OccupiedHintPainter(canvas, _occupiedHints);
+            _speech = new SpeechBubbleTracker(bus, UnscaledTime);
+            _speechPainter = new SpeechBubblePainter(canvas, _speech);
         }
 
         private static float UnscaledTime() => Time.unscaledTime;
@@ -69,6 +74,7 @@ namespace UncannyValet.UI.Hud
             _blessingPops.Draw(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
+            _speechPainter.Draw(camera, time);
             _hud.Draw(time);
             _power.Draw(time);
             _board.CollectKeyBoardRows(_keyRows);
@@ -84,6 +90,7 @@ namespace UncannyValet.UI.Hud
             _freezeTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
+            _speech.Dispose();
         }
     }
 }

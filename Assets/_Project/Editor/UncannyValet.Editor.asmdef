@@ -16,6 +16,7 @@
         "UncannyValet.Traffic",
         "UncannyValet.Run",
         "UncannyValet.UI",
+        "UncannyValet.Watchers",
         "UncannyValet.Bootstrap"
     ],
     "includePlatforms": ["Editor"],

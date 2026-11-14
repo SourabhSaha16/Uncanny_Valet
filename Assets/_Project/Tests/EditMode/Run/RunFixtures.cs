@@ -55,6 +55,14 @@ namespace UncannyValet.Tests.Run
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>Sets an object reference field of an asset, for example <c>_watcher</c>.</summary>
+        public static void SetObject(Object asset, string path, Object value)
+        {
+            var so = new SerializedObject(asset);
+            so.FindProperty(path).objectReferenceValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         public void Dispose()
         {
             foreach (var asset in _made) Object.DestroyImmediate(asset);
