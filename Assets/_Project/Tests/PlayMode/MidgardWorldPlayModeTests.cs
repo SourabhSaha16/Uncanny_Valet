@@ -26,8 +26,10 @@ namespace UncannyValet.Tests.PlayMode
         private const float SampleSeconds = 0.5f;
         private const int Samples = 8;
         private const float GagSeconds = 16f;
-        private const float WheelRunSeconds = 4f;
-        private const float WheelApproach = 9f;
+        private const float WheelRunSeconds = 6f;
+        private const float WheelApproach = 14f;
+        private const float WheelSpeed = 10f;
+        private const string CrazyLotPath = "Assets/_Project/Data/Run/MidgardCrazyLot.asset";
 
         private readonly List<string> _problems = new List<string>();
 
@@ -100,11 +102,11 @@ namespace UncannyValet.Tests.PlayMode
             Services.Get<IEventBus>().Subscribe<CarDamaged>(damaged.Add);
             var at = (Vector2)wheel.transform.position;
             var car = Services.Get<ICarFactory>().Spawn(new CarId(900), at + Vector2.left * WheelApproach, -90f);
-            car.SetDriver(true);
+            var body = car.Transform.GetComponent<Rigidbody2D>(); // not seated: a seated car would be steered by the valet's keyboard
             for (var t = 0f; t < WheelRunSeconds; t += Time.fixedDeltaTime)
             {
                 yield return new WaitForFixedUpdate();
-                car.SetInput(1f, 0f);
+                body.linearVelocity = Vector2.right * WheelSpeed;
             }
             Services.Get<IEventBus>().Unsubscribe<CarDamaged>(damaged.Add);
             Assert.IsTrue(damaged.Exists(d => d.Car == car.Id && d.Damage01 > 0f), "the car took damage from the wheel");
@@ -114,7 +116,7 @@ namespace UncannyValet.Tests.PlayMode
         public IEnumerator Pedestrians_PopGagLines_WhenTheValetPassesClose_WithTheLockouts()
         {
             yield return Play(CrazyPath);
-            var asset = AssetOf(CrazyPath);
+            var asset = CrazyGagLines();
             var requests = new List<(float time, SpeechRequest request)>();
             Services.Get<IEventBus>().Subscribe<SpeechRequested>(e => requests.Add((Time.unscaledTime, e.Request)));
             var valet = Object.FindFirstObjectByType<KeyboardInputSource>().transform;
@@ -122,7 +124,7 @@ namespace UncannyValet.Tests.PlayMode
             {
                 var walker = FirstVisibleWalker();
                 if (walker != null) valet.position = walker.position + Vector3.right * 0.5f;
-                yield return new WaitForSeconds(SampleSeconds);
+                yield return new WaitForSecondsRealtime(SampleSeconds);
             }
             var gags = requests.FindAll(r => r.request.Priority == SpeechPriority.GagLine);
             Assert.GreaterOrEqual(gags.Count, 1, "a walker popped a line");
@@ -136,11 +138,8 @@ namespace UncannyValet.Tests.PlayMode
             Assert.IsEmpty(_problems, string.Join("\n", _problems));
         }
 
-        private static GagLineAsset AssetOf(string path)
-        {
-            var lot = UnityEditor.AssetDatabase.LoadAssetAtPath<UncannyValet.Run.LotDefinition>("Assets/_Project/Data/Run/MidgardCrazyLot.asset");
-            return lot.GagLines;
-        }
+        private static GagLineAsset CrazyGagLines()
+            => UnityEditor.AssetDatabase.LoadAssetAtPath<UncannyValet.Run.LotDefinition>(CrazyLotPath).GagLines;
 
         private IEnumerator Play(string path)
         {
