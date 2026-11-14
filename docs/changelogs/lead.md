@@ -910,3 +910,9 @@ Date: 2026-11-14
 Files: site/ (Web build of 12bbcc2)
 Why: Midgard and Vanaheim are playable end to end (epic #79): lot flow cards, blessings, powers, music, god verdicts.
 Tests: EditMode 1772/1772, PlayMode 71/71 on the source; Web build smoke test: title, how-to-play, Midgard intro card, shift with blessings counter, no console exceptions.
+
+## lead: merge agent/integration run-unity wrapper [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.*, tools/build-web.ps1, CLAUDE.md
+Why: Unity runs piled up and hung on 2026-11-14 and exhausted Windows commit memory; the wrapper serializes runs, checks headroom and kills hung process trees.
+Tests: agent ran tools/tests/test-run-unity.ps1, 12/12 passed (no Unity launched); the wrapper itself is not yet exercised by a real Unity run.

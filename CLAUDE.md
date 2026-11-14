@@ -96,6 +96,12 @@ Only the lead rebuilds and commits `site/` (about 58 MB per build, so only at pu
 - Never force-push, rebase `main`, or rewrite history. Never commit `Library/`, `Temp/` or builds.
 - Unity's batch mode can't run while the editor has the project open; close the editor before agents run
   builds or tests (`tools/run-tests.sh` or `tools/run-tests.ps1`).
+- Every batch-mode Unity launch goes through `tools/run-unity.ps1` (or `tools/run-unity.sh` in Git Bash); `tools/run-tests.*`
+  and `tools/build-web.ps1` already do. Never call `Unity.exe` directly. The wrapper allows one Unity run at a time across all
+  worktrees, refuses to start with under 8 GB free commit memory, and kills its own Unity process tree on timeout
+  (25 minutes, 45 for the web build). See `tools/README-unity.md`.
+- If the wrapper reports "crashed on memory allocation" or "refusing to start", restart Windows rather than retrying.
+  Never kill Unity processes the wrapper did not start. Check the exit code of every build: a piped `| tail` hides a crash.
 
 ## Changelog rule (every commit)
 
