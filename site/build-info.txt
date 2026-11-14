@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  29412a9
-Subject: lead: merge agent/integration screen shake on impact [Claude]
-Date:    2026-11-12 15:28:18 -0800
+Commit:  12bbcc2
+Subject: lead: changelog for #85 merge, Refs #85 [Claude]
+Date:    2026-11-14 10:52:06 -0800

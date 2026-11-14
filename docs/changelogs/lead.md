@@ -904,3 +904,9 @@ Date: 2026-11-14
 Files: Core/Story verdict types, UI/Screens (VerdictPicker, ResultsFormatter, ResultsPainter), Editor verdict drafts, StoryText.asset, tests
 Why: #85 god verdict panel on the results screen.
 Tests: EditMode 1772/1772 (agent also ran PlayMode 71/71 and RunBatch).
+
+## lead: rebuild web site with the story flow for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of 12bbcc2)
+Why: Midgard and Vanaheim are playable end to end (epic #79): lot flow cards, blessings, powers, music, god verdicts.
+Tests: EditMode 1772/1772, PlayMode 71/71 on the source; Web build smoke test: title, how-to-play, Midgard intro card, shift with blessings counter, no console exceptions.
