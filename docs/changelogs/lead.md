@@ -916,3 +916,9 @@ Date: 2026-11-14
 Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.*, tools/build-web.ps1, CLAUDE.md
 Why: Unity runs piled up and hung on 2026-11-14 and exhausted Windows commit memory; the wrapper serializes runs, checks headroom and kills hung process trees.
 Tests: agent ran tools/tests/test-run-unity.ps1, 12/12 passed (no Unity launched); the wrapper itself is not yet exercised by a real Unity run.
+
+## lead: CLAUDE.md rule to clean up agent worktrees after merge [Claude]
+Date: 2026-11-14
+Files: CLAUDE.md
+Why: finished agent worktrees (0.5 to 2 GB each) and orphan folders filled the disk; the lead now removes each worktree and branch right after merging.
+Tests: docs only.
