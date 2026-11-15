@@ -28,6 +28,9 @@ namespace UncannyValet.Patrons
         [Header("Valet pickup spot and queue")]
         [SerializeField] private PickupQueueSettings _pickup = new PickupQueueSettings();
 
+        [Tooltip("Crazy lots only: game minutes between two cars sent to keep the queue full, so arriving cars do not appear on top of each other. 0 sends every free slot at once. Training lots keep the director's pacing.")]
+        [SerializeField, Min(0f)] private float _topUpSpacingMinutes = 1f;
+
         [Header("Late arrivals")]
         [SerializeField, Min(0f), Tooltip("Game minutes before the end of the shift by which a patron must be asking for the car, so every parked car gets its patron back. A stay that would run later is cut short.")]
         private float _lateStayLeadMinutes = 25f;
@@ -40,6 +43,7 @@ namespace UncannyValet.Patrons
         [SerializeField, Min(0f), Tooltip("Game minutes a delivered car waits for its patron to get in before driving off anyway. 0 sends it off at once.")]
         private float _boardingTimeoutMinutes = 6f;
 
+        public float TopUpSpacingMinutes => _topUpSpacingMinutes;
         public float CurbWalkTimeoutMinutes => _curbWalkTimeoutMinutes;
         public float LateStayLeadMinutes => _lateStayLeadMinutes;
         public float LateStayFloorMinutes => _lateStayFloorMinutes;

@@ -133,3 +133,9 @@ Date: 2026-11-13
 Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
 Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
 Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
+
+## patrons: crazy lots keep the pickup queue always full [Claude]
+Date: 2026-11-14
+Files: Patrons/IArrivalPacing.cs, QueueTopUpPacing.cs, DirectorArrivalPacing.cs, ArrivalPacings.cs, PatronSpawner.cs, PatronConfig.cs (TopUpSpacingMinutes), Tests/EditMode/Patrons/ArrivalPacingTests.cs
+Why: Issue #132. On LotKind.Crazy the spawner ignores the director arrival gate and fills every free queue slot (one car per spacing); other lots keep the director pacing.
+Tests: ArrivalPacingTests (full queue at start, stagger, refill after advance, other lots unchanged, reset); EditMode 1837 passed.
