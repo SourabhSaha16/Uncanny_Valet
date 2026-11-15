@@ -976,3 +976,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/UI/Speech/ (SpeechBubbleVisibility, SpeechBubblePainter, SpeechBubbleSettings), Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs, docs/changelogs/integration.md
 Why: Refs #129. Speech bubbles (Grandma's tip line included) are only drawn while the speaker is inside the camera view; tip money is unaffected.
 Tests: EditMode suite passed after merge (exit 0). Not checked in-game; not in beta yet.
+
+## lead: merge agent/ped-roam [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (EnterInterval, WanderPicker, RoamPath, KeepOutAreas, PedestrianBrain, PedestrianPhase, PedestrianWalker, WalkerRouter, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/ (EditMode/Pedestrians, PlayMode/PedestrianHitTests.cs), docs/changelogs/pedestrians.md
+Why: Refs #130. Ambient pedestrians roam along their routes and enter the diner after a random interval instead of all heading to one entrance.
+Tests: EditMode suite passed after merge (exit 0). PlayMode not run. Parking-spot keep-out is built and tested but not fed at runtime (no Core contract exposes spot rectangles); roam targets stay on sidewalk/crosswalk routes. Not in beta yet.
