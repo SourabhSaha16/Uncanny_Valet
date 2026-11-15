@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UncannyValet.UI.Kit;
 using UnityEngine;
@@ -50,7 +51,7 @@ namespace UncannyValet.UI.Hud
             var view = _tracker.View;
             _canvas.Fill(x - 1, BarTop - 1, BarWidth + 2, BarHeight + 2, PixelPalette.Ink);
             _canvas.Fill(x, BarTop, BarWidth, BarHeight, PixelPalette.Track);
-            var filled = Mathf.RoundToInt(view.Fill * BarHeight);
+            var filled = FillPixels(view.Fill);
             _canvas.Fill(x, BarTop + BarHeight - filled, BarWidth, filled, PowerColors.Gold);
             if (view.Pulse01 <= 0f) return;
             var glow = PowerColors.Gold;
@@ -61,10 +62,12 @@ namespace UncannyValet.UI.Hud
 
         private void DrawBolt(int x, int bucket)
         {
-            var segment = BarHeight / Buckets;
-            var centre = BarTop + BarHeight - (bucket * segment - segment / 2);
+            var centre = BarTop + BarHeight - FillPixels(PowerBarThresholds.FractionOf(bucket));
             BoltGlyph.Draw(_canvas, x, centre - BoltGlyph.Height / 2, BoltColor(bucket));
         }
+
+        /// <summary>Bar pixels filled at a fill fraction: one rounding for the fill and for the bolt markers.</summary>
+        public static int FillPixels(float fraction01) => Mathf.RoundToInt(fraction01 * BarHeight);
 
         private Color BoltColor(int bucket)
         {

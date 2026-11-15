@@ -77,7 +77,7 @@ namespace UncannyValet.UI.Hud
             var x = Margin;
             var y = Margin - 1;
             _canvas.Panel(x, y, HudLayout.BlessingsWidth, HudLayout.BlessingsHeight, PixelPalette.PanelDark);
-            _canvas.Icon(PixelIcon.Bolt, x + HudLayout.BoltX, y + HudLayout.BoltY, 1, Color.white);
+            _canvas.Icon(PixelIcon.PrayerHands, x + HudLayout.BoltX, y + HudLayout.BoltY, 1, Color.white);
             _canvas.Text(_blessings.Text, x + HudLayout.CountX, y + HudLayout.CountY, PixelPalette.Gold, HudLayout.TextScale);
             if (_goal != null) DrawBar(x, y, time);
         }

@@ -1,4 +1,5 @@
 using System;
+using UncannyValet.Core.Contracts;
 
 namespace UncannyValet.Powers
 {
@@ -13,15 +14,13 @@ namespace UncannyValet.Powers
         public const float Full = 100f;
 
         /// <summary>The value of one bucket: a third of the bar. Not a tunable.</summary>
-        public const float BucketSize = 33.3f;
+        public const float BucketSize = 33.3f; // = PowerBarThresholds.ValueOf(1); a test keeps them equal
 
         /// <summary>Number of buckets.</summary>
         public const int BucketCount = 3;
 
         // Float slack so 100 - 33.3 still counts as the 66.7 mark.
         private const float Slack = 0.001f;
-
-        private static readonly float[] Thresholds = { 33.3f, 66.7f, 100f };
 
         /// <summary>Current value, 0 to 100.</summary>
         public float Value { get; private set; }
@@ -30,7 +29,7 @@ namespace UncannyValet.Powers
         public int OpenBuckets => BucketsAt(Value);
 
         /// <summary>True when a power can be paid for.</summary>
-        public bool CanSpend => Value + Slack >= BucketSize;
+        public bool CanSpend => OpenBuckets >= 1;
 
         /// <summary>Bar fill, 0 to 1.</summary>
         public float Fill01 => Value / Full;
@@ -67,7 +66,7 @@ namespace UncannyValet.Powers
         private static int BucketsAt(float value)
         {
             var open = 0;
-            while (open < BucketCount && value + Slack >= Thresholds[open]) open++;
+            while (open < BucketCount && value + Slack >= PowerBarThresholds.ValueOf(open + 1)) open++;
             return open;
         }
     }

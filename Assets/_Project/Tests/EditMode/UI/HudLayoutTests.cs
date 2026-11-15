@@ -11,7 +11,7 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void BoltAndCount_FitInTheFirstRowAboveTheBar()
         {
-            var bolt = PixelIconData.Rows(PixelIcon.Bolt);
+            var bolt = PixelIconData.Rows(PixelIcon.PrayerHands);
             Assert.GreaterOrEqual(HudLayout.BoltX, Border);
             Assert.LessOrEqual(HudLayout.BoltX + bolt[0].Length, HudLayout.CountX);
             Assert.LessOrEqual(HudLayout.BoltY + bolt.Length, HudLayout.BarY - HudLayout.MarkerOverhang);
@@ -48,9 +48,9 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void BoltIcon_IsARectangularBitmapOfKnownColours()
+        public void PrayerHandsIcon_IsARectangularBitmapOfKnownColours()
         {
-            var rows = PixelIconData.Rows(PixelIcon.Bolt);
+            var rows = PixelIconData.Rows(PixelIcon.PrayerHands);
             foreach (var row in rows)
             {
                 Assert.AreEqual(rows[0].Length, row.Length);

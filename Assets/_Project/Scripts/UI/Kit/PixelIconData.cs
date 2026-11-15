@@ -29,6 +29,12 @@ namespace UncannyValet.UI.Kit
             "...kyyk..", "..kyyk...", "..kyyk...", ".kyyk....", ".kyk.....", ".kk......",
         };
 
+        private static readonly string[] PrayerHands =
+        {
+            "....k....", "...kyk...", "..kyyyk..", "..kywyk..", ".kyywyyk.", ".kyyoyyk.",
+            ".kyyoyyk.", "..kyoyk..", "..kyoyk..", ".kkkkkkk.", ".kwwkwwk.", ".kkkkkkk.",
+        };
+
         private static readonly string[] Bell =
         {
             "....k....", "...kyk...", "..kyyyk..", "..kywyk..", ".kywyyok.",
@@ -68,6 +74,7 @@ namespace UncannyValet.UI.Kit
                 case PixelIcon.Mud: return Mud;
                 case PixelIcon.Tyre: return Tyre;
                 case PixelIcon.Plug: return Plug;
+                case PixelIcon.PrayerHands: return PrayerHands;
                 default: throw new ArgumentOutOfRangeException(nameof(icon), icon, "Icon has no bitmap.");
             }
         }
