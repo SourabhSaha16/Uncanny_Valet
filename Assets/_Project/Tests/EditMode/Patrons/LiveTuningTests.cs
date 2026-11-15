@@ -95,6 +95,7 @@ namespace UncannyValet.Tests.Patrons
             var t = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f));
             _bus.Publish(new CarParked(t.CarId, 1));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _clock.ElapsedMinutes = 20f; _bus.Publish(new ShiftTick(20f));
             _clock.ElapsedMinutes = 40f; _bus.Publish(new ShiftTick(40f));
             Assert.AreEqual(0, expired);

@@ -49,6 +49,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Publish(new CarArrived(_car));
             _bus.Publish(new CarParked(_car, 1));
             _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
         }
 
         private void Tick(float minute)

@@ -60,6 +60,7 @@ namespace UncannyValet.Tests.Patrons
             _cars.Spawn(car, UnityEngine.Vector2.zero, 0f);
             var ticket = _registry.Open(car, Request(stay));
             _bus.Publish(new PatronEnteredDiner(car));
+            _bus.Publish(new CarLeftPickup(car));
             return ticket;
         }
 

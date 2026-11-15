@@ -62,6 +62,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus.Publish(new CarParked(_car, 1));
             _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             _bus.Publish(new CarAtCurb(_car));
 
@@ -76,6 +77,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus.Publish(new CarParked(_car, 1));
             _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             Tick(90f);
             _bus.Publish(new CarAtCurb(_car));
@@ -97,6 +99,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus.Publish(new CarParked(_car, 1));
             _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             _bus.Publish(new ShiftEnded());
             AssertClosedWithoutDelivery();
