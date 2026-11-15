@@ -1018,3 +1018,9 @@ Date: 2026-11-14
 Files: Scripts/Run (LotDefinition, LotGoal), Scripts/Core/Contracts/ILotGoal.cs (default member ShowPowerBar), Scripts/Bootstrap/RunBootstrap.cs, Scripts/UI/Hud (PowerBarTracker, PlayingHud), Data/Run/MidgardCrazyLot.asset, MidgardTrainingLot.asset, EditMode tests, docs/changelogs/lot.md
 Why: Refs #137 #136. The power bar is hidden on the Midgard lots by a per-lot flag (ShowPowerBar). Perfect Park already runs on every lot including Vanaheim (18 power per perfect park); no gate existed, so #136 needed no code change.
 Tests: EditMode passed after merge (exit 0); the agent also ran PlayMode 77 of 77 and RunBatch. Not played; not in beta yet.
+
+## lead: merge agent/timer-after-pickup, update design log [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (StayStartRule, PickupLeaveWatcher, StayStarter, QueueAdvancer), Scripts/Core/Events/PickupEvents.cs (CarLeftPickup appended), EditMode tests, Tests/PlayMode/PedestrianHitTests.cs, docs/design.md, docs/decisions.md, docs/changelogs/patrons.md
+Why: Refs #139. The patron stay clock starts at the later of PatronEnteredDiner and CarLeftPickup. PlayMode PedestrianHitTests now expect the slight curse from #138 (2 blessings) instead of no curse.
+Tests: EditMode passed (1858, exit 0); full PlayMode 77 of 77 after updating the two stale curse assertions. Not played; not in beta yet.

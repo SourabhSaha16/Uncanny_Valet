@@ -41,7 +41,7 @@ debt, strikes or boss orders (all removed).
    Waiting cars have no timer and never leave on their own.
 3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (the EV charging bay 7, the wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
    hint shows.
-4. The patron returns, the pickup is requested, the valet drives the car to the VALET DROP-OFF (the curb zone), tip is paid. The stay clock starts when the patron enters the diner (PatronEnteredDiner).
+4. The patron returns, the pickup is requested, the valet drives the car to the VALET DROP-OFF (the curb zone), tip is paid. The stay clock starts at the later of two moments: the patron enters the diner (PatronEnteredDiner) and Thor drives the car out of the pickup spot (CarLeftPickup).
 5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
 
 Only the pickup timer exists (game minutes; 1 game minute is 1 real second); it drives the tip and the angry
@@ -113,7 +113,7 @@ separate pickup banner is gone.
 - Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
 - 8 ambient pedestrians loop on fixed routes (MetroCity character parts, 4-direction run cycles). Scenery only
   for now: no collision, no honk.
-- Patron flow: the patron steps out only when Thor comes up to the car in the pickup spot, crosses to the diner and goes inside; the stay clock starts when they enter (PatronEnteredDiner); when the stay
+- Patron flow: the patron steps out only when Thor comes up to the car in the pickup spot, crosses to the diner and goes inside; the stay clock starts when they are in the diner and Thor has driven the car out of the pickup spot (PatronEnteredDiner and CarLeftPickup, whichever is last); when the stay
   ends they come out (PatronSummoned), cross to the curb and wait. The pickup and its patience timer start only
   when they stand at the curb (PatronReachedCurb; fallback after 40 game minutes). Ambient walkers come from
   the road sides, walk to the diner door, vanish inside and come out again. Walkers have no colliders, so routes
@@ -249,6 +249,7 @@ Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 
 # Part B. Pre-pivot design (superseded, kept for history)
 | 2026-11-14 | Valet pickup spot and diner-entry timer merged (#127, #126): queue of 4 whose first slot is the VALET PICKUP spot, the curb zone is the VALET DROP-OFF; the patron stays in the car until Thor approaches it (`PatronStepsOut`); queued cars advance (`CarRepositioned`, `ICarFactory.TryDriveTo`) and a full queue holds arrivals; the stay clock starts on `PatronEnteredDiner` (issue #78's queue-distance rule and 3-minute fallback are removed; the tuning keys are kept as retired); new tunables in `PatronConfig.Pickup` (MaxQueuedCars 4, ApproachRange 4, AdvanceSpeed 5). Supersedes the queue of 3 and the pickup labelling in `docs/redesign/lot_v2_layout.md` |
 | 2026-11-14 | Pedestrian fixes merged (#124, #125): on crazy lots (`LotDefinition.FreePedestrianRoutes`, seeded as `TuningKey.PedestrianFreeRoutes`) walkers take a straight route to the door instead of the crosswalk path, so they no longer queue at the crosswalk; a pushed or bumped pedestrian now stays where they land and walks on from there (`PathFollower.Displace`; the old return-to-route bounce curve is replaced by `PedestrianBounceRule.Slide`) |
+| 2026-11-14 | Playtest batch 2 merged (#129 to #139): speech bubbles switched off by `SpeechBubbleSettings.Enabled` (default off); status label 'No blessing'; any pedestrian hit by the valet's car costs a slight curse of 2 blessings on every lot (`TuningKey.PedestrianSlightCurseAmount`, patron curse stays 5 and is never stacked); car slowdown on a pedestrian hit 35% (was 15%); power bar hidden on Midgard lots (`LotDefinition.ShowPowerBar`); Perfect Park already runs on every lot (18 power per perfect); ambient pedestrians roam and enter the diner after a random 10 to 40 s; bottom row of spots 1.5 units lower (`LotConfig.BottomRowDrop`); crazy lots keep the queue topped up (`IArrivalPacing`); patron timer starts when the patron is in the diner and the car has left the pickup spot (`CarLeftPickup`). |
 
 ## 1. Overview
 

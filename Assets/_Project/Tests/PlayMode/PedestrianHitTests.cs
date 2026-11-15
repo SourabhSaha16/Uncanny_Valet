@@ -89,7 +89,7 @@ namespace UncannyValet.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator CrazyLot_AmbientWalkerIsKnockedAwayWithoutACurse()
+        public IEnumerator CrazyLot_AmbientWalkerIsKnockedAwayAndOnlyTheSlightCurseLands()
         {
             Setup(true);
             var walker = Walker(Vector2.zero, patron: false);
@@ -98,12 +98,12 @@ namespace UncannyValet.Tests.PlayMode
             Assert.AreEqual(1, _hits.Count);
             Assert.IsFalse(_hits[0].IsPatron);
             Assert.Greater(walker.transform.position.y, 0.3f);
-            Assert.AreEqual(0, _blessings.Curses);
-            Assert.AreEqual(40, _blessings.Blessings);
+            Assert.AreEqual(1, _blessings.Curses, "an ambient hit costs the slight curse");
+            Assert.AreEqual(38, _blessings.Blessings);
         }
 
         [UnityTest]
-        public IEnumerator TrainingLot_PatronIsKnockedAwayButNeverCursed()
+        public IEnumerator TrainingLot_PatronIsKnockedAwayAndOnlyTheSlightCurseLands()
         {
             Setup(false);
             var walker = Walker(Vector2.zero, patron: true);
@@ -111,8 +111,8 @@ namespace UncannyValet.Tests.PlayMode
             yield return Drive(car, walker);
             Assert.AreEqual(1, _hits.Count);
             Assert.Greater(walker.transform.position.y, 0.3f);
-            Assert.AreEqual(0, _blessings.Curses);
-            Assert.AreEqual(40, _blessings.Blessings);
+            Assert.AreEqual(1, _blessings.Curses, "a training lot patron hit costs the slight curse");
+            Assert.AreEqual(38, _blessings.Blessings);
         }
 
         private IEnumerator Drive(CarDriver car, PedestrianWalker walker)
