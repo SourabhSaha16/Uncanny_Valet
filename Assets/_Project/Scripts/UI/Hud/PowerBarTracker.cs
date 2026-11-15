@@ -16,10 +16,12 @@ namespace UncannyValet.UI.Hud
         private readonly IEventBus _bus;
         private IRunProgress _progress;
         private IPowerView _powers;
+        private readonly ILotGoal _goal;
         private float _lastTime = -1f;
 
-        public PowerBarTracker(IEventBus bus, PowerBarSettings settings, IRunProgress progress = null, IPowerView powers = null)
+        public PowerBarTracker(IEventBus bus, PowerBarSettings settings, IRunProgress progress = null, IPowerView powers = null, ILotGoal goal = null)
         {
+            _goal = goal;
             _bus = bus;
             _progress = progress;
             _powers = powers;
@@ -32,8 +34,8 @@ namespace UncannyValet.UI.Hud
         public PowerBarView View { get; }
         public PowerIconFlashes Flashes { get; }
 
-        /// <summary>True while at least one power is owned; nothing of the bar is drawn before that.</summary>
-        public bool IsVisible => Progress != null && Progress.EarnedPowers.Count > 0;
+        /// <summary>True while at least one power is owned and the lot shows the bar (not in Midgard); nothing of the bar is drawn otherwise.</summary>
+        public bool IsVisible => (_goal == null || _goal.ShowPowerBar) && Progress != null && Progress.EarnedPowers.Count > 0;
 
         /// <summary>Powers owned; one icon each, in key order.</summary>
         public int IconCount => Progress != null ? Progress.EarnedPowers.Count : 0;

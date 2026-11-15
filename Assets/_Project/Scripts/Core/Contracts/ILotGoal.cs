@@ -10,5 +10,8 @@ namespace UncannyValet.Core.Contracts
 
         /// <summary>Blessings that must be reached by the end of the shift (at least 1).</summary>
         int BlessingThreshold { get; }
+
+        /// <summary>True when the HUD draws the power bar in this lot; only the drawing changes, the bar rules keep running.</summary>
+        bool ShowPowerBar => true;
     }
 }

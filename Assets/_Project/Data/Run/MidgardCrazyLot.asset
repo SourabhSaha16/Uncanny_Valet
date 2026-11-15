@@ -37,6 +37,7 @@ MonoBehaviour:
     _driftPerSecond: 0.6
     _driftCap: 4
   _modifiers: []
+  _showPowerBar: 0
   _blessingThreshold: 300
   _freePedestrianRoutes: 1
   _pedestrianCurses: 1
