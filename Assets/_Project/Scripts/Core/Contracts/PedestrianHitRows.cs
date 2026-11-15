@@ -12,7 +12,7 @@ namespace UncannyValet.Core.Contracts
         public const float FarSpeed = 8f;
         public const float NearTumble = 0.4f;
         public const float FarTumble = 0.8f;
-        public const float CarSlowdown = 0.15f;
+        public const float CarSlowdown = 0.35f;
         public const float CarSlowFloor = 0.3f;
         public const float CurseAmount = 5f;
         public const float CurseLockout = 3f;
@@ -32,7 +32,7 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.PedestrianTumbleFar, Group, "Tumble: seconds at a full-speed hit", 0.1f, 2f, 0.05f,
                 "How long a person spins after a full-speed hit."),
             new TuningInfo(TuningKey.PedestrianCarSlowdown, Group, "Car slowdown when it hits a person (share)", 0f, 0.8f, 0.01f,
-                "Share of its speed the car loses once per hit. 0.15 is 15%. The car is never bounced back."),
+                "Share of its speed the car loses once per hit. 0.35 is 35%. The car is never bounced back."),
             new TuningInfo(TuningKey.PedestrianCarSlowFloor, Group, "Car slowdown: never below (share of top speed)", 0f, 1f, 0.05f,
                 "Hitting people never slows the car below this share of its top speed."),
             new TuningInfo(TuningKey.PedestrianCurseAmount, Group, "Curse for hitting a patron (blessings)", 0f, 50f, 1f,
