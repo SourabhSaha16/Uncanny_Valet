@@ -958,3 +958,9 @@ Date: 2026-11-14
 Files: site/ (Web build of fe91760)
 Why: playtest batch #122 to #127 (valet pickup spot and diner-entry timer, pedestrian free routes and no rubber band, smaller speech bubbles, zoom out, camera fit for the taller lots).
 Tests: EditMode 1802/1802, PlayMode 77/77 on the source; Web smoke test at 16:9: title, how-to-play, Midgard intro, shift with the whole lot in frame (diner door, yellow pickup slot and 3 queue slots, 8 bays), a car queued into the pickup spot.
+
+## lead: merge agent/patron-walkers [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (PatronPool, PatronPoolSizing, PendingStepOuts, PatronWalkers, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/EditMode/Pedestrians/PatronPoolTests.cs, docs/changelogs/pedestrians-patrons.md
+Why: Refs #128. The reserved patron pool is now sized by spots plus queue slots (config value is a floor) and a patron with no free walker waits and retries, so the diner timer cannot stall (design.md A2 pickup flow).
+Tests: EditMode suite passed (1809 of 1809 in the agent run, exit 0 again after merge). No PlayMode or web build; not yet in the beta site.
