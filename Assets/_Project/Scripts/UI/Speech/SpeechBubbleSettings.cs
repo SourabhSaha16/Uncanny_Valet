@@ -7,6 +7,12 @@ namespace UncannyValet.UI.Speech
     [Serializable]
     public sealed class SpeechBubbleSettings
     {
+        /// <summary>The bubble switch used when no config is given: off (owner playtest 2026-11-14: bubbles distract).</summary>
+        public const bool DefaultEnabled = false;
+
+        [SerializeField, Tooltip("Master switch for every speech text bubble (watchers, grandma, gag-line pedestrians). Off (default): none is tracked or drawn; the tips and the rest of the game are unchanged. Blessing and emotion icons are separate.")]
+        private bool _enabled = DefaultEnabled;
+
         /// <summary>The scale used when no config is given (owner playtest 2026-11-14: about 28 percent smaller).</summary>
         public const float DefaultScale = 0.72f;
 
@@ -18,6 +24,9 @@ namespace UncannyValet.UI.Speech
 
         [SerializeField, Min(0f), Tooltip("How far past the screen edge (as a share of the screen size) the speaker may stand and still get a bubble. Beyond it the bubble is hidden; the tip money is paid either way.")]
         private float _viewMargin = DefaultViewMargin;
+
+        /// <summary>True when speech bubbles are tracked and drawn.</summary>
+        public bool Enabled => _enabled;
 
         public float Scale => _scale;
 

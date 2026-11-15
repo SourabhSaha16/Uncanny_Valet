@@ -110,8 +110,8 @@ namespace UncannyValet.Tests.UI
         {
             Assert.AreEqual("Cust. Angry", CarStatusTable.LabelFitting(CarStatus.CustAngry, 200));
             Assert.AreEqual("Angry", CarStatusTable.LabelFitting(CarStatus.CustAngry, 56));
-            Assert.AreEqual("Unblessed", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 56));
-            Assert.AreEqual("Zero", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 40));
+            Assert.AreEqual("No blessing", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 72));
+            Assert.AreEqual("No bless", CarStatusTable.LabelFitting(CarStatus.WillNotBless, 56));
             Assert.AreEqual("Pick Up", CarStatusTable.LabelFitting(CarStatus.PickUp, 56));
         }
 

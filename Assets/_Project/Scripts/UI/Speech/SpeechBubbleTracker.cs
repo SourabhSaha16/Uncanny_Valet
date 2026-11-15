@@ -8,7 +8,8 @@ namespace UncannyValet.UI.Speech
 {
     /// <summary>
     /// Keeps the one speech bubble that is on screen: the request the speech director chose, its wrapped lines and when it ends. A new
-    /// <see cref="SpeechShown"/> replaces the old one (the director never sends two at once).
+    /// <see cref="SpeechShown"/> replaces the old one (the director never sends two at once). When <c>enabled</c> is false (the
+    /// <see cref="SpeechBubbleSettings"/> switch) it never subscribes, so nothing is wrapped or tracked.
     /// </summary>
     public sealed class SpeechBubbleTracker : IDisposable
     {
@@ -16,13 +17,15 @@ namespace UncannyValet.UI.Speech
         private readonly Func<float> _now;
         private readonly List<WordWrap.Span> _lines = new List<WordWrap.Span>(4);
         private SpeechRequest _request;
+        private readonly bool _enabled;
         private float _until = float.NegativeInfinity;
 
-        public SpeechBubbleTracker(IEventBus bus, Func<float> now)
+        public SpeechBubbleTracker(IEventBus bus, Func<float> now, bool enabled)
         {
             _bus = bus;
             _now = now;
-            _bus.Subscribe<SpeechShown>(OnShown);
+            _enabled = enabled;
+            if (_enabled) _bus.Subscribe<SpeechShown>(OnShown);
         }
 
         /// <summary>The wrapped text lines of the current bubble.</summary>
@@ -35,7 +38,10 @@ namespace UncannyValet.UI.Speech
             return now < _until;
         }
 
-        public void Dispose() => _bus.Unsubscribe<SpeechShown>(OnShown);
+        public void Dispose()
+        {
+            if (_enabled) _bus.Unsubscribe<SpeechShown>(OnShown);
+        }
 
         private void OnShown(SpeechShown e)
         {
