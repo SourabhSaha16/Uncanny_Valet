@@ -18,17 +18,21 @@ namespace UncannyValet.UI.Speech
         private readonly PixelCanvas _canvas;
         private readonly SpeechBubbleTracker _tracker;
         private readonly float _scale;
+        private readonly float _viewMargin;
 
         public SpeechBubblePainter(PixelCanvas canvas, SpeechBubbleTracker tracker, SpeechBubbleSettings settings = null)
         {
             _canvas = canvas;
             _tracker = tracker;
             _scale = settings != null ? settings.Scale : SpeechBubbleSettings.DefaultScale;
+            _viewMargin = settings != null ? settings.ViewMargin : SpeechBubbleSettings.DefaultViewMargin;
         }
 
         public void Draw(Camera camera, float now)
         {
             if (camera == null || !_tracker.TryGetCurrent(now, out var request)) return;
+            var view = camera.WorldToViewportPoint(request.CurrentPosition);
+            if (!SpeechBubbleVisibility.IsInView(view.x, view.y, view.z, _viewMargin)) return;
             var screen = camera.WorldToScreenPoint(request.CurrentPosition + Vector2.up * SpeechBubbleLayout.LiftWorldUnits);
             if (screen.z < 0f) return;
             var lines = _tracker.Lines;
