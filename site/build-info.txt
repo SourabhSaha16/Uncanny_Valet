@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  47467ee
-Subject: lead: fix BayEntryTests gap for the lowered bottom row, Refs #131 [Claude]
-Date:    2026-11-14 18:50:45 -0800
+Commit:  e3c084b
+Subject: lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
+Date:    2026-11-14 22:05:12 -0800

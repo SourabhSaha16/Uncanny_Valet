@@ -1,4 +1,23 @@
 === Last 50 commits ===
+e3c084b  2026-11-14  lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
+8a32936  2026-11-14  lead: merge agent/no-trough [Claude]
+151d667  2026-11-14  lot: remove water trough prop, wash bays are plain wash slots [Claude]
+2fe5eb2  2026-11-14  lead: merge agent/queue-advance-fix [Claude]
+8999269  2026-11-14  patrons: queue advances a car that stopped short, retries drives [Claude]
+5b987f3  2026-11-14  lead: merge agent/power-bolt-prayer [Claude]
+076e5b7  2026-11-14  integration: power bar markers at real thresholds, prayer hands for blessings [Claude]
+aecb086  2026-11-14  lead: merge timer-after-pickup, fix PlayMode curse tests, design log, Refs #139 [Claude]
+bcc8ad7  2026-11-14  lead: merge agent/timer-after-pickup [Claude]
+0b426c8  2026-11-14  lead: changelog for power bar flag merge, Refs #136 #137 [Claude]
+d5e1b71  2026-11-14  patrons: stay clock starts after the car leaves the pickup spot [Claude]
+5f6d91c  2026-11-14  lead: merge agent/perfect-w2-powerbar [Claude]
+ca8368d  2026-11-14  lot: per-lot ShowPowerBar hides the power bar in Midgard, Refs #136 #137 [Claude]
+4a00953  2026-11-14  lead: changelog for bubbles, label and curse merges, Refs #134 #135 #138 [Claude]
+2a5b321  2026-11-14  lead: merge agent/ped-curse [Claude]
+812cfac  2026-11-14  economy-night: slight curse for hitting any pedestrian [Claude]
+4014b6f  2026-11-14  lead: merge agent/ui-bubbles-label [Claude]
+4ddc8d1  2026-11-14  integration: speech bubbles off by default, status reads No blessing (Refs #134 #135) [Claude]
+f977fe2  2026-11-14  lead: rebuild site/ with the playtest batch 2 for beta [Claude]
 47467ee  2026-11-14  lead: fix BayEntryTests gap for the lowered bottom row, Refs #131 [Claude]
 f705d27  2026-11-14  lead: changelog for ped-slowdown merge, Refs #133 [Claude]
 4221bad  2026-11-14  lead: merge agent/ped-slowdown [Claude]
@@ -30,25 +49,6 @@ a536200  2026-11-14  lead: changelog and design log for pedestrian fixes, Refs #
 63a9971  2026-11-14  lead: merge agent/pedestrians free routes and no rubber band [Claude]
 1725343  2026-11-14  pedestrians: free direct routes to the diner on crazy lots (Refs #124) [Claude]
 fa04683  2026-11-14  pedestrians: knocked pedestrians walk on from where they land (Refs #125) [Claude]
-41e8431  2026-11-14  lead: design.md for pickup spot and diner timer, wrapper memory pattern fix, Refs #127 #126 [Claude]
-be4c7a0  2026-11-14  lead: merge agent/lot valet pickup spot and diner-entry timer [Claude]
-d4c9f73  2026-11-14  lot: regenerate training scenes with four queue slots [Claude]
-812e012  2026-11-14  lot: valet pickup spot and queue, timer starts in diner [Claude]
-5e7d992  2026-11-14  lead: log 2026-11-14 playtest decisions, Refs #126 #127 [Claude]
-65075db  2026-11-14  lead: CLAUDE.md rule to clean up agent worktrees after merge [Claude]
-160d568  2026-11-14  lead: CLAUDE.md rule for run-unity wrapper, changelog [Claude]
-9b05226  2026-11-14  lead: merge agent/integration run-unity wrapper [Claude]
-c721236  2026-11-14  lead: rebuild site/ with the Midgard and Vanaheim story flow [Claude]
-8cc12b2  2026-11-14  integration: add run-unity wrapper (lock, commit guard, timeout) [Claude]
-12bbcc2  2026-11-14  lead: changelog for #85 merge, Refs #85 [Claude]
-2b22632  2026-11-14  lead: merge agent/integration god verdict on results [Claude]
-d9a3837  2026-11-14  integration: results screen shows the local god verdict, Refs #85 [Claude]
-9aca972  2026-11-14  lead: audio themes assets, PlayMode asmdef reference, Refs #117 [Claude]
-339a6a8  2026-11-14  lead: merge agent/audio music themes and ambience [Claude]
-720d863  2026-11-14  lead: changelog for #84 follow-up merge, Refs #84 [Claude]
-21124b5  2026-11-14  lead: merge agent/integration retry rule and F4 picker [Claude]
-06e1b9a  2026-11-14  integration: no retry after a failed crazy lot, lot picker on F4 [Claude]
-73674f7  2026-11-14  Merge branch 'pivot/chaos' into worktree-agent-a3a8bb48a642684c0
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -364,6 +364,12 @@ Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/B
 Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
 Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
 
+## economy-night: slight curse for hitting any pedestrian [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Economy/SlightCurseRule.cs, PedestrianCurseRule.cs (Covers), ShiftBlessings.cs; Core/Events/TuningKey.cs (appended PedestrianSlightCurseAmount); Core/Contracts/PedestrianHitRows.cs (row, default 2, seed); Tests/EditMode/Economy/SlightCurseTests.cs, PedestrianCurseTests.cs
+Why: Issue #138. The driven car hitting any walker costs a slight curse (2 blessings) on every lot, ignoring the lot curse switch; the full patron curse is unchanged and wins (one curse per hit, no stacking).
+Tests: SlightCurseTests added, PedestrianCurseTests updated; EditMode 1850 passed, 0 failed.
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
@@ -578,6 +584,18 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleVisibility.cs, SpeechBubbleSettings.cs (ViewMargin), SpeechBubblePainter.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs (+ .meta)
 Why: Grandma tip bubble drew at the screen edge even when she was off screen. The painter now skips the bubble while the speaker viewport position is outside the view plus a tunable margin (ViewMargin, default 0.02); the tracker keeps its timer, so the bubble returns if she re-enters before it expires. Tip money is unaffected (display only). Uses the camera HUD already passes in; no per-frame allocation.
 Tests: EditMode SpeechBubbleVisibilityTests (7, incl. leave and re-enter regression).
+
+## integration: speech bubbles off by default, car status reads No blessing (Refs #134 #135) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs (Enabled switch, default off), SpeechBubbleTracker.cs (enabled gate), Hud/PlayingHud.cs, Status/CarStatusTable.cs, CarStatusResolver.cs (comment), Core/Contracts/EmotionRows.cs (tooltip wording only, approved); Assets/_Project/Tests/EditMode/UI/SpeechBubbleTests.cs, CarStatusTests.cs
+Why: playtest: speech bubbles distract (#134). One serialized bool on HudEmotionConfig's Speech Bubble settings turns them back on; off, the tracker never subscribes to SpeechShown and no painter is built, so nothing is wrapped, tracked or drawn (tips and other events unchanged; blessing and emotion icons untouched). #135: the Unblessed status label is now No blessing (fallback No bless when the box is too narrow; the key board box has room for the full label).
+Tests: EditMode SwitchedOff_NeverTracksABubble, TheSettingsDefaultIsOff, updated label-fitting test; full suite run before commit.
+
+## integration: power bar markers at real thresholds, prayer hands for blessings [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PowerBarThresholds.cs (new, one threshold list), Powers/PowerBar.cs, UI/Hud/PowerBarPainter.cs, BlessingPopPainter.cs, BlessingPops.cs, HudPainter.cs, UI/Screens/ResultsPainter.cs, UI/Kit/PixelIcon.cs, PixelIconData.cs; Tests/EditMode/UI/PowerBarMarkerTests.cs, HudLayoutTests.cs (+ .meta)
+Why: #142 the bolt markers were drawn at the centre of each third of the bar (first bolt at about 17 percent) while the first power opens at 33.3, so the fill passed the bolt long before the power worked. Markers now sit at the threshold fraction from the same list the bar uses (new Core file, flagged to the lead), with one pixel rounding shared by fill and markers. #143 blessings show a new PrayerHands pixel icon (HUD counter, blessing pops, results score); the bolt stays on the power bar.
+Tests: EditMode 1883 passed (4 new marker tests).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1583,6 +1601,36 @@ Files: Assets/_Project/Tests/PlayMode/BayEntryTests.cs, docs/changelogs/lead.md
 Why: Refs #131. The PlayMode gap-between-rows test still expected 6 units; it now expects 6 plus LotConfig.BottomRowDrop.
 Tests: Full PlayMode suite 77 of 77 passed (it was 76 of 77 before the fix); EditMode passed earlier on the same code.
 
+## lead: rebuild site/ with the playtest batch 2 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #129 #130 #131 #132 #133. Beta now includes the on-camera-only speech bubbles, roaming pedestrians, lowered bottom row of spots, topped-up queue on crazy lots and the 35% pedestrian slowdown.
+Tests: tools/build-web.ps1 exit 0, build-info shows 47467ee; EditMode and full PlayMode (77 of 77) passed on the same code; browser smoke test loaded Midgard training with the lowered bottom row, no console errors. Crazy lots and the other changes not played.
+
+## lead: merge agent/ui-bubbles-label and agent/ped-curse [Claude]
+Date: 2026-11-14
+Files: Scripts/UI/Speech (SpeechBubbleSettings, SpeechBubbleTracker), Scripts/UI/Hud/PlayingHud.cs, Scripts/UI/Status (CarStatusTable, CarStatusResolver), Scripts/Economy (SlightCurseRule, PedestrianCurseRule, ShiftBlessings), Scripts/Core (TuningKey append PedestrianSlightCurseAmount, EmotionRows, PedestrianHitRows), EditMode tests, docs/changelogs/integration.md, economy-night.md
+Why: Refs #134 #135 #138. Speech bubbles switched off behind one setting (default off); status label reads 'No blessing'; hitting any pedestrian with the valet's car costs a slight curse (2 blessings, tunable) on every lot, the patron curse (5) unchanged and never stacked with it.
+Tests: EditMode passed after each merge (exit 0). Not played; not in beta yet.
+
+## lead: merge agent/perfect-w2-powerbar [Claude]
+Date: 2026-11-14
+Files: Scripts/Run (LotDefinition, LotGoal), Scripts/Core/Contracts/ILotGoal.cs (default member ShowPowerBar), Scripts/Bootstrap/RunBootstrap.cs, Scripts/UI/Hud (PowerBarTracker, PlayingHud), Data/Run/MidgardCrazyLot.asset, MidgardTrainingLot.asset, EditMode tests, docs/changelogs/lot.md
+Why: Refs #137 #136. The power bar is hidden on the Midgard lots by a per-lot flag (ShowPowerBar). Perfect Park already runs on every lot including Vanaheim (18 power per perfect park); no gate existed, so #136 needed no code change.
+Tests: EditMode passed after merge (exit 0); the agent also ran PlayMode 77 of 77 and RunBatch. Not played; not in beta yet.
+
+## lead: merge agent/timer-after-pickup, update design log [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (StayStartRule, PickupLeaveWatcher, StayStarter, QueueAdvancer), Scripts/Core/Events/PickupEvents.cs (CarLeftPickup appended), EditMode tests, Tests/PlayMode/PedestrianHitTests.cs, docs/design.md, docs/decisions.md, docs/changelogs/patrons.md
+Why: Refs #139. The patron stay clock starts at the later of PatronEnteredDiner and CarLeftPickup. PlayMode PedestrianHitTests now expect the slight curse from #138 (2 blessings) instead of no curse.
+Tests: EditMode passed (1858, exit 0); full PlayMode 77 of 77 after updating the two stale curse assertions. Not played; not in beta yet.
+
+## lead: merge queue advance fix, wash bay without trough, power bolt and prayer hands [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (AdvanceTracker, QueueAdvancer, IArrivalScan, ArrivalSlotScanner, PickupQueueSettings), Scripts/Cars/CarAutoDrive.cs, Scripts/Lot (WashBayLayout, LotGeometry, LotLayoutBuilder, SiteLayout, LotConfig, StationSwitch), Editor Vanaheim setup, Vanaheim lot/art assets and scenes, Scripts/Core/Contracts/PowerBarThresholds.cs (new), Scripts/Powers/PowerBar.cs, Scripts/UI (PowerBarPainter, blessing painters, PixelIcon.PrayerHands), tests, changelogs patrons.md, lot.md, integration.md
+Why: Refs #140 #141 #142 #143. Queue cars no longer freeze when one stops short of its slot (scan ignores the car behind, tolerance 2.2, retry after timeout, heading set toward the slot); the Vanaheim water trough prop is gone and wash bays are the regular blue bay with the muddy-car symbol; power markers and usability share one threshold list so 1T opens at the first bolt; blessings show prayer hands, the bolt stays for power.
+Tests: EditMode passed and full PlayMode 78 of 78 on the merged tip (exit 0). Not played.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1858,6 +1906,18 @@ Files: Scripts/Lot/{LotConfig,LotGeometry,TroughLayout}.cs; Data/Lot/LotConfig.a
 Why: Issue #131 (Refs #131, design.md section 4). With the camera zoomed out the two bay rows need more road between them. New LotConfig.BottomRowDrop (default 1.5) is added to the aisle height for the bottom row only (bays, EV bay, wash slot, second wash trough); the crosswalk line (AisleY) stays centred in the wider aisle. All lots share LotConfig so every lot with a bottom row moves. Baked props, mud patches and Vanaheim trough lights placed from the old geometry were re-placed.
 Tests: EditMode 1833/1833 (4 new in BottomRowDropTests); PlayMode CameraFramingPlayModeTests 4/4; RunBatch run (CarHandlingConfig and PedestrianConfig drift reverted).
 
+## lot: per-lot ShowPowerBar hides the power bar in Midgard, Refs #136 #137 [Claude]
+Date: 2026-11-14
+Files: Scripts/Run/{LotDefinition,LotGoal}.cs; Scripts/Core/Contracts/ILotGoal.cs; Scripts/Bootstrap/RunBootstrap.cs; Scripts/UI/Hud/{PowerBarTracker,PlayingHud}.cs; Data/Run/{MidgardCrazyLot,MidgardTrainingLot}.asset; Tests/EditMode/Run/PowerBarFlagAssetTests.cs, Tests/EditMode/UI/PowerBarVisibilityTests.cs
+Why: Issues #137 and #136 (design.md valet powers). LotDefinition.ShowPowerBar (default true, false on both Midgard lots) travels through ILotGoal (default member true) to PowerBarTracker.IsVisible; only drawing changes, the fill rules keep running. Perfect Park judging was never gated by world and Vanaheim lots already seed a Perfect Park fill of 18, so #136 needed tests only.
+Tests: EditMode 1851/1851 (new asset and tracker visibility tests); PlayMode 77/77; RunBatch run (scene and config fileID churn reverted).
+
+## lot: remove water trough prop, wash bays are plain wash slots [Claude]
+Date: 2026-11-14
+Files: Scripts/Lot/{TroughLayout->WashBayLayout,LotGeometry,LotLayoutBuilder,LotConfig,SiteLayout,StationSwitch}.cs; Editor/{Art/VanaheimArt,VanaheimProps,VanaheimLanterns,VanaheimMud,VanaheimWorldSetup}.cs; Data/Art/Vanaheim/{VanaheimTrough.asset (deleted),VanaheimStormyEvening.asset}; Data/Run/{VanaheimTrainingLot,VanaheimCrazyLot}.asset; Scenes Lot_VanaheimTraining, Lot_VanaheimCrazy (regenerated); Tests/EditMode/{Lot/WashBayLayoutTests (renamed),Lot/PropRecipeTests,Director/LotStateWashBayTests (renamed),Run/VanaheimArtTests,Run/VanaheimLayoutTests}.cs; Tests/PlayMode/{VanaheimWorldPlayModeTests,PropArtPlayModeTests}.cs
+Why: Issue #141 (Refs #141, design.md section 4). The waterwheel trough prop was drawn over the Vanaheim wash station, hiding the car and plate. The prop, its recipe asset, its baked placements and its glint lights are gone; the station underneath is the regular wash bay (aqua line, teal fill, WASH label and the muddy-car icon, as on Midgard). Wash behaviour, slot ids and positions are unchanged, and the bays still come from the geometry so they move with BottomRowDrop. TroughLayout and LotGeometry.Troughs are now WashBayLayout and WashBays. A new test checks no prop covers a wash bay.
+Tests: EditMode 1875/1875; PlayMode 77/77 (Vanaheim prop test no longer expects animated props); RunBatch run (Bootstrap, Lot_MidgardCrazy, CarHandlingConfig, PedestrianConfig churn reverted).
+
 === docs/changelogs/orders.md ===
 # Orders changelog
 
@@ -2017,6 +2077,18 @@ Date: 2026-11-14
 Files: Patrons/IArrivalPacing.cs, QueueTopUpPacing.cs, DirectorArrivalPacing.cs, ArrivalPacings.cs, PatronSpawner.cs, PatronConfig.cs (TopUpSpacingMinutes), Tests/EditMode/Patrons/ArrivalPacingTests.cs
 Why: Issue #132. On LotKind.Crazy the spawner ignores the director arrival gate and fills every free queue slot (one car per spacing); other lots keep the director pacing.
 Tests: ArrivalPacingTests (full queue at start, stagger, refill after advance, other lots unchanged, reset); EditMode 1837 passed.
+
+## patrons: stay clock starts after the car leaves the pickup spot [Claude]
+Date: 2026-11-14
+Files: Core/Events/PickupEvents.cs (CarLeftPickup, appended), Patrons/StayStartRule.cs, PickupLeaveWatcher.cs, StayStarter.cs, QueueAdvancer.cs, Tests/EditMode/Patrons/StayStartRuleTests.cs, PickupLeaveWatcherTests.cs, StayStartTests.cs (other tests that publish PatronEnteredDiner now also publish CarLeftPickup)
+Why: Issue #139. The stay clock starts at the later of PatronEnteredDiner and the valet driving the car out of the pickup spot (slot 0); neither alone starts it, and there is still no fallback timer.
+Tests: StayStartRuleTests, PickupLeaveWatcherTests, StayStartTests (both orders, leak on shift end, unknown car); EditMode 1858 passed, 0 failed.
+
+## patrons: queue advances a car that stopped short, retries drives [Claude]
+Date: 2026-11-14
+Files: Patrons/AdvanceTracker.cs (new), QueueAdvancer.cs, IArrivalScan.cs, ArrivalSlotScanner.cs, PickupQueueSettings.cs, Cars/CarAutoDrive.cs (advance heads straight at the slot), Tests/EditMode/Patrons/QueueAdvancerTests.cs, ArrivalPacingTests.cs, QueueSlotAllocatorTests.cs, Tests/PlayMode/PickupQueuePlayModeTests.cs
+Why: Issue #140. A queued car that stopped a little short had its nose in the pickup spot clear box, so the scan counted the car itself as the blocker and the queue froze. The scan now ignores the car asking to move up, slot tolerance is 2.2, a drive that never finishes is offered again after a deadline, and the advance drives straight at the slot centre (snapping onto it).
+Tests: new EditMode (stopped short, near-slot, interrupted retry) and PlayMode full-queue test; EditMode 1878 passed, PlayMode 78 passed.
 
 === docs/changelogs/pedestrians-patrons.md ===
 # Changelog: pedestrians-patrons

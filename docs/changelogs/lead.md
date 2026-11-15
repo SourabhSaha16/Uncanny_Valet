@@ -1030,3 +1030,9 @@ Date: 2026-11-14
 Files: Scripts/Patrons (AdvanceTracker, QueueAdvancer, IArrivalScan, ArrivalSlotScanner, PickupQueueSettings), Scripts/Cars/CarAutoDrive.cs, Scripts/Lot (WashBayLayout, LotGeometry, LotLayoutBuilder, SiteLayout, LotConfig, StationSwitch), Editor Vanaheim setup, Vanaheim lot/art assets and scenes, Scripts/Core/Contracts/PowerBarThresholds.cs (new), Scripts/Powers/PowerBar.cs, Scripts/UI (PowerBarPainter, blessing painters, PixelIcon.PrayerHands), tests, changelogs patrons.md, lot.md, integration.md
 Why: Refs #140 #141 #142 #143. Queue cars no longer freeze when one stops short of its slot (scan ignores the car behind, tolerance 2.2, retry after timeout, heading set toward the slot); the Vanaheim water trough prop is gone and wash bays are the regular blue bay with the muddy-car symbol; power markers and usability share one threshold list so 1T opens at the first bolt; blessings show prayer hands, the bolt stays for power.
 Tests: EditMode passed and full PlayMode 78 of 78 on the merged tip (exit 0). Not played.
+
+## lead: rebuild site/ with playtest batch 3 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #134 to #143. Beta now includes bubbles off, 'No blessing' label, slight curse on any pedestrian hit, Midgard power bar hidden, patron timer after the car leaves the pickup spot, queue advance fix, wash bay without trough, power 1T at the first bolt and prayer hands for blessings.
+Tests: tools/build-web.ps1 exit 0, build-info shows e3c084b; EditMode and PlayMode (78 of 78) passed on the same code; browser smoke test: Midgard training loads, no console errors, blessing counter shows the prayer hands icon, no power bar, a car arrives into the pickup spot. Vanaheim, crazy lots and driving not played.
