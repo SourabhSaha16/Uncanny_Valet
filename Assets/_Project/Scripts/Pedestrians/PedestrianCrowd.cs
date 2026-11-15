@@ -49,9 +49,18 @@ namespace UncannyValet.Pedestrians
             _paths = Services.Get<IPedestrianPaths>();
             _router = new WalkerRouter(_paths, Services.Get<ICarFactory>(), _tuning);
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
-            var pool = new List<PedestrianWalker>(_config.PatronPoolSize);
-            for (var i = 0; i < _config.PatronPoolSize; i++) pool.Add(Create("Patron " + i, _config.Count + i));
+            var poolSize = PatronPoolSizeFor();
+            var pool = new List<PedestrianWalker>(poolSize);
+            for (var i = 0; i < poolSize; i++) pool.Add(Create("Patron " + i, _config.Count + i));
             _patrons = new PatronWalkers(Services.Get<IEventBus>(), _paths, Services.Get<ICarFactory>(), _router, _config, pool);
+        }
+
+        // One person per car that can hold a ticket: every spot plus every queue slot (the config value is a floor).
+        private int PatronPoolSizeFor()
+        {
+            if (!Services.TryGet<ILotLayout>(out var lot)) return _config.PatronPoolSize;
+            return PatronPoolSizing.Compute(_config.PatronPoolSize,
+                lot.RegularSpotCount + lot.ChargingSpotCount, lot.ArrivalSlots.Count);
         }
 
         public bool TryGetWaitingPatron(CarId car, out Vector2 position)

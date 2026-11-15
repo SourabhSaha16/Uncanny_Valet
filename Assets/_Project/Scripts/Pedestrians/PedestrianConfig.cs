@@ -33,7 +33,7 @@ namespace UncannyValet.Pedestrians
         private float _openingProgressMax = 0.7f;
 
         [Header("Patrons")]
-        [SerializeField, Range(1, 12), Tooltip("Most patrons that can be on foot at once (pooled).")]
+        [SerializeField, Range(1, 12), Tooltip("Floor for the reserved patron pool. The pool is at least parking spots plus queue slots (one person per possible open ticket), so this only matters for a tiny lot.")]
         private int _patronPoolSize = 6;
         [SerializeField, Min(0.1f), Tooltip("Walking speed of patrons, world units per second.")]
         private float _patronSpeed = 1.7f;
