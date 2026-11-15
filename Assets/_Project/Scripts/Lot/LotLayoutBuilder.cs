@@ -105,7 +105,7 @@ namespace UncannyValet.Lot
 
         private Color GroundColour() => _groundColour.a > 0f ? _groundColour : _art != null ? _art.AsphaltColor : Ground;
 
-        // The wash slot of the classic grid, or the troughs: one station each, all opened and closed together by the night plan.
+        // The wash slot of the classic grid, or the wash bays: one station each, all opened and closed together by the night plan.
         private void BuildWashStations(RectFactory rects, LotGeometry g)
         {
             if (g.WashStations.Length == 0) return;

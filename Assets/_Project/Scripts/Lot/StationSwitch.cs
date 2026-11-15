@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Shows and hides the wash stations (the wash slot, or every trough) to match the night plan. Closing them first releases the cars in
+    /// Shows and hides the wash stations (the wash slot, or every wash bay) to match the night plan. Closing them first releases the cars in
     /// them (so CarLeftStation is published) and then deactivates them. They start closed.
     /// </summary>
     public sealed class StationSwitch : MonoBehaviour

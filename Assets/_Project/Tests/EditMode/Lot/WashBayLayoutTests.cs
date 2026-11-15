@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace UncannyValet.Tests.Lot
 {
-    /// <summary>The parametric builder's wash troughs and lot extension (Vanaheim): where the troughs stand, how far from the bays, and how the lot widens.</summary>
-    public sealed class WashTroughLayoutTests
+    /// <summary>The parametric builder's wash bays and lot extension (Vanaheim): where the wash bays stand, how far from the bays, and how the lot widens.</summary>
+    public sealed class WashBayLayoutTests
     {
         private const float Extension = 13.5f;
         private const float Distance = 14f;
@@ -20,33 +20,33 @@ namespace UncannyValet.Tests.Lot
         [TearDown] public void TearDown() => Object.DestroyImmediate(_config);
 
         [Test]
-        public void TheDefaultOptions_HaveNoTroughs_AndTheWashSlotIsTheOnlyStation()
+        public void TheDefaultOptions_HaveNoWashBays_AndTheWashSlotIsTheOnlyStation()
         {
             var g = new LotGeometry(_config);
-            Assert.IsEmpty(g.Troughs);
+            Assert.IsEmpty(g.WashBays);
             Assert.AreEqual(1, g.WashStations.Length);
             Assert.AreEqual(g.Wash, g.WashStations[0]);
         }
 
         [Test]
-        public void ClosedServices_WithoutTroughs_HaveNoStations()
+        public void ClosedServices_WithoutWashBays_HaveNoStations()
         {
             var g = new LotGeometry(_config, 3, new LotLayoutOptions(true, 0f));
             Assert.IsEmpty(g.WashStations);
         }
 
         [Test]
-        public void OneTrough_StandsBesideTheBayBlock_BetweenTheBaysAndTheStrip_InTheTopRow()
+        public void OneWashBay_StandsBesideTheBayBlock_BetweenTheBaysAndTheStrip_InTheTopRow()
         {
             var g = new LotGeometry(_config, 3, Beside);
-            Assert.AreEqual(1, g.Troughs.Length);
-            Assert.AreEqual(8, g.Spots.Length, "the trough is not one of the eight bays");
-            var trough = g.Troughs[0];
-            Assert.AreEqual(_config.SpotSize, trough.size, "as big as a bay");
-            Assert.Greater(trough.xMin, g.Spots[3].xMax, "east of the bay block");
-            Assert.Less(trough.xMax, g.Strip.xMin, "west of the right strip");
-            Assert.AreEqual(g.Spots[3].y, trough.y, 0.001f, "in the top row");
-            foreach (var spot in g.Spots) Assert.IsFalse(trough.Overlaps(spot));
+            Assert.AreEqual(1, g.WashBays.Length);
+            Assert.AreEqual(8, g.Spots.Length, "the wash bay is not one of the eight bays");
+            var washBay = g.WashBays[0];
+            Assert.AreEqual(_config.SpotSize, washBay.size, "as big as a bay");
+            Assert.Greater(washBay.xMin, g.Spots[3].xMax, "east of the bay block");
+            Assert.Less(washBay.xMax, g.Strip.xMin, "west of the right strip");
+            Assert.AreEqual(g.Spots[3].y, washBay.y, 0.001f, "in the top row");
+            foreach (var spot in g.Spots) Assert.IsFalse(washBay.Overlaps(spot));
         }
 
         [Test]
@@ -73,45 +73,45 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void ThreeTroughs_StandAtTheFarEnd_AtLeastFourteenUnitsFromEveryBay()
+        public void ThreeWashBays_StandAtTheFarEnd_AtLeastFourteenUnitsFromEveryBay()
         {
             var g = new LotGeometry(_config, 4, Far);
-            Assert.AreEqual(3, g.Troughs.Length);
-            foreach (var trough in g.Troughs)
-                foreach (var spot in g.Spots) Assert.GreaterOrEqual(trough.xMin - spot.xMax, Distance - 0.001f, "gap to bay " + spot);
-            Assert.AreEqual(Distance, g.Troughs[0].xMin - g.Spots[3].xMax, 0.001f, "exactly the asked distance from the nearest bay");
+            Assert.AreEqual(3, g.WashBays.Length);
+            foreach (var washBay in g.WashBays)
+                foreach (var spot in g.Spots) Assert.GreaterOrEqual(washBay.xMin - spot.xMax, Distance - 0.001f, "gap to bay " + spot);
+            Assert.AreEqual(Distance, g.WashBays[0].xMin - g.Spots[3].xMax, 0.001f, "exactly the asked distance from the nearest bay");
         }
 
         [Test]
-        public void TheThreeTroughs_AreInsideTheLot_ClearOfEachOther_TheStrip_TheAisleAndTheQueue()
+        public void TheThreeWashBays_AreInsideTheLot_ClearOfEachOther_TheStrip_TheAisleAndTheQueue()
         {
             var g = new LotGeometry(_config, 4, Far);
             var aisle = Rect.MinMaxRect(g.Spots[0].xMin, g.AisleY - _config.AisleWidth * 0.5f, g.Strip.xMin, g.AisleY + _config.AisleWidth * 0.5f);
-            for (var i = 0; i < g.Troughs.Length; i++)
+            for (var i = 0; i < g.WashBays.Length; i++)
             {
-                var t = g.Troughs[i];
-                Assert.IsTrue(g.Bounds.Contains(t.min) && g.Bounds.Contains(t.max), "trough " + i + " inside the frame");
-                Assert.Less(t.xMax, g.Strip.xMin, "trough " + i + " off the strip");
-                Assert.IsFalse(t.Overlaps(aisle), "trough " + i + " is on the drive aisle");
+                var t = g.WashBays[i];
+                Assert.IsTrue(g.Bounds.Contains(t.min) && g.Bounds.Contains(t.max), "wash bay " + i + " inside the frame");
+                Assert.Less(t.xMax, g.Strip.xMin, "wash bay " + i + " off the strip");
+                Assert.IsFalse(t.Overlaps(aisle), "wash bay " + i + " is on the drive aisle");
                 foreach (var car in g.QueueCars) Assert.IsFalse(t.Overlaps(car));
-                for (var j = 0; j < i; j++) Assert.IsFalse(t.Overlaps(g.Troughs[j]), "troughs " + i + " and " + j);
+                for (var j = 0; j < i; j++) Assert.IsFalse(t.Overlaps(g.WashBays[j]), "wash bays " + i + " and " + j);
             }
         }
 
         [Test]
-        public void TheTroughs_RunTopToBottom_AllInOneColumn()
+        public void TheWashBays_RunTopToBottom_AllInOneColumn()
         {
             var g = new LotGeometry(_config, 4, Far);
-            Assert.Greater(g.Troughs[0].y, g.Troughs[1].y);
-            Assert.Greater(g.Troughs[1].y, g.Troughs[2].y);
-            Assert.AreEqual(g.Troughs[0].x, g.Troughs[2].x, 0.001f);
+            Assert.Greater(g.WashBays[0].y, g.WashBays[1].y);
+            Assert.Greater(g.WashBays[1].y, g.WashBays[2].y);
+            Assert.AreEqual(g.WashBays[0].x, g.WashBays[2].x, 0.001f);
         }
 
         [Test]
-        public void ATroughBelowTheQueue_GrowsTheLotDownwards()
+        public void AWashBayBelowTheQueue_GrowsTheLotDownwards()
         {
             var shallow = new LotGeometry(_config, 1, Far);
-            Assert.LessOrEqual(shallow.Bounds.yMin, shallow.Troughs[2].yMin - _config.Margin + 0.001f);
+            Assert.LessOrEqual(shallow.Bounds.yMin, shallow.WashBays[2].yMin - _config.Margin + 0.001f);
         }
 
         [Test]

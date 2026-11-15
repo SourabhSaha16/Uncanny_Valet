@@ -10,7 +10,7 @@ namespace UncannyValet.Tests.Lot
         private static readonly string[] Expected =
         {
             "MidgardOpenSign", "MidgardTree", "MidgardStallRed", "MidgardStallGreen", "MidgardStallGold", "MidgardFerrisWheel",
-            "VanaheimBarn", "VanaheimWheat", "VanaheimHayBale", "VanaheimFence", "VanaheimTrough", "VanaheimBanner", "VanaheimStall",
+            "VanaheimBarn", "VanaheimWheat", "VanaheimHayBale", "VanaheimFence", "VanaheimBanner", "VanaheimStall",
         };
 
         private static PropShape Fill(int x, int y, int w, int h) => new PropShape(PropShapeKind.Rect, new RectInt(x, y, w, h), PaletteSlot.Wall);
@@ -81,15 +81,13 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void TheFerrisWheel_IsSolidAndTurns_TheOpenSignBlinks_TheTroughTurnsSlowly()
+        public void TheFerrisWheel_IsSolidAndTurns_TheOpenSignBlinks()
         {
             var ferris = ShippedArt.Named<PropRecipe>("MidgardFerrisWheel");
             Assert.IsTrue(ferris.Solid);
             Assert.IsTrue(ferris.Layers.Count > 1 && System.Linq.Enumerable.Any(ferris.Layers, l => l.Animation == PropAnimation.Spin));
             Assert.IsTrue(System.Linq.Enumerable.Any(ShippedArt.Named<PropRecipe>("MidgardOpenSign").Layers, l => l.Animation == PropAnimation.Blink));
-            var trough = System.Linq.Enumerable.First(ShippedArt.Named<PropRecipe>("VanaheimTrough").Layers, l => l.Animation == PropAnimation.Spin);
             var wheel = System.Linq.Enumerable.First(ferris.Layers, l => l.Animation == PropAnimation.Spin);
-            Assert.Less(Mathf.Abs(trough.Speed), 45f, "slowly turning");
             Assert.Greater(Mathf.Abs(wheel.Speed), 0f);
         }
     }

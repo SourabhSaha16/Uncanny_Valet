@@ -42,24 +42,3 @@ MonoBehaviour:
   - _position: {x: 19.1, y: 6.2}
     _radius: 4.2
     _colour: {r: 1, g: 0.71, b: 0.35, a: 1}
-    _intensity: 0.85
-    _flicker: 0.35
-    _flickerSpeed: 3.2
-  - _position: {x: 26, y: 0.29999995}
-    _radius: 3.6
-    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
-    _intensity: 0.55
-    _flicker: 0
-    _flickerSpeed: 0
-  - _position: {x: 26, y: -11.6}
-    _radius: 3.6
-    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
-    _intensity: 0.55
-    _flicker: 0
-    _flickerSpeed: 0
-  - _position: {x: 26, y: -17}
-    _radius: 3.6
-    _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
-    _intensity: 0.55
-    _flicker: 0
-    _flickerSpeed: 0

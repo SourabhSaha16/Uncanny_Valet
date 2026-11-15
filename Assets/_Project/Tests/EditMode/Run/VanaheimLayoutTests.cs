@@ -11,12 +11,12 @@ using static UncannyValet.Tests.Run.VanaheimAssets;
 
 namespace UncannyValet.Tests.Run
 {
-    /// <summary>The shipped Vanaheim lots (task 107): where they sit in the run, the bays, the troughs, the widened lot and the mud patches.</summary>
+    /// <summary>The shipped Vanaheim lots (task 107): where they sit in the run, the bays, the wash bays, the widened lot and the mud patches.</summary>
     public sealed class VanaheimLayoutTests
     {
         private const string TrainingScene = "Assets/_Project/Scenes/Lot_VanaheimTraining.unity";
         private const string CrazyScene = "Assets/_Project/Scenes/Lot_VanaheimCrazy.unity";
-        private const float BayToTrough = 14f;
+        private const float BayToWashBay = 14f;
 
         [Test]
         public void TheRun_ListsTheVanaheimLotsAfterMidgardsTwo_AndValidates()
@@ -53,7 +53,7 @@ namespace UncannyValet.Tests.Run
 
         [TestCase(TrainingPath, 1)]
         [TestCase(CrazyPath, 3)]
-        public void BothLots_AreValid_WithEightBays_NoEv_AndTheirTroughs(string path, int troughs)
+        public void BothLots_AreValid_WithEightBays_NoEv_AndTheirWashBays(string path, int washBays)
         {
             var lot = LotAt(path);
             Assert.IsTrue(lot.TryValidate(out var problem), problem);
@@ -61,9 +61,9 @@ namespace UncannyValet.Tests.Run
             Assert.AreEqual(8, g.Spots.Length);
             Assert.AreEqual(0, g.ChargingSpots.Length, "no EV bay");
             Assert.IsFalse(g.HasWash, "no wash slot in the bay grid");
-            Assert.AreEqual(troughs, g.Troughs.Length);
-            Assert.AreEqual(troughs, g.WashStations.Length);
-            Assert.AreEqual(troughs, lot.LayoutOptions.WashTroughs);
+            Assert.AreEqual(washBays, g.WashBays.Length);
+            Assert.AreEqual(washBays, g.WashStations.Length);
+            Assert.AreEqual(washBays, lot.LayoutOptions.WashTroughs);
         }
 
         [Test]
@@ -77,15 +77,15 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheCrazyTroughs_AreAtLeastFourteenUnitsFromEveryBay_AndTheTrainingTroughIsBesideTheBlock()
+        public void TheCrazyWashBays_AreAtLeastFourteenUnitsFromEveryBay_AndTheTrainingWashBayIsBesideTheBlock()
         {
             var crazy = Geometry(LotAt(CrazyPath));
-            foreach (var trough in crazy.Troughs)
+            foreach (var washBay in crazy.WashBays)
                 foreach (var bay in crazy.Spots)
-                    Assert.GreaterOrEqual(trough.xMin - bay.xMax, BayToTrough - 0.001f);
+                    Assert.GreaterOrEqual(washBay.xMin - bay.xMax, BayToWashBay - 0.001f);
             var training = Geometry(LotAt(TrainingPath));
-            Assert.Less(training.Troughs[0].xMin - training.Spots[3].xMax, BayToTrough, "the compact lot's trough is close to the bays");
-            Assert.Greater(training.Troughs[0].xMin, training.Spots[3].xMax);
+            Assert.Less(training.WashBays[0].xMin - training.Spots[3].xMax, BayToWashBay, "the compact lot's wash bay is close to the bays");
+            Assert.Greater(training.WashBays[0].xMin, training.Spots[3].xMax);
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheMudPatches_SitBetweenTheBaysAndTheTroughs_OffTheBays_AndInsideTheLot()
+        public void TheMudPatches_SitBetweenTheBaysAndTheWashBays_OffTheBays_AndInsideTheLot()
         {
             var lot = LotAt(CrazyPath);
             var g = Geometry(lot);
@@ -109,9 +109,9 @@ namespace UncannyValet.Tests.Run
                 var box = LotGeometry.Box(patch.Center, new Vector2(patch.Size, patch.Size));
                 Assert.IsTrue(g.Bounds.Contains(box.min) && g.Bounds.Contains(box.max), patch.Center + " is inside the lot");
                 Assert.Greater(patch.Center.x - half, g.Spots[3].xMax, "east of the bays");
-                Assert.Less(patch.Center.x, g.Troughs[0].xMin, "west of the troughs");
+                Assert.Less(patch.Center.x, g.WashBays[0].xMin, "west of the wash bays");
                 foreach (var spot in g.Spots) Assert.IsFalse(box.Overlaps(spot));
-                foreach (var trough in g.Troughs) Assert.IsFalse(box.Overlaps(trough), "a puddle on a trough");
+                foreach (var washBay in g.WashBays) Assert.IsFalse(box.Overlaps(washBay), "a puddle on a wash bay");
             }
         }
 

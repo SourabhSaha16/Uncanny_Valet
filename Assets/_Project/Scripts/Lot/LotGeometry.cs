@@ -19,8 +19,8 @@ namespace UncannyValet.Lot
         /// <summary>False in a lot with its services closed: no wash slot and no charging bay, eight regular bays.</summary>
         public bool HasWash { get; }
         /// <summary>The wash troughs outside the bay grid (empty in a lot without troughs), top to bottom.</summary>
-        public Rect[] Troughs { get; }
-        /// <summary>Every wash station of the lot: the wash slot of the classic grid, or the troughs.</summary>
+        public Rect[] WashBays { get; }
+        /// <summary>Every wash station of the lot: the wash slot of the classic grid, or the wash bays.</summary>
         public Rect[] WashStations { get; }
         public Rect Curb { get; }
         /// <summary>The open ground between the diner wall and the curb zone, where waiting patrons stand (same height as the curb).</summary>
@@ -77,10 +77,10 @@ namespace UncannyValet.Lot
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
 
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
-            Troughs = TroughLayout.Place(c, options, Curb.yMax, baysRight);
-            WashStations = HasWash ? new[] { Wash } : Troughs;
+            WashBays = WashBayLayout.Place(c, options, Curb.yMax, baysRight);
+            WashStations = HasWash ? new[] { Wash } : WashBays;
             var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - (c.AisleWidth + c.BottomRowDrop) * (BayPlan.Rows - 1);
-            var lowest = LowestEdge(Troughs, bottomRow);
+            var lowest = LowestEdge(WashBays, bottomRow);
             var sideY = Curb.yMax + s.SideDoorRise;
             var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);

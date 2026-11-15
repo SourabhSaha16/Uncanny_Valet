@@ -31,28 +31,20 @@ namespace UncannyValet.Tests.Run
             => Assert.LessOrEqual(LotAt(TrainingPath).Lighting.GlobalIntensity, 1f);
 
         [Test]
-        public void TheStormyLights_AreHungOverTheVanaheimLayout_InsideTheLot_AndATroughGlintEach()
+        public void TheStormyLights_AreHungOverTheVanaheimLayout_InsideTheLot()
         {
             var lot = LotAt(CrazyPath);
             var g = Geometry(lot);
             foreach (var light in lot.Lighting.Lights) Assert.IsTrue(g.Bounds.Contains(light.Position), "light at " + light.Position);
-            foreach (var trough in g.Troughs)
-            {
-                var near = false;
-                foreach (var light in lot.Lighting.Lights) near |= Vector2.Distance(light.Position, trough.center) < 1f;
-                Assert.IsTrue(near, "a light on the trough at " + trough.center);
-            }
         }
 
         [Test]
-        public void TheBarnAndTheTroughs_ArePlaced_TheFarmSceneryIsDecor()
+        public void TheBarn_IsPlaced_TheFarmSceneryIsDecor()
         {
             Assert.AreEqual(1, Count(LotAt(TrainingPath), "VanaheimBarn"));
-            Assert.AreEqual(1, Count(LotAt(TrainingPath), "VanaheimTrough"));
             Assert.Greater(Count(LotAt(TrainingPath), "VanaheimWheat"), 20);
             Assert.GreaterOrEqual(Count(LotAt(TrainingPath), "VanaheimHayBale"), 2);
             Assert.GreaterOrEqual(Count(LotAt(TrainingPath), "VanaheimFence"), 4);
-            Assert.AreEqual(3, Count(LotAt(CrazyPath), "VanaheimTrough"));
             Assert.GreaterOrEqual(Count(LotAt(CrazyPath), "VanaheimStall"), 4);
             Assert.GreaterOrEqual(Count(LotAt(CrazyPath), "VanaheimBanner"), 3);
             foreach (var path in new[] { TrainingPath, CrazyPath })
@@ -69,12 +61,12 @@ namespace UncannyValet.Tests.Run
                 var g = Geometry(lot);
                 foreach (var prop in lot.Props)
                 {
-                    var trough = prop.Recipe.name == "VanaheimTrough";
-                    var size = trough ? new Vector2(3.4f, 3f) : new Vector2(prop.Recipe.SizeUnits.x, prop.Recipe.SizeUnits.y);
+                    var size = new Vector2(prop.Recipe.SizeUnits.x, prop.Recipe.SizeUnits.y);
                     var box = LotGeometry.Box(prop.Position, size);
                     if (prop.Recipe.name != "VanaheimBarn") // the barn stands on the building
                     {
                         foreach (var spot in g.Spots) Assert.IsFalse(box.Overlaps(spot), prop.Recipe.name + " covers a bay in " + lot.name);
+                        foreach (var washBay in g.WashBays) Assert.IsFalse(box.Overlaps(washBay), prop.Recipe.name + " covers a wash bay in " + lot.name);
                         Assert.IsFalse(box.Overlaps(Rect.MinMaxRect(box.xMin, g.AisleY - 0.7f, box.xMax, g.AisleY + 0.7f)), prop.Recipe.name + " is on the aisle crossing");
                     }
                     foreach (var car in g.QueueCars) Assert.IsFalse(box.Overlaps(car), prop.Recipe.name + " covers the queue in " + lot.name);
