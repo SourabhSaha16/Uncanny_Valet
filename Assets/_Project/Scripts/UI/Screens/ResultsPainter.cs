@@ -67,10 +67,10 @@ namespace UncannyValet.UI.Screens
 
         private void DrawBlessings(string blessings)
         {
-            var bolt = _canvas.IconWidth(PixelIcon.Bolt) * TitleScale;
+            var bolt = _canvas.IconWidth(PixelIcon.PrayerHands) * TitleScale;
             var width = bolt + ScoreGap + PixelTextLayout.Width(blessings.Length, TitleScale);
             var x = PixelTextLayout.Centered(0, PixelGrid.Width, width);
-            _canvas.Icon(PixelIcon.Bolt, x, ScoreTop, TitleScale, Color.white);
+            _canvas.Icon(PixelIcon.PrayerHands, x, ScoreTop, TitleScale, Color.white);
             _canvas.Text(blessings, x + bolt + ScoreGap, ScoreTop + 5, PixelPalette.Gold, TitleScale);
         }
 

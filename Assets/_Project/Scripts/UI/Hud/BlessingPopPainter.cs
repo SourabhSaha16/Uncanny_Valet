@@ -10,7 +10,7 @@ namespace UncannyValet.UI.Hud
     /// </summary>
     public sealed class BlessingPopPainter
     {
-        private const int BoltGap = 2;
+        private const int IconGap = 2;
 
         private readonly PixelCanvas _canvas;
         private readonly BlessingPops _pops;
@@ -40,8 +40,8 @@ namespace UncannyValet.UI.Hud
             if (screen.z < 0f) return;
             var scale = pop.Kind == BlessingPopKind.Big ? _settings.BigFontScale : _settings.FontScale;
             var textWidth = PixelTextLayout.Width(pop.Text.Length, scale);
-            var width = pop.Bolt ? textWidth + BoltGap + _canvas.IconWidth(PixelIcon.Bolt) : textWidth;
-            var height = pop.Bolt ? Math.Max(PixelTextLayout.Height(scale), _canvas.IconHeight(PixelIcon.Bolt)) : PixelTextLayout.Height(scale);
+            var width = pop.HasIcon ? textWidth + IconGap + _canvas.IconWidth(PixelIcon.PrayerHands) : textWidth;
+            var height = pop.HasIcon ? Math.Max(PixelTextLayout.Height(scale), _canvas.IconHeight(PixelIcon.PrayerHands)) : PixelTextLayout.Height(scale);
             var rise = Mathf.RoundToInt(_settings.RisePixels * BlessingPopText.Rise(age, _settings.DurationSeconds));
             var x = WorldTicketLayout.ClampToCanvas(_canvas.Grid.VirtualX(screen.x) - width / 2, width, PixelGrid.Width);
             var y = WorldTicketLayout.ClampToCanvas(
@@ -50,12 +50,12 @@ namespace UncannyValet.UI.Hud
             var shadow = PixelCanvas.ShadowOffset(scale);
             _canvas.Text(pop.Text, x + shadow, y + shadow, WithAlpha(PixelPalette.Ink, alpha), scale, false);
             _canvas.Text(pop.Text, x, y, WithAlpha(ColorOf(pop.Kind), alpha), scale, false);
-            if (pop.Bolt) DrawBolt(x + textWidth + BoltGap, y, alpha);
+            if (pop.HasIcon) DrawIcon(x + textWidth + IconGap, y, alpha);
         }
 
-        private void DrawBolt(int x, int y, float alpha)
+        private void DrawIcon(int x, int y, float alpha)
         {
-            _canvas.Icon(PixelIcon.Bolt, x, y, 1, WithAlpha(Color.white, alpha));
+            _canvas.Icon(PixelIcon.PrayerHands, x, y, 1, WithAlpha(Color.white, alpha));
         }
 
         private static Color ColorOf(BlessingPopKind kind)

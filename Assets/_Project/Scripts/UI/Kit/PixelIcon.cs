@@ -9,6 +9,7 @@ namespace UncannyValet.UI.Kit
         Car,
         Mud,
         Tyre,
-        Plug
+        Plug,
+        PrayerHands
     }
 }

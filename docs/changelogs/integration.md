@@ -217,3 +217,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs (Enabled switch, default off), SpeechBubbleTracker.cs (enabled gate), Hud/PlayingHud.cs, Status/CarStatusTable.cs, CarStatusResolver.cs (comment), Core/Contracts/EmotionRows.cs (tooltip wording only, approved); Assets/_Project/Tests/EditMode/UI/SpeechBubbleTests.cs, CarStatusTests.cs
 Why: playtest: speech bubbles distract (#134). One serialized bool on HudEmotionConfig's Speech Bubble settings turns them back on; off, the tracker never subscribes to SpeechShown and no painter is built, so nothing is wrapped, tracked or drawn (tips and other events unchanged; blessing and emotion icons untouched). #135: the Unblessed status label is now No blessing (fallback No bless when the box is too narrow; the key board box has room for the full label).
 Tests: EditMode SwitchedOff_NeverTracksABubble, TheSettingsDefaultIsOff, updated label-fitting test; full suite run before commit.
+
+## integration: power bar markers at real thresholds, prayer hands for blessings [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PowerBarThresholds.cs (new, one threshold list), Powers/PowerBar.cs, UI/Hud/PowerBarPainter.cs, BlessingPopPainter.cs, BlessingPops.cs, HudPainter.cs, UI/Screens/ResultsPainter.cs, UI/Kit/PixelIcon.cs, PixelIconData.cs; Tests/EditMode/UI/PowerBarMarkerTests.cs, HudLayoutTests.cs (+ .meta)
+Why: #142 the bolt markers were drawn at the centre of each third of the bar (first bolt at about 17 percent) while the first power opens at 33.3, so the fill passed the bolt long before the power worked. Markers now sit at the threshold fraction from the same list the bar uses (new Core file, flagged to the lead), with one pixel rounding shared by fill and markers. #143 blessings show a new PrayerHands pixel icon (HUD counter, blessing pops, results score); the bolt stays on the power bar.
+Tests: EditMode 1883 passed (4 new marker tests).

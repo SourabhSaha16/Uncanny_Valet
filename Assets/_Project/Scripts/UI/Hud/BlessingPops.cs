@@ -16,7 +16,7 @@ namespace UncannyValet.UI.Hud
             public float StartedAt;
             public string Text;
             /// <summary>True when the lightning bolt is drawn after the text (every amount pop; not the PERFECT! label).</summary>
-            public bool Bolt;
+            public bool HasIcon;
             public BlessingPopKind Kind;
             public bool Active;
         }
@@ -52,7 +52,7 @@ namespace UncannyValet.UI.Hud
             _pops[FreeOrOldest()] = new Pop
             {
                 World = world, StartedAt = now, Active = true,
-                Text = BlessingPopText.Format(blessing), Bolt = true, Kind = BlessingPopText.KindOf(blessing, _settings.BigBlessingAmount)
+                Text = BlessingPopText.Format(blessing), HasIcon = true, Kind = BlessingPopText.KindOf(blessing, _settings.BigBlessingAmount)
             };
         }
 
