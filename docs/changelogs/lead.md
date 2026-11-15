@@ -1000,3 +1000,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Tests/PlayMode/BayEntryTests.cs, docs/changelogs/lead.md
 Why: Refs #131. The PlayMode gap-between-rows test still expected 6 units; it now expects 6 plus LotConfig.BottomRowDrop.
 Tests: Full PlayMode suite 77 of 77 passed (it was 76 of 77 before the fix); EditMode passed earlier on the same code.
+
+## lead: rebuild site/ with the playtest batch 2 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #129 #130 #131 #132 #133. Beta now includes the on-camera-only speech bubbles, roaming pedestrians, lowered bottom row of spots, topped-up queue on crazy lots and the 35% pedestrian slowdown.
+Tests: tools/build-web.ps1 exit 0, build-info shows 47467ee; EditMode and full PlayMode (77 of 77) passed on the same code; browser smoke test loaded Midgard training with the lowered bottom row, no console errors. Crazy lots and the other changes not played.

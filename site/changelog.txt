@@ -1,4 +1,20 @@
 === Last 50 commits ===
+47467ee  2026-11-14  lead: fix BayEntryTests gap for the lowered bottom row, Refs #131 [Claude]
+f705d27  2026-11-14  lead: changelog for ped-slowdown merge, Refs #133 [Claude]
+4221bad  2026-11-14  lead: merge agent/ped-slowdown [Claude]
+7fd11e9  2026-11-14  cars: pedestrian hit slows the car by 35 percent by default [Claude]
+fb56dad  2026-11-14  lead: changelog for crazy queue and bottom row merges, Refs #131 #132 [Claude]
+b0a4b32  2026-11-14  lead: merge agent/lot-bottom-row [Claude]
+1e5429b  2026-11-14  lead: merge agent/crazy-queue [Claude]
+7fbab1d  2026-11-14  lot: bottom bay row sits 1.5 units lower [Claude]
+eda0714  2026-11-14  patrons: crazy lots keep the pickup queue always full [Claude]
+14c2e2a  2026-11-14  lead: changelog for ped-roam merge, Refs #130 [Claude]
+1e7cf59  2026-11-14  lead: merge agent/ped-roam [Claude]
+4e22e5d  2026-11-14  pedestrians: ambient people roam, then visit the diner at random [Claude]
+387b7bf  2026-11-14  lead: changelog for grandma bubble merge, Refs #129 [Claude]
+fee8b51  2026-11-14  lead: merge agent/grandma-bubble [Claude]
+13c8349  2026-11-14  integration: speech bubble only while the speaker is in view (Refs #129) [Claude]
+286d9bb  2026-11-14  lead: rebuild site/ with the patron walker pool fix for beta [Claude]
 390db5c  2026-11-14  lead: changelog for patron walker pool merge, Refs #128 [Claude]
 edbca01  2026-11-14  lead: merge agent/patron-walkers [Claude]
 21f550c  2026-11-14  pedestrians: size the patron pool by spots plus queue slots [Claude]
@@ -33,22 +49,6 @@ d9a3837  2026-11-14  integration: results screen shows the local god verdict, Re
 21124b5  2026-11-14  lead: merge agent/integration retry rule and F4 picker [Claude]
 06e1b9a  2026-11-14  integration: no retry after a failed crazy lot, lot picker on F4 [Claude]
 73674f7  2026-11-14  Merge branch 'pivot/chaos' into worktree-agent-a3a8bb48a642684c0
-e708621  2026-11-14  lead: merge agent/integration between-lot flow cards [Claude]
-b679343  2026-11-14  integration: GameUi hands card building to StoryCardCache [Claude]
-80a291f  2026-11-14  integration: story cards fit the panel with the shipped text [Claude]
-67b21ba  2026-11-14  integration: story flow between lots, intro, reward and end cards [Claude]
-78a849e  2026-11-14  audio: procedural themes, ambience and world sounds with last-30-seconds escalation (unverified) [Claude]
-6781f4a  2026-11-14  lead: merge agent/run roguelite run rules [Claude]
-f83cae2  2026-11-14  audio: music theme and ambience data types in Core [Claude]
-b650f1f  2026-11-14  run: roguelite run rules, NextLotChosen and RunCompleted [Claude]
-5fe1d5b  2026-11-13  lead: merge agent/worlds World 2 Vanaheim lots [Claude]
-2d8e818  2026-11-13  worlds: Vanaheim lots, wash troughs and widened lot [Claude]
-6d1abf7  2026-11-13  lead: merge agent/worlds World 1 Midgard lots [Claude]
-6d82400  2026-11-13  worlds: Midgard world tests fixed and final runs [Claude]
-77d944c  2026-11-13  worlds: Midgard lots without services, crowd, traffic, props, gag lines [Claude]
-e0d4a8e  2026-11-13  lead: merge agent/watchers watching gods and speech bubbles [Claude]
-8399c98  2026-11-13  watchers: record final test runs [Claude]
-7d16206  2026-11-13  watchers: speech system, watcher characters and bubbles [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -235,6 +235,12 @@ Date: 2026-11-13
 Files: Cars: MudBlend, MudModifier, MudSettings, CarMudProbe, CarMudEffect (new), DriveInput (grip loss scale), DriftModel and CarDriver (grip loss scale), CarAutoDrive (mud slows game-driven cars), CarFactory (adds CarMudEffect). Lot: MudPatchBuilder, MudPatchField, MudBlobArt, MudBlobPixels, LotLayoutBuilder (patch list). Run: MudPatchModifier, LotModifier (Describe and SeedInto), LotDefinition (BuildWorldSpec, seeds its modifiers). Core: MudPatch, IMudPatches, LotWorldSpec, MudRows, TuningKey (4 keys appended), TuningCatalog. Bootstrap: TuningSeeder (mud default rows). Editor: LotWorldSceneSetup, BootstrapSceneBuilder. Tests: MudEffectTests, MudPatchTests, MudPatchModifierTests, MudPatchPlayModeTests.
 Why: issue #94 of epic #79 (Valet to Valhalla). A lot lists a MudPatchModifier (puddles as centre and size); the scene builder passes the patch list to the lot builder, which draws cached brown pixel blobs and registers IMudPatches. A car whose centre or wheel point is in a puddle gets top speed and acceleration x0.6 and keeps 40% of its grip loss, released over 0.3 s, through the IDriveModifier seam; game-driven cars have their step scaled by the same factor. Mud never touches service modifiers. F2 rows (Advanced) appended at the end of TuningKey; the Muddy arrival share is the lot existing modifier chance.
 Tests: EditMode 1455 passed (blend, modifier, in-mud rule, grip loss scale, rows, patch overlap, field, pixels, builder, modifier asset, Muddy shares 30 and 60 percent); PlayMode 44 passed (MudPatchPlayModeTests: driven car slowed and recovers, game-driven car slowed, valet on foot unaffected, washed car stays clean) incl. BootstrapSceneSmokeTests; RunBatch run, scenes unchanged apart from id churn (reverted).
+
+## cars: pedestrian hit slows the car by 35 percent by default [Claude]
+Date: 2026-11-14
+Files: Core/Contracts/PedestrianHitRows.cs (CarSlowdown default 0.15 to 0.35, tooltip), Tests/EditMode/Cars/PedestrianSlowRuleTests.cs.
+Why: issue #133, hitting a pedestrian should slow the car more. Stays tunable on the F2 rows (PedestrianCarSlowdown); floor of 30% of top speed unchanged. Checked: WalkerKnockback publishes the event for any pedestrian actually knocked (ambient or patron, walking or not), no stored asset holds the old value (TuningSeeder seeds from the constant), and a car slower than the floor keeps its speed so low-speed bumps still work.
+Tests: PedestrianSlowRuleTests updated to 0.35 plus a default-row regression test; full EditMode suite run.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -566,6 +572,12 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Bootstrap/CameraFit.cs, CameraFollow.cs (tooltip); Assets/_Project/Tests/EditMode/Integration/CameraFitTests.cs; Assets/_Project/Tests/PlayMode/CameraFramingPlayModeTests.cs (+ .meta)
 Why: root cause of the cut-off bottom of the taller lots (4th queue slot, #127): CameraFit clamped the zoom to Max Orthographic Size 15, which is below what the lot needs, so the play area was cropped. The play-area floor now wins over the cap (the cap only limits zoom-out for margin and decor). Zoom-out intent of #123 untouched (tightness 0.83 kept). PlayMode test asserts the valet, diner door, valet start and every queue slot are inside the camera view on all four lots at 16:9 and 16:10 (it failed before the fix on queue slot 3 at size 15).
 Tests: EditMode 1802 passed (new LotTallerThanTheCapStillFits), PlayMode 77 passed (4 new), RunBatch ok (scene fileID churn reverted).
+
+## integration: speech bubble only while the speaker is in the camera view (Refs #129) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleVisibility.cs, SpeechBubbleSettings.cs (ViewMargin), SpeechBubblePainter.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs (+ .meta)
+Why: Grandma tip bubble drew at the screen edge even when she was off screen. The painter now skips the bubble while the speaker viewport position is outside the view plus a tunable margin (ViewMargin, default 0.02); the tracker keeps its timer, so the bubble returns if she re-enters before it expires. Tip money is unaffected (display only). Uses the camera HUD already passes in; no per-frame allocation.
+Tests: EditMode SpeechBubbleVisibilityTests (7, incl. leave and re-enter regression).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1535,6 +1547,42 @@ Files: Assets/_Project/Scripts/Pedestrians/ (PatronPool, PatronPoolSizing, Pendi
 Why: Refs #128. The reserved patron pool is now sized by spots plus queue slots (config value is a floor) and a patron with no free walker waits and retries, so the diner timer cannot stall (design.md A2 pickup flow).
 Tests: EditMode suite passed (1809 of 1809 in the agent run, exit 0 again after merge). No PlayMode or web build; not yet in the beta site.
 
+## lead: rebuild site/ with the patron walker pool fix for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #128. Beta now includes the reserved patron walker pool sized by spots plus queue slots.
+Tests: tools/build-web.ps1 exit 0, build-info shows 390db5c; browser smoke test loaded the title screen with no console errors.
+
+## lead: merge agent/grandma-bubble [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/ (SpeechBubbleVisibility, SpeechBubblePainter, SpeechBubbleSettings), Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs, docs/changelogs/integration.md
+Why: Refs #129. Speech bubbles (Grandma's tip line included) are only drawn while the speaker is inside the camera view; tip money is unaffected.
+Tests: EditMode suite passed after merge (exit 0). Not checked in-game; not in beta yet.
+
+## lead: merge agent/ped-roam [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (EnterInterval, WanderPicker, RoamPath, KeepOutAreas, PedestrianBrain, PedestrianPhase, PedestrianWalker, WalkerRouter, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/ (EditMode/Pedestrians, PlayMode/PedestrianHitTests.cs), docs/changelogs/pedestrians.md
+Why: Refs #130. Ambient pedestrians roam along their routes and enter the diner after a random interval instead of all heading to one entrance.
+Tests: EditMode suite passed after merge (exit 0). PlayMode not run. Parking-spot keep-out is built and tested but not fed at runtime (no Core contract exposes spot rectangles); roam targets stay on sidewalk/crosswalk routes. Not in beta yet.
+
+## lead: merge agent/crazy-queue and agent/lot-bottom-row [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (IArrivalPacing, QueueTopUpPacing, DirectorArrivalPacing, ArrivalPacings, PatronSpawner, PatronConfig); Scripts/Lot (LotConfig, LotGeometry, TroughLayout); Data/Lot/LotConfig.asset; Data/Run and Data/Art Vanaheim/Midgard lot assets; regenerated scenes Bootstrap, Lot_MidgardCrazy, Lot_VanaheimCrazy, Lot_VanaheimTraining; new EditMode tests ArrivalPacingTests and BottomRowDropTests; docs/changelogs/patrons.md, lot.md
+Why: Refs #132 and #131. Crazy lots keep the pickup queue topped up (Training and Finale unchanged); the bottom row of spots sits 1.5 units lower on every lot (tunable LotConfig.BottomRowDrop).
+Tests: EditMode suite passed on the merged tip (exit 0); the lot agent also ran RunBatch (exit 0) and CameraFramingPlayModeTests (4 of 4). Not played; MidgardNight light string may be about 1.5 units off (cosmetic). Not in beta yet.
+
+## lead: merge agent/ped-slowdown [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PedestrianHitRows.cs, Assets/_Project/Tests/EditMode/Cars/PedestrianSlowRuleTests.cs, docs/changelogs/cars.md
+Why: Refs #133. A pedestrian hit now slows the car by 35% by default (was 15%), still tunable in the F2 rows; floor stays 30% of top speed.
+Tests: EditMode suite passed after merge (exit 0). Not played; not in beta yet.
+
+## lead: fix BayEntryTests for the lowered bottom row [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Tests/PlayMode/BayEntryTests.cs, docs/changelogs/lead.md
+Why: Refs #131. The PlayMode gap-between-rows test still expected 6 units; it now expects 6 plus LotConfig.BottomRowDrop.
+Tests: Full PlayMode suite 77 of 77 passed (it was 76 of 77 before the fix); EditMode passed earlier on the same code.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1804,6 +1852,12 @@ Files: Scenes Bootstrap.unity and Lot_VanaheimTraining.unity (regenerated), Play
 Why: Issues #127 and #126 (Refs #127 #126, design.md A5). The first queue slot is the valet pickup spot (yellow outline, PICKUP label), the other three slots are the queue behind it, 4 cars in total on every lot; the yellow curb zone is the VALET DROP-OFF. A new car drives to the end of the queue and a full queue holds the arrival (the arrival gate no longer counts parked-pending tickets, only free queue positions). The patron stays in the car until the valet (on foot or driving) is within the approach range of the car in the pickup spot (PatronStepsOut), then walks to the diner; PatronEnteredDiner at the door starts the stay clock (StayStarter). When the pickup car leaves the spot the car behind drives forward into it (CarRepositioned when it stops), the others follow slot by slot, and the freed tail slot takes the next arrival. A queued car the valet takes anyway lets its patron out at once (no stall). Issue #78's queue-distance rule, the 3 game-minute fallback, CarClearedQueue, ServiceTuning and their F2 rows are deleted; TuningKey QueueClearDistance and QueueMaxWaitMinutes stay as RetiredQueue* (append-only).
 Tests: EditMode 1790/1790, PlayMode 73/73 (new PickupQueuePlayModeTests: the patron steps out only when the valet is at the pickup car; the car behind drives into the freed pickup spot), RunBatch run: Bootstrap.unity and Lot_VanaheimTraining.unity regenerated with 4 queue slots (the crazy scenes and CarHandlingConfig only had fileID churn and were reverted). The stay and queue-wait tests of #78 were replaced on purpose (StayStartTests, QueueClearRuleTests removed); tests that started the stay at park or CarClearedQueue now publish PatronEnteredDiner.
 
+## lot: bottom bay row sits 1.5 units lower [Claude]
+Date: 2026-11-14
+Files: Scripts/Lot/{LotConfig,LotGeometry,TroughLayout}.cs; Data/Lot/LotConfig.asset; Data/Run/{MidgardCrazyLot,MidgardTrainingLot,VanaheimCrazyLot,VanaheimMudPatches}.asset; Data/Art/Vanaheim/VanaheimStormyEvening.asset; Scenes Bootstrap, Lot_MidgardCrazy, Lot_VanaheimCrazy, Lot_VanaheimTraining (regenerated); Tests/EditMode/Lot/{BottomRowDropTests (new),LotGeometryTests}.cs
+Why: Issue #131 (Refs #131, design.md section 4). With the camera zoomed out the two bay rows need more road between them. New LotConfig.BottomRowDrop (default 1.5) is added to the aisle height for the bottom row only (bays, EV bay, wash slot, second wash trough); the crosswalk line (AisleY) stays centred in the wider aisle. All lots share LotConfig so every lot with a bottom row moves. Baked props, mud patches and Vanaheim trough lights placed from the old geometry were re-placed.
+Tests: EditMode 1833/1833 (4 new in BottomRowDropTests); PlayMode CameraFramingPlayModeTests 4/4; RunBatch run (CarHandlingConfig and PedestrianConfig drift reverted).
+
 === docs/changelogs/orders.md ===
 # Orders changelog
 
@@ -1958,6 +2012,12 @@ Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/B
 Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
 Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
 
+## patrons: crazy lots keep the pickup queue always full [Claude]
+Date: 2026-11-14
+Files: Patrons/IArrivalPacing.cs, QueueTopUpPacing.cs, DirectorArrivalPacing.cs, ArrivalPacings.cs, PatronSpawner.cs, PatronConfig.cs (TopUpSpacingMinutes), Tests/EditMode/Patrons/ArrivalPacingTests.cs
+Why: Issue #132. On LotKind.Crazy the spawner ignores the director arrival gate and fills every free queue slot (one car per spacing); other lots keep the director pacing.
+Tests: ArrivalPacingTests (full queue at start, stagger, refill after advance, other lots unchanged, reset); EditMode 1837 passed.
+
 === docs/changelogs/pedestrians-patrons.md ===
 # Changelog: pedestrians-patrons
 
@@ -2001,6 +2061,12 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Pedestrians/{WalkerRouteRule,WalkerRouter,PedestrianCrowd}.cs, Core/Events/TuningKey.cs (append PedestrianFreeRoutes), Core/Contracts/PedestrianHitRows.cs, Run/LotDefinition.cs (_freePedestrianRoutes), Bootstrap/TuningSeeder.cs, Editor/{RunAssetSetup,VanaheimWorldSetup}.cs, Data/Run/{Midgard,Vanaheim}CrazyLot.asset, Tests/EditMode/Pedestrians/WalkerRouteRuleTests.cs, Tests/EditMode/Run/{LotSeedingTests,FreePedestrianRoutesAssetTests}.cs
 Why: issue #124. On crazy lots pedestrians queued behind each other at the crosswalk. A per-lot LotDefinition switch seeds the new tuning key PedestrianFreeRoutes (appended at the end of TuningKey); the pure WalkerRouteRule keeps only the first and last point of a road or to-door route when it is on, so people walk the straight line to the diner. Training lots keep the crosswalks. Additive Core change: one TuningKey, one row.
 Tests: WalkerRouteRuleTests (4), LotSeedingTests (1), FreePedestrianRoutesAssetTests (4 lots).
+
+## pedestrians: ambient people roam, then visit the diner at random [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/{PedestrianBrain,PedestrianPhase,PedestrianConfig,PedestrianCrowd,PedestrianWalker,WalkerRouter}.cs, new {RoamPath,KeepOutAreas,WanderPicker,EnterInterval}.cs, Tests/EditMode/Pedestrians/{PedestrianBrainTests,WanderPickerTests,EnterIntervalTests}.cs, Tests/PlayMode/PedestrianHitTests.cs
+Why: issue #130. All ambient people walked straight to the one diner door. Now each appears at the road side and roams along its sidewalk/crosswalk route (random spots, never a spot inside a KeepOutAreas rectangle, legs that cross one are rejected); after a random PedestrianConfig.RoamSeconds interval (new, min/max) it finishes the leg, walks to the door, goes in, comes out later and roams on. The off-screen Leaving walk of ambient people is gone. Patron walkers are untouched. KeepOutAreas is pure but nothing fills it yet: no Core contract exposes spot rectangles (needs a Lot-side addition, asked of the lead). PedestrianConfig.asset needs no change (new fields use their defaults).
+Tests: WanderPickerTests (7: targets and legs never in a keep-out rectangle, min leg, determinism, slicing), EnterIntervalTests (3: range, variation, walkers not all due together), PedestrianBrainTests updated (roam, enter, come out, vary). Full EditMode suite: 1822 passed, 0 failed.
 
 === docs/changelogs/pivot-art.md ===
 # pivot-art changelog

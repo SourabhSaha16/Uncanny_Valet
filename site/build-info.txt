@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  390db5c
-Subject: lead: changelog for patron walker pool merge, Refs #128 [Claude]
-Date:    2026-11-14 18:08:21 -0800
+Commit:  47467ee
+Subject: lead: fix BayEntryTests gap for the lowered bottom row, Refs #131 [Claude]
+Date:    2026-11-14 18:50:45 -0800
