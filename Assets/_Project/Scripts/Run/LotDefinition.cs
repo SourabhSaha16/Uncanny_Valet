@@ -32,6 +32,8 @@ namespace UncannyValet.Run
         private List<DialPosition> _dials = new List<DialPosition>();
         [SerializeField, Tooltip("Power bar gained per Perfect Park, perfect drop-off and drift in this lot.")]
         private LotPowerFill _powerFill = new LotPowerFill();
+        [SerializeField, Tooltip("Show the power bar on the HUD. Off in Midgard (it confuses there); the bar rules still run.")]
+        private bool _showPowerBar = true;
         [SerializeField, Tooltip("The mechanics this lot uses.")]
         private List<LotModifier> _modifiers = new List<LotModifier>();
         [SerializeField, Min(1), Tooltip("Blessings needed to clear the lot. Placeholder until the blessing task tunes it.")]
@@ -89,6 +91,9 @@ namespace UncannyValet.Run
         public IReadOnlyList<ModifierChance> ModifierChances => _modifierChances;
         public IReadOnlyList<DialPosition> Dials => _dials;
         public LotPowerFill PowerFill => _powerFill;
+
+        /// <summary>True when the HUD draws the power bar in this lot (false in Midgard).</summary>
+        public bool ShowPowerBar => _showPowerBar;
         public IReadOnlyList<LotModifier> Modifiers => _modifiers;
         public int BlessingThreshold => _blessingThreshold;
         public PowerGrant Grant => _grant;

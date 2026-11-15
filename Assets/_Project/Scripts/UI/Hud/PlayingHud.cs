@@ -41,7 +41,7 @@ namespace UncannyValet.UI.Hud
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
             BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null)
         {
-            _powerTracker = new PowerBarTracker(bus, powerBar);
+            _powerTracker = new PowerBarTracker(bus, powerBar, goal: goal);
             _power = new PowerBarPainter(canvas, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);

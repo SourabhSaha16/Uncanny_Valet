@@ -48,7 +48,7 @@ namespace UncannyValet.Bootstrap
             Services.Register<IRunProgress>(host.Progress);
             Services.Register<IRunFlowState>(host.Progress);
             Services.Register<ILotPicker>(host);
-            Services.Register<ILotGoal>(new LotGoal(lot.Id, lot.BlessingThreshold));
+            Services.Register<ILotGoal>(new LotGoal(lot.Id, lot.BlessingThreshold, lot.ShowPowerBar));
             var link = new RunProgressLink(bus, host.Progress);
             var flow = new RunFlow(bus, host.Progress, host.Definition);
             var devPowers = Services.TryGet<ITuning>(out var tuning) ? new DevPowerLink(bus, tuning, host.Progress) : null;
