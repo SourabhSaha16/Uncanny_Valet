@@ -60,6 +60,7 @@ namespace UncannyValet.Tests.Patrons
             var t = _registry.Create(_car, new PatronRequest(10f, 20, false, 60f, modifiers));
             _registry.AnnounceArrival(t);
             _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             return t;
         }
 

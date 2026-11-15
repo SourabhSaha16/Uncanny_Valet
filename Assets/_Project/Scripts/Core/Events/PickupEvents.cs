@@ -27,4 +27,14 @@ namespace UncannyValet.Core.Events
         public readonly CarId Car;
         public CarRepositioned(CarId car) { Car = car; }
     }
+
+    /// <summary>
+    /// The valet drove this car out of the pickup spot (slot 0 of the queue), or took it from somewhere that is not the pickup
+    /// spot. Published by Patrons; the stay clock starts at the later of this and <see cref="PatronEnteredDiner"/> (issue 139).
+    /// </summary>
+    public readonly struct CarLeftPickup : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarLeftPickup(CarId car) { Car = car; }
+    }
 }

@@ -70,6 +70,7 @@ namespace UncannyValet.Tests.Integration
             var ticket = Registry.Open(car, request);
             Bus.Publish(new CarSpawned(car, ticket.TicketId));
             Bus.Publish(new PatronEnteredDiner(car));
+            Bus.Publish(new CarLeftPickup(car));
             return ticket;
         }
 

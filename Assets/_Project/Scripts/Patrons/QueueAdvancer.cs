@@ -20,6 +20,7 @@ namespace UncannyValet.Patrons
         private readonly ILotLayout _lot;
         private readonly IArrivalScan _scan;
         private readonly PickupQueueSettings _settings;
+        private readonly PickupLeaveWatcher _leave;
         private readonly PatronExitGate _gate = new PatronExitGate();
         private readonly List<CarId> _standing = new List<CarId>();
         private readonly Dictionary<CarId, int> _moving = new Dictionary<CarId, int>();
@@ -30,6 +31,7 @@ namespace UncannyValet.Patrons
         public QueueAdvancer(IEventBus bus, ICarFactory cars, ILotLayout lot, IArrivalScan scan, PickupQueueSettings settings)
         {
             _bus = bus; _cars = cars; _lot = lot; _scan = scan; _settings = settings;
+            _leave = new PickupLeaveWatcher(bus, cars, lot, settings.SlotTolerance);
             _bus.Subscribe<CarArrived>(OnArrived);
             _bus.Subscribe<CarRepositioned>(OnRepositioned);
             _bus.Subscribe<CarEntered>(OnEntered);
@@ -43,6 +45,7 @@ namespace UncannyValet.Patrons
 
         public void Dispose()
         {
+            _leave.Dispose();
             _bus.Unsubscribe<CarArrived>(OnArrived);
             _bus.Unsubscribe<CarRepositioned>(OnRepositioned);
             _bus.Unsubscribe<CarEntered>(OnEntered);
@@ -51,9 +54,10 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<ShiftEnded>(OnShiftEdge);
         }
 
-        /// <summary>Lets the patron at the pickup spot out when the valet is near, and moves the queue up where a slot is clear.</summary>
+        /// <summary>Lets the patron at the pickup spot out when the valet is near, and moves the queue up where a slot is clear, and reports a car the valet drove out of the pickup spot.</summary>
         public void Tick()
         {
+            _leave.Tick();
             if (_standing.Count == 0) return;
             var slots = _lot.ArrivalSlots;
             FillSlotCars(slots);

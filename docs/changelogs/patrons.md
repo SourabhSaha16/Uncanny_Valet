@@ -139,3 +139,9 @@ Date: 2026-11-14
 Files: Patrons/IArrivalPacing.cs, QueueTopUpPacing.cs, DirectorArrivalPacing.cs, ArrivalPacings.cs, PatronSpawner.cs, PatronConfig.cs (TopUpSpacingMinutes), Tests/EditMode/Patrons/ArrivalPacingTests.cs
 Why: Issue #132. On LotKind.Crazy the spawner ignores the director arrival gate and fills every free queue slot (one car per spacing); other lots keep the director pacing.
 Tests: ArrivalPacingTests (full queue at start, stagger, refill after advance, other lots unchanged, reset); EditMode 1837 passed.
+
+## patrons: stay clock starts after the car leaves the pickup spot [Claude]
+Date: 2026-11-14
+Files: Core/Events/PickupEvents.cs (CarLeftPickup, appended), Patrons/StayStartRule.cs, PickupLeaveWatcher.cs, StayStarter.cs, QueueAdvancer.cs, Tests/EditMode/Patrons/StayStartRuleTests.cs, PickupLeaveWatcherTests.cs, StayStartTests.cs (other tests that publish PatronEnteredDiner now also publish CarLeftPickup)
+Why: Issue #139. The stay clock starts at the later of PatronEnteredDiner and the valet driving the car out of the pickup spot (slot 0); neither alone starts it, and there is still no fallback timer.
+Tests: StayStartRuleTests, PickupLeaveWatcherTests, StayStartTests (both orders, leak on shift end, unknown car); EditMode 1858 passed, 0 failed.

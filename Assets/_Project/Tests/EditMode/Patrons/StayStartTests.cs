@@ -59,6 +59,7 @@ namespace UncannyValet.Tests.Patrons
             var t = Arrive(1, 1f);
             Tick(10f);
             Assert.IsFalse(t.StayStarted);
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _clock.ElapsedMinutes = 12f;
             _bus.Publish(new PatronEnteredDiner(t.CarId));
             Assert.IsTrue(t.StayStarted);
@@ -86,6 +87,7 @@ namespace UncannyValet.Tests.Patrons
             _clock.ElapsedMinutes = 1f;
             _bus.Publish(new CarParked(t.CarId, 3));
             Assert.IsFalse(t.StayStarted, "the car was handed over but the patron has not reached the diner");
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _clock.ElapsedMinutes = 4f;
             _bus.Publish(new PatronEnteredDiner(t.CarId));
             Assert.AreEqual(4f + Stay, t.ReturnMinute);
@@ -95,6 +97,7 @@ namespace UncannyValet.Tests.Patrons
         public void EnteringTwice_StartsTheStayOnlyOnce()
         {
             var t = Arrive(1, 1f);
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _clock.ElapsedMinutes = 2f;
             _bus.Publish(new PatronEnteredDiner(t.CarId));
             _clock.ElapsedMinutes = 4f;
@@ -104,8 +107,60 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ADinerEntryForAnUnknownCar_IsIgnored()
+        public void PatronInsideBeforeTheCarLeavesThePickup_TheClockWaitsForTheCar()
         {
+            var t = Arrive(1, 0f);
+            _clock.ElapsedMinutes = 3f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.IsFalse(t.StayStarted, "the car is still in the pickup spot");
+            _clock.ElapsedMinutes = 7f;
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.AreEqual(7f + Stay, t.ReturnMinute);
+            Assert.AreEqual(7f, _started[0].Minute);
+        }
+
+        [Test]
+        public void CarLeavesBeforeThePatronIsInside_TheClockStartsWhenThePatronEnters()
+        {
+            var t = Arrive(1, 0f);
+            _clock.ElapsedMinutes = 2f;
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.IsFalse(t.StayStarted, "the car left but the patron is still walking");
+            _bus.Publish(new CarParked(t.CarId, 4));
+            Tick(5f);
+            Assert.IsFalse(t.StayStarted, "parked and still walking: no clock yet");
+            _clock.ElapsedMinutes = 6f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(6f + Stay, t.ReturnMinute);
+        }
+
+        [Test]
+        public void CarLeavingTwice_DoesNotStartTheClockOnItsOwn()
+        {
+            var t = Arrive(1, 0f);
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.IsFalse(t.StayStarted);
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(1, _started.Count);
+        }
+
+        [Test]
+        public void ShiftEndWithOneMomentSeen_ReleasesTheFlag_SoAReusedCarIdStartsClean()
+        {
+            var t = Arrive(1, 0f);
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new ShiftEnded());
+            var again = Arrive(1, 1f);
+            _bus.Publish(new CarLeftPickup(again.CarId));
+            Assert.IsFalse(again.StayStarted, "the old patron-inside flag must not leak into the next ticket");
+        }
+
+        [Test]
+        public void EventsForAnUnknownCar_AreIgnored()
+        {
+            _bus.Publish(new CarLeftPickup(new CarId(99)));
             _bus.Publish(new PatronEnteredDiner(new CarId(99)));
             Assert.AreEqual(0, _started.Count);
         }
@@ -118,6 +173,7 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<PatronReturnShifted>(e => shifted++);
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(0, shifted);
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(1, shifted);

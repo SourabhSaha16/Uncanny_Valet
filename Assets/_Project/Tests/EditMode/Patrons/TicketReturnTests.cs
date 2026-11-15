@@ -112,6 +112,7 @@ namespace UncannyValet.Tests.Patrons
             Tick(3f);
             _bus.Publish(new CarArrived(t.CarId));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(3f + Stay - 1f);
             Assert.AreEqual(0, _summoned);
             Tick(3f + Stay);
@@ -128,6 +129,7 @@ namespace UncannyValet.Tests.Patrons
             _registry.CurbWalkTimeoutMinutes = WalkTimeout;
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(Stay);
             Tick(Stay + WalkTimeout);
             Assert.AreEqual(TicketState.PickupRequested, t.State);
@@ -140,7 +142,9 @@ namespace UncannyValet.Tests.Patrons
             var washing = _registry.Open(new CarId(2), new PatronRequest(Stay, 20, false, 60f, ModifierTestKit.Of(false, true)));
             _bus.Publish(new CarEnteredStation(washing.CarId, StationKind.Wash));
             _bus.Publish(new PatronEnteredDiner(queued.CarId));
+            _bus.Publish(new CarLeftPickup(queued.CarId));
             _bus.Publish(new PatronEnteredDiner(washing.CarId));
+            _bus.Publish(new CarLeftPickup(washing.CarId));
             Tick(Stay);
             _bus.Publish(new CarAtCurb(queued.CarId));
             _bus.Publish(new CarAtCurb(washing.CarId));
@@ -154,6 +158,7 @@ namespace UncannyValet.Tests.Patrons
         {
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _bus.Publish(new CarAtCurb(t.CarId));
             Assert.AreEqual(0, _closed);
             Tick(Stay);
@@ -172,6 +177,7 @@ namespace UncannyValet.Tests.Patrons
                 _bus.Publish(new CarArrived(tickets[i].CarId));
                 if (i % 3 == 1) _bus.Publish(new CarParked(tickets[i].CarId, i));
                 _bus.Publish(new PatronEnteredDiner(tickets[i].CarId));
+                _bus.Publish(new CarLeftPickup(tickets[i].CarId));
             }
             for (var m = 12; m <= 120; m++)
             {
@@ -192,6 +198,7 @@ namespace UncannyValet.Tests.Patrons
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
             Assert.IsFalse(acceptance.WillAccept(t.CarId));
             _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(Stay);
             Assert.IsTrue(acceptance.WillAccept(t.CarId));
         }

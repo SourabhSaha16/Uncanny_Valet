@@ -48,6 +48,7 @@ namespace UncannyValet.Tests.Patrons
             _registry.Open(car, new PatronRequest(20f, 10, false, 60f));
             _bus.Publish(new CarParked(car, car.Value));
             _bus.Publish(new PatronEnteredDiner(car));
+            _bus.Publish(new CarLeftPickup(car));
         }
 
         private void DeliverBoth()
