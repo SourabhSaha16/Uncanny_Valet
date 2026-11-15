@@ -16,6 +16,7 @@ namespace UncannyValet.Core.Contracts
         public const float CarSlowFloor = 0.3f;
         public const float CurseAmount = 5f;
         public const float CurseLockout = 3f;
+        public const float SlightCurseAmount = 2f;
 
         public static readonly TuningInfo[] Rows =
         {
@@ -37,6 +38,8 @@ namespace UncannyValet.Core.Contracts
                 "Hitting people never slows the car below this share of its top speed."),
             new TuningInfo(TuningKey.PedestrianCurseAmount, Group, "Curse for hitting a patron (blessings)", 0f, 50f, 1f,
                 "Blessings taken off when the car you drive hits a patron on foot. Favour resets too."),
+            new TuningInfo(TuningKey.PedestrianSlightCurseAmount, Group, "Slight curse for hitting any other person (blessings)", 0f, 50f, 1f,
+                "Blessings taken off when the car you drive hits a passer-by (not a patron the full curse covers). Every lot, ignores the curse switch. Same lockout as the patron curse."),
             new TuningInfo(TuningKey.PedestrianCurseLockout, Group, "Curse: seconds before the same patron can curse again", 0f, 20f, 0.5f,
                 "Hitting the same patron again within this time costs nothing."),
             new TuningInfo(TuningKey.PedestrianCurses, Group, "Hitting patrons is a curse (1 yes, 0 no)", 0f, 1f, 1f,
@@ -58,6 +61,7 @@ namespace UncannyValet.Core.Contracts
             t.Seed(TuningKey.PedestrianCarSlowFloor, CarSlowFloor);
             t.Seed(TuningKey.PedestrianCurseAmount, CurseAmount);
             t.Seed(TuningKey.PedestrianCurseLockout, CurseLockout);
+            t.Seed(TuningKey.PedestrianSlightCurseAmount, SlightCurseAmount);
             t.Seed(TuningKey.PedestrianCurses, cursesOn ? 1f : 0f);
             t.Seed(TuningKey.PedestrianFreeRoutes, freeRoutes ? 1f : 0f);
         }

@@ -22,6 +22,7 @@ namespace UncannyValet.Economy
         private readonly FavourTracker _favour;
         private readonly Func<ILotGoal> _goal;
         private readonly PedestrianCurseRule _pedestrianCurses = new PedestrianCurseRule();
+        private readonly SlightCurseRule _slightCurses = new SlightCurseRule();
         private bool _open;
 
         /// <summary>Seconds clock the pedestrian curse lockout reads (the game time by default; tests replace it).</summary>
@@ -77,6 +78,7 @@ namespace UncannyValet.Economy
             PeakFavour = 1;
             _open = true;
             _pedestrianCurses.Reset();
+            _slightCurses.Reset();
             Publish();
         }
 
@@ -117,15 +119,23 @@ namespace UncannyValet.Economy
         // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.
         private void OnTimerExpired(TicketTimerExpired e) => ApplyCurse(e.Ticket, _config.DefaultCurse);
 
-        // The driven car hit a patron walker: a curse of the tuned size where the lot allows it (no ticket belongs to it).
+        // The driven car hit a walker (no ticket belongs to the curse). A patron where the lot allows it gets the full curse;
+        // anyone else, on every lot, the slight one. One curse per hit: the bigger wins, so a patron the full curse covers
+        // never also gets the slight one (not even during the full lockout).
         private void OnPedestrianHit(PedestrianHit e)
         {
             if (!_open || !Services.TryGet<ITuning>(out var tuning)) return;
             var on = tuning.TryGet(TuningKey.PedestrianCurses, out var switchValue) && switchValue >= 0.5f;
             var lockout = tuning.TryGet(TuningKey.PedestrianCurseLockout, out var l) ? l : PedestrianHitRows.CurseLockout;
-            if (!_pedestrianCurses.TryCurse(e, Clock(), on, lockout)) return;
-            var amount = tuning.TryGet(TuningKey.PedestrianCurseAmount, out var a) ? a : PedestrianHitRows.CurseAmount;
-            ApplyCurse(TicketId.None, Mathf.RoundToInt(amount));
+            if (_pedestrianCurses.TryCurse(e, Clock(), on, lockout))
+            {
+                var amount = tuning.TryGet(TuningKey.PedestrianCurseAmount, out var a) ? a : PedestrianHitRows.CurseAmount;
+                ApplyCurse(TicketId.None, Mathf.RoundToInt(amount));
+                return;
+            }
+            if (PedestrianCurseRule.Covers(e, on) || !_slightCurses.TryCurse(e, Clock(), lockout)) return;
+            var slight = tuning.TryGet(TuningKey.PedestrianSlightCurseAmount, out var s) ? s : PedestrianHitRows.SlightCurseAmount;
+            ApplyCurse(TicketId.None, Mathf.RoundToInt(slight));
         }
 
         private void Publish() => _bus.Publish(new BlessingsChanged(Blessings, FavourMultiplier, Curses));
