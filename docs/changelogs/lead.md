@@ -970,3 +970,9 @@ Date: 2026-11-14
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #128. Beta now includes the reserved patron walker pool sized by spots plus queue slots.
 Tests: tools/build-web.ps1 exit 0, build-info shows 390db5c; browser smoke test loaded the title screen with no console errors.
+
+## lead: merge agent/grandma-bubble [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/ (SpeechBubbleVisibility, SpeechBubblePainter, SpeechBubbleSettings), Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs, docs/changelogs/integration.md
+Why: Refs #129. Speech bubbles (Grandma's tip line included) are only drawn while the speaker is inside the camera view; tip money is unaffected.
+Tests: EditMode suite passed after merge (exit 0). Not checked in-game; not in beta yet.
