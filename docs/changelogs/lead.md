@@ -982,3 +982,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Pedestrians/ (EnterInterval, WanderPicker, RoamPath, KeepOutAreas, PedestrianBrain, PedestrianPhase, PedestrianWalker, WalkerRouter, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/ (EditMode/Pedestrians, PlayMode/PedestrianHitTests.cs), docs/changelogs/pedestrians.md
 Why: Refs #130. Ambient pedestrians roam along their routes and enter the diner after a random interval instead of all heading to one entrance.
 Tests: EditMode suite passed after merge (exit 0). PlayMode not run. Parking-spot keep-out is built and tested but not fed at runtime (no Core contract exposes spot rectangles); roam targets stay on sidewalk/crosswalk routes. Not in beta yet.
+
+## lead: merge agent/crazy-queue and agent/lot-bottom-row [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (IArrivalPacing, QueueTopUpPacing, DirectorArrivalPacing, ArrivalPacings, PatronSpawner, PatronConfig); Scripts/Lot (LotConfig, LotGeometry, TroughLayout); Data/Lot/LotConfig.asset; Data/Run and Data/Art Vanaheim/Midgard lot assets; regenerated scenes Bootstrap, Lot_MidgardCrazy, Lot_VanaheimCrazy, Lot_VanaheimTraining; new EditMode tests ArrivalPacingTests and BottomRowDropTests; docs/changelogs/patrons.md, lot.md
+Why: Refs #132 and #131. Crazy lots keep the pickup queue topped up (Training and Finale unchanged); the bottom row of spots sits 1.5 units lower on every lot (tunable LotConfig.BottomRowDrop).
+Tests: EditMode suite passed on the merged tip (exit 0); the lot agent also ran RunBatch (exit 0) and CameraFramingPlayModeTests (4 of 4). Not played; MidgardNight light string may be about 1.5 units off (cosmetic). Not in beta yet.
