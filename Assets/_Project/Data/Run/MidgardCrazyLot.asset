@@ -58,13 +58,13 @@ MonoBehaviour:
     _position: {x: 15.95, y: 1.5999994}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 668983c3c39a8a74c9aa9831874f261b, type: 2}
-    _position: {x: 15.95, y: -8.1}
+    _position: {x: 15.95, y: -8.85}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: d32b4005fa887a845886ccac07f09169, type: 2}
-    _position: {x: 15.95, y: -11.3}
+    _position: {x: 15.95, y: -12.05}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: a8ee95c5967bc084e914f539cd3fd7a4, type: 2}
-    _position: {x: 15.95, y: -14.5}
+    _position: {x: 15.95, y: -15.25}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 9b41fcb270ecba340bfa3a624c128858, type: 2}
     _position: {x: 12, y: -19.05}

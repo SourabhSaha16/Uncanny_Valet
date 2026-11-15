@@ -51,13 +51,13 @@ MonoBehaviour:
     _intensity: 0.55
     _flicker: 0
     _flickerSpeed: 0
-  - _position: {x: 26, y: -10.1}
+  - _position: {x: 26, y: -11.6}
     _radius: 3.6
     _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
     _intensity: 0.55
     _flicker: 0
     _flickerSpeed: 0
-  - _position: {x: 26, y: -15.500001}
+  - _position: {x: 26, y: -17}
     _radius: 3.6
     _colour: {r: 0.62, g: 0.82, b: 1, a: 1}
     _intensity: 0.55

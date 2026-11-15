@@ -23,7 +23,7 @@ namespace UncannyValet.Lot
             for (var i = 0; i < rects.Length; i++)
             {
                 rects[i] = LotGeometry.Box(new Vector2(x, y), size);
-                y -= size.y + (i == 0 ? config.AisleWidth : config.Site.TroughStackGap);
+                y -= size.y + (i == 0 ? config.AisleWidth + config.BottomRowDrop : config.Site.TroughStackGap);
             }
             return rects;
         }
