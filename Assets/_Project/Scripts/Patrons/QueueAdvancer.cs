@@ -23,13 +23,15 @@ namespace UncannyValet.Patrons
         private readonly PickupLeaveWatcher _leave;
         private readonly PatronExitGate _gate = new PatronExitGate();
         private readonly List<CarId> _standing = new List<CarId>();
-        private readonly Dictionary<CarId, int> _moving = new Dictionary<CarId, int>();
+        private readonly AdvanceTracker _moving = new AdvanceTracker();
+        private readonly Func<float> _clock;
         private readonly List<CarId> _inSlot = new List<CarId>();
         private readonly List<bool> _occupied = new List<bool>();
         private readonly List<QueueMove> _moves = new List<QueueMove>();
 
-        public QueueAdvancer(IEventBus bus, ICarFactory cars, ILotLayout lot, IArrivalScan scan, PickupQueueSettings settings)
+        public QueueAdvancer(IEventBus bus, ICarFactory cars, ILotLayout lot, IArrivalScan scan, PickupQueueSettings settings, Func<float> clock = null)
         {
+            _clock = clock ?? (() => Time.time);
             _bus = bus; _cars = cars; _lot = lot; _scan = scan; _settings = settings;
             _leave = new PickupLeaveWatcher(bus, cars, lot, settings.SlotTolerance);
             _bus.Subscribe<CarArrived>(OnArrived);
@@ -58,6 +60,7 @@ namespace UncannyValet.Patrons
         public void Tick()
         {
             _leave.Tick();
+            _moving.Expire(_clock());
             if (_standing.Count == 0) return;
             var slots = _lot.ArrivalSlots;
             FillSlotCars(slots);
@@ -71,7 +74,7 @@ namespace UncannyValet.Patrons
             for (var i = 0; i < slots.Count; i++) _inSlot.Add(CarId.None);
             for (var i = 0; i < _standing.Count; i++)
             {
-                if (_moving.ContainsKey(_standing[i]) || !_cars.TryGet(_standing[i], out var car) || car.Transform == null) continue;
+                if (_moving.IsMoving(_standing[i]) || !_cars.TryGet(_standing[i], out var car) || car.Transform == null) continue;
                 var slot = QueueSlotLocator.SlotAt(slots, car.Transform.position, _settings.SlotTolerance);
                 if (slot != QueueSlotLocator.None && _inSlot[slot] == CarId.None) _inSlot[slot] = _standing[i];
             }
@@ -86,16 +89,25 @@ namespace UncannyValet.Patrons
                 _bus.Publish(new PatronStepsOut(car));
         }
 
+        // A car whose nose reaches into the slot ahead (it stopped a little short) must not count itself as the blocker.
         private void Advance(IReadOnlyList<Vector2> slots)
         {
             _occupied.Clear();
-            var scanned = _scan.Scan(slots.Count);
-            for (var i = 0; i < scanned.Count; i++) _occupied.Add(scanned[i]);
-            foreach (var target in _moving.Values) if (target < _occupied.Count) _occupied[target] = true;
+            for (var i = 0; i < slots.Count; i++)
+                _occupied.Add(_scan.IsTaken(i, i + 1 < _inSlot.Count ? _inSlot[i + 1] : CarId.None));
+            _moving.MarkTargets(_occupied);
             _moves.Clear();
             QueueAdvanceRule.Moves(_inSlot, _occupied, _moves);
-            for (var i = 0; i < _moves.Count; i++)
-                if (_cars.TryDriveTo(_moves[i].Car, slots[_moves[i].ToSlot], _settings.AdvanceSpeed)) _moving[_moves[i].Car] = _moves[i].ToSlot;
+            for (var i = 0; i < _moves.Count; i++) Drive(_moves[i], slots);
+        }
+
+        private void Drive(QueueMove move, IReadOnlyList<Vector2> slots)
+        {
+            if (!_cars.TryGet(move.Car, out var car) || car.Transform == null) return;
+            var target = slots[move.ToSlot];
+            var travel = Vector2.Distance(car.Transform.position, target) / _settings.AdvanceSpeed;
+            if (!_cars.TryDriveTo(move.Car, target, _settings.AdvanceSpeed)) return;
+            _moving.Start(move.Car, move.ToSlot, _clock() + travel * _settings.AdvanceTimeoutScale + _settings.AdvanceTimeoutPad);
         }
 
         private void OnArrived(CarArrived e)

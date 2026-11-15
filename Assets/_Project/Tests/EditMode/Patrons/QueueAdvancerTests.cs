@@ -26,6 +26,7 @@ namespace UncannyValet.Tests.Patrons
         private sealed class Cars : ICarFactory
         {
             public readonly Dictionary<CarId, QueueCar> All = new Dictionary<CarId, QueueCar>();
+            public bool Hold;
             public readonly List<(CarId car, Vector2 to)> Drives = new List<(CarId, Vector2)>();
             public IDrivable Spawn(CarId id, Vector2 position, float rotationDegrees) => null;
             public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees, int arrivalSlot) => null;
@@ -37,7 +38,7 @@ namespace UncannyValet.Tests.Patrons
             {
                 if (!All.TryGetValue(id, out var car)) return false;
                 Drives.Add((id, target));
-                car.Transform.position = target;
+                if (!Hold) car.Transform.position = target;
                 return true;
             }
         }
@@ -62,6 +63,8 @@ namespace UncannyValet.Tests.Patrons
         {
             public readonly List<bool> Occupied = new List<bool> { false, false, false, false };
             public IReadOnlyList<bool> Scan(int maxSlots) => Occupied;
+            public bool IsTaken(int slot, CarId except) => Occupied[slot] && !(Standing.TryGetValue(slot, out var car) && car == except);
+            public readonly Dictionary<int, CarId> Standing = new Dictionary<int, CarId>();
         }
 
         private sealed class Focus : IPlayerFocus
@@ -186,6 +189,44 @@ namespace UncannyValet.Tests.Patrons
             Assert.AreEqual(2, _cars.Drives.Count);
             Assert.AreEqual(c, _cars.Drives[1].car);
             Assert.AreEqual(_lot.Slots[1], _cars.Drives[1].to);
+        }
+
+        [Test]
+        public void ACarStoppedALittleShort_WhoseNoseReachesIntoThePickupSpot_IsStillAdvanced()
+        {
+            var b = Arrive(2, 1);
+            _cars.All[b].Transform.position = _lot.Slots[1] + new Vector2(0f, 1.2f);
+            _scan.Occupied[0] = true;
+            _scan.Standing[0] = b;
+            _queue.Tick();
+            Assert.AreEqual(1, _cars.Drives.Count, "its own nose in the pickup spot must not block it");
+            Assert.AreEqual(_lot.Slots[0], _cars.Drives[0].to);
+        }
+
+        [Test]
+        public void ACarThatIsOnlyNearItsSlot_CountsAsInIt()
+        {
+            var b = Arrive(2, 1);
+            _cars.All[b].Transform.position = _lot.Slots[1] + new Vector2(1.2f, 1.5f);
+            _queue.Tick();
+            Assert.AreEqual(1, _cars.Drives.Count);
+        }
+
+        [Test]
+        public void AnInterruptedAdvance_IsOfferedAgainOnceItsDeadlinePasses()
+        {
+            var now = 0f;
+            _queue.Dispose();
+            _queue = new QueueAdvancer(_bus, _cars, _lot, _scan, new PickupQueueSettings(), () => now) { Focus = _focus };
+            var b = Arrive(2, 1);
+            _cars.Hold = true;
+            _queue.Tick();
+            _queue.Tick();
+            Assert.AreEqual(1, _cars.Drives.Count, "while the drive may still be running it is not repeated");
+            now = 30f;
+            _queue.Tick();
+            Assert.AreEqual(2, _cars.Drives.Count, "the drive never finished, so the car is sent again");
+            Assert.AreEqual(b, _cars.Drives[1].car);
         }
 
         [Test]
