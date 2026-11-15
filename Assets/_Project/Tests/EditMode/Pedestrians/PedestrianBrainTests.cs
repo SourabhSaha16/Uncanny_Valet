@@ -14,20 +14,59 @@ namespace UncannyValet.Tests.Pedestrians
         }
 
         [Test]
-        public void AmbientWalksInHidesThenLeavesThenWaitsToAppearAgain()
+        public void AmbientRoamsThenEntersThenComesOutAndRoamsAgain()
         {
             var brain = new PedestrianBrain();
-            brain.BeginAmbient(3f);
+            brain.BeginAmbient(3f, 4f);
+            Assert.AreEqual(PedestrianPhase.Roaming, brain.Phase);
+            brain.Tick(3f);
+            Assert.IsFalse(brain.EnterDue);
+            brain.Tick(1.5f);
+            Assert.IsTrue(brain.EnterDue);
+            brain.GoToDoor();
             Assert.AreEqual(PedestrianPhase.Arriving, brain.Phase);
             brain.ReachedRouteEnd();
             Assert.AreEqual(PedestrianPhase.Inside, brain.Phase);
             brain.Tick(2f);
             Assert.AreEqual(PedestrianPhase.Inside, brain.Phase);
             brain.Tick(1.5f);
-            Assert.AreEqual(PedestrianPhase.Leaving, brain.Phase);
+            Assert.AreEqual(PedestrianPhase.Roaming, brain.Phase);
+            Assert.IsFalse(brain.EnterDue);
+        }
+
+        [Test]
+        public void PatronIsNeverDueToEnter()
+        {
+            var brain = new PedestrianBrain();
+            brain.BeginPatron();
+            Assert.IsFalse(brain.EnterDue);
+        }
+
+        [Test]
+        public void PlannedVisitSetsTheNextStayAndRoam()
+        {
+            var brain = new PedestrianBrain();
+            brain.BeginAmbient(1f, 1f);
+            brain.GoToDoor();
+            brain.PlanVisit(5f, 9f);
             brain.ReachedRouteEnd();
-            Assert.AreEqual(PedestrianPhase.Idle, brain.Phase);
+            brain.Tick(4.9f);
+            Assert.AreEqual(PedestrianPhase.Inside, brain.Phase);
+            brain.Tick(0.2f);
+            Assert.AreEqual(PedestrianPhase.Roaming, brain.Phase);
+            brain.Tick(8.9f);
+            Assert.IsFalse(brain.EnterDue);
+            brain.Tick(0.2f);
+            Assert.IsTrue(brain.EnterDue);
+        }
+
+        [Test]
+        public void SwitchedOffRoamerWaitsToAppearAgain()
+        {
+            var brain = new PedestrianBrain();
+            brain.BeginAmbient(3f, 4f);
             brain.WaitToSpawn(2f);
+            Assert.AreEqual(PedestrianPhase.Idle, brain.Phase);
             Assert.IsFalse(brain.SpawnDue);
             brain.Tick(2.5f);
             Assert.IsTrue(brain.SpawnDue);
