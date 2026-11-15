@@ -1006,3 +1006,9 @@ Date: 2026-11-14
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #129 #130 #131 #132 #133. Beta now includes the on-camera-only speech bubbles, roaming pedestrians, lowered bottom row of spots, topped-up queue on crazy lots and the 35% pedestrian slowdown.
 Tests: tools/build-web.ps1 exit 0, build-info shows 47467ee; EditMode and full PlayMode (77 of 77) passed on the same code; browser smoke test loaded Midgard training with the lowered bottom row, no console errors. Crazy lots and the other changes not played.
+
+## lead: merge agent/ui-bubbles-label and agent/ped-curse [Claude]
+Date: 2026-11-14
+Files: Scripts/UI/Speech (SpeechBubbleSettings, SpeechBubbleTracker), Scripts/UI/Hud/PlayingHud.cs, Scripts/UI/Status (CarStatusTable, CarStatusResolver), Scripts/Economy (SlightCurseRule, PedestrianCurseRule, ShiftBlessings), Scripts/Core (TuningKey append PedestrianSlightCurseAmount, EmotionRows, PedestrianHitRows), EditMode tests, docs/changelogs/integration.md, economy-night.md
+Why: Refs #134 #135 #138. Speech bubbles switched off behind one setting (default off); status label reads 'No blessing'; hitting any pedestrian with the valet's car costs a slight curse (2 blessings, tunable) on every lot, the patron curse (5) unchanged and never stacked with it.
+Tests: EditMode passed after each merge (exit 0). Not played; not in beta yet.
