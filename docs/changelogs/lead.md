@@ -964,3 +964,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Pedestrians/ (PatronPool, PatronPoolSizing, PendingStepOuts, PatronWalkers, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/EditMode/Pedestrians/PatronPoolTests.cs, docs/changelogs/pedestrians-patrons.md
 Why: Refs #128. The reserved patron pool is now sized by spots plus queue slots (config value is a floor) and a patron with no free walker waits and retries, so the diner timer cannot stall (design.md A2 pickup flow).
 Tests: EditMode suite passed (1809 of 1809 in the agent run, exit 0 again after merge). No PlayMode or web build; not yet in the beta site.
+
+## lead: rebuild site/ with the patron walker pool fix for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #128. Beta now includes the reserved patron walker pool sized by spots plus queue slots.
+Tests: tools/build-web.ps1 exit 0, build-info shows 390db5c; browser smoke test loaded the title screen with no console errors.

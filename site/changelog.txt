@@ -1,4 +1,8 @@
 === Last 50 commits ===
+390db5c  2026-11-14  lead: changelog for patron walker pool merge, Refs #128 [Claude]
+edbca01  2026-11-14  lead: merge agent/patron-walkers [Claude]
+21f550c  2026-11-14  pedestrians: size the patron pool by spots plus queue slots [Claude]
+1f0ee5b  2026-11-14  lead: rebuild site/ with the playtest batch for beta [Claude]
 fe91760  2026-11-14  lead: changelog for camera fit merge, Refs #123 #127 [Claude]
 31a0258  2026-11-14  lead: merge agent/integration camera fits taller lots [Claude]
 3999cf8  2026-11-14  integration: camera always shows the whole lot, floor beats zoom cap [Claude]
@@ -45,10 +49,6 @@ b650f1f  2026-11-14  run: roguelite run rules, NextLotChosen and RunCompleted [C
 e0d4a8e  2026-11-13  lead: merge agent/watchers watching gods and speech bubbles [Claude]
 8399c98  2026-11-13  watchers: record final test runs [Claude]
 7d16206  2026-11-13  watchers: speech system, watcher characters and bubbles [Claude]
-1ee4c11  2026-11-13  lead: merge agent/art procedural prop toolkit and first props [Claude]
-9cb3c4b  2026-11-13  art: procedural prop toolkit, Midgard and Vanaheim props, lighting presets [Claude]
-2726ad6  2026-11-13  lead: merge agent/cars mud patches [Claude]
-986f003  2026-11-13  cars: mud patches slow cars and dull drifting [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -1523,6 +1523,18 @@ Files: Bootstrap/CameraFit.cs, CameraFollow tooltip, CameraFitTests, CameraFrami
 Why: the 4th queue slot made the lots taller than the zoom cap, clipping the diner door and queue end (#123, #127); the play-area floor now beats the cap.
 Tests: EditMode 1802/1802, PlayMode 77/77 and RunBatch ok (agent).
 
+## lead: rebuild site/ with pickup spot, pedestrian fixes, smaller bubbles, camera fit [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of fe91760)
+Why: playtest batch #122 to #127 (valet pickup spot and diner-entry timer, pedestrian free routes and no rubber band, smaller speech bubbles, zoom out, camera fit for the taller lots).
+Tests: EditMode 1802/1802, PlayMode 77/77 on the source; Web smoke test at 16:9: title, how-to-play, Midgard intro, shift with the whole lot in frame (diner door, yellow pickup slot and 3 queue slots, 8 bays), a car queued into the pickup spot.
+
+## lead: merge agent/patron-walkers [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (PatronPool, PatronPoolSizing, PendingStepOuts, PatronWalkers, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/EditMode/Pedestrians/PatronPoolTests.cs, docs/changelogs/pedestrians-patrons.md
+Why: Refs #128. The reserved patron pool is now sized by spots plus queue slots (config value is a floor) and a patron with no free walker waits and retries, so the diner timer cannot stall (design.md A2 pickup flow).
+Tests: EditMode suite passed (1809 of 1809 in the agent run, exit 0 again after merge). No PlayMode or web build; not yet in the beta site.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1945,6 +1957,15 @@ Date: 2026-11-13
 Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
 Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
 Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
+
+=== docs/changelogs/pedestrians-patrons.md ===
+# Changelog: pedestrians-patrons
+
+## pedestrians: size the patron pool by spots plus queue slots [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/{PatronPoolSizing,PatronPool,PendingStepOuts,PatronWalkers,PedestrianCrowd,PedestrianConfig}.cs, Assets/_Project/Tests/EditMode/Pedestrians/PatronPoolTests.cs
+Why: issue #128. The reserved patron pool was a fixed 6, so a 7th open ticket got no walker, PatronEnteredDiner never fired and the stay timer stalled. The pool is now max(PatronPoolSize floor, regular + charging spots + arrival queue slots), read from ILotLayout (no Core change). If a person is still missing, PatronWalkers logs one error naming the car and defers the step-out (and any summon) until one is released. Ambient people and the patron pool are separate lists.
+Tests: PatronPoolTests (sizing rule, every open ticket gets a person, deferred once and served on return, pool never hands out ambient people); EditMode suite run.
 
 === docs/changelogs/pedestrians.md ===
 # Pedestrians changelog

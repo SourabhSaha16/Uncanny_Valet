@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  fe91760
-Subject: lead: changelog for camera fit merge, Refs #123 #127 [Claude]
-Date:    2026-11-14 15:27:09 -0800
+Commit:  390db5c
+Subject: lead: changelog for patron walker pool merge, Refs #128 [Claude]
+Date:    2026-11-14 18:08:21 -0800
