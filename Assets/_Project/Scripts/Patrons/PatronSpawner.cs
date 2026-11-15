@@ -32,6 +32,7 @@ namespace UncannyValet.Patrons
         private IModifierCatalog _catalog;
         private PatronRequest _pending;
         private bool _hasPending;
+        private IArrivalPacing _pacing = new DirectorArrivalPacing();
 
         public TicketRegistry Registry { get; private set; }
 
@@ -117,6 +118,9 @@ namespace UncannyValet.Patrons
         private void OnShiftStarted(ShiftStarted e)
         {
             _shiftOpen = true;
+            var kind = Services.TryGet<IRunProgress>(out var run) && run.HasCurrentLot ? run.CurrentLot.Kind : LotKind.None;
+            _pacing = ArrivalPacings.For(kind, _config.TopUpSpacingMinutes);
+            _pacing.Reset();
             _nextArrivalMinute = 0f;
             _hasPending = false;
         }
@@ -134,7 +138,7 @@ namespace UncannyValet.Patrons
         // Rolls the request once when the director asks, then keeps it until a queue slot is clear.
         private void OnPatronScheduled(PatronScheduled e)
         {
-            if (!DirectorOn || !_shiftOpen) return;
+            if (_pacing.TopsUpQueue || !DirectorOn || !_shiftOpen) return;
             var progress = ShiftProgress();
             _pending = e.ArchetypeChosen ? _roller.Roll(progress, e.Archetype) : _roller.Roll(progress);
             _hasPending = true;
@@ -155,8 +159,19 @@ namespace UncannyValet.Patrons
             return length > 0f ? Mathf.Clamp01(1f - _clock.SecondsRemaining / length) : 0f;
         }
 
+        // Crazy lots: every free queue slot is filled, one car per pacing spacing, whatever the director says.
+        private void TopUpQueue(float elapsedMinutes)
+        {
+            while (_shiftOpen && _pacing.Due(elapsedMinutes) && _slots.ChooseForSpawn() != ArrivalGate.NoSlot)
+            {
+                if (!TrySpawn(_roller.Roll(ShiftProgress()), out _)) return;
+                _pacing.Spawned(elapsedMinutes);
+            }
+        }
+
         private void OnShiftTick(ShiftTick e)
         {
+            if (_pacing.TopsUpQueue) { TopUpQueue(e.ElapsedMinutes); return; }
             if (DirectorOn) { TrySpawnPending(); return; }
             _hasPending = false;
             if (e.ElapsedMinutes < _nextArrivalMinute) return;
