@@ -994,3 +994,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Core/Contracts/PedestrianHitRows.cs, Assets/_Project/Tests/EditMode/Cars/PedestrianSlowRuleTests.cs, docs/changelogs/cars.md
 Why: Refs #133. A pedestrian hit now slows the car by 35% by default (was 15%), still tunable in the F2 rows; floor stays 30% of top speed.
 Tests: EditMode suite passed after merge (exit 0). Not played; not in beta yet.
+
+## lead: fix BayEntryTests for the lowered bottom row [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Tests/PlayMode/BayEntryTests.cs, docs/changelogs/lead.md
+Why: Refs #131. The PlayMode gap-between-rows test still expected 6 units; it now expects 6 plus LotConfig.BottomRowDrop.
+Tests: Full PlayMode suite 77 of 77 passed (it was 76 of 77 before the fix); EditMode passed earlier on the same code.
