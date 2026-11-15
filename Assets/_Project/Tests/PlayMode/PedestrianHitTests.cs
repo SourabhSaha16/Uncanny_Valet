@@ -134,7 +134,7 @@ namespace UncannyValet.Tests.PlayMode
             _walkers.Add(go);
             var walker = go.AddComponent<PedestrianWalker>();
             walker.Create(_pedestrians);
-            if (patron) walker.Brain.BeginPatron(); else walker.Brain.BeginAmbient(5f);
+            if (patron) walker.Brain.BeginPatron(); else walker.Brain.BeginAmbient(5f, 5f);
             walker.Walk(new List<Vector2> { position, position + Vector2.up * 0.01f }); // solid, and standing still (speed 0)
             return walker;
         }

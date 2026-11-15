@@ -45,8 +45,11 @@ namespace UncannyValet.Pedestrians
         /// <summary>The curb standing spot of a patron.</summary>
         public int Slot { get; set; }
 
-        /// <summary>Which road route an ambient person walks (in or out).</summary>
+        /// <summary>Which road route (sidewalk and crosswalk path) an ambient person roams along.</summary>
         public int RouteIndex { get; set; }
+
+        /// <summary>Where on that route the roaming person is (or is walking to): 0 is the road side, 1 is the diner door.</summary>
+        public float RoamFraction { get; set; }
 
         /// <summary>How far along the first walk an ambient person starts (opening of the night only).</summary>
         public float StartFraction { get; set; }

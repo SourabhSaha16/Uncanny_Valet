@@ -8,8 +8,8 @@ using UnityEngine;
 namespace UncannyValet.Pedestrians
 {
     /// <summary>
-    /// Owns the pooled people. Ambient people walk in from the road side, cross at the crosswalks, vanish into the
-    /// diner, come out again and walk away; patrons (see <see cref="PatronWalkers"/>) follow their tickets. Walking
+    /// Owns the pooled people. Ambient people appear at the road side and roam the sidewalks and crosswalks; after a random
+    /// interval each decides to walk to the diner, vanish inside, come out again and roam on; patrons (see <see cref="PatronWalkers"/>) follow their tickets. Walking
     /// people are solid (see <see cref="PedestrianWalker"/>). Created once by <see cref="Begin"/>; nothing is allocated per frame.
     /// </summary>
     [DisallowMultipleComponent]
@@ -18,7 +18,11 @@ namespace UncannyValet.Pedestrians
         [SerializeField] private PedestrianConfig _config;
 
         private readonly List<PedestrianWalker> _ambient = new List<PedestrianWalker>(10);
+        private const int WanderAttempts = 8;
+        private const int WanderSeed = 1009;
+
         private WalkerRouter _router;
+        private WanderPicker _wander;
         private IPedestrianPaths _paths;
         private ITuning _tuning;
         private IEventBus _bus;
@@ -28,6 +32,9 @@ namespace UncannyValet.Pedestrians
 
         /// <summary>The sprite sets and sizes the people are drawn with; null when not wired.</summary>
         public PedestrianConfig Config => _config;
+
+        /// <summary>Rectangles roaming people never walk into or across; fill it with the parking spot areas.</summary>
+        public KeepOutAreas KeepOut { get; } = new KeepOutAreas();
 
         /// <summary>How many ambient pedestrians exist.</summary>
         public int Count => _ambient.Count;
@@ -47,7 +54,8 @@ namespace UncannyValet.Pedestrians
             _tuning = Services.Get<ITuning>();
             _bus = Services.Get<IEventBus>();
             _paths = Services.Get<IPedestrianPaths>();
-            _router = new WalkerRouter(_paths, Services.Get<ICarFactory>(), _tuning);
+            _wander = new WanderPicker(_config.RoamMinLegShare, WanderAttempts, KeepOut, WanderSeed);
+            _router = new WalkerRouter(_paths, Services.Get<ICarFactory>(), _tuning, _wander);
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
             var poolSize = PatronPoolSizeFor();
             var pool = new List<PedestrianWalker>(poolSize);
@@ -98,24 +106,48 @@ namespace UncannyValet.Pedestrians
             {
                 if (allowed) BeginAmbientWalk(walker, 0f);
             }
-            else if (walker.Brain.Phase != walker.Applied) _router.Apply(walker);
+            else if (walker.Brain.Phase != walker.Applied) ApplyChange(walker);
+        }
+
+        // Coming out of the diner: roam again from the door along a freshly chosen route.
+        private void ApplyChange(PedestrianWalker walker)
+        {
+            if (walker.Applied == PedestrianPhase.Inside && walker.Brain.Phase == PedestrianPhase.Roaming)
+            {
+                walker.RouteIndex = NextRoute();
+                walker.RoamFraction = 1f;
+            }
+            _router.Apply(walker);
         }
 
         private void BeginAmbientWalk(PedestrianWalker walker, float startFraction)
         {
             walker.RouteIndex = NextRoute();
+            walker.RoamFraction = 0f;
             walker.StartFraction = startFraction;
-            walker.Brain.BeginAmbient(Between(_config.InsideSeconds));
+            walker.Brain.BeginAmbient(Between(_config.InsideSeconds), RoamDraw());
             _router.Apply(walker);
         }
 
         private void OnRouteFinished(PedestrianWalker walker)
         {
-            if (walker.Brain.IsPatron) { _patrons?.OnRouteFinished(walker); return; }
-            walker.Brain.ReachedRouteEnd();
-            if (walker.Brain.Phase == PedestrianPhase.Leaving) walker.RouteIndex = NextRoute();
-            if (walker.Brain.Phase == PedestrianPhase.Idle) walker.Brain.WaitToSpawn(Between(_config.RespawnSeconds));
+            var brain = walker.Brain;
+            if (brain.IsPatron) { _patrons?.OnRouteFinished(walker); return; }
+            if (brain.Phase == PedestrianPhase.Roaming) FinishRoamLeg(walker);
+            else
+            {
+                if (brain.Phase == PedestrianPhase.Arriving) brain.PlanVisit(Between(_config.InsideSeconds), RoamDraw());
+                brain.ReachedRouteEnd();
+                if (brain.Phase == PedestrianPhase.Idle) brain.WaitToSpawn(Between(_config.RespawnSeconds));
+            }
             _router.Apply(walker);
+        }
+
+        // A roam leg ended: go to the door when the decision timer ran out, vanish if the F2 slider switched this person off, else roam on.
+        private void FinishRoamLeg(PedestrianWalker walker)
+        {
+            if (_ambient.IndexOf(walker) >= ActiveAmbient()) walker.Brain.WaitToSpawn(Between(_config.RespawnSeconds));
+            else if (walker.Brain.EnterDue) walker.Brain.GoToDoor();
         }
 
         private void OnBumped(PedestrianWalker walker, float strength)
@@ -149,6 +181,8 @@ namespace UncannyValet.Pedestrians
         }
 
         private int NextRoute() => _paths.RoadRouteCount <= 0 ? 0 : (int)(PedestrianPlan.Hash01(++_serial) * _paths.RoadRouteCount) % _paths.RoadRouteCount;
+
+        private float RoamDraw() => EnterInterval.Next(_config.RoamSeconds, PedestrianPlan.Hash01(++_serial));
 
         private float Between(Vector2 range) => Mathf.Lerp(range.x, range.y, PedestrianPlan.Hash01(++_serial));
     }

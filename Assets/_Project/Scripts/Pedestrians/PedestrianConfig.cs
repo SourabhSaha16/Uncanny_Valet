@@ -27,6 +27,10 @@ namespace UncannyValet.Pedestrians
         [Header("Ambient flow")]
         [SerializeField, Tooltip("Seconds an ambient person stays in the diner (min, max).")]
         private Vector2 _insideSeconds = new Vector2(5f, 14f);
+        [SerializeField, Tooltip("Seconds an ambient person roams the sidewalks and crosswalks before deciding to walk to the diner door (min, max; each decision draws a new value, so people do not all head in together).")]
+        private Vector2 _roamSeconds = new Vector2(10f, 40f);
+        [SerializeField, Range(0.05f, 0.8f), Tooltip("Shortest roaming leg as a share of the route, so people do not shuffle on the spot.")]
+        private float _roamMinLegShare = 0.2f;
         [SerializeField, Tooltip("Seconds an ambient person stays out of sight before appearing at the road side again (min, max).")]
         private Vector2 _respawnSeconds = new Vector2(1f, 7f);
         [SerializeField, Range(0f, 0.9f), Tooltip("At the start of the night an ambient person may begin up to this share of the way along their walk, so the street is not empty.")]
@@ -96,6 +100,8 @@ namespace UncannyValet.Pedestrians
         public int SortingOrder => _sortingOrder;
         public Vector2 InsideSeconds => _insideSeconds;
         public Vector2 RespawnSeconds => _respawnSeconds;
+        public Vector2 RoamSeconds => new Vector2(Mathf.Max(0f, _roamSeconds.x), Mathf.Max(0f, _roamSeconds.y));
+        public float RoamMinLegShare => _roamMinLegShare;
         public float OpeningProgressMax => _openingProgressMax;
         public int PatronPoolSize => _patronPoolSize;
         public float PatronSpeed => _patronSpeed;
