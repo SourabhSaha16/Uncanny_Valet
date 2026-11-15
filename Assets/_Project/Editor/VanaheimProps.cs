@@ -9,8 +9,8 @@ namespace UncannyValet.EditorTools
 {
     /// <summary>
     /// Where the props of the two Vanaheim lots stand (task 107), computed from the lot's geometry: the barn on the building, a wheat field,
-    /// fences and hay bales above the bays of Freyr's Harvest Barn; the barn, feast stalls and banners above the bays of the storm feast; and
-    /// a waterwheel trough on every wash trough. All of it stays off the bays, the aisle crossing, the queue and the curb.
+    /// fences and hay bales above the bays of Freyr's Harvest Barn; the barn, feast stalls and banners above the bays of the storm feast.
+    /// All of it stays off the bays, the aisle crossing, the queue and the curb.
     /// </summary>
     internal static class VanaheimProps
     {
@@ -45,10 +45,9 @@ namespace UncannyValet.EditorTools
             var fence = Load(VanaheimArt.FencePath);
             for (var i = 0; i < FenceCount; i++) list.Add(new PropPlacement(fence, new Vector2(x0 + 1f + i * FenceSpacing, top + FenceY)));
             var hay = Load(VanaheimArt.HayPath);
-            var trough = g.Troughs[0];
-            list.Add(new PropPlacement(hay, new Vector2(trough.center.x - 0.5f, top + HayY)));
-            list.Add(new PropPlacement(hay, new Vector2(trough.center.x + 0.6f, top + HayY)));
-            AddTroughs(list, g);
+            var bay = g.WashBays[0];
+            list.Add(new PropPlacement(hay, new Vector2(bay.center.x - 0.5f, top + HayY)));
+            list.Add(new PropPlacement(hay, new Vector2(bay.center.x + 0.6f, top + HayY)));
             return list;
         }
 
@@ -61,19 +60,12 @@ namespace UncannyValet.EditorTools
             var top = g.Curb.yMax;
             for (var i = 0; i < StallCount; i++) list.Add(new PropPlacement(stall, new Vector2(x0 + i * StallSpacing, top + StallY)));
             for (var i = 0; i < BannerCount; i++) list.Add(new PropPlacement(banner, new Vector2(x0 + BannerOffset + i * StallSpacing, top + BannerY)));
-            AddTroughs(list, g);
             return list;
         }
 
         // The barn stands on the re-skinned building, facing the lot.
         private static PropPlacement Barn(LotGeometry g)
             => new PropPlacement(Load(VanaheimArt.BarnPath), new Vector2(g.Diner.center.x, g.Curb.yMax + BarnAboveCurb), BarnOrder);
-
-        private static void AddTroughs(List<PropPlacement> list, LotGeometry g)
-        {
-            var trough = Load(VanaheimArt.TroughPath);
-            foreach (var rect in g.Troughs) list.Add(new PropPlacement(trough, rect.center));
-        }
 
         private static PropRecipe Load(string path) => AssetDatabase.LoadAssetAtPath<PropRecipe>(path);
     }

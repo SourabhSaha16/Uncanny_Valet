@@ -15,7 +15,7 @@ namespace UncannyValet.Lot
         private float _spotGap = 0.6f;
         [SerializeField, Range(3f, 9f), Tooltip("Height of the drive aisle between the two bay rows (also copied into CarHandlingConfig at setup).")]
         private float _aisleWidth = 6f;
-        [SerializeField, Min(0f), Tooltip("Extra distance the bottom bay row (and the second wash trough) sits below the top row, added to the aisle height. The crosswalk stays centred in the wider aisle and the lot frame grows with it. 0 gives the old layout.")]
+        [SerializeField, Min(0f), Tooltip("Extra distance the bottom bay row (and the second wash bay) sits below the top row, added to the aisle height. The crosswalk stays centred in the wider aisle and the lot frame grows with it. 0 gives the old layout.")]
         private float _bottomRowDrop = 1.5f;
 
         [Header("Curb")]

@@ -6,8 +6,8 @@ using UncannyValet.Director;
 
 namespace UncannyValet.Tests.Director
 {
-    /// <summary>A lot with several wash troughs reports one wash slot per trough to the director, and cars in different troughs hold different slots.</summary>
-    public sealed class LotStateTroughTests
+    /// <summary>A lot with several wash bays reports one wash slot per wash bay to the director, and cars in different wash bays hold different slots.</summary>
+    public sealed class LotStateWashBayTests
     {
         private const int EightBays = 8;
         private EventBus _bus;
@@ -32,10 +32,10 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void ThreeTroughs_AreThreeWashSlots_AndNoChargingSlot() => Assert.AreEqual(3, _tracker.Capture().Slots.Count);
+        public void ThreeWashBays_AreThreeWashSlots_AndNoChargingSlot() => Assert.AreEqual(3, _tracker.Capture().Slots.Count);
 
         [Test]
-        public void OneTrough_IsOneWashSlot()
+        public void OneWashBay_IsOneWashSlot()
         {
             _tracker.Dispose();
             _tracker = new LotStateTracker(_bus, new FakeClock(), new TuningStore(_bus), ModifierTestKit.Catalog(), EightBays, 0, true, 1);
@@ -44,7 +44,7 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void TwoMuddyCars_InTwoTroughs_HoldTwoSlots()
+        public void TwoMuddyCars_InTwoWashBays_HoldTwoSlots()
         {
             foreach (var n in new[] { 1, 2 })
             {
@@ -64,7 +64,7 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void WithoutAWash_TheTroughCountIsIgnored()
+        public void WithoutAWash_TheWashBayCountIsIgnored()
         {
             _tracker.Dispose();
             _tracker = new LotStateTracker(_bus, new FakeClock(), new TuningStore(_bus), ModifierTestKit.Catalog(), EightBays, 0, false, 3);

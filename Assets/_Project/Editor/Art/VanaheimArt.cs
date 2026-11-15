@@ -5,7 +5,7 @@ using static UncannyValet.EditorTools.Art.RecipeKit;
 
 namespace UncannyValet.EditorTools.Art
 {
-    /// <summary>The Vanaheim art assets: golds, barn reds, earth browns and storm greys; barn, wheat tiles, hay bales, fences, the waterwheel trough, feast banners and stalls, sunny and stormy lighting.</summary>
+    /// <summary>The Vanaheim art assets: golds, barn reds, earth browns and storm greys; barn, wheat tiles, hay bales, fences, feast banners and stalls, sunny and stormy lighting.</summary>
     internal static class VanaheimArt
     {
         public const string Folder = ArtAssets.Root + "Vanaheim/";
@@ -14,7 +14,6 @@ namespace UncannyValet.EditorTools.Art
         public const string WheatPath = Folder + "VanaheimWheat.asset";
         public const string HayPath = Folder + "VanaheimHayBale.asset";
         public const string FencePath = Folder + "VanaheimFence.asset";
-        public const string TroughPath = Folder + "VanaheimTrough.asset";
         public const string BannerPath = Folder + "VanaheimBanner.asset";
         public const string StallPath = Folder + "VanaheimStall.asset";
         public const string SunnyPath = Folder + "VanaheimSunnyAfternoon.asset";
@@ -31,7 +30,6 @@ namespace UncannyValet.EditorTools.Art
             ArtAssets.Ensure(WheatPath, Wheat);
             ArtAssets.Ensure(HayPath, HayBale);
             ArtAssets.Ensure(FencePath, Fence);
-            ArtAssets.Ensure(TroughPath, Trough);
             ArtAssets.Ensure(BannerPath, Banner);
             ArtAssets.Ensure(StallPath, Stall);
             ArtAssets.Ensure(SunnyPath, () => LightingPreset.Create("VanaheimSunnyAfternoon", Hex("#ffe2a8"), 1f, new PointLightSpec[0]));
@@ -89,25 +87,6 @@ namespace UncannyValet.EditorTools.Art
                 Rect(2, 2, 4, 26, PaletteSlot.Wood), Rect(30, 2, 4, 26, PaletteSlot.Wood), Rect(58, 2, 4, 26, PaletteSlot.Wood),
             };
             return PropRecipe.Create("VanaheimFence", new Vector2Int(2, 1), new[] { PropLayer.Create("Fence", shapes) }, true, new Vector2(2f, 0.5f));
-        }
-
-        // A wooden basin of water beside a slowly turning wooden waterwheel.
-        private static PropRecipe Trough()
-        {
-            var basin = new[]
-            {
-                Rect(4, 0, 84, 40, PaletteSlot.Wood), Rect(10, 26, 72, 10, PaletteSlot.Sky), Rect(10, 40, 4, 12, PaletteSlot.Wood), Rect(78, 40, 4, 12, PaletteSlot.Wood),
-            };
-            var wheel = new List<PropShape>();
-            var hub = new Vector2Int(92, 56);
-            Wheel(wheel, hub, 30, PaletteSlot.Wood, PaletteSlot.Metal);
-            for (var i = 0; i < 8; i++) wheel.Add(Rect(OnCircle(hub, 30, i * 45f).x - 3, OnCircle(hub, 30, i * 45f).y - 3, 6, 6, PaletteSlot.Wood));
-            var layers = new[]
-            {
-                PropLayer.Create("Basin", basin),
-                PropLayer.Create("Wheel", wheel.ToArray(), false, false, PropAnimation.Spin, 18f, hub, 1),
-            };
-            return PropRecipe.Create("VanaheimTrough", new Vector2Int(4, 3), layers);
         }
 
         private static PropRecipe Banner()

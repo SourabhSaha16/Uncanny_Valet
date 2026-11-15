@@ -13,7 +13,7 @@ using UnityEngine;
 namespace UncannyValet.EditorTools
 {
     /// <summary>
-    /// Fills in the two Vanaheim lots (task 107) once: closed services plus the wash troughs (one beside the bay block in Freyr's Harvest Barn,
+    /// Fills in the two Vanaheim lots (task 107) once: closed services plus the wash bays (one beside the bay block in Freyr's Harvest Barn,
     /// three at the far end of the widened storm feast lot), the Muddy shares, the crowd, the barn sign and the dirt ground, the props and the
     /// lantern lights, the mud patches of the crazy lot and the gag lines. A lot that already has gag lines is left alone, so the owner's edits
     /// survive a rebuild.
@@ -28,9 +28,9 @@ namespace UncannyValet.EditorTools
         private const int CrazyPedestrians = 8;
         private const float TrainingMuddy = 0.3f;
         private const float CrazyMuddy = 0.6f;
-        // The lot is widened by this much; the troughs stand this far from the bay block (14), and the strip keeps clear of the last trough.
+        // The lot is widened by this much; the wash bays stand this far from the bay block (14), and the strip keeps clear of the last wash bay.
         private const float CrazyExtension = 13.5f;
-        private const float CrazyTroughDistance = 14f;
+        private const float CrazyWashBayDistance = 14f;
         private const string BuildingSign = "BARN";
         private static readonly Color TrainingGround = new Color(0.63f, 0.48f, 0.29f);
         private static readonly Color CrazyGround = new Color(0.4f, 0.3f, 0.21f);
@@ -55,7 +55,7 @@ namespace UncannyValet.EditorTools
                 AssetDatabase.CreateAsset(makeGag(), gagPath);
                 gag = AssetDatabase.LoadAssetAtPath<GagLineAsset>(gagPath);
             }
-            var options = crazy ? new LotLayoutOptions(true, 0f, 3, CrazyExtension, CrazyTroughDistance) : new LotLayoutOptions(true, 0f, 1);
+            var options = crazy ? new LotLayoutOptions(true, 0f, 3, CrazyExtension, CrazyWashBayDistance) : new LotLayoutOptions(true, 0f, 1);
             var geometry = new LotGeometry(config, lot.QueueSlots, options);
             var so = new SerializedObject(lot);
             so.FindProperty("_gagLines").objectReferenceValue = gag;
@@ -111,7 +111,7 @@ namespace UncannyValet.EditorTools
             list.GetArrayElementAtIndex(0).objectReferenceValue = mud;
         }
 
-        // Hay bales, fences, stalls and banners are decor (only the barn is solid; the trough is a wash slot a car drives into).
+        // Hay bales, fences, stalls and banners are decor (only the barn is solid; the wash bay is a wash slot a car drives into).
         private static void SoftenDecor()
         {
             foreach (var path in DecorPaths)

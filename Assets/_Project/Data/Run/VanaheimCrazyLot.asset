@@ -82,15 +82,6 @@ MonoBehaviour:
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
     _position: {x: 19.1, y: 4.6}
     _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
-    _position: {x: 26, y: 0.29999995}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
-    _position: {x: 26, y: -11.6}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
-    _position: {x: 26, y: -17}
-    _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: f578e7b872709cf4d9fcf846f9468968, type: 2}
   _layoutOptions:
     _servicesClosed: 1

@@ -50,7 +50,7 @@ namespace UncannyValet.Tests.PlayMode
             var spinner = animator.transform.Find("MidgardFerrisWheel");
             for (var i = 0; i < WarmUpFrames; i++) yield return null;
             if (spinner != null) Assert.AreNotEqual(0f, spinner.Find("Wheel").localRotation.eulerAngles.z, "the wheel turns");
-            Assert.Greater(animator.Count, 0);
+            if (spinner != null) Assert.Greater(animator.Count, 0, "Midgard has animated props; Vanaheim has none");
         }
 
         [UnityTest]
