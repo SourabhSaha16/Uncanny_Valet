@@ -988,3 +988,9 @@ Date: 2026-11-14
 Files: Scripts/Patrons (IArrivalPacing, QueueTopUpPacing, DirectorArrivalPacing, ArrivalPacings, PatronSpawner, PatronConfig); Scripts/Lot (LotConfig, LotGeometry, TroughLayout); Data/Lot/LotConfig.asset; Data/Run and Data/Art Vanaheim/Midgard lot assets; regenerated scenes Bootstrap, Lot_MidgardCrazy, Lot_VanaheimCrazy, Lot_VanaheimTraining; new EditMode tests ArrivalPacingTests and BottomRowDropTests; docs/changelogs/patrons.md, lot.md
 Why: Refs #132 and #131. Crazy lots keep the pickup queue topped up (Training and Finale unchanged); the bottom row of spots sits 1.5 units lower on every lot (tunable LotConfig.BottomRowDrop).
 Tests: EditMode suite passed on the merged tip (exit 0); the lot agent also ran RunBatch (exit 0) and CameraFramingPlayModeTests (4 of 4). Not played; MidgardNight light string may be about 1.5 units off (cosmetic). Not in beta yet.
+
+## lead: merge agent/ped-slowdown [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PedestrianHitRows.cs, Assets/_Project/Tests/EditMode/Cars/PedestrianSlowRuleTests.cs, docs/changelogs/cars.md
+Why: Refs #133. A pedestrian hit now slows the car by 35% by default (was 15%), still tunable in the F2 rows; floor stays 30% of top speed.
+Tests: EditMode suite passed after merge (exit 0). Not played; not in beta yet.
