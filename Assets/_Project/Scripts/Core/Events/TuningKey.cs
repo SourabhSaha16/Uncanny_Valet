@@ -433,5 +433,7 @@ namespace UncannyValet.Core.Events
         WorldSoundVolume,
         /// <summary>Per-lot switch: 1 when pedestrians may walk any direct route to the diner (crazy lots), 0 when they keep to the crosswalks.</summary>
         PedestrianFreeRoutes,
+        /// <summary>Blessings a slight curse takes off when the driven car hits any other pedestrian (every lot).</summary>
+        PedestrianSlightCurseAmount,
     }
 }

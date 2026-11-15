@@ -107,25 +107,23 @@ namespace UncannyValet.Tests.Economy
         }
 
         [Test]
-        public void RealBlessings_TrainingLotNeverCurses()
+        public void RealBlessings_TrainingLotGivesOnlyTheSlightCurseForAPatron()
         {
             using (var w = new World(false))
             {
                 w.Earn(40);
-                var before = w.Blessings.Blessings;
                 w.Bus.Publish(Hit(7));
-                Assert.AreEqual(before, w.Blessings.Blessings);
-                Assert.AreEqual(0, w.Blessings.Curses);
+                Assert.AreEqual(38, w.Blessings.Blessings);
+                Assert.AreEqual(1, w.Blessings.Curses);
             }
         }
 
         [Test]
-        public void RealBlessings_AmbientWalkerAndGameCarsNeverCurse()
+        public void RealBlessings_GameCarsNeverCurse()
         {
             using (var w = new World(true))
             {
                 w.Earn(40);
-                w.Bus.Publish(Hit(7, isPatron: false));
                 w.Bus.Publish(Hit(8, byPlayer: false));
                 Assert.AreEqual(0, w.Blessings.Curses);
             }

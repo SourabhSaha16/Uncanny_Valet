@@ -56,3 +56,9 @@ Date: 2026-11-13
 Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
 Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
 Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
+
+## economy-night: slight curse for hitting any pedestrian [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Economy/SlightCurseRule.cs, PedestrianCurseRule.cs (Covers), ShiftBlessings.cs; Core/Events/TuningKey.cs (appended PedestrianSlightCurseAmount); Core/Contracts/PedestrianHitRows.cs (row, default 2, seed); Tests/EditMode/Economy/SlightCurseTests.cs, PedestrianCurseTests.cs
+Why: Issue #138. The driven car hitting any walker costs a slight curse (2 blessings) on every lot, ignoring the lot curse switch; the full patron curse is unchanged and wins (one curse per hit, no stacking).
+Tests: SlightCurseTests added, PedestrianCurseTests updated; EditMode 1850 passed, 0 failed.
