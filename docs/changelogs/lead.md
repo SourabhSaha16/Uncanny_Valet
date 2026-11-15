@@ -1012,3 +1012,9 @@ Date: 2026-11-14
 Files: Scripts/UI/Speech (SpeechBubbleSettings, SpeechBubbleTracker), Scripts/UI/Hud/PlayingHud.cs, Scripts/UI/Status (CarStatusTable, CarStatusResolver), Scripts/Economy (SlightCurseRule, PedestrianCurseRule, ShiftBlessings), Scripts/Core (TuningKey append PedestrianSlightCurseAmount, EmotionRows, PedestrianHitRows), EditMode tests, docs/changelogs/integration.md, economy-night.md
 Why: Refs #134 #135 #138. Speech bubbles switched off behind one setting (default off); status label reads 'No blessing'; hitting any pedestrian with the valet's car costs a slight curse (2 blessings, tunable) on every lot, the patron curse (5) unchanged and never stacked with it.
 Tests: EditMode passed after each merge (exit 0). Not played; not in beta yet.
+
+## lead: merge agent/perfect-w2-powerbar [Claude]
+Date: 2026-11-14
+Files: Scripts/Run (LotDefinition, LotGoal), Scripts/Core/Contracts/ILotGoal.cs (default member ShowPowerBar), Scripts/Bootstrap/RunBootstrap.cs, Scripts/UI/Hud (PowerBarTracker, PlayingHud), Data/Run/MidgardCrazyLot.asset, MidgardTrainingLot.asset, EditMode tests, docs/changelogs/lot.md
+Why: Refs #137 #136. The power bar is hidden on the Midgard lots by a per-lot flag (ShowPowerBar). Perfect Park already runs on every lot including Vanaheim (18 power per perfect park); no gate existed, so #136 needed no code change.
+Tests: EditMode passed after merge (exit 0); the agent also ran PlayMode 77 of 77 and RunBatch. Not played; not in beta yet.
