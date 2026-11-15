@@ -145,3 +145,9 @@ Date: 2026-11-14
 Files: Core/Events/PickupEvents.cs (CarLeftPickup, appended), Patrons/StayStartRule.cs, PickupLeaveWatcher.cs, StayStarter.cs, QueueAdvancer.cs, Tests/EditMode/Patrons/StayStartRuleTests.cs, PickupLeaveWatcherTests.cs, StayStartTests.cs (other tests that publish PatronEnteredDiner now also publish CarLeftPickup)
 Why: Issue #139. The stay clock starts at the later of PatronEnteredDiner and the valet driving the car out of the pickup spot (slot 0); neither alone starts it, and there is still no fallback timer.
 Tests: StayStartRuleTests, PickupLeaveWatcherTests, StayStartTests (both orders, leak on shift end, unknown car); EditMode 1858 passed, 0 failed.
+
+## patrons: queue advances a car that stopped short, retries drives [Claude]
+Date: 2026-11-14
+Files: Patrons/AdvanceTracker.cs (new), QueueAdvancer.cs, IArrivalScan.cs, ArrivalSlotScanner.cs, PickupQueueSettings.cs, Cars/CarAutoDrive.cs (advance heads straight at the slot), Tests/EditMode/Patrons/QueueAdvancerTests.cs, ArrivalPacingTests.cs, QueueSlotAllocatorTests.cs, Tests/PlayMode/PickupQueuePlayModeTests.cs
+Why: Issue #140. A queued car that stopped a little short had its nose in the pickup spot clear box, so the scan counted the car itself as the blocker and the queue froze. The scan now ignores the car asking to move up, slot tolerance is 2.2, a drive that never finishes is offered again after a deadline, and the advance drives straight at the slot centre (snapping onto it).
+Tests: new EditMode (stopped short, near-slot, interrupted retry) and PlayMode full-queue test; EditMode 1878 passed, PlayMode 78 passed.

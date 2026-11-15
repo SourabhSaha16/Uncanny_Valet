@@ -65,7 +65,8 @@ namespace UncannyValet.Cars
             if (IsBusy) return false;
             Cache(definition);
             _target = target;
-            _heading = transform.up;
+            var toTarget = target - _body.position;
+            _heading = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : (Vector2)transform.up;
             _advanceSpeed = speed;
             SetAutoDriving(true, true);
             _mode = Mode.Advancing;

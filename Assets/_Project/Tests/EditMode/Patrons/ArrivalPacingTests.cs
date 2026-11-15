@@ -30,6 +30,7 @@ namespace UncannyValet.Tests.Patrons
         {
             public readonly List<bool> Occupied = new List<bool> { false, false, false, false };
             public IReadOnlyList<bool> Scan(int maxSlots) => Occupied;
+            public bool IsTaken(int slot, CarId except) => Occupied[slot];
         }
 
         private EventBus _bus;

@@ -109,6 +109,26 @@ namespace UncannyValet.Tests.PlayMode
             Assert.Less(Vector2.Distance(second.GetComponent<Rigidbody2D>().position, _layout.ArrivalSlots[0]), 0.1f);
         }
 
+        [UnityTest]
+        public IEnumerator AFullQueueMovesUpIntoTheirSlotsWhenThePickupCarIsDrivenAway_EvenOneThatStoppedShort()
+        {
+            var cars = new CarDriver[4];
+            for (var i = 0; i < 4; i++) cars[i] = Arrive(i + 1, i);
+            // The front queued car stopped a little short of its slot: its nose reaches into the pickup spot's box.
+            cars[1].GetComponent<Rigidbody2D>().position = _layout.ArrivalSlots[1] + new Vector2(0f, 0.9f);
+            cars[1].transform.position = cars[1].GetComponent<Rigidbody2D>().position;
+            yield return Run(0.5f);
+            cars[0].SetDriver(true);
+            cars[0].GetComponent<Rigidbody2D>().position = _layout.ArrivalSlots[0] + new Vector2(14f, 0f);
+            yield return Run(8f);
+            for (var i = 1; i < 4; i++)
+            {
+                var at = cars[i].GetComponent<Rigidbody2D>().position;
+                Assert.Less(Vector2.Distance(at, _layout.ArrivalSlots[i - 1]), 0.1f, "car " + (i + 1) + " ends in slot " + (i - 1));
+                Assert.IsFalse(cars[i].GetComponent<CarAutoDrive>().IsBusy, "car " + (i + 1) + " stopped driving");
+            }
+        }
+
         private static GameObject Build<T>(string name, string field, Object value, out T component) where T : Component
         {
             var go = new GameObject(name);

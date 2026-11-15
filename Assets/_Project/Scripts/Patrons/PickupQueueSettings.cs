@@ -19,12 +19,18 @@ namespace UncannyValet.Patrons
         [SerializeField, Tooltip("Width and length of the box that must be free of cars before the car behind drives into a slot; a little smaller than a car.")]
         private Vector2 _advanceClearSize = new Vector2(2f, 4f);
         [SerializeField, Min(0.2f), Tooltip("How far from a slot centre a standing car still counts as being in that slot.")]
-        private float _slotTolerance = 1.5f;
+        private float _slotTolerance = 2.2f;
+        [SerializeField, Min(1f), Tooltip("A queue drive still unfinished after this many times its expected time counts as interrupted and is offered again.")]
+        private float _advanceTimeoutScale = 2f;
+        [SerializeField, Min(0f), Tooltip("Seconds added to a queue drive's expected time before it counts as interrupted.")]
+        private float _advanceTimeoutPad = 1f;
 
         public int MaxQueuedCars => _maxQueuedCars;
         public float ApproachRange => _approachRange;
         public float AdvanceSpeed => _advanceSpeed;
         public Vector2 AdvanceClearSize => _advanceClearSize;
         public float SlotTolerance => _slotTolerance;
+        public float AdvanceTimeoutScale => _advanceTimeoutScale;
+        public float AdvanceTimeoutPad => _advanceTimeoutPad;
     }
 }
