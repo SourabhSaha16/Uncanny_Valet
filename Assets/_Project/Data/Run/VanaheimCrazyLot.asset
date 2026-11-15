@@ -39,8 +39,8 @@ MonoBehaviour:
   _modifiers:
   - {fileID: 11400000, guid: ac3d58131c5fff34bb2506f29fed5965, type: 2}
   _blessingThreshold: 300
-  _freePedestrianRoutes: 1
   _pedestrianCurses: 0
+  _freePedestrianRoutes: 1
   _grant:
     _power: 2
     _level: 1
@@ -86,10 +86,10 @@ MonoBehaviour:
     _position: {x: 26, y: 0.29999995}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
-    _position: {x: 26, y: -10.1}
+    _position: {x: 26, y: -11.6}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 6e452bf5b38b2034394174f75bed1b53, type: 2}
-    _position: {x: 26, y: -15.500001}
+    _position: {x: 26, y: -17}
     _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: f578e7b872709cf4d9fcf846f9468968, type: 2}
   _layoutOptions:

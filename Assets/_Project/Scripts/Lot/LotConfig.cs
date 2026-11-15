@@ -15,6 +15,8 @@ namespace UncannyValet.Lot
         private float _spotGap = 0.6f;
         [SerializeField, Range(3f, 9f), Tooltip("Height of the drive aisle between the two bay rows (also copied into CarHandlingConfig at setup).")]
         private float _aisleWidth = 6f;
+        [SerializeField, Min(0f), Tooltip("Extra distance the bottom bay row (and the second wash trough) sits below the top row, added to the aisle height. The crosswalk stays centred in the wider aisle and the lot frame grows with it. 0 gives the old layout.")]
+        private float _bottomRowDrop = 1.5f;
 
         [Header("Curb")]
         [SerializeField, Tooltip("Centre of the curb zone; it sits right of the diner's main door with an open gap between (SiteLayout.CurbGap). The top bay row is aligned with the curb's top edge.")]
@@ -132,6 +134,7 @@ namespace UncannyValet.Lot
         public Vector2 SpotSize => _spotSize;
         public float SpotGap => _spotGap;
         public float AisleWidth => _aisleWidth;
+        public float BottomRowDrop => _bottomRowDrop;
         public Vector2 CurbPosition => _curbPosition;
         public Vector2 CurbSize => _curbSize;
         public float CurbToSpotsGap => _curbToSpotsGap;

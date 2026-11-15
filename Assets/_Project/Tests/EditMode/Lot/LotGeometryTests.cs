@@ -18,7 +18,10 @@ namespace UncannyValet.Tests.Lot
         }
 
         [TearDown]
-        public void TearDown() => Object.DestroyImmediate(_config);
+        public void TearDown()
+        {
+            Object.DestroyImmediate(_config);
+        }
 
         private Dictionary<string, Rect> AllRects()
         {
@@ -39,10 +42,10 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void TheDriveAisleIsSixUnitsTall()
+        public void TheDriveAisleIsSixUnitsTallPlusTheBottomRowDrop()
         {
             var gap = _geo.Spots[0].yMin - _geo.ChargingSpots[0].yMax;
-            Assert.AreEqual(6f, gap, 0.001f);
+            Assert.AreEqual(6f + _config.BottomRowDrop, gap, 0.001f, "the aisle plus the bottom row drop");
             Assert.AreEqual(6f, _config.AisleWidth, 0.001f);
         }
 

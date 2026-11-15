@@ -72,14 +72,14 @@ namespace UncannyValet.Lot
             Spots = Cells(c, spotsLeft, HasWash ? BayPlan.Regular : BayPlan.RegularWithoutServices);
             ChargingSpots = HasWash ? Cells(c, spotsLeft, BayPlan.Charging) : new Rect[0];
             Wash = HasWash ? Cells(c, spotsLeft, new[] { BayPlan.Wash })[0] : default;
-            AisleY = Curb.yMax - c.SpotSize.y - c.AisleWidth * 0.5f;
+            AisleY = Curb.yMax - c.SpotSize.y - (c.AisleWidth + c.BottomRowDrop) * 0.5f;
             QueueSlots = QueueSlotsFor(c, queueSlots > 0 ? queueSlots : c.QueueSlotCount);
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
 
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
             Troughs = TroughLayout.Place(c, options, Curb.yMax, baysRight);
             WashStations = HasWash ? new[] { Wash } : Troughs;
-            var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - c.AisleWidth * (BayPlan.Rows - 1);
+            var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - (c.AisleWidth + c.BottomRowDrop) * (BayPlan.Rows - 1);
             var lowest = LowestEdge(Troughs, bottomRow);
             var sideY = Curb.yMax + s.SideDoorRise;
             var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
@@ -121,7 +121,7 @@ namespace UncannyValet.Lot
             for (var i = 0; i < cells.Length; i++)
             {
                 var x = left + c.SpotSize.x * 0.5f + plan[i].x * (c.SpotSize.x + c.SpotGap);
-                var y = Curb.yMax - c.SpotSize.y * 0.5f - plan[i].y * (c.SpotSize.y + c.AisleWidth);
+                var y = Curb.yMax - c.SpotSize.y * 0.5f - plan[i].y * (c.SpotSize.y + c.AisleWidth + c.BottomRowDrop);
                 cells[i] = Box(new Vector2(x, y), c.SpotSize);
             }
             return cells;
