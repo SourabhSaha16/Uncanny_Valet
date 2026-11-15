@@ -1024,3 +1024,9 @@ Date: 2026-11-14
 Files: Scripts/Patrons (StayStartRule, PickupLeaveWatcher, StayStarter, QueueAdvancer), Scripts/Core/Events/PickupEvents.cs (CarLeftPickup appended), EditMode tests, Tests/PlayMode/PedestrianHitTests.cs, docs/design.md, docs/decisions.md, docs/changelogs/patrons.md
 Why: Refs #139. The patron stay clock starts at the later of PatronEnteredDiner and CarLeftPickup. PlayMode PedestrianHitTests now expect the slight curse from #138 (2 blessings) instead of no curse.
 Tests: EditMode passed (1858, exit 0); full PlayMode 77 of 77 after updating the two stale curse assertions. Not played; not in beta yet.
+
+## lead: merge queue advance fix, wash bay without trough, power bolt and prayer hands [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (AdvanceTracker, QueueAdvancer, IArrivalScan, ArrivalSlotScanner, PickupQueueSettings), Scripts/Cars/CarAutoDrive.cs, Scripts/Lot (WashBayLayout, LotGeometry, LotLayoutBuilder, SiteLayout, LotConfig, StationSwitch), Editor Vanaheim setup, Vanaheim lot/art assets and scenes, Scripts/Core/Contracts/PowerBarThresholds.cs (new), Scripts/Powers/PowerBar.cs, Scripts/UI (PowerBarPainter, blessing painters, PixelIcon.PrayerHands), tests, changelogs patrons.md, lot.md, integration.md
+Why: Refs #140 #141 #142 #143. Queue cars no longer freeze when one stops short of its slot (scan ignores the car behind, tolerance 2.2, retry after timeout, heading set toward the slot); the Vanaheim water trough prop is gone and wash bays are the regular blue bay with the muddy-car symbol; power markers and usability share one threshold list so 1T opens at the first bolt; blessings show prayer hands, the bolt stays for power.
+Tests: EditMode passed and full PlayMode 78 of 78 on the merged tip (exit 0). Not played.
