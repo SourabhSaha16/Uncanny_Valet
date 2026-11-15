@@ -19,7 +19,7 @@ namespace UncannyValet.Tests.UI
         {
             _kit = new WatcherTestKit();
             _now = 10f;
-            _tracker = new SpeechBubbleTracker(_kit.Bus, () => _now);
+            _tracker = new SpeechBubbleTracker(_kit.Bus, () => _now, true);
         }
 
         [TearDown]
@@ -27,6 +27,20 @@ namespace UncannyValet.Tests.UI
 
         private void Show(string text, float seconds = 4f)
             => _kit.Bus.Publish(new SpeechShown(new SpeechRequest("MRS. OKAFOR", text, Vector2.zero, null, SpeechPriority.Tip), seconds));
+
+        [Test]
+        public void SwitchedOff_NeverTracksABubble()
+        {
+            using (var off = new SpeechBubbleTracker(_kit.Bus, () => _now, false))
+            {
+                Show("HELLO");
+                Assert.IsFalse(off.TryGetCurrent(_now, out _));
+                Assert.AreEqual(0, off.Lines.Count);
+            }
+        }
+
+        [Test]
+        public void TheSettingsDefaultIsOff() => Assert.IsFalse(new SpeechBubbleSettings().Enabled);
 
         [Test]
         public void NothingShown_NoBubble() => Assert.IsFalse(_tracker.TryGetCurrent(_now, out _));

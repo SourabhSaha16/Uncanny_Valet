@@ -211,3 +211,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleVisibility.cs, SpeechBubbleSettings.cs (ViewMargin), SpeechBubblePainter.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs (+ .meta)
 Why: Grandma tip bubble drew at the screen edge even when she was off screen. The painter now skips the bubble while the speaker viewport position is outside the view plus a tunable margin (ViewMargin, default 0.02); the tracker keeps its timer, so the bubble returns if she re-enters before it expires. Tip money is unaffected (display only). Uses the camera HUD already passes in; no per-frame allocation.
 Tests: EditMode SpeechBubbleVisibilityTests (7, incl. leave and re-enter regression).
+
+## integration: speech bubbles off by default, car status reads No blessing (Refs #134 #135) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs (Enabled switch, default off), SpeechBubbleTracker.cs (enabled gate), Hud/PlayingHud.cs, Status/CarStatusTable.cs, CarStatusResolver.cs (comment), Core/Contracts/EmotionRows.cs (tooltip wording only, approved); Assets/_Project/Tests/EditMode/UI/SpeechBubbleTests.cs, CarStatusTests.cs
+Why: playtest: speech bubbles distract (#134). One serialized bool on HudEmotionConfig's Speech Bubble settings turns them back on; off, the tracker never subscribes to SpeechShown and no painter is built, so nothing is wrapped, tracked or drawn (tips and other events unchanged; blessing and emotion icons untouched). #135: the Unblessed status label is now No blessing (fallback No bless when the box is too narrow; the key board box has room for the full label).
+Tests: EditMode SwitchedOff_NeverTracksABubble, TheSettingsDefaultIsOff, updated label-fitting test; full suite run before commit.

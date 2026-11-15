@@ -58,8 +58,9 @@ namespace UncannyValet.UI.Hud
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
             _occupiedPainter = new OccupiedHintPainter(canvas, _occupiedHints);
-            _speech = new SpeechBubbleTracker(bus, UnscaledTime);
-            _speechPainter = new SpeechBubblePainter(canvas, _speech, speechBubble);
+            var bubbles = speechBubble != null ? speechBubble.Enabled : SpeechBubbleSettings.DefaultEnabled;
+            _speech = new SpeechBubbleTracker(bus, UnscaledTime, bubbles);
+            if (bubbles) _speechPainter = new SpeechBubblePainter(canvas, _speech, speechBubble);
         }
 
         private static float UnscaledTime() => Time.unscaledTime;
@@ -74,7 +75,7 @@ namespace UncannyValet.UI.Hud
             _blessingPops.Draw(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
-            _speechPainter.Draw(camera, time);
+            _speechPainter?.Draw(camera, time);
             _hud.Draw(time);
             _power.Draw(time);
             _board.CollectKeyBoardRows(_keyRows);

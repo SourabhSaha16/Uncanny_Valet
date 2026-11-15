@@ -17,7 +17,7 @@ namespace UncannyValet.UI.Status
             _fallback = fallback;
         }
 
-        /// <summary>The game's rules: Unblessed, Cust. Angry, Pick Up, Servicing, Serviced, then Parked.</summary>
+        /// <summary>The game's rules: No blessing, Cust. Angry, Pick Up, Servicing, Serviced, then Parked.</summary>
         public static CarStatusResolver CreateDefault(EmotionRule emotions) => new CarStatusResolver(new ICarStatusRule[]
         {
             new WillNotBlessStatusRule(emotions),
