@@ -34,6 +34,7 @@ namespace UncannyValet.EditorTools
             var interactor = go.AddComponent<Interactor>();
             var seat = go.AddComponent<SeatController>();
             go.AddComponent<ThunderDash>();
+            go.AddComponent<ShiftDash>();
 
             var so = new SerializedObject(seat);
             so.FindProperty("_mover").objectReferenceValue = mover;

@@ -49,14 +49,13 @@ namespace UncannyValet.Core.Contracts
             }
         }
 
-        // One bucket, two uses: the dash on foot (distance, dash time) and the boost in a car (boost time, top speed, acceleration).
+        // One bucket, two uses: the boost lasts one time; on foot it multiplies walking speed, in a car top speed and acceleration.
         private static string ThunderFieldName(PowerField field)
         {
             switch (field)
             {
-                case PowerField.Distance: return "dash distance";
-                case PowerField.Secondary: return "dash time (s)";
-                case PowerField.Duration: return "car boost time (s)";
+                case PowerField.Secondary: return "walking speed (times)";
+                case PowerField.Duration: return "boost time (s)";
                 case PowerField.PushStrength: return "car top speed (times)";
                 case PowerField.Width: return "car acceleration (times)";
                 default: return null;

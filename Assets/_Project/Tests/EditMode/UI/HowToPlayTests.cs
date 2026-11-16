@@ -58,7 +58,7 @@ namespace UncannyValet.Tests.UI
                         Assert.IsTrue(PixelGlyphs.Chars.Contains(char.ToUpperInvariant(c).ToString()), "glyph for " + c);
                 }
             Assert.AreEqual(5, HowToPlayText.Rules.Length);
-            Assert.AreEqual(3, HowToPlayText.Controls.Length);
+            Assert.AreEqual(4, HowToPlayText.Controls.Length);
         }
     }
 }

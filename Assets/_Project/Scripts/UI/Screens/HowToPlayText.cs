@@ -20,6 +20,7 @@ namespace UncannyValet.UI.Screens
         {
             "W (drive) A (left turn) S (reverse/brake) D (right turn)",
             "Shift (handbrake for drifting - sharper turns)",
+            "Shift (dash, on foot)",
             "E (to enter/exit car)"
         };
 

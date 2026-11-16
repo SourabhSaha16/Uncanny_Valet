@@ -16,7 +16,7 @@ namespace UncannyValet.Core.Contracts
         public float PushStrength;
         /// <summary>Width of the power's reach in world units.</summary>
         public float Width;
-        /// <summary>A second time or number a power needs (Thunder stride: the on-foot dash time in seconds).</summary>
+        /// <summary>A second time or number a power needs (Thunder stride: the on-foot walking speed multiplier).</summary>
         public float Secondary;
 
         public PowerLevelValues(float cooldown, float duration, float distance = 0f, float pushStrength = 0f, float width = 0f, float secondary = 0f)

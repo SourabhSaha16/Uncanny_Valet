@@ -96,7 +96,7 @@ namespace UncannyValet.Tests.Powers
         public void ExamplesFromTheSpecAreReadable()
         {
             var labels = TuningCatalog.All.Select(r => r.Label).ToList();
-            CollectionAssert.Contains(labels, "Thunder stride level 1: dash distance");
+            CollectionAssert.Contains(labels, "Thunder stride level 1: walking speed (times)");
             CollectionAssert.Contains(labels, "Storm wind level 2: gust width");
             CollectionAssert.Contains(labels, "Freeze time level 1: cooldown (s)");
         }

@@ -14,14 +14,14 @@ using UnityEngine.TestTools;
 
 namespace UncannyValet.Tests.PlayMode
 {
-    /// <summary>Thunder stride: the on-foot dash stops at a wall and passes pedestrians; the car boost is faster and still takes damage; the cooldown blocks a second use.</summary>
+    /// <summary>The Shift dash on foot stops at walls and is still blocked by pedestrians, with a cooldown; Thunder stride speeds up walking while it runs; the car boost is faster and still takes damage; the cooldown blocks a second use.</summary>
     public class ThunderStridePlayModeTests
     {
         private sealed class StubInput : MonoBehaviour, IInputSource
         {
             public Vector2 Move { get; set; }
             public bool InteractPressed => false;
-            public bool Drift => false;
+            public bool Drift { get; set; }
         }
 
         private sealed class DefaultsView : IPowerView
@@ -81,6 +81,7 @@ namespace UncannyValet.Tests.PlayMode
             var interactor = go.AddComponent<Interactor>();
             var seat = go.AddComponent<SeatController>();
             go.AddComponent<ThunderDash>();
+            go.AddComponent<ShiftDash>();
             Field(seat, "_mover", mover);
             Field(seat, "_interactor", interactor);
             Field(seat, "_bodyRenderers", new Renderer[0]);
@@ -100,38 +101,89 @@ namespace UncannyValet.Tests.PlayMode
             return go;
         }
 
-        private IEnumerator Dash(Rigidbody2D body, StubInput input, int level)
+        private static IEnumerator Wait(float seconds)
         {
-            input.Move = Vector2.right;
-            yield return new WaitForFixedUpdate();
-            _bus.Publish(new PowerActivated(StoryPower.ThunderStride, level));
+            for (var t = 0f; t < seconds; t += Time.fixedDeltaTime) yield return new WaitForFixedUpdate();
+        }
+
+        // A fresh press of the dash button: the move direction is read at the press.
+        private IEnumerator Press(StubInput input, Vector2 move, float settle = 0.6f)
+        {
+            input.Move = move;
+            input.Drift = true;
+            yield return null;
+            yield return null;
+            input.Drift = false;
             input.Move = Vector2.zero; // the dash direction was taken at the press; walking adds nothing afterwards
-            for (var t = 0f; t < 0.6f; t += Time.fixedDeltaTime) yield return new WaitForFixedUpdate();
+            yield return Wait(settle);
             yield return new WaitForFixedUpdate();
         }
 
         [UnityTest]
-        public IEnumerator TheDashCoversTheLevelDistance_AndPassesAPedestrianLayerCollider([Values(1, 2)] int level)
+        public IEnumerator TheShiftDashCoversItsDistanceInTheHeldDirection()
         {
             var (_, body, input) = MakeValet();
-            Solid(new Vector2(2.5f, 0f), new Vector2(0.6f, 2f), PhysicsLayers.Pedestrian);
             yield return null; // Start of the valet components runs before the first Update
-            yield return Dash(body, input, level);
-            var expected = level == 1 ? 5f : 8f;
-            Assert.AreEqual(expected, body.position.x, 0.4f, "went the full distance through the pedestrian");
+            yield return Press(input, Vector2.right);
+            Assert.AreEqual(3f, body.position.x, 0.4f);
             Assert.AreEqual(0f, body.position.y, 0.1f);
         }
 
         [UnityTest]
-        public IEnumerator TheDashStopsAtAWall_AndPedestriansBlockAgainAfterwards()
+        public IEnumerator TheShiftDashStopsAtAWall()
+        {
+            var (_, body, input) = MakeValet();
+            Solid(new Vector2(3f, 0f), new Vector2(1f, 4f));
+            yield return null;
+            yield return Press(input, Vector2.right);
+            Assert.Less(body.position.x, 2.2f, "stopped at the wall face (2.5) minus the valet's radius");
+            Assert.Greater(body.position.x, 1.5f, "it did dash toward the wall");
+        }
+
+        [UnityTest]
+        public IEnumerator ThePedestrianLayerStillBlocksTheShiftDash()
         {
             var (go, body, input) = MakeValet();
-            Solid(new Vector2(4f, 0f), new Vector2(1f, 4f));
-            yield return null; // Start of the valet components runs before the first Update
-            yield return Dash(body, input, 2);
-            Assert.Less(body.position.x, 3.3f, "stopped at the wall face (3.5) minus the valet's radius");
-            Assert.Greater(body.position.x, 2.8f, "a plain walk would only have reached about 2.4");
-            Assert.IsFalse(Physics2D.GetIgnoreLayerCollision(go.layer, PhysicsLayers.Pedestrian), "pedestrian collisions are back");
+            Solid(new Vector2(2f, 0f), new Vector2(0.6f, 2f), PhysicsLayers.Pedestrian);
+            yield return null;
+            yield return Press(input, Vector2.right);
+            Assert.Less(body.position.x, 1.5f, "the pedestrian blocked him (face at 1.7 minus the radius)");
+            Assert.IsFalse(Physics2D.GetIgnoreLayerCollision(go.layer, PhysicsLayers.Pedestrian), "pedestrian collisions were never switched off");
+        }
+
+        [UnityTest]
+        public IEnumerator TheShiftDashCooldownBlocksASecondDashUntilItHasRun()
+        {
+            var (_, body, input) = MakeValet();
+            yield return null;
+            yield return Press(input, Vector2.right, 0.3f);
+            var first = body.position.x;
+            yield return Press(input, Vector2.right, 0.3f);
+            Assert.AreEqual(first, body.position.x, 0.05f, "still cooling down");
+            yield return Wait(1.5f);
+            yield return Press(input, Vector2.right, 0.3f);
+            Assert.AreEqual(first + 3f, body.position.x, 0.5f, "the cooldown ran out");
+        }
+
+        [UnityTest]
+        public IEnumerator ThunderStrideSpeedsUpWalkingOnlyWhileThePowerRuns()
+        {
+            var (_, body, input) = MakeValet();
+            yield return null;
+            input.Move = Vector2.right;
+            yield return Wait(0.5f);
+            var plain = body.position.x;
+            Assert.AreEqual(2f, plain, 0.4f, "4 units per second");
+            _bus.Publish(new PowerActivated(StoryPower.ThunderStride, 1));
+            yield return new WaitForFixedUpdate();
+            var from = body.position.x;
+            yield return Wait(0.5f);
+            Assert.AreEqual(3.2f, body.position.x - from, 0.5f, "x1.6 while the power runs");
+            _bus.Publish(new PowerEnded(StoryPower.ThunderStride));
+            yield return new WaitForFixedUpdate();
+            from = body.position.x;
+            yield return Wait(0.5f);
+            Assert.AreEqual(2f, body.position.x - from, 0.4f, "back to normal");
         }
 
         private void MakeFactory()
@@ -199,7 +251,7 @@ namespace UncannyValet.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheCooldownBlocksASecondUseUntilItHasRun()
         {
-            var power = new ThunderStridePower(() => false);
+            var power = new ThunderStridePower();
             var stack = new PowerStack(_bus, new IPower[] { power }, new PowerCooldowns());
             var bucket = new Bucket { Open = 3 };
             var values = new PowerLevelValues(0.6f, 0f, 5f, 1.5f, 2f, 0.1f);
