@@ -1,7 +1,4 @@
 using NUnit.Framework;
-using UncannyValet.Core.Contracts;
-using UncannyValet.Core.Ids;
-using UncannyValet.Powers;
 using UncannyValet.Valet;
 using UnityEngine;
 
@@ -29,18 +26,15 @@ namespace UncannyValet.Tests.Valet
             return position;
         }
 
-        [TestCase(1, 5f)]
-        [TestCase(2, 8f)]
-        public void TheDashCoversTheLevelsDistanceInTheDashTime(int level, float distance)
+        [TestCase(3f, 0.2f)]
+        [TestCase(5f, 0.3f)]
+        public void TheDashCoversItsDistanceInItsTime(float distance, float seconds)
         {
-            var values = PowerDefaults.Values(StoryPower.ThunderStride, level);
-            Assert.AreEqual(distance, values.Distance);
-            Assert.AreEqual(0.2f, values.Secondary, 0.0001f);
             var rule = new DashRule();
-            rule.Begin(Vector2.right, values.Distance, values.Secondary);
+            rule.Begin(Vector2.right, distance, seconds);
             var reached = Run(rule, 100f, out var steps);
             Assert.AreEqual(distance, reached, 0.01f);
-            Assert.LessOrEqual(steps * Dt, 0.2f + Dt);
+            Assert.LessOrEqual(steps * Dt, seconds + Dt);
             Assert.IsFalse(rule.IsActive);
         }
 

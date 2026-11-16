@@ -11,10 +11,14 @@ namespace UncannyValet.Valet
 
         private Rigidbody2D _body;
         private IInputSource _input;
+        private WalkSpeedBoost _boost;
         private bool _dashing;
         private Vector2 _dashVelocity;
 
         public void SetInput(IInputSource input) => _input = input;
+
+        /// <summary>Sets the source of the walking speed multiplier (the Thunder stride boost); null means no boost.</summary>
+        public void SetSpeedBoost(WalkSpeedBoost boost) => _boost = boost;
 
         /// <summary>Overrides walking with a dash velocity until <see cref="EndDash"/>.</summary>
         public void SetDash(Vector2 velocity)
@@ -35,7 +39,7 @@ namespace UncannyValet.Valet
         {
             if (_dashing) { _body.linearVelocity = _dashVelocity; return; }
             if (_input == null) return;
-            _body.linearVelocity = _input.Move * _speed;
+            _body.linearVelocity = _input.Move * (_speed * (_boost != null ? _boost.Multiplier : 1f));
         }
 
         private void OnDisable()

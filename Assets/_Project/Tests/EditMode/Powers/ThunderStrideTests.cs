@@ -11,7 +11,6 @@ namespace UncannyValet.Tests.Powers
 {
     public class ThunderStrideTests
     {
-        private bool _driving;
         private ThunderStridePower _power;
         private PowerStack _stack;
         private FakeBucket _bucket;
@@ -19,21 +18,20 @@ namespace UncannyValet.Tests.Powers
         [SetUp]
         public void SetUp()
         {
-            _driving = false;
-            _power = new ThunderStridePower(() => _driving);
+            _power = new ThunderStridePower();
             _bucket = new FakeBucket { Open = 3 };
             _stack = new PowerStack(new EventBus(), new IPower[] { _power }, new PowerCooldowns());
         }
 
         private static PowerLevelValues Values(int level) => PowerDefaults.Values(StoryPower.ThunderStride, level);
 
-        [TestCase(1, 5f, 1.5f)]
-        [TestCase(2, 8f, 2.2f)]
-        public void TheShippedNumbersFollowTheSpec(int level, float dash, float boost)
+        [TestCase(1, 1.6f, 1.5f)]
+        [TestCase(2, 2f, 2.2f)]
+        public void TheShippedNumbersFollowTheSpec(int level, float walkSpeed, float boost)
         {
             var v = Values(level);
-            Assert.AreEqual(dash, v.Distance);
-            Assert.AreEqual(0.2f, v.Secondary, 0.0001f);
+            Assert.AreEqual(walkSpeed, v.Secondary, 0.0001f, "on-foot walking speed x");
+            Assert.AreEqual(0f, v.Distance, "the old dash distance is unused");
             Assert.AreEqual(4f, v.Cooldown);
             Assert.AreEqual(boost, v.Duration, 0.0001f);
             Assert.AreEqual(1.5f, v.PushStrength, "car top speed x1.5");
@@ -44,31 +42,31 @@ namespace UncannyValet.Tests.Powers
         public void ItCanAlwaysStart()
         {
             Assert.IsTrue(_power.CanActivate());
-            _driving = true;
-            Assert.IsTrue(_power.CanActivate());
         }
 
         [Test]
-        public void OnFootItLastsTheDashTime_InACarTheBoostTime()
+        public void ItLastsTheLevelsBoostTime()
         {
-            Assert.AreEqual(0.2f, ThunderStridePower.UseSeconds(Values(1), false), 0.0001f);
-            Assert.AreEqual(1.5f, ThunderStridePower.UseSeconds(Values(1), true), 0.0001f);
-            Assert.AreEqual(2.2f, ThunderStridePower.UseSeconds(Values(2), true), 0.0001f);
+            _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket);
+            _stack.Tick(1.4f);
+            Assert.IsTrue(_power.IsActive);
+            _stack.Tick(0.2f);
+            Assert.IsFalse(_power.IsActive);
         }
 
         [Test]
-        public void OneUseSpendsOneBucket_AndTheCooldownStartsOnlyAfterTheDashEnds()
+        public void OneUseSpendsOneBucket_AndTheCooldownStartsOnlyAfterTheBoostEnds()
         {
             Assert.AreEqual(FireResult.Started, _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket));
             Assert.AreEqual(1, _bucket.Spent);
             Assert.IsTrue(_power.IsActive);
             Assert.AreEqual(PowerPhase.Active, _stack.PhaseOf(StoryPower.ThunderStride, out _));
-            _stack.Tick(0.1f);
-            Assert.IsTrue(_stack.Cooldowns.IsReady(StoryPower.ThunderStride), "no cooldown while the dash runs");
+            _stack.Tick(1.4f);
+            Assert.IsTrue(_stack.Cooldowns.IsReady(StoryPower.ThunderStride), "no cooldown while the boost runs");
             _stack.Tick(0.15f);
             Assert.IsFalse(_power.IsActive);
             Assert.AreEqual(PowerPhase.Cooling, _stack.PhaseOf(StoryPower.ThunderStride, out var left));
-            Assert.AreEqual(1f, left, 0.05f);
+            Assert.AreEqual(1f, left, 0.05f, "the cooldown has barely started");
             Assert.AreEqual(FireResult.NotReady, _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket));
             _stack.Tick(3.9f);
             Assert.AreEqual(PowerPhase.Cooling, _stack.PhaseOf(StoryPower.ThunderStride, out _), "4 s after the use ended");
@@ -78,30 +76,14 @@ namespace UncannyValet.Tests.Powers
         }
 
         [Test]
-        public void InACarTheUseLastsTheBoostThenTheCooldownStarts()
+        public void TheLevel2UseLastsTheLongerBoostThenTheCooldownStarts()
         {
-            _driving = true;
             _stack.TryFire(StoryPower.ThunderStride, 2, Values(2), _bucket);
             _stack.Tick(2.1f);
             Assert.IsTrue(_power.IsActive);
             _stack.Tick(0.2f);
             Assert.IsFalse(_power.IsActive);
             Assert.AreEqual(PowerPhase.Cooling, _stack.PhaseOf(StoryPower.ThunderStride, out _));
-        }
-
-        [Test]
-        public void TheDrivingTrackerFollowsTheCarEvents()
-        {
-            var bus = new EventBus();
-            var tracker = new DrivingTracker(bus);
-            Assert.IsFalse(tracker.IsDriving);
-            bus.Publish(new CarEntered(new CarId(1)));
-            Assert.IsTrue(tracker.IsDriving);
-            bus.Publish(new CarExited(new CarId(1)));
-            Assert.IsFalse(tracker.IsDriving);
-            tracker.Dispose();
-            bus.Publish(new CarEntered(new CarId(1)));
-            Assert.IsFalse(tracker.IsDriving);
         }
 
         [Test]
@@ -114,10 +96,10 @@ namespace UncannyValet.Tests.Powers
             Assert.IsTrue(settings.Apply(key, 0.3f));
             settings.TryGetValues(StoryPower.ThunderStride, 2, out var values);
             Assert.AreEqual(0.3f, values.Secondary, 0.0001f);
-            Assert.AreEqual("dash time (s)", PowerLevelRows.FieldName(StoryPower.ThunderStride, PowerField.Secondary));
+            Assert.AreEqual("walking speed (times)", PowerLevelRows.FieldName(StoryPower.ThunderStride, PowerField.Secondary));
             var names = new List<string>();
             foreach (var info in TuningCatalog.All) if (info.Group == "Thunder stride") names.Add(info.Label);
-            Assert.AreEqual(12, names.Count, "6 numbers x 2 levels");
+            Assert.AreEqual(10, names.Count, "5 shown numbers x 2 levels (distance is unused)");
             Object.DestroyImmediate(config);
         }
     }

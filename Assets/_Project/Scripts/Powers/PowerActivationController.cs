@@ -17,7 +17,6 @@ namespace UncannyValet.Powers
         private IEventBus _bus;
         private IPowerInput _input;
         private PowerStack _stack;
-        private DrivingTracker _driving;
         private bool _started;
         private bool _subscribed;
 
@@ -35,8 +34,7 @@ namespace UncannyValet.Powers
             _bus = Services.Get<IEventBus>();
             _input = Services.TryGet<IPowerInput>(out var input) ? input : new KeyboardPowerInput();
             var freeze = new FreezeTimeEffect(_bar.Settings);
-            _driving = new DrivingTracker(_bus);
-            var thunder = new ThunderStridePower(() => _driving.IsDriving);
+            var thunder = new ThunderStridePower();
             _stack = new PowerStack(_bus, new IPower[] { thunder, freeze }, new PowerCooldowns());
             Services.Register<IWorldTime>(freeze);
             Services.Register<IPowerView>(new PowerView(() => _bar.Progress, _bar.Settings, _stack));
@@ -47,8 +45,6 @@ namespace UncannyValet.Powers
         private void OnEnable() { if (_started) Subscribe(); }
 
         private void OnDisable() => Unsubscribe();
-
-        private void OnDestroy() => _driving?.Dispose();
 
         private void Update()
         {
