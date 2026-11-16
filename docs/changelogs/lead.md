@@ -1042,3 +1042,9 @@ Date: 2026-11-16
 Files: Scripts/Patrons (StayJitter, PatronSpawner, PatronConfig, PatronTuning), Tests/EditMode/Patrons/StayJitterTests.cs, docs/changelogs/patrons.md
 Why: Refs #144. Each car's stay gets a seeded random offset (default plus or minus 30%, PatronConfig stay jitter fraction, floor LateStayFloorMinutes) so returns no longer bunch up; applied before the shift fit so stays still end inside the shift.
 Tests: EditMode passed after merge (exit 0). Not played; not in beta yet. No F2 row (would need Core/Bootstrap edits).
+
+## lead: merge agent/shift-dash, update design log [Claude]
+Date: 2026-11-16
+Files: Scripts/Valet (ShiftDash, DashCooldown, WalkSpeedBoost, OnFootMover, ThunderDash), Scripts/Powers (ThunderStridePower, DrivingTracker deleted), Core power row labels, ThunderStrideDefinition.asset, UI/Screens/HowToPlayText.cs, Editor/ValetSceneBuilder.cs, four regenerated scenes, tests, docs/design.md, docs/decisions.md, docs/changelogs/valet.md
+Why: Refs #145 #146. Shift dash on foot (3 units, 0.2 s, 1.5 s cooldown, tunable, only moves Thor); power 1 is a temporary walking speed boost (1.6 at level 1, 2.0 at level 2) instead of the on-foot dash; how-to-play card lists the Shift dash.
+Tests: EditMode passed (exit 0) and full PlayMode 80 of 80 on the merged tip. Not played; not in beta yet. Scenes regenerated with RunBatch (fileID churn kept with the new ShiftDash component).
