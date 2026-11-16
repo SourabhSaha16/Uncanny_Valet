@@ -13,6 +13,9 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes a car stays parked before pickup is requested (min, max).")]
         [SerializeField] private Vector2 _stayRange = new Vector2(20f, 45f);
 
+        [SerializeField, Range(0f, 0.9f), Tooltip("Each patron's stay is moved by a random amount up to this fraction of itself, either way, so returns spread out instead of all coming at once. 0 turns it off.")]
+        private float _stayJitterFraction = 0.3f;
+
         [SerializeField, Min(0)] [FormerlySerializedAs("_baseTip")] private int _baseBlessing = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
@@ -45,6 +48,7 @@ namespace UncannyValet.Patrons
 
         public float TopUpSpacingMinutes => _topUpSpacingMinutes;
         public float CurbWalkTimeoutMinutes => _curbWalkTimeoutMinutes;
+        public float StayJitterFraction => _stayJitterFraction;
         public float LateStayLeadMinutes => _lateStayLeadMinutes;
         public float LateStayFloorMinutes => _lateStayFloorMinutes;
         public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;

@@ -21,6 +21,7 @@ namespace UncannyValet.Patrons
         public float StayMax => Read(TuningKey.StayMaxMinutes, _config.StayRange.y);
         public float GapMin => Read(TuningKey.ArrivalGapMinMinutes, _config.ArrivalIntervalRange.x);
         public float GapMax => Read(TuningKey.ArrivalGapMaxMinutes, _config.ArrivalIntervalRange.y);
+        public float StayJitter => _config.StayJitterFraction;
         public float LateStayLead => _config.LateStayLeadMinutes;
         public float LateStayFloor => _config.LateStayFloorMinutes;
 
