@@ -151,3 +151,9 @@ Date: 2026-11-14
 Files: Patrons/AdvanceTracker.cs (new), QueueAdvancer.cs, IArrivalScan.cs, ArrivalSlotScanner.cs, PickupQueueSettings.cs, Cars/CarAutoDrive.cs (advance heads straight at the slot), Tests/EditMode/Patrons/QueueAdvancerTests.cs, ArrivalPacingTests.cs, QueueSlotAllocatorTests.cs, Tests/PlayMode/PickupQueuePlayModeTests.cs
 Why: Issue #140. A queued car that stopped a little short had its nose in the pickup spot clear box, so the scan counted the car itself as the blocker and the queue froze. The scan now ignores the car asking to move up, slot tolerance is 2.2, a drive that never finishes is offered again after a deadline, and the advance drives straight at the slot centre (snapping onto it).
 Tests: new EditMode (stopped short, near-slot, interrupted retry) and PlayMode full-queue test; EditMode 1878 passed, PlayMode 78 passed.
+
+## patrons: jitter each patron stay so returns spread out [Claude]
+Date: 2026-11-16
+Files: Patrons/StayJitter.cs (new), PatronSpawner.cs, PatronConfig.cs, PatronTuning.cs; test Patrons/StayJitterTests.cs.
+Why: Issue #144 (playtest): return timers ran out one after another and pickup requests came in a clump. Each car stay (rolled 20-45) now moves by a seeded random offset of up to PatronConfig.StayJitterFraction (default 0.3, +/-30%) of itself, never below the late-stay floor. The draw is seeded from the car id, so it needs no extra roll from the shared random and tests stay deterministic. It runs before StayFit.Clamp, so the stay still ends inside the shift; tip maths is untouched (it uses time since the pickup request). No minimum gap added: the stay clock starts per car, so independent offsets already spread returns.
+Tests: StayJitterTests (7: varied, bounds, floor, determinism, off at 0, spread, fits shift). EditMode 1894/1894.

@@ -101,18 +101,20 @@ namespace UncannyValet.Patrons
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
             _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees, slot);
-            ticket = Registry.Create(car, FitStay(request));
+            ticket = Registry.Create(car, FitStay(request, car));
             _slots.Reserve(car, slot);
             Registry.AnnounceArrival(ticket);
             return true;
         }
 
-        // A late arrival's stay is cut so its patron is back asking for the car before the shift ends.
-        private PatronRequest FitStay(PatronRequest request)
+        // The stay is jittered per car so returns spread out, then a late arrival's stay is cut so its patron is back
+        // asking for the car before the shift ends (the cut comes last, so the stay always fits the shift).
+        private PatronRequest FitStay(PatronRequest request, CarId car)
         {
             var remaining = _clock.SecondsRemaining * _tuning.MinutesPerSecond;
-            var stay = StayFit.Clamp(request.StayMinutes, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
-            return stay < request.StayMinutes ? request.WithStay(stay) : request;
+            var spread = StayJitter.Apply(request.StayMinutes, _tuning.StayJitter, _tuning.LateStayFloor, car.Value);
+            var stay = StayFit.Clamp(spread, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
+            return stay != request.StayMinutes ? request.WithStay(stay) : request;
         }
 
         private void OnShiftStarted(ShiftStarted e)
