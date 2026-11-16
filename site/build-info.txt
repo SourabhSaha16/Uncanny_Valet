@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  e3c084b
-Subject: lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
-Date:    2026-11-14 22:05:12 -0800
+Commit:  27d3d26
+Subject: lead: merge shift-dash, design log, Refs #145 #146 [Claude]
+Date:    2026-11-16 15:50:05 -0800

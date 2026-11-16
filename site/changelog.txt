@@ -1,4 +1,11 @@
 === Last 50 commits ===
+27d3d26  2026-11-16  lead: merge shift-dash, design log, Refs #145 #146 [Claude]
+d165d4a  2026-11-16  lead: merge agent/shift-dash [Claude]
+42c0530  2026-11-16  valet: Shift dash on foot, Thunder stride is a walking speed boost [Claude]
+c00cb8f  2026-11-16  lead: changelog for stay jitter merge, Refs #144 [Claude]
+3a195c8  2026-11-16  lead: merge agent/stay-jitter [Claude]
+5d6ab32  2026-11-16  patrons: jitter each patron stay so returns spread out [Claude]
+aec0349  2026-11-14  lead: rebuild site/ with playtest batch 3 for beta [Claude]
 e3c084b  2026-11-14  lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
 8a32936  2026-11-14  lead: merge agent/no-trough [Claude]
 151d667  2026-11-14  lot: remove water trough prop, wash bays are plain wash slots [Claude]
@@ -42,13 +49,6 @@ fe91760  2026-11-14  lead: changelog for camera fit merge, Refs #123 #127 [Claud
 31a0258  2026-11-14  lead: merge agent/integration camera fits taller lots [Claude]
 3999cf8  2026-11-14  integration: camera always shows the whole lot, floor beats zoom cap [Claude]
 32c71a9  2026-11-14  lead: changelog for bubble size and zoom merge, Refs #122 #123 [Claude]
-ad7f66b  2026-11-14  lead: merge agent/integration smaller speech bubbles and zoom out [Claude]
-0ba6a63  2026-11-14  integration: zoom the game camera out a little (Refs #123) [Claude]
-11716c5  2026-11-14  integration: smaller watcher speech bubbles, tunable scale (Refs #122) [Claude]
-a536200  2026-11-14  lead: changelog and design log for pedestrian fixes, Refs #124 #125 [Claude]
-63a9971  2026-11-14  lead: merge agent/pedestrians free routes and no rubber band [Claude]
-1725343  2026-11-14  pedestrians: free direct routes to the diner on crazy lots (Refs #124) [Claude]
-fa04683  2026-11-14  pedestrians: knocked pedestrians walk on from where they land (Refs #125) [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -1631,6 +1631,24 @@ Files: Scripts/Patrons (AdvanceTracker, QueueAdvancer, IArrivalScan, ArrivalSlot
 Why: Refs #140 #141 #142 #143. Queue cars no longer freeze when one stops short of its slot (scan ignores the car behind, tolerance 2.2, retry after timeout, heading set toward the slot); the Vanaheim water trough prop is gone and wash bays are the regular blue bay with the muddy-car symbol; power markers and usability share one threshold list so 1T opens at the first bolt; blessings show prayer hands, the bolt stays for power.
 Tests: EditMode passed and full PlayMode 78 of 78 on the merged tip (exit 0). Not played.
 
+## lead: rebuild site/ with playtest batch 3 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #134 to #143. Beta now includes bubbles off, 'No blessing' label, slight curse on any pedestrian hit, Midgard power bar hidden, patron timer after the car leaves the pickup spot, queue advance fix, wash bay without trough, power 1T at the first bolt and prayer hands for blessings.
+Tests: tools/build-web.ps1 exit 0, build-info shows e3c084b; EditMode and PlayMode (78 of 78) passed on the same code; browser smoke test: Midgard training loads, no console errors, blessing counter shows the prayer hands icon, no power bar, a car arrives into the pickup spot. Vanaheim, crazy lots and driving not played.
+
+## lead: merge agent/stay-jitter [Claude]
+Date: 2026-11-16
+Files: Scripts/Patrons (StayJitter, PatronSpawner, PatronConfig, PatronTuning), Tests/EditMode/Patrons/StayJitterTests.cs, docs/changelogs/patrons.md
+Why: Refs #144. Each car's stay gets a seeded random offset (default plus or minus 30%, PatronConfig stay jitter fraction, floor LateStayFloorMinutes) so returns no longer bunch up; applied before the shift fit so stays still end inside the shift.
+Tests: EditMode passed after merge (exit 0). Not played; not in beta yet. No F2 row (would need Core/Bootstrap edits).
+
+## lead: merge agent/shift-dash, update design log [Claude]
+Date: 2026-11-16
+Files: Scripts/Valet (ShiftDash, DashCooldown, WalkSpeedBoost, OnFootMover, ThunderDash), Scripts/Powers (ThunderStridePower, DrivingTracker deleted), Core power row labels, ThunderStrideDefinition.asset, UI/Screens/HowToPlayText.cs, Editor/ValetSceneBuilder.cs, four regenerated scenes, tests, docs/design.md, docs/decisions.md, docs/changelogs/valet.md
+Why: Refs #145 #146. Shift dash on foot (3 units, 0.2 s, 1.5 s cooldown, tunable, only moves Thor); power 1 is a temporary walking speed boost (1.6 at level 1, 2.0 at level 2) instead of the on-foot dash; how-to-play card lists the Shift dash.
+Tests: EditMode passed (exit 0) and full PlayMode 80 of 80 on the merged tip. Not played; not in beta yet. Scenes regenerated with RunBatch (fileID churn kept with the new ShiftDash component).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2089,6 +2107,12 @@ Date: 2026-11-14
 Files: Patrons/AdvanceTracker.cs (new), QueueAdvancer.cs, IArrivalScan.cs, ArrivalSlotScanner.cs, PickupQueueSettings.cs, Cars/CarAutoDrive.cs (advance heads straight at the slot), Tests/EditMode/Patrons/QueueAdvancerTests.cs, ArrivalPacingTests.cs, QueueSlotAllocatorTests.cs, Tests/PlayMode/PickupQueuePlayModeTests.cs
 Why: Issue #140. A queued car that stopped a little short had its nose in the pickup spot clear box, so the scan counted the car itself as the blocker and the queue froze. The scan now ignores the car asking to move up, slot tolerance is 2.2, a drive that never finishes is offered again after a deadline, and the advance drives straight at the slot centre (snapping onto it).
 Tests: new EditMode (stopped short, near-slot, interrupted retry) and PlayMode full-queue test; EditMode 1878 passed, PlayMode 78 passed.
+
+## patrons: jitter each patron stay so returns spread out [Claude]
+Date: 2026-11-16
+Files: Patrons/StayJitter.cs (new), PatronSpawner.cs, PatronConfig.cs, PatronTuning.cs; test Patrons/StayJitterTests.cs.
+Why: Issue #144 (playtest): return timers ran out one after another and pickup requests came in a clump. Each car stay (rolled 20-45) now moves by a seeded random offset of up to PatronConfig.StayJitterFraction (default 0.3, +/-30%) of itself, never below the late-stay floor. The draw is seeded from the car id, so it needs no extra roll from the shared random and tests stay deterministic. It runs before StayFit.Clamp, so the stay still ends inside the shift; tip maths is untouched (it uses time since the pickup request). No minimum gap added: the stay clock starts per car, so independent offsets already spread returns.
+Tests: StayJitterTests (7: varied, bounds, floor, determinism, off at 0, spread, fits shift). EditMode 1894/1894.
 
 === docs/changelogs/pedestrians-patrons.md ===
 # Changelog: pedestrians-patrons
@@ -2601,6 +2625,18 @@ Date: 2026-11-13
 Files: Valet: DashRule, DashDirection, BoltShape, ThunderStreaks, ThunderDash (new); OnFootMover (SetDash, EndDash), SeatController (IsDriving, Car), ValetAnimator (Facing). Editor/ValetSceneBuilder.cs adds ThunderDash to the valet; Scenes/Bootstrap.unity rebuilt. Core: PowerField.Secondary, PowerLevelValues.Secondary, PowerTuningKeys (FieldCount 6, 8 Secondary keys appended contiguously at the end of TuningKey), PowerLevelRows (Thunder stride row names), PowerEvents.ThunderStrideStarted. Data: ThunderStrideDefinition.asset. Tests as listed.
 Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
 Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
+
+## valet: free Shift dash on foot with cooldown [Claude]
+Date: 2026-11-16
+Files: Valet: ShiftDash, DashCooldown (new); Editor/ValetSceneBuilder.cs adds ShiftDash to the valet; Scenes rebuilt by RunBatch; UI/Screens/HowToPlayText.cs (one control line); Tests: DashCooldownTests, ThunderStridePlayModeTests, HowToPlayTests.
+Why: issue #145. Shift (the shared Dash/Handbrake `IInputSource.Drift`, already in Core, no contract change) dashes on foot only: 3 units in 0.2 s in the held direction else the facing, then a 1.5 s cooldown (serialized on ShiftDash, no stamina). It reuses DashRule, never ignores pedestrians (they block and bump him), stops at solids, and reads the gated input so cards, pause and the F2 text field block it.
+Tests: EditMode DashCooldownTests (press edge, cooldown, reset, no dash while driving); PlayMode distance, wall stop, pedestrian blocks, cooldown.
+
+## valet: Thunder stride is a walking speed boost on foot [Claude]
+Date: 2026-11-16
+Files: Valet: WalkSpeedBoost (new), ThunderDash (now trail, camera kick and boost owner), OnFootMover (SetSpeedBoost); Powers: ThunderStridePower (one duration for foot and car), PowerActivationController, DrivingTracker removed; PowerDefaults; Core/Contracts: PowerLevelRows (labels), PowerLevelValues and PowerField (comments); Data/Powers/ThunderStrideDefinition.asset (distance 0, secondary 1.6 and 2, description); Tests updated.
+Why: issue #146. The level 1 power multiplies Thor's walking speed for the power's Duration (PowerLevelValues.Secondary, row "walking speed (times)", default 1.6, level 2 is 2.0; the old dash Distance field is now unused and has no row); the car boost is unchanged. The on-foot power dash and its pedestrian-layer ignore are gone.
+Tests: EditMode WalkSpeedBoostTests, ThunderStrideTests, PowerFrameworkTests; PlayMode walking speed on and off with the power.
 
 === docs/changelogs/watchers.md ===
 # Watchers module changelog
