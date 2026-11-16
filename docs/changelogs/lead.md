@@ -1036,3 +1036,9 @@ Date: 2026-11-14
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #134 to #143. Beta now includes bubbles off, 'No blessing' label, slight curse on any pedestrian hit, Midgard power bar hidden, patron timer after the car leaves the pickup spot, queue advance fix, wash bay without trough, power 1T at the first bolt and prayer hands for blessings.
 Tests: tools/build-web.ps1 exit 0, build-info shows e3c084b; EditMode and PlayMode (78 of 78) passed on the same code; browser smoke test: Midgard training loads, no console errors, blessing counter shows the prayer hands icon, no power bar, a car arrives into the pickup spot. Vanaheim, crazy lots and driving not played.
+
+## lead: merge agent/stay-jitter [Claude]
+Date: 2026-11-16
+Files: Scripts/Patrons (StayJitter, PatronSpawner, PatronConfig, PatronTuning), Tests/EditMode/Patrons/StayJitterTests.cs, docs/changelogs/patrons.md
+Why: Refs #144. Each car's stay gets a seeded random offset (default plus or minus 30%, PatronConfig stay jitter fraction, floor LateStayFloorMinutes) so returns no longer bunch up; applied before the shift fit so stays still end inside the shift.
+Tests: EditMode passed after merge (exit 0). Not played; not in beta yet. No F2 row (would need Core/Bootstrap edits).
