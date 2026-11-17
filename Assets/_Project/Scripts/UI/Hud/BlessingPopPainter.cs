@@ -15,9 +15,11 @@ namespace UncannyValet.UI.Hud
         private readonly PixelCanvas _canvas;
         private readonly BlessingPops _pops;
         private readonly BlessingPopSettings _settings;
+        private readonly Color _perfectColor;
 
-        public BlessingPopPainter(PixelCanvas canvas, BlessingPops pops, BlessingPopSettings settings)
+        public BlessingPopPainter(PixelCanvas canvas, BlessingPops pops, BlessingPopSettings settings, Color perfectColor)
         {
+            _perfectColor = perfectColor;
             _canvas = canvas;
             _pops = pops;
             _settings = settings;
@@ -49,7 +51,7 @@ namespace UncannyValet.UI.Hud
             var alpha = BlessingPopText.Alpha(age, _settings.DurationSeconds, _settings.HoldFraction);
             var shadow = PixelCanvas.ShadowOffset(scale);
             _canvas.Text(pop.Text, x + shadow, y + shadow, WithAlpha(PixelPalette.Ink, alpha), scale, false);
-            _canvas.Text(pop.Text, x, y, WithAlpha(ColorOf(pop.Kind), alpha), scale, false);
+            _canvas.Text(pop.Text, x, y, WithAlpha(ColorOf(pop.Kind, _perfectColor), alpha), scale, false);
             if (pop.HasIcon) DrawIcon(x + textWidth + IconGap, y, alpha);
         }
 
@@ -62,18 +64,20 @@ namespace UncannyValet.UI.Hud
         {
             switch (kind)
             {
-                case BlessingPopKind.Big: return _settings.BigFontScale;
+                case BlessingPopKind.Big:
+                case BlessingPopKind.Perfect: return _settings.BigFontScale;
                 case BlessingPopKind.Curse: return _settings.CurseFontScale;
                 default: return _settings.FontScale;
             }
         }
 
-        private static Color ColorOf(BlessingPopKind kind)
+        private static Color ColorOf(BlessingPopKind kind, Color perfect)
         {
             switch (kind)
             {
                 case BlessingPopKind.Curse: return PixelPalette.Blood;
                 case BlessingPopKind.Big: return PixelPalette.Gold;
+                case BlessingPopKind.Perfect: return perfect;
                 case BlessingPopKind.Normal: return PixelPalette.Green;
                 default: return PixelPalette.Grey;
             }

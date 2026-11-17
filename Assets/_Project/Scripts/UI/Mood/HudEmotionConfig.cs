@@ -42,6 +42,9 @@ namespace UncannyValet.UI.Mood
         [Header("+X pop beside the power bar")]
         [SerializeField] private PowerFillPopSettings _powerFillPop = new PowerFillPopSettings();
 
+        [Header("Shift clock tab (under the score panel)")]
+        [SerializeField] private ClockSettings _clock = new ClockSettings();
+
         [Header("Watcher speech bubble")]
         [SerializeField] private SpeechBubbleSettings _speechBubble = new SpeechBubbleSettings();
 
@@ -51,6 +54,7 @@ namespace UncannyValet.UI.Mood
         public BlessingPopSettings BlessingPop => _blessingPop;
         public PowerBarSettings PowerBar => _powerBar;
         public PowerFillPopSettings PowerFillPop => _powerFillPop;
+        public ClockSettings Clock => _clock;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
         public float WillNotBlessFrom => _willNotBlessFrom;

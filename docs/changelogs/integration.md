@@ -247,3 +247,9 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/UI/Pie/ (new: BayBorderLayer, BayBorderRule, BayBorderSettings, BayBorderSprites, BayBorderView; PickupPieSettings default 20 px, offset 1.45); UI/Mood/HudEmotionConfig.cs, UI/Hud/PlayingHud.cs, UI/GameUi.cs, Bootstrap/GameBootstrap.cs; Tests/EditMode/UI/BayBorderTests.cs (new)
 Why: #158 a bay's border flashes green when its car parks completely inside (CarParkedInside), then in the pickup-timer colour at 1.5/3/7 Hz (happy/impatient/angry) while its patron waits; released when the car leaves, the ticket closes, the shift ends or the car is gone. Bay rects come from the new ISpotGeometry, registered in Bootstrap when the lot implements it (no border until Lot implements it). Pie is 20 px (was 14).
 Tests: EditMode 1942 passed (BayBorderTests, 9 new). PlayMode not run (run-tests.ps1 is EditMode only).
+
+## ui: green PERFECT cues, clock tab under score panel, Refs #161 #162 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/ (new: ClockLayout, ClockSettings; BlessingPopKind +Perfect, BlessingPops, BlessingPopPainter, PowerFillPopRule, PowerFillPopPainter, HudPainter, PlayingHud); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/ClockPlacementTests.cs (new)
+Why: #161 the PERFECT! pop and the PerfectPark +X pop now use the bay border green (EmotionStyle Happy colour, one value passed from PlayingHud, no literal); ParkedInside keeps its lighter gold-pulled green. #162 the shift clock is a tab flush under the score panel at the left edge (was top centre over the lot); gap and inset tunable in ClockSettings (HudEmotionConfig.Clock), clear of the power column and its +X pops. Not checked visually.
+Tests: EditMode passed (ClockPlacementTests, 9 new cases); RunBatch not needed (no Editor/Data/Scenes change).

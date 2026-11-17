@@ -62,10 +62,10 @@ namespace UncannyValet.UI.Hud
             _pops[FreeOrOldest()] = new Pop { World = world, StartedAt = now, Active = true, Text = text, HasIcon = true, Kind = BlessingPopKind.Curse };
         }
 
-        /// <summary>Starts a pop with ready-made text (the PERFECT! label), in the big look.</summary>
+        /// <summary>Starts a pop with ready-made text (the PERFECT! label), in the perfect look.</summary>
         public void StartLabel(Vector2 world, string text, float now)
         {
-            _pops[FreeOrOldest()] = new Pop { World = world, StartedAt = now, Active = true, Text = text, Kind = BlessingPopKind.Big };
+            _pops[FreeOrOldest()] = new Pop { World = world, StartedAt = now, Active = true, Text = text, Kind = BlessingPopKind.Perfect };
         }
 
         /// <summary>Retires pops that have run their course.</summary>
