@@ -2,6 +2,12 @@
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
 
+## patrons: no EV without charging bay, dirty cars spaced apart [Claude]
+Date: 2026-11-17
+Files: Patrons/ModifierStationFilter.cs (new), Patrons/DirtySpacing.cs (new), PatronRequestRoller.cs, PatronSpawner.cs, PatronConfig.cs; test Tests/EditMode/Patrons/DirtySpacingAndStationTests.cs.
+Why: Refs #164 #165. Root cause of #164: the director path (PatronRequestRoller.Roll with an archetype) mapped Ev/MuddyEv straight to NeedsCharge through ArchetypeModifiers, ignoring the lot (lot catalogs list NeedsCharge even at chance 0, so the EV look and charge symbol applied on lots with no charging bay). Now every rolled set is filtered by the lot snapshot: a modifier stays only if the lot has a station of the kind that clears it. #165: DirtySpacing turns a muddy arrival clean when fewer than PatronConfig.CleanCarsBetweenDirty (default 1) clean cars passed since the last muddy one; reset on ShiftStarted.
+Tests: DirtySpacingAndStationTests (10). EditMode suite run before commit.
+
 ## patrons: apply night plan, EV charging, washing and tip breakdown
 Date: 2026-11-06
 Files: Assets/_Project/Scripts/Patrons/{ServiceProgress,ChargeRule,WashRule,ServiceTuning,IPatronRandom,UnityPatronRandom,PatronPlan,PatronRequestRoller,StationService,TicketSettler,Ticket,TicketBook,TicketRegistry,PatronRequest,PatronConfig,PatronSpawner}.cs, Assets/_Project/Data/Patrons/PatronConfig.asset, Assets/_Project/Tests/EditMode/Patrons/{ServiceRules,TicketRegistryService,TicketRegistryNight,TicketRegistry,TicketRegistryTimer}Tests.cs
