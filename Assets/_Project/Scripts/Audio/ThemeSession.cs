@@ -16,18 +16,20 @@ namespace UncannyValet.Audio
         private readonly AmbienceSetDefinition _ambience;
         private readonly WorldSoundTuning _tuning;
         private readonly EscalationRule _rule;
-        private readonly List<AudioSource> _layerSources = new List<AudioSource>();
+        private readonly LayerSet _layers;
+        private readonly List<SourceLayer> _layerSources = new List<SourceLayer>();
         private readonly List<float> _layerLevels = new List<float>();
-        private readonly AudioSource _escalationSource;
+        private readonly SourceLayer _escalationSource;
         private float _gain;
         private bool _active;
 
         /// <param name="theme">May be null (ambience only, funk loop in the director).</param>
         /// <param name="ambience">May be null.</param>
-        public ThemeSession(IEventBus bus, GameObject host, MusicThemeDefinition theme, AmbienceSetDefinition ambience,
+        public ThemeSession(IEventBus bus, GameObject host, LayerSet layers, MusicThemeDefinition theme, AmbienceSetDefinition ambience,
             int sampleRate, float tempoSmoothing, WorldSoundTuning tuning)
         {
             _bus = bus;
+            _layers = layers;
             _theme = theme;
             _ambience = ambience;
             _tuning = tuning;
@@ -47,6 +49,8 @@ namespace UncannyValet.Audio
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftLast30Seconds>(OnLast30);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Subscribe<NextLotChosen>(OnLotOver);
+            _bus.Subscribe<RunCompleted>(OnRunOver);
         }
 
         public void Unsubscribe()
@@ -56,6 +60,8 @@ namespace UncannyValet.Audio
             _bus.Unsubscribe<ShiftStarted>(OnShiftStarted);
             _bus.Unsubscribe<ShiftLast30Seconds>(OnLast30);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
+            _bus.Unsubscribe<NextLotChosen>(OnLotOver);
+            _bus.Unsubscribe<RunCompleted>(OnRunOver);
         }
 
         /// <summary>Sets the base gain (master after mute, times the effect volume) and applies every layer volume.</summary>
@@ -63,7 +69,7 @@ namespace UncannyValet.Audio
         {
             _gain = gain;
             float ambienceScale = gain * _tuning.Ambience * (_theme != null ? _theme.AmbienceVolume : 1f);
-            for (int i = 0; i < _layerSources.Count; i++) _layerSources[i].volume = ambienceScale * _layerLevels[i];
+            for (int i = 0; i < _layerSources.Count; i++) _layerSources[i].SetVolume(ambienceScale * _layerLevels[i]);
             ApplyEscalationVolume();
         }
 
@@ -82,34 +88,38 @@ namespace UncannyValet.Audio
             {
                 var layer = _ambience.Layers[i];
                 if (!AmbienceLoops.IsLoop(layer.Kind)) continue;
-                var source = LoopSource(host, layer.Kind.ToString(), AmbienceLoops.Build(layer.Kind, rate), rate);
+                var source = LoopLayer(host, layer.Kind.ToString(), AmbienceLoops.Build(layer.Kind, rate), rate);
                 _layerSources.Add(source);
                 _layerLevels.Add(layer.Level);
                 source.Play();
             }
         }
 
-        private AudioSource BuildEscalation(GameObject host, int rate)
+        private SourceLayer BuildEscalation(GameObject host, int rate)
         {
             if (_theme == null) return null;
             var loop = EscalationLoops.Build(_theme.EscalationLayer, rate);
-            return loop == null ? null : LoopSource(host, _theme.EscalationLayer.ToString(), loop, rate);
+            return loop == null ? null : LoopLayer(host, _theme.EscalationLayer.ToString(), loop, rate);
         }
 
-        private static AudioSource LoopSource(GameObject host, string name, float[] samples, int rate)
+        private SourceLayer LoopLayer(GameObject host, string name, float[] samples, int rate)
         {
-            var source = host.AddComponent<AudioSource>();
-            source.clip = ClipFactory.Create(name, samples, rate, false);
-            source.loop = true;
-            source.playOnAwake = false;
-            return source;
+            var clip = ClipFactory.Create(name, samples, rate, false);
+            var layer = new SourceLayer(host.AddComponent<AudioSource>(), clip, clip);
+            _layers.Hold(layer);
+            return layer;
         }
 
         private void ApplyEscalationVolume()
         {
             if (_escalationSource == null) return;
-            _escalationSource.volume = _gain * _tuning.Escalation * _theme.EscalationVolume * _rule.LayerLevel;
+            _escalationSource.SetVolume(_gain * _tuning.Escalation * _theme.EscalationVolume * _rule.LayerLevel);
         }
+
+        // The lot is over (the next one loads from the story card): nothing of it may keep sounding.
+        private void OnLotOver(NextLotChosen e) => _layers.SilenceAll();
+
+        private void OnRunOver(RunCompleted e) => _layers.SilenceAll();
 
         private void OnShiftStarted(ShiftStarted e) => StopEscalation();
 
@@ -126,7 +136,7 @@ namespace UncannyValet.Audio
         private void StopEscalation()
         {
             _rule.Reset();
-            if (_escalationSource != null) _escalationSource.Stop();
+            _escalationSource?.Stop();
         }
     }
 }
