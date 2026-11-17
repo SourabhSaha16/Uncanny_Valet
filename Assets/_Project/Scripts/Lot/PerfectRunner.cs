@@ -88,8 +88,8 @@ namespace UncannyValet.Lot
 
         private void OnDelivered(CarDelivered e)
         {
-            if (!_curb.TryGetRotation(e.Car, out var rotation)) return;
-            if (_dropOff.IsPerfect(rotation, _curb.Holds(e.Car), _map.PickupElapsed(e.Car)))
+            if (!_curb.TryGetRotation(e.Car, out var rotation) || !_curb.TryGetOffsetX(e.Car, out var offsetX)) return;
+            if (_dropOff.IsPerfect(rotation, _curb.Holds(e.Car), _map.PickupElapsed(e.Car), offsetX, _curb.Span))
                 _bus.Publish(new PerfectDropOff(e.Car, e.Ticket));
         }
 

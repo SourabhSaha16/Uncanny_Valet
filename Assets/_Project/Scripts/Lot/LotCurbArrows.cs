@@ -19,13 +19,21 @@ namespace UncannyValet.Lot
             root.transform.SetParent(parent, false);
             var arrow = root.AddComponent<CurbArrow>();
             arrow.Init(style);
-            var words = config.CurbLabelWords.Length;
-            var letter = config.LabelCharWidth * config.CurbLabelSize;
-            var half = CurbArrowLayout.TextHalfExtent(words, config.CurbLabelColumnSpacing, letter);
-            var x = CurbArrowLayout.SideX(config.CurbSize.x, half, style.EdgeInset);
+            var x = SideX(config);
             Paint(rects, root.transform, arrow, style, config.CurbPosition + new Vector2(-x, 0f), "W");
             Paint(rects, root.transform, arrow, style, config.CurbPosition + new Vector2(x, 0f), "E");
             return arrow;
+        }
+
+        /// <summary>The strip between the two arrows Build paints for this config (the same maths, so the rule matches the paint).</summary>
+        public static CurbArrowSpan SpanOf(LotConfig config) => new CurbArrowSpan(SideX(config));
+
+        private static float SideX(LotConfig config)
+        {
+            var words = config.CurbLabelWords.Length;
+            var letter = config.LabelCharWidth * config.CurbLabelSize;
+            var half = CurbArrowLayout.TextHalfExtent(words, config.CurbLabelColumnSpacing, letter);
+            return CurbArrowLayout.SideX(config.CurbSize.x, half, config.CurbArrow.EdgeInset);
         }
 
         private static void Paint(RectFactory rects, Transform parent, CurbArrow owner, CurbArrowStyle s, Vector2 centre, string side)
