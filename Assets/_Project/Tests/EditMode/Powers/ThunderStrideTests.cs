@@ -25,8 +25,8 @@ namespace UncannyValet.Tests.Powers
 
         private static PowerLevelValues Values(int level) => PowerDefaults.Values(StoryPower.ThunderStride, level);
 
-        [TestCase(1, 1.6f, 1.5f)]
-        [TestCase(2, 2f, 2.2f)]
+        [TestCase(1, 1.6f, 5f)]
+        [TestCase(2, 2f, 7f)]
         public void TheShippedNumbersFollowTheSpec(int level, float walkSpeed, float boost)
         {
             var v = Values(level);
@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.Powers
         public void ItLastsTheLevelsBoostTime()
         {
             _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket);
-            _stack.Tick(1.4f);
+            _stack.Tick(4.9f);
             Assert.IsTrue(_power.IsActive);
             _stack.Tick(0.2f);
             Assert.IsFalse(_power.IsActive);
@@ -61,9 +61,9 @@ namespace UncannyValet.Tests.Powers
             Assert.AreEqual(1, _bucket.Spent);
             Assert.IsTrue(_power.IsActive);
             Assert.AreEqual(PowerPhase.Active, _stack.PhaseOf(StoryPower.ThunderStride, out _));
-            _stack.Tick(1.4f);
+            _stack.Tick(4.9f);
             Assert.IsTrue(_stack.Cooldowns.IsReady(StoryPower.ThunderStride), "no cooldown while the boost runs");
-            _stack.Tick(0.15f);
+            _stack.Tick(0.2f);
             Assert.IsFalse(_power.IsActive);
             Assert.AreEqual(PowerPhase.Cooling, _stack.PhaseOf(StoryPower.ThunderStride, out var left));
             Assert.AreEqual(1f, left, 0.05f, "the cooldown has barely started");
@@ -76,10 +76,21 @@ namespace UncannyValet.Tests.Powers
         }
 
         [Test]
+        public void AFireWhileTheLongBoostRunsIsRefusedSoItNeverStacksOrRestarts()
+        {
+            _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket);
+            _stack.Tick(3f);
+            Assert.AreEqual(FireResult.NotReady, _stack.TryFire(StoryPower.ThunderStride, 1, Values(1), _bucket));
+            Assert.AreEqual(1, _bucket.Spent, "no bucket spent on the refused fire");
+            _stack.Tick(2.1f);
+            Assert.IsFalse(_power.IsActive, "it still ends 5 s after the first use");
+        }
+
+        [Test]
         public void TheLevel2UseLastsTheLongerBoostThenTheCooldownStarts()
         {
             _stack.TryFire(StoryPower.ThunderStride, 2, Values(2), _bucket);
-            _stack.Tick(2.1f);
+            _stack.Tick(6.9f);
             Assert.IsTrue(_power.IsActive);
             _stack.Tick(0.2f);
             Assert.IsFalse(_power.IsActive);
