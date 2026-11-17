@@ -17,6 +17,7 @@ namespace UncannyValet.UI.Kit
         public static readonly Color OrangeRed = new Color32(0xFF, 0x5A, 0x2A, 255);
         public static readonly Color Green = new Color32(0x4C, 0xCB, 0x5E, 255);
         public static readonly Color Cyan = new Color32(0x38, 0xD6, 0xF0, 255);
+        public static readonly Color Blood = new Color32(0xE0, 0x2F, 0x3C, 255);
         public static readonly Color Grey = new Color32(0x8C, 0x8C, 0x9C, 255);
         public static readonly Color Track = new Color32(0x12, 0x0F, 0x1C, 255);
         public static readonly Color PanelDark = new Color32(0x3A, 0x30, 0x58, 255);

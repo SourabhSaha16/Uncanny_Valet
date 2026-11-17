@@ -56,6 +56,12 @@ namespace UncannyValet.UI.Hud
             };
         }
 
+        /// <summary>Starts a red "-N" curse pop with ready-made text; the prayer hands follow it like a blessing's.</summary>
+        public void StartCurse(Vector2 world, string text, float now)
+        {
+            _pops[FreeOrOldest()] = new Pop { World = world, StartedAt = now, Active = true, Text = text, HasIcon = true, Kind = BlessingPopKind.Curse };
+        }
+
         /// <summary>Starts a pop with ready-made text (the PERFECT! label), in the big look.</summary>
         public void StartLabel(Vector2 world, string text, float now)
         {

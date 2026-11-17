@@ -38,7 +38,7 @@ namespace UncannyValet.UI.Hud
         {
             var screen = camera.WorldToScreenPoint(new Vector3(pop.World.x, pop.World.y, 0f));
             if (screen.z < 0f) return;
-            var scale = pop.Kind == BlessingPopKind.Big ? _settings.BigFontScale : _settings.FontScale;
+            var scale = ScaleOf(pop.Kind);
             var textWidth = PixelTextLayout.Width(pop.Text.Length, scale);
             var width = pop.HasIcon ? textWidth + IconGap + _canvas.IconWidth(PixelIcon.PrayerHands) : textWidth;
             var height = pop.HasIcon ? Math.Max(PixelTextLayout.Height(scale), _canvas.IconHeight(PixelIcon.PrayerHands)) : PixelTextLayout.Height(scale);
@@ -58,10 +58,21 @@ namespace UncannyValet.UI.Hud
             _canvas.Icon(PixelIcon.PrayerHands, x, y, 1, WithAlpha(Color.white, alpha));
         }
 
+        private int ScaleOf(BlessingPopKind kind)
+        {
+            switch (kind)
+            {
+                case BlessingPopKind.Big: return _settings.BigFontScale;
+                case BlessingPopKind.Curse: return _settings.CurseFontScale;
+                default: return _settings.FontScale;
+            }
+        }
+
         private static Color ColorOf(BlessingPopKind kind)
         {
             switch (kind)
             {
+                case BlessingPopKind.Curse: return PixelPalette.Blood;
                 case BlessingPopKind.Big: return PixelPalette.Gold;
                 case BlessingPopKind.Normal: return PixelPalette.Green;
                 default: return PixelPalette.Grey;

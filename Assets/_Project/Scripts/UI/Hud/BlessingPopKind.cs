@@ -5,6 +5,7 @@ namespace UncannyValet.UI.Hud
     {
         Zero,
         Normal,
-        Big
+        Big,
+        Curse
     }
 }
