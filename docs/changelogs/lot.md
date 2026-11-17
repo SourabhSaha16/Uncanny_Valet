@@ -181,3 +181,9 @@ Date: 2026-11-16
 Files: Lot/CurbArrowSpan.cs (new), LotCurbArrows.cs (SpanOf, shared SideX), CurbZone.cs (Span, TryGetOffsetX), DropOffJudge.cs, PerfectRunner.cs, PerfectTuning.cs, PerfectSettings.cs (DropOffArrowTolerance), tests Lot/PerfectJudgeTests.cs.
 Why: Issue #153 (Refs #153), design.md A11 perfect drop-off. A perfect drop-off now also needs the settled car's centre between the two painted arrows: sideways offset from the zone centre within the arrow centre lines plus a tolerance (default 0.25, edge counts). A zone with no arrows has no span and never blocks perfect. The tolerance is an asset setting only (no TuningKey: Core is the lead's).
 Tests: DropOffNeedsTheCarCentreBetweenTheArrows (inside, outside left and right, on the edge), no-arrows case and the old angle/timer cases; EditMode suite passes via tools/run-tests.ps1.
+
+## lot: publish CarParkedInside when a car settles fully inside a bay, SpotGeometry, Refs #157 [Claude]
+Date: 2026-11-16
+Files: Scripts/Lot/{BayFitRule,CarOutline,SpotGeometry}.cs (new), ParkingSpot.cs, SpotBuilder.cs (InnerSize), LotLayoutBuilder.cs (implements ISpotGeometry), PerfectSettings.cs (ParkedInsideTolerance); Tests/EditMode/Lot/{BayFitRuleTests,SpotGeometryTests}.cs
+Why: Issue #157, design.md section 4. A bay publishes CarParkedInside right after CarParked when all four corners of the car box collider lie inside the painted inner rect (spot size less the lines) plus a tolerance (default 0.05, PerfectSettings). Once per CarParked since a re-settle in the same bay is ignored. Regular and EV bays only; wash bays do not publish CarParked. LotLayoutBuilder also implements ISpotGeometry (inner rect, world centre and rotation per bay) for Bootstrap to register.
+Tests: new BayFitRuleTests (inside, touching, each side out, tolerance edge) and SpotGeometryTests; EditMode suite via tools/run-tests.ps1.

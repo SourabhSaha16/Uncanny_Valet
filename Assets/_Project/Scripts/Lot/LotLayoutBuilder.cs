@@ -11,8 +11,10 @@ namespace UncannyValet.Lot
     /// are shown; <see cref="LotExpander"/> opens and closes them with the night plan. Local origin is the lot's own
     /// transform. 0 degrees = car facing +Y (up).
     /// </summary>
-    public class LotLayoutBuilder : MonoBehaviour, ILotLayout
+    public class LotLayoutBuilder : MonoBehaviour, ILotLayout, ISpotGeometry
     {
+        private readonly SpotGeometry _geometry = new SpotGeometry();
+
         private static readonly Color Ground = new Color(0.22f, 0.23f, 0.26f);
         private static readonly Color CurbEdge = new Color(0.95f, 0.78f, 0.15f);
         private static readonly Color CurbFill = new Color(0.55f, 0.42f, 0.12f);
@@ -97,11 +99,16 @@ namespace UncannyValet.Lot
                 var area = charging ? g.ChargingSpots[i - g.Spots.Length] : g.Spots[i];
                 spots[i] = SpotBuilder.Build(rects, transform, c, i + 1, area, charging, _occupancy,
                     _groundColour.a > 0f ? _groundColour : _art != null ? _art.AsphaltColor : (Color?)null, judge);
+                _geometry.Set(i + 1, new SpotBounds(spots[i].transform.position, SpotBuilder.InnerSize(c),
+                    spots[i].transform.eulerAngles.z));
             }
             _expander = gameObject.AddComponent<LotExpander>();
             _expander.Init(_occupancy, spots);
             ValetStartPoint = c.CurbPosition + new Vector2(c.CurbSize.x * 0.5f + c.ValetStartOffset, 0f);
         }
+
+        /// <inheritdoc />
+        public bool TryGetSpot(int spotId, out SpotBounds bay) => _geometry.TryGetSpot(spotId, out bay);
 
         private Color GroundColour() => _groundColour.a > 0f ? _groundColour : _art != null ? _art.AsphaltColor : Ground;
 

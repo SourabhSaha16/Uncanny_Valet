@@ -28,6 +28,11 @@ namespace UncannyValet.Lot
         [SerializeField, Min(0f), Tooltip("Units a car must have moved since it last stopped for a Perfect Park to count again.")]
         private float _parkMinTravel = 3f;
 
+        [Header("Parked inside")]
+        [SerializeField, Min(0f), Tooltip("How far the car collider may stray past the bay edge and still count as parked completely inside.")]
+        private float _parkedInsideTolerance = 0.05f;
+
+        public float ParkedInsideTolerance => _parkedInsideTolerance;
         public float DropOffAngleDegrees => _dropOffAngleDegrees;
         public float DropOffTimerShare => _dropOffTimerShare;
         public float DropOffArrowTolerance => _dropOffArrowTolerance;
