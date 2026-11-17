@@ -15,9 +15,10 @@ namespace UncannyValet.UI.Hud
             return whole > 0;
         }
 
-        /// <summary>The pop colour of a source: its own tint pulled toward gold by <paramref name="goldPull"/>, so the set stays subtle.</summary>
-        public static Color ColorOf(PowerFillSource source, float goldPull)
+        /// <summary>The pop colour of a source: its own tint pulled toward gold by <paramref name="goldPull"/>, so the set stays subtle; a Perfect Park is the shared bay-border green, unpulled.</summary>
+        public static Color ColorOf(PowerFillSource source, float goldPull, Color perfectColor)
         {
+            if (source == PowerFillSource.PerfectPark) return perfectColor;
             return Color.Lerp(TintOf(source), PowerColors.Gold, goldPull);
         }
 

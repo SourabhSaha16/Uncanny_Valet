@@ -15,9 +15,11 @@ namespace UncannyValet.UI.Hud
         private readonly PowerFillPops _pops;
         private readonly PowerFillPopSettings _settings;
         private readonly PowerBarTracker _bar;
+        private readonly Color _perfectColor;
 
-        public PowerFillPopPainter(PixelCanvas canvas, PowerFillPops pops, PowerFillPopSettings settings, PowerBarTracker bar)
+        public PowerFillPopPainter(PixelCanvas canvas, PowerFillPops pops, PowerFillPopSettings settings, PowerBarTracker bar, Color perfectColor)
         {
+            _perfectColor = perfectColor;
             _canvas = canvas;
             _pops = pops;
             _settings = settings;
@@ -45,7 +47,7 @@ namespace UncannyValet.UI.Hud
             var x = right - (textWidth + BoltGap + BoltGlyph.Width);
             var y = PowerBarPainter.BarTop + PowerBarPainter.BarHeight / 2 + pop.Slot * _settings.SlotSpacingPixels - rise;
             var alpha = BlessingPopText.Alpha(age, _settings.DurationSeconds, _settings.HoldFraction);
-            var color = PowerFillPopRule.ColorOf(pop.Source, _settings.GoldPull);
+            var color = PowerFillPopRule.ColorOf(pop.Source, _settings.GoldPull, _perfectColor);
             var shadow = PixelCanvas.ShadowOffset(scale);
             var textY = y + (BoltGlyph.Height - PixelTextLayout.Height(scale)) / 2;
             _canvas.Text(pop.Text, x + shadow, textY + shadow, WithAlpha(PixelPalette.Ink, alpha), scale, false);

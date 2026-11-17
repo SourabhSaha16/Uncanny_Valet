@@ -6,14 +6,12 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// The corner HUD from the style guide's Scene 10: shift clock top centre, the blessing count with its bar and threshold top left,
+    /// The corner HUD from the style guide's Scene 10: the blessing count with its bar and threshold top left with the shift clock tab hanging under it,
     /// favour badge top right. Strings are cached and rebuilt only when a number changes.
     /// </summary>
     public sealed class HudPainter
     {
         private const int Margin = HudLayout.Margin;
-        private const int ClockWidth = 58;
-        private const int ClockHeight = 22;
         private const int BigScale = 2;
         private const int MinFavourShown = 2;
         private const float BlinkPeriod = 0.5f;
@@ -23,6 +21,7 @@ namespace UncannyValet.UI.Hud
         private readonly IGameClock _clock;
         private readonly IShiftBlessingsView _blessingsView;
         private readonly ILotGoal _goal;
+        private readonly ClockSettings _clockSettings;
         private readonly StringBuilder _clockText = new StringBuilder(8);
         private readonly CachedText _blessings = new CachedText(string.Empty);
         private readonly StringBuilder _goalText = new StringBuilder(12);
@@ -35,8 +34,9 @@ namespace UncannyValet.UI.Hud
         private float _favourRisenAt = NeverRisen;
 
         /// <param name="goal">The lot goal that sets the bar and the threshold; null draws the count only.</param>
-        public HudPainter(PixelCanvas canvas, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal)
+        public HudPainter(PixelCanvas canvas, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ClockSettings clockSettings = null)
         {
+            _clockSettings = clockSettings ?? new ClockSettings();
             _canvas = canvas;
             _clock = clock;
             _blessingsView = blessings;
@@ -59,13 +59,14 @@ namespace UncannyValet.UI.Hud
                 _clockText.Clear();
                 ClockText.Write(_clockText, seconds);
             }
-            var x = (PixelGrid.Width - ClockWidth) / 2;
-            _canvas.Panel(x, Margin - 1, ClockWidth, ClockHeight, PixelPalette.PanelDark);
+            var x = ClockLayout.X(_clockSettings.InsetPixels);
+            _canvas.Panel(x, ClockLayout.Y(_clockSettings.GapPixels), ClockLayout.Width, ClockLayout.Height, PixelPalette.PanelDark);
             var level = Alarm.ForClock(seconds);
             var flash = level == AlarmLevel.Danger && !Blink.IsOn(time, BlinkPeriod);
             var color = flash ? PixelPalette.Cream : AlarmColors.For(level, PixelPalette.Cream);
             var width = PixelTextLayout.Width(_clockText.Length, BigScale);
-            _canvas.Text(_clockText, PixelTextLayout.Centered(x, ClockWidth, width), Margin + 4, color, BigScale);
+            _canvas.Text(_clockText, PixelTextLayout.Centered(x, ClockLayout.Width, width),
+                ClockLayout.TextY(_clockSettings.GapPixels, PixelTextLayout.Height(BigScale)), color, BigScale);
         }
 
         private void DrawBlessings(float time)

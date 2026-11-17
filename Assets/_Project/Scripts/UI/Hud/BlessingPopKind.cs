@@ -6,6 +6,8 @@ namespace UncannyValet.UI.Hud
         Zero,
         Normal,
         Big,
-        Curse
+        Curse,
+        /// <summary>The PERFECT! label: big, in the bay-border green.</summary>
+        Perfect
     }
 }

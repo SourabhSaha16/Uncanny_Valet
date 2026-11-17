@@ -44,20 +44,22 @@ namespace UncannyValet.UI.Hud
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
             BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null, PickupPieSettings pickupPie = null,
-            ISpotGeometry spots = null, BayBorderSettings bayBorder = null, PowerFillPopSettings powerFillPop = null)
+            ISpotGeometry spots = null, BayBorderSettings bayBorder = null, PowerFillPopSettings powerFillPop = null,
+            ClockSettings clockSettings = null)
         {
+            var perfectGreen = style.ColorOf(Emotion.Happy); // the bay border's green flash: one colour for every perfect cue
             if (spots != null)
-                _bayBorders = new BayBorderLayer(bus, spots, cars, style, bayBorder ?? new BayBorderSettings(), style.ColorOf(Emotion.Happy), UnscaledTime);
+                _bayBorders = new BayBorderLayer(bus, spots, cars, style, bayBorder ?? new BayBorderSettings(), perfectGreen, UnscaledTime);
             _powerTracker = new PowerBarTracker(bus, powerBar, goal: goal);
             _power = new PowerBarPainter(canvas, _powerTracker);
             var fillSettings = powerFillPop ?? new PowerFillPopSettings();
             var fillPops = new PowerFillPops(fillSettings);
             _fillPopTracker = new PowerFillPopTracker(bus, fillPops, UnscaledTime);
-            _fillPops = new PowerFillPopPainter(canvas, fillPops, fillSettings, _powerTracker);
+            _fillPops = new PowerFillPopPainter(canvas, fillPops, fillSettings, _powerTracker, perfectGreen);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
             _board = new TicketBoard(bus, Services.Get<IModifierCatalog>());
-            _hud = new HudPainter(canvas, clock, blessings, goal);
+            _hud = new HudPainter(canvas, clock, blessings, goal, clockSettings);
             _notices = new NoticePainter(canvas);
             _world = new WorldTicketPainter(canvas, cars);
             _pies = new PickupPieLayer(cars, style, pickupPie ?? new PickupPieSettings());
@@ -65,7 +67,7 @@ namespace UncannyValet.UI.Hud
             var pops = new BlessingPops(blessingPop);
             _blessingPopTracker = new BlessingPopTracker(bus, cars, pops, blessingPop, UnscaledTime);
             _cursePopTracker = new CursePopTracker(bus, pops, blessingPop, UnscaledTime, FrameCount);
-            _blessingPops = new BlessingPopPainter(canvas, pops, blessingPop);
+            _blessingPops = new BlessingPopPainter(canvas, pops, blessingPop, perfectGreen);
             _curbHints = new CurbHintTracker(bus);
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
