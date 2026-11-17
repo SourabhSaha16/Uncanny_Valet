@@ -1222,3 +1222,9 @@ Date: 2026-11-17
 Files: site/, docs/changelogs/lead.md
 Why: player-visible changes #171 to #173 (design.md log 2026-11-17).
 Tests: EditMode 2033/2033, PlayMode 89/89, web build exit 0 (build-info commit 9b9c526); local smoke test: title, how-to-play and the Midgard intro show plain backgrounds and the edited text.
+
+## lead: raise the skid mark fade F2 range to 60 s, Refs #175 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Contracts/HandlingRows.cs, docs/changelogs/lead.md
+Why: tyre marks should stay 30 s; the F2 row topped out at 20 s.
+Tests: EditMode run at the merge.

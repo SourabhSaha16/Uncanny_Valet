@@ -31,7 +31,7 @@ namespace UncannyValet.Core.Contracts
                 "Holding Shift above this speed leaves skid marks even when the car is not sliding much."),
             new TuningInfo(TuningKey.HandlingMarkOpacity, Group, "Skid mark darkness", 0.1f, 1f, 0.05f,
                 "How dark the marks of a full drift are. Gentle slides are fainter."),
-            new TuningInfo(TuningKey.HandlingMarkFadeSeconds, Group, "Skid mark fade time (s)", 1f, 20f, 0.5f,
+            new TuningInfo(TuningKey.HandlingMarkFadeSeconds, Group, "Skid mark fade time (s)", 1f, 60f, 0.5f,
                 "Seconds a skid mark takes to fade away."),
             new TuningInfo(TuningKey.HandlingTopSpeedScale, Group, "Top speed (x car's own)", 0.5f, 2f, 0.05f,
                 "Multiplies every car's top speed. 1 keeps each car's own value, so cars still differ from each other."),
