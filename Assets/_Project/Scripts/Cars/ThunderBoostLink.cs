@@ -8,7 +8,7 @@ namespace UncannyValet.Cars
 {
     /// <summary>
     /// Reacts to PowerActivated(ThunderStride) while the valet drives a car: puts a <see cref="ThunderBoostModifier"/> built from
-    /// the level's numbers on that car (top speed in PushStrength, acceleration in Width) and takes it off when the power ends,
+    /// the level's numbers on that car (top speed in PushStrength, acceleration in Width; grip loss and turn fall-off kept from the handling numbers) and takes it off when the power ends,
     /// the valet gets out, or the car is gone. Collisions and damage are untouched.
     /// </summary>
     public sealed class ThunderBoostLink : IDisposable
@@ -66,7 +66,8 @@ namespace UncannyValet.Cars
             if (!_cars.TryGet(_drivenCar, out var car) || car.Transform == null || !car.Transform.TryGetComponent(out CarDriver driver)) return;
             Clear();
             _boosted = driver;
-            _modifier = new ThunderBoostModifier(values.PushStrength, values.Width);
+            _modifier = new ThunderBoostModifier(values.PushStrength, values.Width,
+                driver.Handling?.ThunderGripLossKept ?? 1f, driver.Handling?.ThunderTurnFalloffKept ?? 1f);
             driver.Modifiers.Add(_modifier);
         }
 

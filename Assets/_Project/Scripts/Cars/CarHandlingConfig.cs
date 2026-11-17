@@ -56,6 +56,12 @@ namespace UncannyValet.Cars
         [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's reverse top speed.")]
         private float _reverseScale = 1f;
 
+        [Header("Thunder stride boost handling (issue 167)")]
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the speed-based grip loss kept while the Thunder stride boost runs (1 = unchanged, 0.4 = 40% of the loss).")]
+        private float _thunderGripLossKept = 0.4f;
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the turn-rate fall-off with speed kept while the boost runs (0 = off, the car turns as at low speed; 1 = unchanged).")]
+        private float _thunderTurnFalloffKept = 0f;
+
         [Header("Car-on-car bounce")]
         [SerializeField, Range(0f, 1f), Tooltip("Restitution between two cars: 0 = dead stop, 1 = perfect rubber. Walls and the valet are unchanged.")]
         private float _bounciness = 0.4f;
@@ -76,6 +82,11 @@ namespace UncannyValet.Cars
 
         [Header("Skid marks and tyre sound (section 6)")]
         [SerializeField] private SkidConfig _skid = new SkidConfig();
+
+        /// <summary>Share of the speed grip loss kept during the Thunder stride boost.</summary>
+        public float ThunderGripLossKept => _thunderGripLossKept;
+        /// <summary>Share of the turn fall-off kept during the Thunder stride boost (0 = off).</summary>
+        public float ThunderTurnFalloffKept => _thunderTurnFalloffKept;
 
         /// <summary>Smallest impact force (units per second) that damages a car.</summary>
         public float DamageMinForce => _damageMinForce;

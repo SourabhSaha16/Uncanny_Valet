@@ -67,3 +67,9 @@ Date: 2026-11-16
 Files: Valet: ThunderAura, ThunderAuraClock, ThunderAuraTiming, ThunderAuraLook, AuraTint, AuraGlow (new), ThunderDash (owns the glow, ShiftEnded clears it); Powers: PowerDefaults (boost 5 s level 1, 7 s level 2); Data/Powers/ThunderStrideDefinition.asset (same durations); Tests: ThunderAuraClockTests, ThunderAuraPlayModeTests (new), ThunderStrideTests (timings, no-stack test).
 Why: issue #150. The boost ended too fast and was hard to see. It now lasts 5 s (7 s at level 2, still tunable in F2 Advanced) and the valet, or the car he drives, gets a pulsing golden tint (MaterialPropertyBlock), a soft glow under it and a steady spray of lightning sparks for the whole boost, blinking in the last second. The cooldown still starts when the boost ends and a fire during the boost is refused, so nothing stacks. The glow clears on PowerEnded, ShiftEnded, disable and destroy, and follows car enter and exit.
 Tests: EditMode 1916 passed (clock range, warning window, clear, restart); PlayMode 83 passed (tint and glow on, off at PowerEnded and ShiftEnded, no leaked glow object); RunBatch ok (scene and asset churn reverted).
+
+## valet: Thunder stride eases grip loss and turn fall-off [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/DriveInput.cs, SteeringModel.cs, CarDriver.cs, ThunderBoostModifier.cs, ThunderBoostLink.cs, CarHandlingConfig.cs, CarHandlingLive.cs (Cars, authorised by the lead for issue #167); Assets/_Project/Tests/EditMode/Cars/ThunderBoostTests.cs
+Why: Refs #167. While the in-car Thunder stride boost runs, the turn-rate fall-off is switched off (TurnFalloffScale 0) and speed grip loss is scaled by a configurable share (docs/redesign/car_handling_spec.md sections 2 and 3).
+Tests: EditMode ThunderBoostTests extended (falloff off, grip scale applied, normal values return after the boost ends).
