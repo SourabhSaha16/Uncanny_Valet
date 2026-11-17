@@ -1078,3 +1078,9 @@ Date: 2026-11-16
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #147 #148 #149 #150. Beta now includes the level audio reset, wash bays beside the lot, the shared mud symbol and the longer, visible first power.
 Tests: tools/build-web.ps1 exit 0, build-info shows 06dd88a; EditMode and PlayMode (85 of 85) passed on the same code; browser smoke test: Midgard training loads, no console errors. Vanaheim lots (F4 did not open the picker in the pane), audio and the power effect were not checked in the browser.
+
+## lead: merge agent/lot-perfect-arrows and agent/curse-pop, Refs #152 #153 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merges of the lot and UI branches)
+Why: Issues #152 and #153. Perfect drop-off needs the car between the curb arrows; curses show a -N pop.
+Tests: EditMode passed on the merged tree (exit 0). PlayMode and site rebuild wait for the cars work (#151).
