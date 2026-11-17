@@ -50,7 +50,8 @@ namespace UncannyValet.Patrons
             _liveTuning = Services.Get<ITuning>();
             _catalog = Services.Get<IModifierCatalog>();
             var tuning = _tuning = new PatronTuning(_liveTuning, _config);
-            _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog);
+            Services.TryGet<ILotSnapshotSource>(out var lotView);
+            _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog, lotView);
             _clock = Services.Get<IGameClock>();
             Services.TryGet<IShiftBlessingsView>(out var score);
             Registry = new TicketRegistry(_bus, _clock, Services.Get<IBlessingCalculator>(), tuning, score, _catalog);
@@ -123,6 +124,7 @@ namespace UncannyValet.Patrons
             var kind = Services.TryGet<IRunProgress>(out var run) && run.HasCurrentLot ? run.CurrentLot.Kind : LotKind.None;
             _pacing = ArrivalPacings.For(kind, _config.TopUpSpacingMinutes);
             _pacing.Reset();
+            _roller.ResetShift();
             _nextArrivalMinute = 0f;
             _hasPending = false;
         }

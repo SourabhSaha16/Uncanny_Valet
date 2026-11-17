@@ -19,6 +19,9 @@ namespace UncannyValet.Patrons
         [SerializeField, Min(0)] [FormerlySerializedAs("_baseTip")] private int _baseBlessing = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
+        [SerializeField, Min(0), Tooltip("Clean cars that must arrive between two muddy ones in a shift, so mud never comes back to back. 0 turns the rule off.")]
+        private int _cleanCarsBetweenDirty = 1;
+
         [Tooltip("The shift plan's starting cap on cars waiting to be parked, which the Patron Director reads. The queue itself holds up to Pickup.MaxQueuedCars.")]
         [SerializeField, Range(1, 4)] private int _maxWaitingCars = 3;
 
@@ -58,6 +61,7 @@ namespace UncannyValet.Patrons
         public Vector2 StayRange => _stayRange;
         public int BaseBlessing => _baseBlessing;
         public float ImpatientChance => _impatientChance;
+        public int CleanCarsBetweenDirty => _cleanCarsBetweenDirty;
         public float PickupWindowMinutes => _pickupWindowMinutes;
         public float ImpatientWindowScale => _impatientWindowScale;
     }
