@@ -10,7 +10,7 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void Wrap_BreaksAtSpacesAndNeverExceedsTheLimit()
         {
-            const string text = "Customer cars will sometimes have SPECIAL REQUESTs like car wash or EV charging";
+            const string text = "Customer cars will sometimes have SPECIAL REQUESTs like a car wash";
             var spans = new List<WordWrap.Span>();
             WordWrap.Wrap(text, 30, spans);
             Assert.Greater(spans.Count, 1);

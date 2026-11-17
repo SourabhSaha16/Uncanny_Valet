@@ -271,3 +271,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/ShiftEndCleanup.cs (new), CarFactory.cs (DespawnAll, subscription created in Start, disposed in OnDestroy); Tests/EditMode/Cars/ShiftEndCleanupTests.cs, Tests/PlayMode/ShiftEndDespawnTests.cs (new, + .meta)
 Why: cars leaving at the end of a shift drove off screen behind the results screen. Despawn goes through the existing CarFactory.Despawn, so seats, stations and trips are released by the destroyed car as before; PatronDeparture's later drive-away call finds no car and does nothing. Ambient traffic is untouched.
 Tests: EditMode 2008 passed; PlayMode ShiftEndDespawnTests passed (full PlayMode 84 of 86; PowerBarPlayModeTests.FreezeTime_Owned... and VanaheimStormWindPlayModeTests.WithStormWindOwned... fail in power-bucket asserts, areas this change does not touch).
+
+## ui: plain background for title and how-to, lot intro and EV text fixes [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Screens/TitlePainter.cs, HowToPlayPainter.cs, HowToPlayText.cs, Editor/StoryTextDrafts.cs, Data/UI/StoryText.asset, Tests/EditMode/UI/HowToPlayTests.cs
+Why: Refs #171 #172. Title and how-to-play now fill the screen with PixelPalette.PanelDark instead of veiling the lot; removed the Thor line from the Midgard training intro and the EV charging words from the how-to-play special-requests line.
+Tests: EditMode suite passed; RunBatch ran (its unrelated scene/config rewrites were reverted).

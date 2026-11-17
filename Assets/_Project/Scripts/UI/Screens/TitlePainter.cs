@@ -5,7 +5,7 @@ namespace UncannyValet.UI.Screens
 {
     /// <summary>
     /// The title screen from the style guide's Scene 13: VALET TO VALHALLA in big chunky letters (two lines, so
-    /// each fits the canvas) over the (still) lot, a row of key tags, and a blinking PRESS ANY KEY. Mrs. Okafor and the cast are left for real art.
+    /// each fits the canvas) on a plain full-screen panel colour (as on the how-to-play screen), a row of key tags, and a blinking PRESS ANY KEY. Mrs. Okafor and the cast are left for real art.
     /// </summary>
     public sealed class TitlePainter
     {
@@ -28,7 +28,6 @@ namespace UncannyValet.UI.Screens
         private const int PromptTop = 224;
         private const int PromptScale = 2;
         private const float BlinkPeriod = 1f;
-        private static readonly Color Veil = new Color(0f, 0f, 0f, 0.35f);
 
         private readonly PixelCanvas _canvas;
 
@@ -40,7 +39,7 @@ namespace UncannyValet.UI.Screens
         /// <param name="picker">The developer lot picker; null draws no list.</param>
         public void Draw(float time, TitlePicker picker = null)
         {
-            _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, Veil);
+            _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, PixelPalette.PanelDark);
             DrawCentered(Line1, Line1Top, TitleScale, PixelPalette.Gold);
             DrawCentered(Line2, Line2Top, TitleScale, PixelPalette.OrangeRed);
             DrawTags();

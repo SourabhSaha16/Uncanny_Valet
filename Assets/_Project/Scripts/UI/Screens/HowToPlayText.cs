@@ -12,7 +12,7 @@ namespace UncannyValet.UI.Screens
             "You are a Valet at a busy diner",
             "Customers will DROP OFF their car and then PICK UP after a while",
             "You earn BLESSINGS only for PICK UPs, NOT for DROP OFFs",
-            "Customer cars will sometimes have SPECIAL REQUESTs like car wash or EV charging",
+            "Customer cars will sometimes have SPECIAL REQUESTs like a car wash",
             "Completing these requests will earn bonus BLESSINGS"
         };
 
