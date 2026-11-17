@@ -69,13 +69,12 @@ namespace UncannyValet.Lot
             _bus.Subscribe<TuningChanged>(OnTuning);
         }
 
-        /// <summary>A car came to rest in this bay (called by the bay once it has published CarParked).</summary>
-        public void Parked(Transform bay, IDrivable car)
+        /// <summary>A car came to rest in this bay (called by the bay once it has published CarParked); <paramref name="inside"/> is whether it rests completely inside the bay box.</summary>
+        public void Parked(Transform bay, IDrivable car, bool inside)
         {
             var pose = car.Transform;
-            var local = bay.InverseTransformPoint(pose.position);
             var angle = Mathf.DeltaAngle(bay.eulerAngles.z, pose.eulerAngles.z);
-            var verdict = _park.Judge(angle, local.x, local.y, IsTouching(pose));
+            var verdict = _park.Judge(angle, inside, IsTouching(pose));
             if (!_gate.Rest(car.Id, Time.time, pose.position, verdict == ParkVerdict.Perfect)) return;
             _bus.Publish(new PerfectPark(car.Id, _map.TicketOf(car.Id)));
         }

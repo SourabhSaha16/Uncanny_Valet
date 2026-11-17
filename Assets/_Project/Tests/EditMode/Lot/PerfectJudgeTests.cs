@@ -79,22 +79,22 @@ namespace UncannyValet.Tests.Lot
             Assert.AreEqual(span.Contains(x, 0f), span.Contains(-x, 0f));
         }
 
-        [TestCase(0f, 0f, 0f, false, ParkVerdict.Perfect)]
-        [TestCase(180f, 0.1f, -0.2f, false, ParkVerdict.Perfect)]
-        [TestCase(4f, 0f, 0f, false, ParkVerdict.Perfect)]
-        [TestCase(176f, 0f, 0f, false, ParkVerdict.Perfect)]
-        [TestCase(-4f, 0f, 0f, false, ParkVerdict.Perfect)]
-        [TestCase(10f, 0.3f, 0.6f, false, ParkVerdict.Perfect)]
-        [TestCase(-190f, -0.3f, -0.6f, false, ParkVerdict.Perfect)]
-        [TestCase(14f, 0f, 0f, false, ParkVerdict.Crooked)]
-        [TestCase(14f, 0.3f, 0.6f, false, ParkVerdict.Crooked)]
-        [TestCase(90f, 0f, 0f, false, ParkVerdict.Crooked)]
-        [TestCase(0f, 0.4f, 0f, false, ParkVerdict.OffCentreSide)]
-        [TestCase(0f, -0.4f, 0f, false, ParkVerdict.OffCentreSide)]
-        [TestCase(0f, 0f, 0.8f, false, ParkVerdict.OffCentreLength)]
-        [TestCase(0f, 0f, 0f, true, ParkVerdict.Touching)]
-        public void ParkJudgeChecksAngleOffsetsAndContact(float angle, float side, float length, bool touching, ParkVerdict expected) =>
-            Assert.AreEqual(expected, new ParkJudge(_tuning).Judge(angle, side, length, touching));
+        // Arguments: angle, inside the bay box, touching. Where the car sits inside the box does not matter.
+        [TestCase(0f, true, false, ParkVerdict.Perfect)]
+        [TestCase(180f, true, false, ParkVerdict.Perfect)]
+        [TestCase(4f, true, false, ParkVerdict.Perfect)]
+        [TestCase(176f, true, false, ParkVerdict.Perfect)]
+        [TestCase(-4f, true, false, ParkVerdict.Perfect)]
+        [TestCase(5f, true, false, ParkVerdict.Perfect)]
+        [TestCase(-190f, true, false, ParkVerdict.Perfect)]
+        [TestCase(14f, true, false, ParkVerdict.Crooked)]
+        [TestCase(14f, false, false, ParkVerdict.Crooked)]
+        [TestCase(90f, true, false, ParkVerdict.Crooked)]
+        [TestCase(0f, false, false, ParkVerdict.OutsideBay)]
+        [TestCase(5f, false, false, ParkVerdict.OutsideBay)]
+        [TestCase(0f, true, true, ParkVerdict.Touching)]
+        public void ParkJudgeChecksAngleBoxAndContact(float angle, bool inside, bool touching, ParkVerdict expected) =>
+            Assert.AreEqual(expected, new ParkJudge(_tuning).Judge(angle, inside, touching));
 
         [Test]
         public void AxisDeviationTreatsNoseInAndTailInAlike()

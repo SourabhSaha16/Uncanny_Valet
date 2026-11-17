@@ -6,13 +6,16 @@ namespace UncannyValet.Lot
     /// <summary>The live Perfect Park and Perfect drop-off thresholds: seeded into the tuning store and kept in step with the F2 panel.</summary>
     public sealed class PerfectTuning
     {
+        // Retired keys: the Perfect Park rule no longer reads them, but Core's F2 rows still list them and the catalog
+        // requires every row to be seeded. Remove with the rows (a Core change) and keep the enum values (append-only).
+        private const float RetiredSideOffsetSeed = 0.35f;
+        private const float RetiredLengthOffsetSeed = 0.7f;
+
         public float DropOffAngle { get; private set; }
         public float DropOffTimerShare { get; private set; }
         /// <summary>Sideways slack past each curb arrow's centre line for the car centre (not an F2 key; set from the asset).</summary>
         public float DropOffArrowTolerance { get; private set; }
         public float ParkAngle { get; private set; }
-        public float ParkSideOffset { get; private set; }
-        public float ParkLengthOffset { get; private set; }
         public float ParkCooldown { get; private set; }
         public float ParkMinTravel { get; private set; }
 
@@ -22,8 +25,6 @@ namespace UncannyValet.Lot
             DropOffTimerShare = s.DropOffTimerShare;
             DropOffArrowTolerance = s.DropOffArrowTolerance;
             ParkAngle = s.ParkAngleDegrees;
-            ParkSideOffset = s.ParkSideOffset;
-            ParkLengthOffset = s.ParkLengthOffset;
             ParkCooldown = s.ParkCooldownSeconds;
             ParkMinTravel = s.ParkMinTravel;
         }
@@ -34,8 +35,8 @@ namespace UncannyValet.Lot
             t.Seed(TuningKey.PerfectDropOffAngle, DropOffAngle);
             t.Seed(TuningKey.PerfectDropOffTimerShare, DropOffTimerShare);
             t.Seed(TuningKey.PerfectParkAngle, ParkAngle);
-            t.Seed(TuningKey.PerfectParkSideOffset, ParkSideOffset);
-            t.Seed(TuningKey.PerfectParkLengthOffset, ParkLengthOffset);
+            t.Seed(TuningKey.PerfectParkSideOffset, RetiredSideOffsetSeed);
+            t.Seed(TuningKey.PerfectParkLengthOffset, RetiredLengthOffsetSeed);
             t.Seed(TuningKey.PerfectParkCooldown, ParkCooldown);
             t.Seed(TuningKey.PerfectParkMinTravel, ParkMinTravel);
         }
@@ -55,8 +56,6 @@ namespace UncannyValet.Lot
                 case TuningKey.PerfectDropOffAngle: DropOffAngle = value; return true;
                 case TuningKey.PerfectDropOffTimerShare: DropOffTimerShare = value; return true;
                 case TuningKey.PerfectParkAngle: ParkAngle = value; return true;
-                case TuningKey.PerfectParkSideOffset: ParkSideOffset = value; return true;
-                case TuningKey.PerfectParkLengthOffset: ParkLengthOffset = value; return true;
                 case TuningKey.PerfectParkCooldown: ParkCooldown = value; return true;
                 case TuningKey.PerfectParkMinTravel: ParkMinTravel = value; return true;
                 default: return false;
