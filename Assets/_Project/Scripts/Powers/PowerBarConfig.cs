@@ -14,6 +14,9 @@ namespace UncannyValet.Powers
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one Perfect Park.")]
         private float _fillPerfectPark = 18f;
 
+        [SerializeField, Range(0f, 100f), Tooltip("Bar gained when a car is parked inside a bay. A Perfect Park adds this too.")]
+        private float _fillParkedInside = 4f;
+
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one perfect drop-off.")]
         private float _fillPerfectDropOff = 10f;
 
@@ -32,6 +35,7 @@ namespace UncannyValet.Powers
         private List<PowerDefinition> _definitions = new List<PowerDefinition>();
 
         public float FillPerfectPark => _fillPerfectPark;
+        public float FillParkedInside => _fillParkedInside;
         public float FillPerfectDropOff => _fillPerfectDropOff;
         public float FillDriftPerSecond => _fillDriftPerSecond;
         public float FillDriftCap => _fillDriftCap;
@@ -49,6 +53,7 @@ namespace UncannyValet.Powers
         public void SeedInto(ITuning t)
         {
             t.Seed(TuningKey.PowerFillPerfectPark, _fillPerfectPark);
+            t.Seed(TuningKey.PowerFillParkedInside, _fillParkedInside);
             t.Seed(TuningKey.PowerFillPerfectDropOff, _fillPerfectDropOff);
             t.Seed(TuningKey.PowerFillDriftPerSecond, _fillDriftPerSecond);
             t.Seed(TuningKey.PowerFillDriftCap, _fillDriftCap);

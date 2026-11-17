@@ -12,6 +12,7 @@ namespace UncannyValet.Powers
         public PowerSettings(PowerBarConfig config)
         {
             FillPerfectPark = config.FillPerfectPark;
+            FillParkedInside = config.FillParkedInside;
             FillPerfectDropOff = config.FillPerfectDropOff;
             FillDriftPerSecond = config.FillDriftPerSecond;
             FillDriftCap = config.FillDriftCap;
@@ -22,6 +23,7 @@ namespace UncannyValet.Powers
         }
 
         public float FillPerfectPark { get; private set; }
+        public float FillParkedInside { get; private set; }
         public float FillPerfectDropOff { get; private set; }
         public float FillDriftPerSecond { get; private set; }
         public float FillDriftCap { get; private set; }
@@ -59,6 +61,7 @@ namespace UncannyValet.Powers
             switch (key)
             {
                 case TuningKey.PowerFillPerfectPark: FillPerfectPark = value; return true;
+                case TuningKey.PowerFillParkedInside: FillParkedInside = value; return true;
                 case TuningKey.PowerFillPerfectDropOff: FillPerfectDropOff = value; return true;
                 case TuningKey.PowerFillDriftPerSecond: FillDriftPerSecond = value; return true;
                 case TuningKey.PowerFillDriftCap: FillDriftCap = value; return true;

@@ -217,6 +217,7 @@ namespace UncannyValet.Tests.Powers
                 var lot = fx.Lot(World.Midgard, LotKind.Crazy);
                 var so = new UnityEditor.SerializedObject(lot);
                 so.FindProperty("_powerFill._perfectPark").floatValue = 25f;
+                so.FindProperty("_powerFill._parkedInside").floatValue = 7f;
                 so.FindProperty("_powerFill._perfectDropOff").floatValue = 12f;
                 so.FindProperty("_powerFill._driftPerSecond").floatValue = 1.5f;
                 so.FindProperty("_powerFill._driftCap").floatValue = 6f;
@@ -224,6 +225,7 @@ namespace UncannyValet.Tests.Powers
                 var tuning = new TuningStore(new EventBus());
                 TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, powers: _config, lot: lot);
                 Assert.AreEqual(25f, tuning.Get(TuningKey.PowerFillPerfectPark));
+                Assert.AreEqual(7f, tuning.Get(TuningKey.PowerFillParkedInside));
                 Assert.AreEqual(12f, tuning.Get(TuningKey.PowerFillPerfectDropOff));
                 Assert.AreEqual(1.5f, tuning.Get(TuningKey.PowerFillDriftPerSecond));
                 Assert.AreEqual(6f, tuning.Get(TuningKey.PowerFillDriftCap));
@@ -231,6 +233,7 @@ namespace UncannyValet.Tests.Powers
                 var plain = new TuningStore(new EventBus());
                 TuningSeeder.Seed(plain, shift, patrons, blessings, 6, powers: _config);
                 Assert.AreEqual(18f, plain.Get(TuningKey.PowerFillPerfectPark), "no lot: the config numbers");
+                Assert.AreEqual(4f, plain.Get(TuningKey.PowerFillParkedInside), "no lot: the config number");
             }
             finally
             {

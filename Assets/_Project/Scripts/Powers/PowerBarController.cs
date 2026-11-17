@@ -90,6 +90,7 @@ namespace UncannyValet.Powers
         private void Publish(int spentBucket) => _bus.Publish(new PowerBarChanged(Bar.Value, Bar.OpenBuckets, spentBucket));
 
         private void OnPerfectPark(PerfectPark e) => Fill(Settings.FillPerfectPark);
+        private void OnParkedInside(CarParkedInside e) => Fill(Settings.FillParkedInside);
         private void OnPerfectDropOff(PerfectDropOff e) => Fill(Settings.FillPerfectDropOff);
         private void OnSlideStarted(CarSlideStarted e) => _drift.Begin(e.Car);
         private void OnSlideEnded(CarSlideEnded e) => _drift.End(e.Car);
@@ -107,6 +108,7 @@ namespace UncannyValet.Powers
             if (_subscribed) return;
             _subscribed = true;
             _bus.Subscribe<PerfectPark>(OnPerfectPark);
+            _bus.Subscribe<CarParkedInside>(OnParkedInside);
             _bus.Subscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Subscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Subscribe<CarSlideEnded>(OnSlideEnded);
@@ -119,6 +121,7 @@ namespace UncannyValet.Powers
             if (!_subscribed) return;
             _subscribed = false;
             _bus.Unsubscribe<PerfectPark>(OnPerfectPark);
+            _bus.Unsubscribe<CarParkedInside>(OnParkedInside);
             _bus.Unsubscribe<PerfectDropOff>(OnPerfectDropOff);
             _bus.Unsubscribe<CarSlideStarted>(OnSlideStarted);
             _bus.Unsubscribe<CarSlideEnded>(OnSlideEnded);

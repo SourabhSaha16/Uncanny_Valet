@@ -62,3 +62,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Economy/SlightCurseRule.cs, PedestrianCurseRule.cs (Covers), ShiftBlessings.cs; Core/Events/TuningKey.cs (appended PedestrianSlightCurseAmount); Core/Contracts/PedestrianHitRows.cs (row, default 2, seed); Tests/EditMode/Economy/SlightCurseTests.cs, PedestrianCurseTests.cs
 Why: Issue #138. The driven car hitting any walker costs a slight curse (2 blessings) on every lot, ignoring the lot curse switch; the full patron curse is unchanged and wins (one curse per hit, no stacking).
 Tests: SlightCurseTests added, PedestrianCurseTests updated; EditMode 1850 passed, 0 failed.
+
+## economy-night: parked inside fills the power bar, Refs #159 [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Powers/PowerBarConfig.cs, PowerSettings.cs, PowerBarController.cs; Scripts/Core/Contracts/PowerRows.cs (F2 row); Scripts/Run/LotPowerFill.cs (per-lot override, edited with lead permission); Data/Powers/PowerBarConfig.asset; Tests/EditMode/Powers/PowerBarControllerTests.cs, PowerFrameworkTests.cs; Tests/EditMode/Integration/DevPowerLinkTests.cs (bar group count 4 to 5, new key)
+Why: Issue #159. CarParkedInside adds PowerFillParkedInside (default 4 of 100) to the bar, same gating as Perfect Park; a perfect park fires both so adds 22.
+Tests: ParkedInside fill, sum with Perfect Park, tuning change added; EditMode run exit 0.
