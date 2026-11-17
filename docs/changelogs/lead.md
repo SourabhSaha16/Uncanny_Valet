@@ -1090,3 +1090,9 @@ Date: 2026-11-16
 Files: docs/design.md, docs/changelogs/lead.md (merge of the cars branch)
 Why: Issue #151. Faster turning, speed fall-off, Shift entry kick, grip recheck.
 Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
+
+## lead: rebuild site/ with handling pass, curse pop and perfect-arrows rule for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #151 #152 #153. Beta now includes faster turning with the Shift entry kick, the -N curse pop and the perfect drop-off between the curb arrows.
+Tests: tools/build-web.ps1 exit 0, build-info shows 9ecdb0f; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: title screen loads, no console errors. Feel, the -N pop and the arrow rule were not played in the browser.

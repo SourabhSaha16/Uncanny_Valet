@@ -1,4 +1,15 @@
 === Last 50 commits ===
+9ecdb0f  2026-11-16  lead: log cars handling merge, Refs #151 [Claude]
+7c6872a  2026-11-16  lead: merge agent/cars turn rate and drift kick [Claude]
+eb8bf43  2026-11-16  cars: faster turning, speed fall-off and drift entry kick, Refs #151 [Claude]
+3f0d8c5  2026-11-16  cars: merge pivot/chaos into agent/cars, Refs #151 [Claude]
+59a17c5  2026-11-16  lead: log merges of lot-perfect-arrows and curse-pop, Refs #152 #153 [Claude]
+7c441ac  2026-11-16  cars: wip turn fall-off and drift kick, Refs #151 [Claude]
+765cbd3  2026-11-16  lead: merge agent/curse-pop [Claude]
+0ce6c03  2026-11-16  lead: merge agent/lot-perfect-arrows [Claude]
+2003f64  2026-11-16  integration: red -N pop when a pedestrian hit costs blessings, Refs #152 [Claude]
+8e8e6d6  2026-11-16  lot: perfect drop-off needs the car between the curb arrows [Claude]
+0d1d004  2026-11-16  lead: rebuild site/ with playtest batch 5 for beta [Claude]
 06dd88a  2026-11-16  lead: merge wash-near-symbol, design log, Refs #148 #149 [Claude]
 2bcf6aa  2026-11-16  lead: merge agent/wash-near-symbol [Claude]
 2dd702b  2026-11-16  lot: wash bays right next to the bay block, one shared mud symbol, Refs #148 #149 [Claude]
@@ -38,17 +49,6 @@ f977fe2  2026-11-14  lead: rebuild site/ with the playtest batch 2 for beta [Cla
 47467ee  2026-11-14  lead: fix BayEntryTests gap for the lowered bottom row, Refs #131 [Claude]
 f705d27  2026-11-14  lead: changelog for ped-slowdown merge, Refs #133 [Claude]
 4221bad  2026-11-14  lead: merge agent/ped-slowdown [Claude]
-7fd11e9  2026-11-14  cars: pedestrian hit slows the car by 35 percent by default [Claude]
-fb56dad  2026-11-14  lead: changelog for crazy queue and bottom row merges, Refs #131 #132 [Claude]
-b0a4b32  2026-11-14  lead: merge agent/lot-bottom-row [Claude]
-1e5429b  2026-11-14  lead: merge agent/crazy-queue [Claude]
-7fbab1d  2026-11-14  lot: bottom bay row sits 1.5 units lower [Claude]
-eda0714  2026-11-14  patrons: crazy lots keep the pickup queue always full [Claude]
-14c2e2a  2026-11-14  lead: changelog for ped-roam merge, Refs #130 [Claude]
-1e7cf59  2026-11-14  lead: merge agent/ped-roam [Claude]
-4e22e5d  2026-11-14  pedestrians: ambient people roam, then visit the diner at random [Claude]
-387b7bf  2026-11-14  lead: changelog for grandma bubble merge, Refs #129 [Claude]
-fee8b51  2026-11-14  lead: merge agent/grandma-bubble [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -247,6 +247,12 @@ Date: 2026-11-14
 Files: Core/Contracts/PedestrianHitRows.cs (CarSlowdown default 0.15 to 0.35, tooltip), Tests/EditMode/Cars/PedestrianSlowRuleTests.cs.
 Why: issue #133, hitting a pedestrian should slow the car more. Stays tunable on the F2 rows (PedestrianCarSlowdown); floor of 30% of top speed unchanged. Checked: WalkerKnockback publishes the event for any pedestrian actually knocked (ambient or patron, walking or not), no stored asset holds the old value (TuningSeeder seeds from the constant), and a car slower than the floor keeps its speed so low-speed bumps still work.
 Tests: PedestrianSlowRuleTests updated to 0.35 plus a default-row regression test; full EditMode suite run.
+
+## cars: faster turning, speed fall-off and drift entry kick [Claude]
+Date: 2026-11-16
+Files: Cars/{DriftState,DriftKickSettings,DriftKickConfig}.cs (new), Cars/{CarDriver,CarHandlingConfig,CarHandlingLive,DriftModel,SteeringModel}.cs, Data/Cars/CarHandlingConfig.asset, Core/Events/TuningKey.cs (7 keys appended at the end), Core/Contracts/HandlingRows.cs (7 F2 rows), tests (EditMode Cars/DriftStateTests new, CarHandlingTuningTests, TurningRadiusTests)
+Why: issue 151, cars turned too slowly. TurnFullSpeed 4 to 6 (max turn rate 2.73 rad/s, 156 deg/s; TightestRadius stays 2.2 so the aisle check is unchanged and clean). Above TurnFullSpeed the turn rate eases down by TurnFalloff (0.12 per unit of speed) to a floor TurnMinShare (0.55); radius still grows. DriftState (per car, no allocation): on the frame Shift starts above DriftMinSpeed with steer held, a yaw kick (3 rad/s fading over 0.12 s) in the steer direction; turn rate x1.3 while held; drift grip kept 0.25 s after release then blended back over 0.2 s (DriftModel takes a 0..1 drift blend; the bool overloads and the mud GripLossScale are kept). Grip nudge: GripAtSpeed 0.55 to 0.75 (steady slip angle at 6 u/s with the faster turn rate was about 35 deg, now about 26, near the old 24) and DriftGripScale 0.25 to 0.2 (a drift slides about as much as before). All numbers are in CarHandlingConfig/DriftKickConfig and the F2 panel. Merged pivot/chaos first (conflicts in CarDriver, DriftModel, TuningKey resolved; new keys come after the existing ones). Stale assertions updated for the intended new defaults. Refs #151.
+Tests: EditMode 1962/1962 passed (11 new); PlayMode BayEntryTests 8/8 passed. Not felt by hand in play.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -602,6 +608,12 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Core/Contracts/PowerBarThresholds.cs (new, one threshold list), Powers/PowerBar.cs, UI/Hud/PowerBarPainter.cs, BlessingPopPainter.cs, BlessingPops.cs, HudPainter.cs, UI/Screens/ResultsPainter.cs, UI/Kit/PixelIcon.cs, PixelIconData.cs; Tests/EditMode/UI/PowerBarMarkerTests.cs, HudLayoutTests.cs (+ .meta)
 Why: #142 the bolt markers were drawn at the centre of each third of the bar (first bolt at about 17 percent) while the first power opens at 33.3, so the fill passed the bolt long before the power worked. Markers now sit at the threshold fraction from the same list the bar uses (new Core file, flagged to the lead), with one pixel rounding shared by fill and markers. #143 blessings show a new PrayerHands pixel icon (HUD counter, blessing pops, results score); the bolt stays on the power bar.
 Tests: EditMode 1883 passed (4 new marker tests).
+
+## integration: red -N pop when a pedestrian hit costs blessings (Refs #152) [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/UI/Hud/CursePopRule.cs, CursePopTracker.cs, BlessingPopKind.cs, BlessingPops.cs, BlessingPopPainter.cs, BlessingPopSettings.cs, PlayingHud.cs, UI/Kit/PixelPalette.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/CursePopTests.cs (+ .meta)
+Why: the slight and full pedestrian curses took blessings with no feedback. A red "-N" (prayer hands after it) now rises at the hit spot, N = blessings really lost (clamped at 0, no pop when none). Uses existing events only: PedestrianHit (spot), CurseApplied with no ticket (amount), BlessingsChanged (running total); the two arrive in either order and pair within one frame, so one pop per hit and a locked-out hit never pops. Font scale and lift are tunable in BlessingPopSettings.
+Tests: EditMode CursePopTests (11); full suite 1937 passed.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1679,6 +1691,24 @@ Files: Scripts/Core/Contracts (LotLayoutOptions, WashIconArt), Scripts/Lot/WashB
 Why: Refs #148 #149. Wash bays now sit in one column directly beside the bay block (gap WashBayGap 0.5; the Vanaheim crazy lot is no longer widened by 13.5); the muddy car and the wash station share the mud splat symbol.
 Tests: EditMode passed (exit 0) and full PlayMode 85 of 85 on the merged tip. Not seen in a game view; not in beta yet. Midgard lots keep ShowPowerBar off.
 
+## lead: rebuild site/ with playtest batch 5 for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #147 #148 #149 #150. Beta now includes the level audio reset, wash bays beside the lot, the shared mud symbol and the longer, visible first power.
+Tests: tools/build-web.ps1 exit 0, build-info shows 06dd88a; EditMode and PlayMode (85 of 85) passed on the same code; browser smoke test: Midgard training loads, no console errors. Vanaheim lots (F4 did not open the picker in the pane), audio and the power effect were not checked in the browser.
+
+## lead: merge agent/lot-perfect-arrows and agent/curse-pop, Refs #152 #153 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merges of the lot and UI branches)
+Why: Issues #152 and #153. Perfect drop-off needs the car between the curb arrows; curses show a -N pop.
+Tests: EditMode passed on the merged tree (exit 0). PlayMode and site rebuild wait for the cars work (#151).
+
+## lead: merge agent/cars turn rate and drift kick, Refs #151 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merge of the cars branch)
+Why: Issue #151. Faster turning, speed fall-off, Shift entry kick, grip recheck.
+Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -1971,6 +2001,12 @@ Date: 2026-11-17
 Files: Scripts/Core/Contracts/{LotLayoutOptions,WashIconArt}.cs; Scripts/Lot/WashBayLayout.cs; Scripts/Run/LotDefinitionRules.cs; Editor/{LotWorldSceneSetup,VanaheimWorldSetup,VanaheimProps,VanaheimLanterns,VanaheimMud}.cs; Data/Run/{VanaheimTrainingLot,VanaheimCrazyLot,VanaheimMudPatches,MidgardTrainingLot,MidgardCrazyLot}.asset; Data/Art/Vanaheim/VanaheimStormyEvening.asset; Scenes (field rename; Vanaheim gap and extension); Tests/EditMode/{Lot/WashBayLayoutTests,Run/VanaheimLayoutTests,UI/SharedMudSymbolTests}.cs
 Why: Issues #148 and #149 (design.md section 4). Wash bays were up to 14 units from the bays; now every wash bay stands in one column a small WashBayGap (0.5; the old TroughDistance renamed with FormerlySerializedAs and used in every mode) east of the bay block: first in the top row, second in the bottom row (bottom-row drop kept), third below. The storm feast lot is no longer widened (extension 0), so its bounds and camera are tighter; stalls, banners, lanterns and mud patches are derived from the new geometry (Vanaheim setup now rebuilds props, mud and lanterns on each run). The wash station now draws the mud splat the HUD shows for a muddy car (one bitmap in MudIconArt; WashIconArt forwards to it) instead of a water drop.
 Tests: EditMode 1911/1911 (new SharedMudSymbolTests, updated wash bay and Vanaheim layout tests); PlayMode 80/80; RunBatch run (scene and config fileID churn reverted).
+
+## lot: perfect drop-off needs the car between the curb arrows [Claude]
+Date: 2026-11-16
+Files: Lot/CurbArrowSpan.cs (new), LotCurbArrows.cs (SpanOf, shared SideX), CurbZone.cs (Span, TryGetOffsetX), DropOffJudge.cs, PerfectRunner.cs, PerfectTuning.cs, PerfectSettings.cs (DropOffArrowTolerance), tests Lot/PerfectJudgeTests.cs.
+Why: Issue #153 (Refs #153), design.md A11 perfect drop-off. A perfect drop-off now also needs the settled car's centre between the two painted arrows: sideways offset from the zone centre within the arrow centre lines plus a tolerance (default 0.25, edge counts). A zone with no arrows has no span and never blocks perfect. The tolerance is an asset setting only (no TuningKey: Core is the lead's).
+Tests: DropOffNeedsTheCarCentreBetweenTheArrows (inside, outside left and right, on the edge), no-arrows case and the old angle/timer cases; EditMode suite passes via tools/run-tests.ps1.
 
 === docs/changelogs/orders.md ===
 # Orders changelog
