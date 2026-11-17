@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44c7e9823cc61104d85e6ec696ccdf1f, type: 3}
   m_Name: PowerBarConfig
   m_EditorClassIdentifier: UncannyValet.Powers::UncannyValet.Powers.PowerBarConfig
-  _fillPerfectPark: 18
-  _fillParkedInside: 4
+  _fillPerfectPark: 15
+  _fillParkedInside: 0
   _fillPerfectDropOff: 10
   _fillDriftPerSecond: 0.6
   _fillDriftCap: 4

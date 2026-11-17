@@ -93,8 +93,15 @@ namespace UncannyValet.Tests.Lot
         [TestCase(0f, false, false, ParkVerdict.OutsideBay)]
         [TestCase(5f, false, false, ParkVerdict.OutsideBay)]
         [TestCase(0f, true, true, ParkVerdict.Touching)]
-        public void ParkJudgeChecksAngleBoxAndContact(float angle, bool inside, bool touching, ParkVerdict expected) =>
+        public void ParkJudgeChecksAngleBoxAndContact(float angle, bool inside, bool touching, ParkVerdict expected)
+        {
+            _tuning.TrySet(TuningKey.PerfectParkAngle, 12f);
             Assert.AreEqual(expected, new ParkJudge(_tuning).Judge(angle, inside, touching));
+        }
+
+        [Test]
+        public void TheDefaultAcceptsAnyAngleInsideTheBox() =>
+            Assert.AreEqual(ParkVerdict.Perfect, new ParkJudge(_tuning).Judge(90f, true, false));
 
         [Test]
         public void AxisDeviationTreatsNoseInAndTailInAlike()

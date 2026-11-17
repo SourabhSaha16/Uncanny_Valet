@@ -42,6 +42,8 @@ MonoBehaviour:
   _fullImpactSpeed: 6
   _parkedMassScale: 8
   _bumpPairInterval: 0.25
+  _damageMinForce: 1.5
+  _damagePercentPerForce: 8
   _skid:
     _slideThreshold: 1.2
     _shiftSlideSpeed: 2

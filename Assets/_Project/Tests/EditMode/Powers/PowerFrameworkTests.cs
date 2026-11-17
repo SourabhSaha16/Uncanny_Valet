@@ -232,8 +232,8 @@ namespace UncannyValet.Tests.Powers
                 Assert.IsTrue(lot.TryValidate(out var problem), problem);
                 var plain = new TuningStore(new EventBus());
                 TuningSeeder.Seed(plain, shift, patrons, blessings, 6, powers: _config);
-                Assert.AreEqual(18f, plain.Get(TuningKey.PowerFillPerfectPark), "no lot: the config numbers");
-                Assert.AreEqual(4f, plain.Get(TuningKey.PowerFillParkedInside), "no lot: the config number");
+                Assert.AreEqual(15f, plain.Get(TuningKey.PowerFillPerfectPark), "no lot: the config numbers");
+                Assert.AreEqual(0f, plain.Get(TuningKey.PowerFillParkedInside), "no lot: the config number");
             }
             finally
             {
@@ -251,7 +251,7 @@ namespace UncannyValet.Tests.Powers
             try
             {
                 var fill = fx.Lot(World.Midgard, LotKind.Training).PowerFill;
-                Assert.AreEqual(18f, fill.PerfectPark);
+                Assert.AreEqual(15f, fill.PerfectPark);
                 Assert.AreEqual(10f, fill.PerfectDropOff);
                 Assert.IsTrue(fill.IsSane);
             }

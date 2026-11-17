@@ -19,6 +19,8 @@ MonoBehaviour:
   _scale: 1.3
   _sortingOrder: 4
   _insideSeconds: {x: 5, y: 14}
+  _roamSeconds: {x: 10, y: 40}
+  _roamMinLegShare: 0.2
   _respawnSeconds: {x: 1, y: 7}
   _openingProgressMax: 0.7
   _patronPoolSize: 6

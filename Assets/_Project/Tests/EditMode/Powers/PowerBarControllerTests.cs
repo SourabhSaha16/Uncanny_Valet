@@ -77,14 +77,15 @@ namespace UncannyValet.Tests.Powers
         {
             Own();
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
-            Assert.AreEqual(18f, _controller.Bar.Value, 0.0001f);
+            Assert.AreEqual(15f, _controller.Bar.Value, 0.0001f);
             Assert.AreEqual(1, _changes.Count);
             Assert.AreEqual(0, _changes[0].OpenBuckets);
         }
 
         [Test]
-        public void ParkedInside_FillsFour_AndNothingWithoutAPower()
+        public void ParkedInside_FillsItsSetting_AndNothingWithoutAPower()
         {
+            _controller.Settings.Apply(TuningKey.PowerFillParkedInside, 4f);
             _bus.Publish(new CarParkedInside(new CarId(1), 3));
             Assert.AreEqual(0f, _controller.Bar.Value);
             Own();
@@ -96,9 +97,10 @@ namespace UncannyValet.Tests.Powers
         public void PerfectParkAfterParkedInside_AddsBoth_AndPerfectStaysLarger()
         {
             Own();
+            _controller.Settings.Apply(TuningKey.PowerFillParkedInside, 4f);
             _bus.Publish(new CarParkedInside(new CarId(1), 3));
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
-            Assert.AreEqual(22f, _controller.Bar.Value, 0.0001f);
+            Assert.AreEqual(19f, _controller.Bar.Value, 0.0001f);
             Assert.Greater(_controller.Settings.FillPerfectPark, _controller.Settings.FillParkedInside);
         }
 
@@ -126,10 +128,11 @@ namespace UncannyValet.Tests.Powers
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
             Assert.IsFalse(_controller.TrySpend());
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
+            _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
             _changes.Clear();
             Assert.IsTrue(_controller.TrySpend());
             Assert.AreEqual(1, _changes[0].SpentBucket);
-            Assert.AreEqual(36f - 33.3f, _controller.Bar.Value, 0.001f);
+            Assert.AreEqual(45f - 33.3f, _controller.Bar.Value, 0.001f);
         }
 
         [Test]

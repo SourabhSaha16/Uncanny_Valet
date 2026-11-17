@@ -12,10 +12,10 @@ namespace UncannyValet.Powers
     {
         [Header("Power bar fill (the bar runs 0 to 100; a third of it is one bucket)")]
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one Perfect Park.")]
-        private float _fillPerfectPark = 18f;
+        private float _fillPerfectPark = 15f;
 
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained when a car is parked inside a bay. A Perfect Park adds this too.")]
-        private float _fillParkedInside = 4f;
+        private float _fillParkedInside = 0f;
 
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one perfect drop-off.")]
         private float _fillPerfectDropOff = 10f;

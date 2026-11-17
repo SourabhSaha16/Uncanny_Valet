@@ -32,7 +32,8 @@ MonoBehaviour:
     _chance: 0.6
   _dials: []
   _powerFill:
-    _perfectPark: 18
+    _perfectPark: 15
+    _parkedInside: 0
     _perfectDropOff: 10
     _driftPerSecond: 0.6
     _driftCap: 4

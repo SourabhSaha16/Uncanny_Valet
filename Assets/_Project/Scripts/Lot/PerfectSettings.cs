@@ -17,8 +17,8 @@ namespace UncannyValet.Lot
         private float _dropOffArrowTolerance = 0.25f;
 
         [Header("Perfect park")]
-        [SerializeField, Range(1f, 20f), Tooltip("Largest angle off the bay's long axis, nose in or tail in. The car must also be completely inside the bay box (see Parked inside).")]
-        private float _parkAngleDegrees = 12f;
+        [SerializeField, Range(1f, 90f), Tooltip("Largest angle off the bay's long axis, nose in or tail in. The car must also be completely inside the bay box (see Parked inside).")]
+        private float _parkAngleDegrees = 90f;
         [SerializeField, Min(0f), Tooltip("Seconds before the same car can earn another Perfect Park.")]
         private float _parkCooldownSeconds = 10f;
         [SerializeField, Min(0f), Tooltip("Units a car must have moved since it last stopped for a Perfect Park to count again.")]
