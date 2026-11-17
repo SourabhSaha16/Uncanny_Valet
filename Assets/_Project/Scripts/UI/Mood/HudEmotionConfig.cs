@@ -39,6 +39,9 @@ namespace UncannyValet.UI.Mood
         [FormerlySerializedAs("_powerMeter")]
         [SerializeField] private PowerBarSettings _powerBar = new PowerBarSettings();
 
+        [Header("+X pop beside the power bar")]
+        [SerializeField] private PowerFillPopSettings _powerFillPop = new PowerFillPopSettings();
+
         [Header("Watcher speech bubble")]
         [SerializeField] private SpeechBubbleSettings _speechBubble = new SpeechBubbleSettings();
 
@@ -47,6 +50,7 @@ namespace UncannyValet.UI.Mood
         public BayBorderSettings BayBorder => _bayBorder;
         public BlessingPopSettings BlessingPop => _blessingPop;
         public PowerBarSettings PowerBar => _powerBar;
+        public PowerFillPopSettings PowerFillPop => _powerFillPop;
         public float ImpatientFrom => _impatientFrom;
         public float AngryFrom => _angryFrom;
         public float WillNotBlessFrom => _willNotBlessFrom;

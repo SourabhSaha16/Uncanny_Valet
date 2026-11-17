@@ -27,14 +27,17 @@ namespace UncannyValet.UI.Hud
             }
         }
 
-        /// <summary>Draws the bolt with its top left corner at (x, y) in the given colour on a dark outline.</summary>
-        public static void Draw(PixelCanvas canvas, int x, int y, Color color)
+        /// <summary>Draws the bolt with its top left corner at (x, y) in the given colour on a dark outline; alpha fades both.</summary>
+        public static void Draw(PixelCanvas canvas, int x, int y, Color color, float alpha = 1f)
         {
+            var ink = PixelPalette.Ink;
+            ink.a *= alpha;
+            color.a *= alpha;
             for (var row = 0; row < Height; row++)
             {
-                canvas.Fill(x + Starts[row] - 1, y + row, Lengths[row] + 2, 1, PixelPalette.Ink);
-                canvas.Fill(x + Starts[row], y + row - 1, Lengths[row], 1, PixelPalette.Ink);
-                canvas.Fill(x + Starts[row], y + row + 1, Lengths[row], 1, PixelPalette.Ink);
+                canvas.Fill(x + Starts[row] - 1, y + row, Lengths[row] + 2, 1, ink);
+                canvas.Fill(x + Starts[row], y + row - 1, Lengths[row], 1, ink);
+                canvas.Fill(x + Starts[row], y + row + 1, Lengths[row], 1, ink);
             }
             for (var row = 0; row < Height; row++) canvas.Fill(x + Starts[row], y + row, Lengths[row], 1, color);
         }

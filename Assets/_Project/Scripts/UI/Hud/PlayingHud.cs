@@ -35,6 +35,8 @@ namespace UncannyValet.UI.Hud
         private readonly OccupiedHintPainter _occupiedPainter;
         private readonly PowerBarTracker _powerTracker;
         private readonly PowerBarPainter _power;
+        private readonly PowerFillPopTracker _fillPopTracker;
+        private readonly PowerFillPopPainter _fillPops;
         private readonly FreezeTracker _freezeTracker;
         private readonly FreezeVeilPainter _freezeVeil;
         private readonly SpeechBubbleTracker _speech;
@@ -42,12 +44,16 @@ namespace UncannyValet.UI.Hud
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
             BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null, PickupPieSettings pickupPie = null,
-            ISpotGeometry spots = null, BayBorderSettings bayBorder = null)
+            ISpotGeometry spots = null, BayBorderSettings bayBorder = null, PowerFillPopSettings powerFillPop = null)
         {
             if (spots != null)
                 _bayBorders = new BayBorderLayer(bus, spots, cars, style, bayBorder ?? new BayBorderSettings(), style.ColorOf(Emotion.Happy), UnscaledTime);
             _powerTracker = new PowerBarTracker(bus, powerBar, goal: goal);
             _power = new PowerBarPainter(canvas, _powerTracker);
+            var fillSettings = powerFillPop ?? new PowerFillPopSettings();
+            var fillPops = new PowerFillPops(fillSettings);
+            _fillPopTracker = new PowerFillPopTracker(bus, fillPops, UnscaledTime);
+            _fillPops = new PowerFillPopPainter(canvas, fillPops, fillSettings, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
             _board = new TicketBoard(bus, Services.Get<IModifierCatalog>());
@@ -88,6 +94,7 @@ namespace UncannyValet.UI.Hud
             _speechPainter?.Draw(camera, time);
             _hud.Draw(time);
             _power.Draw(time);
+            _fillPops.Draw(Time.unscaledTime);
             _notices.Draw(prompt);
         }
 
@@ -99,6 +106,7 @@ namespace UncannyValet.UI.Hud
             _blessingPopTracker.Dispose();
             _cursePopTracker.Dispose();
             _powerTracker.Dispose();
+            _fillPopTracker.Dispose();
             _freezeTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
