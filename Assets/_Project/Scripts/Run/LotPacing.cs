@@ -21,6 +21,9 @@ namespace UncannyValet.Run
         [SerializeField, Range(1, 4), Tooltip("Most cars waiting for a spot at once. The queue holds as many as the lot's queue slots.")]
         private int _maxWaitingCars = 2;
 
+        [SerializeField, Range(0, 4), Tooltip("Cars the arrival queue is always topped up to (issue 178). 0 = no minimum: the Patron Director paces arrivals. Never above the lot's queue slots.")]
+        private int _minQueuedCars;
+
         [SerializeField, Min(0), Tooltip("Cars the Patron Director plans for the shift. 0 = derive it from the shift length and the mean arrival gap (see DerivedArrivalBudget).")]
         private int _arrivalBudget;
 
@@ -31,6 +34,8 @@ namespace UncannyValet.Run
         public float ArrivalGapMinSeconds => _arrivalGapMinSeconds;
         public float ArrivalGapMaxSeconds => _arrivalGapMaxSeconds;
         public int MaxWaitingCars => _maxWaitingCars;
+        /// <summary>Cars the queue is kept topped up to; 0 = no minimum.</summary>
+        public int MinQueuedCars => _minQueuedCars;
         /// <summary>The authored budget; 0 means "derive it".</summary>
         public int ArrivalBudgetOverride => _arrivalBudget;
 
@@ -68,6 +73,7 @@ namespace UncannyValet.Run
             tuning.Seed(TuningKey.ArrivalGapMaxMinutes, _arrivalGapMaxSeconds * gameMinutesPerSecond);
             tuning.Seed(TuningKey.PlanMaxWaitingCars, EffectiveMaxWaiting(queueSlots));
             tuning.Seed(TuningKey.DirArrivalBudget, ArrivalBudget);
+            tuning.Seed(TuningKey.PlanMinQueuedCars, Mathf.Min(_minQueuedCars, EffectiveMaxWaiting(queueSlots)));
         }
     }
 }

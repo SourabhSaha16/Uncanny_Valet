@@ -13,6 +13,8 @@ namespace UncannyValet.Core.Contracts
                 "How much sooner or later than planned the director may call a parked patron back, in percent of their stay. Only before the late-shift phase."),
             new TuningInfo(TuningKey.PickupSpacingSeconds, Group, "Pickup spacing (s)", 0f, 15f, 0.5f,
                 "Fewest seconds between two patrons reaching the curb, except in a peak. The late-shift pickups obey it too."),
+            new TuningInfo(TuningKey.PickupPeakSpacingSeconds, Group, "Pickup spacing in a peak (s)", 0f, 15f, 0.5f,
+                "Fewest seconds between two patrons reaching the curb during a wave peak, so crazy nights do not summon several at once. Shorter than the normal spacing; 0 waives the spacing in a peak."),
             new TuningInfo(TuningKey.LatePickupStart, Group, "Late-shift pickups start (s before the end)", 0f, 180f, 5f,
                 "From here on every waiting patron is called back early, wherever their car is, even outside the return window, so the player is still earns blessings. 0 turns it off."),
             new TuningInfo(TuningKey.LastPickupLead, Group, "Last late pickup requested (s before the end)", 0f, 60f, 1f,

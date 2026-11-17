@@ -87,7 +87,7 @@ namespace UncannyValet.Tests.Director
         public void AnEmptyQueueGetsACarWithinTheIdleLimit()
         {
             _tuning.Set(TuningKey.ArrivalIdleLimit, 2f);
-            Run(3f);
+            Run(1f); // issue 179: the first car no longer waits out the limit
             Assert.AreEqual(1, _scheduled.Count);
             Assert.AreEqual(ScheduleReason.Idle, _scheduled[0].Reason);
         }
@@ -132,6 +132,7 @@ namespace UncannyValet.Tests.Director
         {
             var b = new SnapshotBuilderForTests();
             for (var i = 0; i < 6; i++) b.Car(CarLotState.PickupRequested, patience: 0.5f);
+            b.Car(CarLotState.WaitingToPark, awaitingPark: true); // a car is already queued, so the shift's first send is not due
             _lot.Next = b.Build();
             var relief = 0;
             _bus.Subscribe<ReliefStarted>(e => relief++);

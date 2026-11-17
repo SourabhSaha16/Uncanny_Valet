@@ -33,6 +33,7 @@ namespace UncannyValet.Patrons
         private PatronRequest _pending;
         private bool _hasPending;
         private IArrivalPacing _pacing = new DirectorArrivalPacing();
+        private MinQueueTopUp _minQueue;
 
         public TicketRegistry Registry { get; private set; }
 
@@ -53,6 +54,7 @@ namespace UncannyValet.Patrons
             Services.TryGet<ILotSnapshotSource>(out var lotView);
             _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog, lotView);
             _clock = Services.Get<IGameClock>();
+            _minQueue = new MinQueueTopUp(_liveTuning, _config.TopUpSpacingMinutes);
             Services.TryGet<IShiftBlessingsView>(out var score);
             Registry = new TicketRegistry(_bus, _clock, Services.Get<IBlessingCalculator>(), tuning, score, _catalog);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
@@ -88,6 +90,15 @@ namespace UncannyValet.Patrons
             if (_queue == null) return;
             if (_queue.Focus == null && Services.TryGet<IPlayerFocus>(out var focus)) _queue.Focus = focus;
             _queue.Tick();
+            if (_shiftOpen && !_pacing.TopsUpQueue) KeepMinimumQueued();
+        }
+
+        // Lots with a queue minimum (Vanaheim training, issue 178) send a car whenever fewer cars wait than the minimum.
+        private void KeepMinimumQueued()
+        {
+            var now = _clock.ElapsedMinutes;
+            if (!_minQueue.Due(Registry.AwaitingParkCount, now)) return;
+            if (TrySpawn(_roller.Roll(ShiftProgress()), out _)) _minQueue.Sent(now);
         }
 
         /// <summary>
@@ -102,20 +113,10 @@ namespace UncannyValet.Patrons
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
             _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees, slot);
-            ticket = Registry.Create(car, FitStay(request, car));
+            ticket = Registry.Create(car, ArrivalStay.Fit(request, car, _tuning, _clock.SecondsRemaining));
             _slots.Reserve(car, slot);
             Registry.AnnounceArrival(ticket);
             return true;
-        }
-
-        // The stay is jittered per car so returns spread out, then a late arrival's stay is cut so its patron is back
-        // asking for the car before the shift ends (the cut comes last, so the stay always fits the shift).
-        private PatronRequest FitStay(PatronRequest request, CarId car)
-        {
-            var remaining = _clock.SecondsRemaining * _tuning.MinutesPerSecond;
-            var spread = StayJitter.Apply(request.StayMinutes, _tuning.StayJitter, _tuning.LateStayFloor, car.Value);
-            var stay = StayFit.Clamp(spread, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
-            return stay != request.StayMinutes ? request.WithStay(stay) : request;
         }
 
         private void OnShiftStarted(ShiftStarted e)
@@ -124,9 +125,13 @@ namespace UncannyValet.Patrons
             var kind = Services.TryGet<IRunProgress>(out var run) && run.HasCurrentLot ? run.CurrentLot.Kind : LotKind.None;
             _pacing = ArrivalPacings.For(kind, _config.TopUpSpacingMinutes);
             _pacing.Reset();
+            _minQueue.Reset();
             _roller.ResetShift();
             _nextArrivalMinute = 0f;
             _hasPending = false;
+            // The first car drives in at once (issue 179); the director path sends it from its first tick.
+            if (_pacing.TopsUpQueue) TopUpQueue(0f);
+            else if (!DirectorOn) SpawnOnTimer(0f);
         }
 
         private void OnShiftEnded(ShiftEnded e)
@@ -178,9 +183,15 @@ namespace UncannyValet.Patrons
             if (_pacing.TopsUpQueue) { TopUpQueue(e.ElapsedMinutes); return; }
             if (DirectorOn) { TrySpawnPending(); return; }
             _hasPending = false;
-            if (e.ElapsedMinutes < _nextArrivalMinute) return;
+            SpawnOnTimer(e.ElapsedMinutes);
+        }
+
+        // The fixed timer: one car, then the next after a rolled gap.
+        private void SpawnOnTimer(float elapsedMinutes)
+        {
+            if (elapsedMinutes < _nextArrivalMinute) return;
             if (!TrySpawn(_roller.Roll(ShiftProgress()), out _)) return;
-            _nextArrivalMinute = e.ElapsedMinutes + _roller.NextGap();
+            _nextArrivalMinute = elapsedMinutes + _roller.NextGap();
         }
     }
 }

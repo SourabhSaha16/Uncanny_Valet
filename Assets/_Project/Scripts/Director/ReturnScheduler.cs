@@ -8,7 +8,7 @@ namespace UncannyValet.Director
     /// inside the diner (dropped off, stay not over, not yet summoned), wherever the car is, so it can never
     /// move the return of a patron who already left or asked for the car.
     /// Before the late-shift phase it keeps every return inside its window (the planned stay +/- the window share),
-    /// keeps patrons at least the pickup spacing apart (waived in a wave peak), brings one return forward when the lot
+    /// keeps patrons at least the pickup spacing apart (a shorter peak spacing in a wave peak, issue 177), brings one return forward when the lot
     /// is tight or the player is under target, and holds one back when over target or in relief, at most once per
     /// cooldown. In the late-shift phase <see cref="LateReturnPlanner"/> pulls every return forward outside the window.
     /// </summary>
@@ -18,6 +18,7 @@ namespace UncannyValet.Director
         private readonly ReturnCandidates _cars = new ReturnCandidates();
         private readonly LateReturnPlanner _late;
         private float _lastNudge = float.NegativeInfinity;
+        private float _spacing;
 
         public ReturnScheduler(ReturnSettings settings)
         {
@@ -48,7 +49,8 @@ namespace UncannyValet.Director
 
         private void PlanNormal(in ReturnInput input)
         {
-            if (!input.WavePeak) KeepSpacing(input.LastSummonedSeconds);
+            _spacing = input.WavePeak ? _settings.PeakSpacingSeconds : _settings.SpacingSeconds;
+            KeepSpacing(input.LastSummonedSeconds);
             if (input.NowSeconds - _lastNudge < _settings.CooldownSeconds) return;
             var forward = !input.InRelief && (input.LotTight || input.Gap < -input.Band);
             var hold = input.InRelief || input.Gap > input.Band;
@@ -64,11 +66,11 @@ namespace UncannyValet.Director
             for (var i = 0; i < _cars.Count; i++)
             {
                 var c = _cars[i];
-                var wanted = prev + _settings.SpacingSeconds;
+                var wanted = prev + _spacing;
                 if (c.At < wanted)
                 {
                     if (wanted <= c.Hi) _cars.Move(i, wanted);
-                    else if (i > 0) PullEarlier(i - 1, c.At - _settings.SpacingSeconds, i > 1 ? _cars[i - 2].At : lastSummoned);
+                    else if (i > 0) PullEarlier(i - 1, c.At - _spacing, i > 1 ? _cars[i - 2].At : lastSummoned);
                 }
                 prev = System.Math.Max(prev, _cars[i].At);
             }
@@ -78,7 +80,7 @@ namespace UncannyValet.Director
         private void PullEarlier(int index, float to, float beforeAt)
         {
             var c = _cars[index];
-            var earliest = System.Math.Max(c.Lo, beforeAt + _settings.SpacingSeconds);
+            var earliest = System.Math.Max(c.Lo, beforeAt + _spacing);
             if (System.Math.Max(to, earliest) < c.At) _cars.Move(index, System.Math.Max(to, earliest));
         }
 
@@ -89,7 +91,7 @@ namespace UncannyValet.Director
             for (var i = 0; i < _cars.Count; i++)
             {
                 var c = _cars[i];
-                var to = System.Math.Max(c.Lo, prev + _settings.SpacingSeconds);
+                var to = System.Math.Max(c.Lo, prev + _spacing);
                 if (c.At - to >= _settings.MinMoveSeconds) { _cars.Move(i, to); return true; }
                 prev = System.Math.Max(prev, c.At);
             }
@@ -102,7 +104,7 @@ namespace UncannyValet.Director
             for (var i = 0; i < _cars.Count; i++)
             {
                 var c = _cars[i];
-                var next = i + 1 < _cars.Count ? _cars[i + 1].At - _settings.SpacingSeconds : float.PositiveInfinity;
+                var next = i + 1 < _cars.Count ? _cars[i + 1].At - _spacing : float.PositiveInfinity;
                 var to = System.Math.Min(c.Hi, next);
                 if (to - c.At >= _settings.MinMoveSeconds) { _cars.Move(i, to); return true; }
             }

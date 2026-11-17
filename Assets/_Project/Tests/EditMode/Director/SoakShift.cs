@@ -32,6 +32,8 @@ namespace UncannyValet.Tests.Director
         /// <summary>Returns moved outside the window before the late-shift phase.</summary>
         public int MovedOutsideWindow;
         public int Moves;
+        /// <summary>Most pickups requested inside any 5 second window (issue 177).</summary>
+        public int MostSummonsIn5Seconds;
     }
 
     /// <summary>Runs one seeded shift: the real DirectorBrain against the fake lot and the scripted bot.</summary>
@@ -41,10 +43,12 @@ namespace UncannyValet.Tests.Director
         private const float ShiftSeconds = 240f;
         private const int MaxFavour = 4;
 
-        public static SoakResult Run(int seed)
+        /// <param name="peakSpacingSeconds">Overrides the pickup spacing in a wave peak (0 reproduces the old waived spacing); negative keeps the default.</param>
+        public static SoakResult Run(int seed, float peakSpacingSeconds = -1f)
         {
             var bus = new EventBus();
             var tuning = new TuningStore(bus);
+            if (peakSpacingSeconds >= 0f) tuning.Set(TuningKey.PickupPeakSpacingSeconds, peakSpacingSeconds);
             var clock = new FakeClock { ShiftLengthSeconds = ShiftSeconds, SecondsRemaining = ShiftSeconds };
             var sim = new SoakSim(bus, new System.Random(seed * 31 + 7));
             var settings = new DirectorSettings();
@@ -66,6 +70,7 @@ namespace UncannyValet.Tests.Director
             result.Arrivals = sim.Arrivals;
             result.Delivered = sim.Delivered;
             result.Angry = sim.AngryTimes.Count;
+            result.MostSummonsIn5Seconds = SoakReturnAudit.MostInWindow(sim.RequestTimes, SoakReturnAudit.ClumpWindowSeconds);
             SoakReturnAudit.CountSpacing(sim, profile, ShiftSeconds, settings.Returns.SpacingSeconds, Dt, result);
             var rs = settings.Returns;
             SoakReturnAudit.CountUnrequested(sim, ShiftSeconds, rs.LastLeadSeconds,

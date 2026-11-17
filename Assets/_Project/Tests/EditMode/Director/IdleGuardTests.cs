@@ -34,14 +34,36 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void EmptyQueueForcesASendAfterTheLimit()
         {
+            AfterTheFirstCar();
             Assert.AreEqual(_settings.Pacing.MaxEmptyQueueSeconds, SecondsToForce(In()), Dt);
         }
 
+        // A car reached the queue: the shift's first car is no longer pending, the normal limit applies from here.
+        private void AfterTheFirstCar() => _guard.Update(In(queue: 1), 0f);
+
         [Test]
-        public void TheFirstCarOfAShiftIsDueWithinTheLimit()
+        public void TheFirstCarOfAShiftIsDueAtOnceNotAfterTheLimit()
         {
             _guard.Reset();
-            Assert.LessOrEqual(SecondsToForce(In(used: 0, left: 240f)), _settings.Pacing.MaxEmptyQueueSeconds + Dt);
+            var seconds = SecondsToForce(In(used: 0, left: 240f));
+            Assert.That(seconds, Is.InRange(0f, 1f), "issue 179: a car drives in within about a second of the shift starting");
+            Assert.Less(seconds, _settings.Pacing.MaxEmptyQueueSeconds);
+        }
+
+        [Test]
+        public void EveryNewShiftSendsItsFirstCarAtOnce()
+        {
+            AfterTheFirstCar();
+            _guard.Reset();
+            Assert.That(SecondsToForce(In(left: 150f)), Is.InRange(0f, 1f));
+        }
+
+        [Test]
+        public void ADirectorTickSendsTheFirstCarOnAnEmptyLot()
+        {
+            var seconds = -1f;
+            for (var t = Dt; t < 5f && seconds < 0f; t += Dt) if (_pacer.Tick(In(left: 150f), Dt).IsSpawn) seconds = t;
+            Assert.That(seconds, Is.InRange(0f, 1f));
         }
 
         [Test]
@@ -70,6 +92,7 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void TheCountdownShowsTheSecondsLeft()
         {
+            AfterTheFirstCar();
             _guard.Update(In(), 0.5f);
             Assert.AreEqual(_settings.Pacing.MaxEmptyQueueSeconds - 0.5f, _guard.SecondsUntilForced, 0.001f);
         }

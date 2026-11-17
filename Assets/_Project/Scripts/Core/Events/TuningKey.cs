@@ -456,5 +456,10 @@ namespace UncannyValet.Core.Events
         OvertimeCurseSecondsPerPoint,
         /// <summary>Most blessings one late pickup can cost.</summary>
         OvertimeCurseCap,
+        // Issues 177 and 178 (Patrons owns).
+        /// <summary>Per-lot: cars the arrival queue is kept topped up to (0 = no minimum, the Director paces arrivals).</summary>
+        PlanMinQueuedCars,
+        /// <summary>Fewest seconds between two patrons reaching the curb during a wave peak (0 = no spacing in a peak, as before).</summary>
+        PickupPeakSpacingSeconds,
     }
 }

@@ -13,6 +13,8 @@ namespace UncannyValet.Director
         private float _windowPercent = 25f;
         [SerializeField, Min(0f), Tooltip("Fewest seconds between two patrons reaching the curb, except in a wave peak.")]
         private float _spacingSeconds = 4f;
+        [SerializeField, Min(0f), Tooltip("Fewest seconds between two patrons reaching the curb during a wave peak (issue 177). 0 = no spacing in a peak.")]
+        private float _peakSpacingSeconds = 3f;
         [SerializeField, Min(0f), Tooltip("From this many seconds before the end every open ticket's return is brought forward, outside the window. 0 = never.")]
         private float _lateStartSeconds = 60f;
         [SerializeField, Min(0f), Tooltip("The last late-shift pickup is requested this many seconds before the end.")]
@@ -26,6 +28,7 @@ namespace UncannyValet.Director
 
         public float WindowFraction => _windowPercent * 0.01f;
         public float SpacingSeconds => _spacingSeconds;
+        public float PeakSpacingSeconds => _peakSpacingSeconds;
         public float LateStartSeconds => _lateStartSeconds;
         public float LastLeadSeconds => _lastLeadSeconds;
         public float MinLeadSeconds => _minLeadSeconds;
@@ -37,6 +40,7 @@ namespace UncannyValet.Director
         {
             t.Seed(TuningKey.ReturnWindowPercent, _windowPercent);
             t.Seed(TuningKey.PickupSpacingSeconds, _spacingSeconds);
+            t.Seed(TuningKey.PickupPeakSpacingSeconds, _peakSpacingSeconds);
             t.Seed(TuningKey.LatePickupStart, _lateStartSeconds);
             t.Seed(TuningKey.LastPickupLead, _lastLeadSeconds);
         }
@@ -46,6 +50,7 @@ namespace UncannyValet.Director
         {
             _windowPercent = TuningRead.Float(t, TuningKey.ReturnWindowPercent, _windowPercent);
             _spacingSeconds = TuningRead.Float(t, TuningKey.PickupSpacingSeconds, _spacingSeconds);
+            _peakSpacingSeconds = TuningRead.Float(t, TuningKey.PickupPeakSpacingSeconds, _peakSpacingSeconds);
             _lateStartSeconds = TuningRead.Float(t, TuningKey.LatePickupStart, _lateStartSeconds);
             _lastLeadSeconds = TuningRead.Float(t, TuningKey.LastPickupLead, _lastLeadSeconds);
         }

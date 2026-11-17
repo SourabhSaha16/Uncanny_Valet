@@ -8,6 +8,21 @@ namespace UncannyValet.Tests.Director
     internal static class SoakReturnAudit
     {
         private const float Epsilon = 0.01f;
+        /// <summary>The window of the "patrons summoned at once" count (issue 177).</summary>
+        public const float ClumpWindowSeconds = 5f;
+
+        /// <summary>The most times (ascending) that fall inside any window of <paramref name="window"/> seconds, ends included.</summary>
+        public static int MostInWindow(System.Collections.Generic.IReadOnlyList<float> times, float window)
+        {
+            var most = 0;
+            var first = 0;
+            for (var i = 0; i < times.Count; i++)
+            {
+                while (times[i] - times[first] > window + Epsilon) first++;
+                if (i - first + 1 > most) most = i - first + 1;
+            }
+            return most;
+        }
 
         /// <summary>Counts pickup-spacing violations: two requests closer than the spacing (less one sim tick, the time resolution), the later one outside a wave peak.</summary>
         public static void CountSpacing(SoakSim sim, SoakProfile profile, float shiftSeconds, float spacing, float tick, SoakResult r)
