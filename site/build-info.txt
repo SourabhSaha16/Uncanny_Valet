@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  aa0258a
-Subject: lead: design log and changelog for park feedback, Refs #157 #158 #159 [Claude]
-Date:    2026-11-16 21:39:27 -0800
+Commit:  2497d5b
+Subject: lead: design log and changelog for power pops, Refs #160 [Claude]
+Date:    2026-11-17 08:04:19 -0800

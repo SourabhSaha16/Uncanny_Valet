@@ -1,4 +1,12 @@
 === Last 50 commits ===
+2497d5b  2026-11-17  lead: design log and changelog for power pops, Refs #160 [Claude]
+16321bd  2026-11-17  lead: merge agent/integration +X bolt pops, Refs #160 [Claude]
+d754590  2026-11-17  lead: merge agent/powers PowerFilled publishing, Refs #160 [Claude]
+fcdb639  2026-11-17  ui: +X bolt pop beside the power bar on PowerFilled, Refs #160 [Claude]
+190415c  2026-11-17  powers: publish PowerFilled when the bar gains [Claude]
+39a00fe  2026-11-17  lead: add PowerFilled event and PowerFillSource to Core, Refs #160 [Claude]
+e60c9d5  2026-11-16  lead: exempt lot wip commit from changelog check, Refs #157 [Claude]
+838adbc  2026-11-16  lead: rebuild site/ with park feedback for beta [Claude]
 aa0258a  2026-11-16  lead: design log and changelog for park feedback, Refs #157 #158 #159 [Claude]
 ce8c6cf  2026-11-16  lead: merge agent/bay-border-flash [Claude]
 8d83230  2026-11-16  lead: merge agent/power-parked-inside [Claude]
@@ -41,14 +49,6 @@ aded065  2026-11-16  audio: silence and release all level audio on lot change an
 6ac9d8e  2026-11-16  lead: rebuild site/ with playtest batch 4 for beta [Claude]
 27d3d26  2026-11-16  lead: merge shift-dash, design log, Refs #145 #146 [Claude]
 d165d4a  2026-11-16  lead: merge agent/shift-dash [Claude]
-42c0530  2026-11-16  valet: Shift dash on foot, Thunder stride is a walking speed boost [Claude]
-c00cb8f  2026-11-16  lead: changelog for stay jitter merge, Refs #144 [Claude]
-3a195c8  2026-11-16  lead: merge agent/stay-jitter [Claude]
-5d6ab32  2026-11-16  patrons: jitter each patron stay so returns spread out [Claude]
-aec0349  2026-11-14  lead: rebuild site/ with playtest batch 3 for beta [Claude]
-e3c084b  2026-11-14  lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
-8a32936  2026-11-14  lead: merge agent/no-trough [Claude]
-151d667  2026-11-14  lot: remove water trough prop, wash bays are plain wash slots [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -620,6 +620,12 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/UI/Hud/CursePopRule.cs, CursePopTracker.cs, BlessingPopKind.cs, BlessingPops.cs, BlessingPopPainter.cs, BlessingPopSettings.cs, PlayingHud.cs, UI/Kit/PixelPalette.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/CursePopTests.cs (+ .meta)
 Why: the slight and full pedestrian curses took blessings with no feedback. A red "-N" (prayer hands after it) now rises at the hit spot, N = blessings really lost (clamped at 0, no pop when none). Uses existing events only: PedestrianHit (spot), CurseApplied with no ticket (amount), BlessingsChanged (running total); the two arrive in either order and pair within one frame, so one pop per hit and a locked-out hit never pops. Font scale and lift are tunable in BlessingPopSettings.
 Tests: EditMode CursePopTests (11); full suite 1937 passed.
+
+## ui: +X bolt pop beside the power bar on PowerFilled, Refs #160 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/ (new: PowerFillPopSettings, PowerFillPops, PowerFillPopRule, PowerFillPopTracker, PowerFillPopPainter; edited PlayingHud, BoltGlyph (alpha), PowerBarPainter (layout consts public)); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/PowerFillPopTests.cs (new)
+Why: #160 each PowerFilled shows "+X" (amount rounded, nothing under 0.5) with the lightning bolt, rising and fading left of the power icons. Pops arriving together take different stack slots (lowest slot no recent pop still holds) so they never overlap; fixed pool, no per-frame allocation; cleared on ShiftStarted and ShiftEnded. Colour per source is its tint pulled toward gold. Tunables in PowerFillPopSettings inside HudEmotionConfig (new field takes its default from the code, no asset edit). Drawn only while the power bar itself is visible.
+Tests: EditMode 1969 passed (PowerFillPopTests, 15 cases). PlayMode and Web build not run.
 
 ## integration: remove CAR SLOTS board and plates, add pickup timer pie, Refs #154 #155 #156 [Claude]
 Date: 2026-11-17
@@ -1781,6 +1787,30 @@ Files: docs/design.md, docs/changelogs/lead.md (merges of the Lot, Powers and UI
 Why: Issues #157 to #159. CarParkedInside, the small power gain, the bay border flash and the bigger pie.
 Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
 
+## lead: rebuild site/ with park feedback (border flash, power gain, bigger pie) for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #157 #158 #159. Beta now flashes the bay border on a clean park and with the pickup timer, adds a little power for a clean park, and shows a bigger pie.
+Tests: tools/build-web.ps1 exit 0, build-info shows aa0258a; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: Midgard training starts, no console errors. The border flash, the power gain and the bigger pie were not seen in the browser (no car was parked).
+
+## lead: exempt lot wip commit fabdc77 from the changelog check, Refs #157 [Claude]
+Date: 2026-11-16
+Files: tools/changelog-exempt.txt, docs/changelogs/lead.md
+Why: CI failed the deploy because the lot agent's wip commit had no entry; its final commit fee8963 has one. History is not rewritten (CLAUDE.md).
+Tests: bash tools/check-changelog.sh passes locally for the pushed range.
+
+## lead: add PowerFilled event and PowerFillSource to Core, Refs #160 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Events/PowerEvents.cs, docs/changelogs/lead.md
+Why: the HUD shows +X bolts when the power bar gains from a perfect park, clean park, perfect drop-off or a slide (design.md power bar section). Contract only; Powers publishes it, UI shows it.
+Tests: none (data types only); EditMode run at the merge.
+
+## lead: merge powers and UI for +X power pops, Refs #160 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild)
+Why: merged agent work for the PowerFilled event and the +X bolt pops (design.md log 2026-11-17).
+Tests: EditMode exit 0 on the combined tree; PlayMode not run (no physics code changed); RunBatch not needed (no Editor/Data/Scenes change).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2580,6 +2610,12 @@ Date: 2026-11-13
 Files: Powers: ThunderStridePower, DrivingTracker (new); PowerActivationController (registers Thunder stride), PowerDefaults (spec numbers: cooldown 4, dash 5/8 over 0.2 s, boost 1.5/2.2 s, top speed x1.5 in PushStrength, acceleration x2 in Width), PowerLevelData (Secondary). Part of the valet commit for issue #88.
 Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
 Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
+
+## powers: publish PowerFilled when the bar gains [Claude]
+Date: 2026-11-17
+Files: Powers: PowerBarController, DriftFillTracker (per-slide total of what the bar took; Credit; End returns it), PowerFillRule (new). Tests: PowerFillReportTests.
+Why: issue #160: the HUD shows +X per gain. Park, parked-inside and drop-off publish PowerFilled (amount the bar really took, clamped at 100, skipped under 0.5) after PowerBarChanged; a drift slide publishes one PowerFilled(total, Drift) at CarSlideEnded. Only while a power is owned; shift start clears silently. Refs #160.
+Tests: EditMode 1963 passed, 0 failed.
 
 === docs/changelogs/qa.md ===
 # QA changelog
