@@ -1066,3 +1066,9 @@ Date: 2026-11-16
 Files: Scripts/Valet (ThunderAuraClock, ThunderAuraTiming, ThunderAuraLook, ThunderAura, AuraTint, AuraGlow, ThunderDash), Scripts/Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, tests, docs/changelogs/valet.md
 Why: Refs #150. The first power lasts 5 s at level 1 and 7 s at level 2 (was 1.5 and 2.2) and shows a pulsing golden tint, a glow disc and lightning sparks on Thor or his car, with a blink in the last second.
 Tests: EditMode passed after merge (exit 0); agent ran full PlayMode (83 of 83) and RunBatch. Not seen in a running game (car tint relies on the sprite shader honouring _Color); not in beta yet.
+
+## lead: merge agent/wash-near-symbol, update design log [Claude]
+Date: 2026-11-16
+Files: Scripts/Core/Contracts (LotLayoutOptions, WashIconArt), Scripts/Lot/WashBayLayout.cs, Scripts/Run/LotDefinitionRules.cs, Editor Vanaheim setup files, Vanaheim and Midgard lot assets, Vanaheim mud and lighting assets, scenes (field rename; Lot_VanaheimCrazy gap and extension), tests, docs/design.md, docs/changelogs/lot.md
+Why: Refs #148 #149. Wash bays now sit in one column directly beside the bay block (gap WashBayGap 0.5; the Vanaheim crazy lot is no longer widened by 13.5); the muddy car and the wash station share the mud splat symbol.
+Tests: EditMode passed (exit 0) and full PlayMode 85 of 85 on the merged tip. Not seen in a game view; not in beta yet. Midgard lots keep ShowPowerBar off.
