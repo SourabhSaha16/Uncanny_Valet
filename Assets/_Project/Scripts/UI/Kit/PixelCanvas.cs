@@ -10,6 +10,7 @@ namespace UncannyValet.UI.Kit
     public sealed class PixelCanvas
     {
         private readonly PixelKit _kit;
+        private readonly PixelFontRenderer _font;
         private PixelGrid _grid;
         private float _zoom = 1f;
         private int _anchorX;
@@ -18,6 +19,7 @@ namespace UncannyValet.UI.Kit
         public PixelCanvas(PixelKit kit)
         {
             _kit = kit;
+            _font = kit.FontRenderer;
         }
 
         public PixelGrid Grid => _grid;
@@ -84,13 +86,13 @@ namespace UncannyValet.UI.Kit
             GUI.DrawTexture(ScreenRect(x, y, texture.width * scale, texture.height * scale), texture);
         }
 
-        /// <summary>One glyph; spaces draw nothing.</summary>
+        /// <summary>One letter in its text cell (<see cref="PixelTextLayout.Advance"/> wide, <see cref="PixelGlyphs.Height"/> tall); spaces draw nothing.</summary>
         public void Char(char c, int x, int y, Color color, int scale)
         {
             if (c == ' ') return;
             GUI.color = color;
-            Blit(_kit.Font, x, y, PixelGlyphs.Width * scale, PixelGlyphs.Height * scale,
-                PixelGlyphs.IndexOf(c) * PixelGlyphs.Width, 0, PixelGlyphs.Width, PixelGlyphs.Height);
+            var cell = ScreenRect(x, y, PixelTextLayout.Advance * scale, PixelGlyphs.Height * scale);
+            _font.Draw(c, cell, scale, _grid.Scale * _zoom, _zoom < 1f);
         }
 
         public void Text(string text, int x, int y, Color color, int scale = 1, bool shadow = true)

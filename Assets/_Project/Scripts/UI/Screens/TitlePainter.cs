@@ -4,13 +4,13 @@ using UnityEngine;
 namespace UncannyValet.UI.Screens
 {
     /// <summary>
-    /// The title screen from the style guide's Scene 13: UNCANNY VALET in big chunky letters over the (still) lot,
-    /// a row of key tags, and a blinking PRESS ANY KEY. Mrs. Okafor and the cast are left for real art.
+    /// The title screen from the style guide's Scene 13: VALET TO VALHALLA in big chunky letters (two lines, so
+    /// each fits the canvas) over the (still) lot, a row of key tags, and a blinking PRESS ANY KEY. Mrs. Okafor and the cast are left for real art.
     /// </summary>
     public sealed class TitlePainter
     {
-        public const string Line1 = "UNCANNY";
-        public const string Line2 = "VALET";
+        public const string Line1 = "VALET TO";
+        public const string Line2 = "VALHALLA";
         public const string Prompt = "PRESS ANY KEY";
 
         private const int TitleScale = 7;

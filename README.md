@@ -1,4 +1,4 @@
-# Uncanny Valet: start here
+# Valet to Valhalla: start here
 
 This kit turns a new Unity project into one that a team of Claude Code agents builds in parallel. Each
 push to `main` publishes the game's web build (the committed `site/` folder) to GitHub Pages. The build

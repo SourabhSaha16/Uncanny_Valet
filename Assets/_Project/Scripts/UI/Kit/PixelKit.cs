@@ -4,8 +4,8 @@ using UnityEngine;
 namespace UncannyValet.UI.Kit
 {
     /// <summary>
-    /// Owns every generated texture of the pixel UI: the font atlas, the nine-slice panel and the icons. All are
-    /// made once in code with Point filtering and released with <see cref="Dispose"/>.
+    /// Owns every generated texture of the pixel UI (the nine-slice panel and the icons, made once in code with Point filtering and
+    /// released with <see cref="Dispose"/>) and the TrueType font renderer.
     /// </summary>
     public sealed class PixelKit : IDisposable
     {
@@ -14,13 +14,13 @@ namespace UncannyValet.UI.Kit
         public const int PanelBorder = 3;
         private const byte BevelShade = 0xC0;
 
-        private readonly Texture2D _font;
+        private readonly PixelFontRenderer _fontRenderer;
         private readonly Texture2D _panel;
         private readonly Texture2D[] _icons;
 
         public PixelKit()
         {
-            _font = BuildFont();
+            _fontRenderer = new PixelFontRenderer(UiFontConfig.LoadOrDefault());
             _panel = BuildPanel();
             _icons = new Texture2D[Enum.GetValues(typeof(PixelIcon)).Length];
             for (var i = 0; i < _icons.Length; i++)
@@ -30,8 +30,8 @@ namespace UncannyValet.UI.Kit
             }
         }
 
-        /// <summary>The font atlas: one 5x7 cell per glyph, white on clear, in <see cref="PixelGlyphs.Chars"/> order.</summary>
-        public Texture2D Font => _font;
+        /// <summary>Draws letters with the UI font.</summary>
+        public PixelFontRenderer FontRenderer => _fontRenderer;
 
         /// <summary>The nine-slice panel: ink outline, a darker bevel, white fill (tint it to colour the panel).</summary>
         public Texture2D Panel => _panel;
@@ -40,23 +40,8 @@ namespace UncannyValet.UI.Kit
 
         public void Dispose()
         {
-            Release(_font);
             Release(_panel);
             for (var i = 0; i < _icons.Length; i++) Release(_icons[i]);
-        }
-
-        private static Texture2D BuildFont()
-        {
-            var width = PixelGlyphs.Count * PixelGlyphs.Width;
-            var height = PixelGlyphs.Height;
-            var pixels = new Color32[width * height];
-            var white = new Color32(255, 255, 255, 255);
-            for (var glyph = 0; glyph < PixelGlyphs.Count; glyph++)
-                for (var row = 0; row < height; row++)
-                    for (var column = 0; column < PixelGlyphs.Width; column++)
-                        if (PixelGlyphs.IsLit(glyph, row, column))
-                            pixels[(height - 1 - row) * width + glyph * PixelGlyphs.Width + column] = white;
-            return PixelBitmap.Make("PixelFont", width, height, pixels);
         }
 
         private static Texture2D BuildPanel()

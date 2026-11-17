@@ -6,7 +6,7 @@ set -euo pipefail
 SITE_DIR="$1"
 
 {
-  echo "Uncanny Valet web build"
+  echo "Valet to Valhalla web build"
   echo "Commit:  $(git rev-parse --short HEAD)"
   echo "Subject: $(git log -1 --format=%s)"
   echo "Date:    $(git log -1 --format=%cd --date=iso)"
