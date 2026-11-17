@@ -30,6 +30,11 @@ namespace UncannyValet.Cars
             float falloffPerSpeed, float minShare)
             => TurnRate(steer, forwardSpeed, maxTurnRate, turnFullSpeed) * Falloff(forwardSpeed, turnFullSpeed, falloffPerSpeed, minShare);
 
+        /// <summary>Turn rate with the fall-off scaled by <paramref name="falloffScale"/> (1 = normal, 0 = no fall-off).</summary>
+        public static float TurnRate(float steer, float forwardSpeed, float maxTurnRate, float turnFullSpeed,
+            float falloffPerSpeed, float minShare, float falloffScale)
+            => TurnRate(steer, forwardSpeed, maxTurnRate, turnFullSpeed, falloffPerSpeed * Mathf.Max(0f, falloffScale), minShare);
+
         /// <summary>Radius with the fall-off: speed divided by the eased turn rate, never below R_min.</summary>
         public static float Radius(float forwardSpeed, float rMin, float maxTurnRate, float turnFullSpeed,
             float falloffPerSpeed, float minShare)

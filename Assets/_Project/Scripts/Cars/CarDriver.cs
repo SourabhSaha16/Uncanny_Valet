@@ -33,6 +33,9 @@ namespace UncannyValet.Cars
         public SlipReading Reading { get; private set; }
 
         /// <summary>Input editors read before the handling model; faults add themselves here.</summary>
+        /// <summary>The live handling numbers (null until initialised with them).</summary>
+        public CarHandlingLive Handling => _handling;
+
         public DriveModifierStack Modifiers { get; } = new DriveModifierStack();
 
         /// <param name="handling">Live handling numbers shared by all cars of the factory.</param>
@@ -110,7 +113,7 @@ namespace UncannyValet.Cars
                 drive.Braking, drive.CoastDrag, drive.TopSpeed * input.TopSpeedScale, drive.ReverseFactor, Time.fixedDeltaTime);
             _body.linearVelocity = PreSolveVelocity = velocity + up * (next - forward);
             var turn = SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed,
-                _handling.TurnFalloff, _handling.TurnMinShare);
+                _handling.TurnFalloff, _handling.TurnMinShare, input.TurnFalloffScale);
             _body.angularVelocity = Mathf.Rad2Deg * (turn * _driftState.TurnScale + _driftState.KickYaw);
         }
 

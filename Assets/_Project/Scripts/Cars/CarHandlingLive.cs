@@ -23,8 +23,15 @@ namespace UncannyValet.Cars
         /// <summary>Damage percent per unit of force above the smallest hit.</summary>
         public float DamagePercentPerForce { get; private set; }
 
+        /// <summary>Share of the speed grip loss kept during the Thunder stride boost.</summary>
+        public float ThunderGripLossKept { get; private set; }
+        /// <summary>Share of the turn fall-off kept during the Thunder stride boost (0 = off).</summary>
+        public float ThunderTurnFalloffKept { get; private set; }
+
         public CarHandlingLive(CarHandlingConfig config)
         {
+            ThunderGripLossKept = config.ThunderGripLossKept;
+            ThunderTurnFalloffKept = config.ThunderTurnFalloffKept;
             DamageMinForce = config.DamageMinForce;
             DamagePercentPerForce = config.DamagePercentPerForce;
             _lateralFriction = config.LateralFriction;
