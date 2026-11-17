@@ -1210,3 +1210,9 @@ Date: 2026-11-17
 Files: site/, docs/changelogs/lead.md
 Why: player-visible changes #164 to #170, #168, #50 (design.md log 2026-11-17).
 Tests: EditMode 2028/2028, PlayMode 86/86, web build exit 0 (build-info commit cfa8c43); local smoke test: title, how-to-play, lot intro and HUD render with the new font, no console errors.
+
+## lead: merge playtest batch 8, rebuild site/ for beta, Refs #171 #172 #173 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (integration title/text, late-pickup pop)
+Why: playtest notes 1 to 3 (design.md log 2026-11-17). Root cause of #173: the late-pickup curse was applied but had no pop and the pickup pop read only the closed ticket's blessing (0).
+Tests: EditMode 2033/2033, PlayMode 89/89 on the combined tree.
