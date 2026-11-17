@@ -271,3 +271,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/ShiftEndCleanup.cs (new), CarFactory.cs (DespawnAll, subscription created in Start, disposed in OnDestroy); Tests/EditMode/Cars/ShiftEndCleanupTests.cs, Tests/PlayMode/ShiftEndDespawnTests.cs (new, + .meta)
 Why: cars leaving at the end of a shift drove off screen behind the results screen. Despawn goes through the existing CarFactory.Despawn, so seats, stations and trips are released by the destroyed car as before; PatronDeparture's later drive-away call finds no car and does nothing. Ambient traffic is untouched.
 Tests: EditMode 2008 passed; PlayMode ShiftEndDespawnTests passed (full PlayMode 84 of 86; PowerBarPlayModeTests.FreezeTime_Owned... and VanaheimStormWindPlayModeTests.WithStormWindOwned... fail in power-bucket asserts, areas this change does not touch).
+
+## ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/BlessingPopTracker.cs, PendingBlessingPops.cs, Scripts/Economy/OvertimeCurseRule.cs; Tests/EditMode/Integration/LateCursePopFlowTests.cs (new), Tests/EditMode/Economy/OvertimeCurseTests.cs, Tests/PlayMode/LatePickupCursePlayModeTests.cs (new, + .meta)
+Why: the late-pickup curse was applied on delivery, but nothing showed it (CursePopTracker skips ticket curses; the pickup pop only read the closed blessing, 0) and the total cannot drop below 0. BlessingPopTracker now keeps the ticket's CurseApplied amount until TicketClosed and pops a red "-N" (existing Curse look) where the blessing pop would be. OvertimeCurseRule.Take now costs at least 1 even when delivery shares the expiry's instant. A voided ticket (no delivery) still costs 0 and pops nothing.
+Tests: EditMode full suite 2033 passed; PlayMode LatePickupCursePlayModeTests 3 passed (real ShiftClock, TicketRegistry, ShiftBlessings on Time.time, seeded tuning). Not checked visually.

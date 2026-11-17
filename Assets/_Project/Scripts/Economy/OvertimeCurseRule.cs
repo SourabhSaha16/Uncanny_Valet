@@ -11,6 +11,9 @@ namespace UncannyValet.Economy
     /// </summary>
     public sealed class OvertimeCurseRule
     {
+        // A delivery in the very frame the timer ran out still counts as late: it costs the minimum.
+        private const float JustExpiredSeconds = 0.001f;
+
         private readonly Dictionary<TicketId, float> _expiredAt = new Dictionary<TicketId, float>();
 
         /// <summary>The curse for a given overtime (0 when the patron was not late).</summary>
@@ -24,12 +27,12 @@ namespace UncannyValet.Economy
         /// <summary>The ticket's pickup timer ran out at <paramref name="now"/> (seconds on any steady clock).</summary>
         public void MarkExpired(TicketId ticket, float now) => _expiredAt[ticket] = now;
 
-        /// <summary>The curse owed for this ticket delivered at <paramref name="now"/>; the ticket is forgotten. 0 when on time.</summary>
+        /// <summary>The curse owed for this ticket delivered at <paramref name="now"/>; the ticket is forgotten. 0 when the timer never ran out (at least 1 otherwise, even with no wait).</summary>
         public int Take(TicketId ticket, float now, float secondsPerPoint, int cap)
         {
             if (!_expiredAt.TryGetValue(ticket, out var at)) return 0;
             _expiredAt.Remove(ticket);
-            return Amount(now - at, secondsPerPoint, cap);
+            return Amount(Math.Max(now - at, JustExpiredSeconds), secondsPerPoint, cap);
         }
 
         /// <summary>Forgets a ticket that ended without a delivery.</summary>
