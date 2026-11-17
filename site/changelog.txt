@@ -1,4 +1,6 @@
 === Last 50 commits ===
+2de311c  2026-11-17  lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
+250e826  2026-11-17  lead: rebuild site/ with Perfect Park and clock changes for beta [Claude]
 6f3e916  2026-11-17  lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
 51e919d  2026-11-17  lead: merge agent/integration green Perfect and clock tab, Refs #161 #162 [Claude]
 179793d  2026-11-17  lead: merge agent/lot relaxed Perfect Park, Refs #161 [Claude]
@@ -47,8 +49,6 @@ eb8bf43  2026-11-16  cars: faster turning, speed fall-off and drift entry kick, 
 2bcf6aa  2026-11-16  lead: merge agent/wash-near-symbol [Claude]
 2dd702b  2026-11-16  lot: wash bays right next to the bay block, one shared mud symbol, Refs #148 #149 [Claude]
 1ce021b  2026-11-16  lead: changelog for power visible merge, Refs #150 [Claude]
-bbb68d8  2026-11-16  lead: merge agent/power-visible [Claude]
-7ba8519  2026-11-16  valet: Thunder stride lasts 5 s and glows while it runs [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -1822,6 +1822,18 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectTuning.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs, docs/design.md, docs/changelogs/lead.md
 Why: Perfect Park no longer reads the side and length offsets (design.md log 2026-11-17), so their F2 rows and seeds go; the TuningKey values stay (append-only). Visible row count 15 to 13 in the test.
 Tests: EditMode exit 0 on the combined tree; PlayMode run before the build.
+
+## lead: rebuild site/ with relaxed Perfect Park, green Perfect and clock tab for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible change for #161 and #162 (design.md log 2026-11-17).
+Tests: EditMode exit 0, PlayMode 85/85, web build exit 0 (build-info commit 6f3e916).
+
+## lead: Perfect Park is just inside the box, +15 power, Refs #163 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Lot/PerfectSettings.cs, Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Powers/PowerBarConfig.cs, Assets/_Project/Scripts/Run/LotPowerFill.cs, Assets/_Project/Data/ (PowerBarConfig, four lot assets, regenerated configs), Assets/_Project/Scenes/ (RunBatch regenerated), three EditMode test files, docs/design.md
+Why: playtest note: drop the inside-and-straight split, +15 for getting inside the box (design.md log 2026-11-17). Default park angle 90 accepts any angle; the clean-park gain default is 0.
+Tests: EditMode exit 0 (updated defaults, new test for any-angle default); RunBatch exit 0.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog

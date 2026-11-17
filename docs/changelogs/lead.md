@@ -1186,3 +1186,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Lot/PerfectSettings.cs, Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Powers/PowerBarConfig.cs, Assets/_Project/Scripts/Run/LotPowerFill.cs, Assets/_Project/Data/ (PowerBarConfig, four lot assets, regenerated configs), Assets/_Project/Scenes/ (RunBatch regenerated), three EditMode test files, docs/design.md
 Why: playtest note: drop the inside-and-straight split, +15 for getting inside the box (design.md log 2026-11-17). Default park angle 90 accepts any angle; the clean-park gain default is 0.
 Tests: EditMode exit 0 (updated defaults, new test for any-angle default); RunBatch exit 0.
+
+## lead: rebuild site/ with the simpler Perfect Park reward for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible change for #163 (design.md log 2026-11-17).
+Tests: EditMode exit 0, RunBatch exit 0, web build exit 0 (build-info commit 2de311c). PlayMode not run (no physics code changed).

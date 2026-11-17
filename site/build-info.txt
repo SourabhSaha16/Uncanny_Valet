@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  6f3e916
-Subject: lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
-Date:    2026-11-17 09:20:08 -0800
+Commit:  2de311c
+Subject: lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
+Date:    2026-11-17 10:20:02 -0800
