@@ -1174,3 +1174,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectTuning.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs, docs/design.md, docs/changelogs/lead.md
 Why: Perfect Park no longer reads the side and length offsets (design.md log 2026-11-17), so their F2 rows and seeds go; the TuningKey values stay (append-only). Visible row count 15 to 13 in the test.
 Tests: EditMode exit 0 on the combined tree; PlayMode run before the build.
+
+## lead: rebuild site/ with relaxed Perfect Park, green Perfect and clock tab for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible change for #161 and #162 (design.md log 2026-11-17).
+Tests: EditMode exit 0, PlayMode 85/85, web build exit 0 (build-info commit 6f3e916).

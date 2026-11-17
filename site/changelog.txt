@@ -1,4 +1,10 @@
 === Last 50 commits ===
+6f3e916  2026-11-17  lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
+51e919d  2026-11-17  lead: merge agent/integration green Perfect and clock tab, Refs #161 #162 [Claude]
+179793d  2026-11-17  lead: merge agent/lot relaxed Perfect Park, Refs #161 [Claude]
+2a344b7  2026-11-17  lot: Perfect Park counts anywhere inside the bay box [Claude]
+f119c00  2026-11-17  ui: green PERFECT cues, clock tab under score panel, Refs #161 #162 [Claude]
+95a0971  2026-11-17  lead: rebuild site/ with power pops for beta [Claude]
 2497d5b  2026-11-17  lead: design log and changelog for power pops, Refs #160 [Claude]
 16321bd  2026-11-17  lead: merge agent/integration +X bolt pops, Refs #160 [Claude]
 d754590  2026-11-17  lead: merge agent/powers PowerFilled publishing, Refs #160 [Claude]
@@ -43,12 +49,6 @@ eb8bf43  2026-11-16  cars: faster turning, speed fall-off and drift entry kick, 
 1ce021b  2026-11-16  lead: changelog for power visible merge, Refs #150 [Claude]
 bbb68d8  2026-11-16  lead: merge agent/power-visible [Claude]
 7ba8519  2026-11-16  valet: Thunder stride lasts 5 s and glows while it runs [Claude]
-1ec7560  2026-11-16  lead: changelog for audio reset merge, Refs #147 [Claude]
-abba153  2026-11-16  lead: merge agent/audio-reset [Claude]
-aded065  2026-11-16  audio: silence and release all level audio on lot change and lot end [Claude]
-6ac9d8e  2026-11-16  lead: rebuild site/ with playtest batch 4 for beta [Claude]
-27d3d26  2026-11-16  lead: merge shift-dash, design log, Refs #145 #146 [Claude]
-d165d4a  2026-11-16  lead: merge agent/shift-dash [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -638,6 +638,12 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/UI/Pie/ (new: BayBorderLayer, BayBorderRule, BayBorderSettings, BayBorderSprites, BayBorderView; PickupPieSettings default 20 px, offset 1.45); UI/Mood/HudEmotionConfig.cs, UI/Hud/PlayingHud.cs, UI/GameUi.cs, Bootstrap/GameBootstrap.cs; Tests/EditMode/UI/BayBorderTests.cs (new)
 Why: #158 a bay's border flashes green when its car parks completely inside (CarParkedInside), then in the pickup-timer colour at 1.5/3/7 Hz (happy/impatient/angry) while its patron waits; released when the car leaves, the ticket closes, the shift ends or the car is gone. Bay rects come from the new ISpotGeometry, registered in Bootstrap when the lot implements it (no border until Lot implements it). Pie is 20 px (was 14).
 Tests: EditMode 1942 passed (BayBorderTests, 9 new). PlayMode not run (run-tests.ps1 is EditMode only).
+
+## ui: green PERFECT cues, clock tab under score panel, Refs #161 #162 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/ (new: ClockLayout, ClockSettings; BlessingPopKind +Perfect, BlessingPops, BlessingPopPainter, PowerFillPopRule, PowerFillPopPainter, HudPainter, PlayingHud); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/ClockPlacementTests.cs (new)
+Why: #161 the PERFECT! pop and the PerfectPark +X pop now use the bay border green (EmotionStyle Happy colour, one value passed from PlayingHud, no literal); ParkedInside keeps its lighter gold-pulled green. #162 the shift clock is a tab flush under the score panel at the left edge (was top centre over the lot); gap and inset tunable in ClockSettings (HudEmotionConfig.Clock), clear of the power column and its +X pops. Not checked visually.
+Tests: EditMode passed (ClockPlacementTests, 9 new cases); RunBatch not needed (no Editor/Data/Scenes change).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1811,6 +1817,12 @@ Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild)
 Why: merged agent work for the PowerFilled event and the +X bolt pops (design.md log 2026-11-17).
 Tests: EditMode exit 0 on the combined tree; PlayMode not run (no physics code changed); RunBatch not needed (no Editor/Data/Scenes change).
 
+## lead: retire dead Perfect Park offset rows and merge #161 #162 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectTuning.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs, docs/design.md, docs/changelogs/lead.md
+Why: Perfect Park no longer reads the side and length offsets (design.md log 2026-11-17), so their F2 rows and seeds go; the TuningKey values stay (append-only). Visible row count 15 to 13 in the test.
+Tests: EditMode exit 0 on the combined tree; PlayMode run before the build.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2115,6 +2127,12 @@ Date: 2026-11-16
 Files: Scripts/Lot/{BayFitRule,CarOutline,SpotGeometry}.cs (new), ParkingSpot.cs, SpotBuilder.cs (InnerSize), LotLayoutBuilder.cs (implements ISpotGeometry), PerfectSettings.cs (ParkedInsideTolerance); Tests/EditMode/Lot/{BayFitRuleTests,SpotGeometryTests}.cs
 Why: Issue #157, design.md section 4. A bay publishes CarParkedInside right after CarParked when all four corners of the car box collider lie inside the painted inner rect (spot size less the lines) plus a tolerance (default 0.05, PerfectSettings). Once per CarParked since a re-settle in the same bay is ignored. Regular and EV bays only; wash bays do not publish CarParked. LotLayoutBuilder also implements ISpotGeometry (inner rect, world centre and rotation per bay) for Bootstrap to register.
 Tests: new BayFitRuleTests (inside, touching, each side out, tolerance edge) and SpotGeometryTests; EditMode suite via tools/run-tests.ps1.
+
+## lot: Perfect Park counts anywhere inside the bay box, Refs #161 [Claude]
+Date: 2026-11-17
+Files: Scripts/Lot/{ParkJudge,ParkVerdict,ParkingSpot,PerfectRunner,PerfectSettings,PerfectTuning}.cs; Tests/EditMode/Lot/PerfectJudgeTests.cs
+Why: Issue #161, design.md section 4 (play-test note). Perfect Park now needs the car completely inside the bay box (the BayFitRule result that also drives CarParkedInside, same tolerance) and a heading within the park angle; side and length offsets are gone from PerfectSettings, PerfectTuning and ParkJudge. ParkVerdict: OffCentreSide and OffCentreLength replaced by OutsideBay. Cooldown, min-travel and touching gates unchanged; both CarParkedInside and PerfectPark still fire. TuningKeys PerfectParkSideOffset/LengthOffset and their Core F2 rows are kept but unread; PerfectTuning still seeds fixed values for them because the catalog requires every row seeded (lead can retire the rows).
+Tests: ParkJudgeChecksAngleBoxAndContact (off-centre at 5 degrees inside the box is Perfect; outside the box or off-angle is not); EditMode 1974/1974 and PlayMode 85/85 pass.
 
 === docs/changelogs/orders.md ===
 # Orders changelog

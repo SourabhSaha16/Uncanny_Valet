@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  2497d5b
-Subject: lead: design log and changelog for power pops, Refs #160 [Claude]
-Date:    2026-11-17 08:04:19 -0800
+Commit:  6f3e916
+Subject: lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
+Date:    2026-11-17 09:20:08 -0800
