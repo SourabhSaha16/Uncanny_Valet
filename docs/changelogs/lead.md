@@ -1054,3 +1054,9 @@ Date: 2026-11-16
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #144 #145 #146. Beta now includes the patron stay jitter, the Shift dash on foot and the on-foot speed boost power.
 Tests: tools/build-web.ps1 exit 0, build-info shows 27d3d26; EditMode and PlayMode (80 of 80) passed on the same code; browser smoke test: Midgard training loads, how-to-play card lists the Shift dash, no console errors. The dash, the boost and the jitter were not exercised in the browser.
+
+## lead: merge agent/audio-reset [Claude]
+Date: 2026-11-16
+Files: Scripts/Audio (IAudioLayer, LayerSet, SourceLayer, AudioDirector, ThemeSession), Tests/EditMode/Audio/LayerSetTests.cs, Tests/PlayMode/LevelAudioResetPlayModeTests.cs, docs/changelogs/audio.md
+Why: Refs #147. Every level music, ambience and escalation loop is now a layer in one LayerSet that is silenced (stopped, volume 0, clip released) when the level changes, a lot is chosen, the run completes or the director is destroyed, so the previous level's tracks cannot overlap the next.
+Tests: EditMode passed after merge (exit 0); agent ran the audio PlayMode tests (6 of 6). Root cause inferred from code, not heard; not in beta yet.
