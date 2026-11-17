@@ -61,3 +61,9 @@ Date: 2026-11-14
 Files: Audio (ThemeContext, IThemePart, the nine instrument parts, ThemeParts, ThemeLoopBuilder, SeamlessNoise, Ambience*, EscalationLoops, EscalationRule, ThemeSession, WorldSoundTuning, SfxWorld, VoiceSpec vibrato, SfxId 27-29, SfxEventRouter, AudioConfig, AudioDirector), Core (TuningKey x3 appended, WorldSoundRows, TuningCatalog, CarEnteredMud event), Run (LotDefinition theme and ambience fields, rules), Cars (CarMudEffect publishes CarEnteredMud), Bootstrap (AudioBootstrap, TuningSeeder, GameBootstrap one line), Editor (AudioThemeAssets, ProjectSetup), Tests (EditMode MusicThemeTests, ThemeSoundTests, ThemeFixtures, LotAudioTests; PlayMode ThemedLotAudioPlayModeTests, mud entry test).
 Why: Issue #117 (epic #79): per-lot music themes, ambience, chime/splash/squelch and the +15% tempo escalation.
 Tests: NOT YET RUN: the D: disk was full (Unity could not build Library), so compile, RunBatch, EditMode and PlayMode are pending. The theme assets are not generated yet.
+
+## audio: silence and release all level audio on lot change and lot end [Claude]
+Date: 2026-11-16
+Files: Audio/IAudioLayer.cs, LayerSet.cs, SourceLayer.cs (new); ThemeSession.cs, AudioDirector.cs; Tests EditMode/Audio/LayerSetTests.cs, PlayMode/LevelAudioResetPlayModeTests.cs
+Why: Issue #147: the previous level music and ambience must not keep sounding. Every music, ambience and escalation loop is now a layer in one LayerSet, silenced (stopped, volume 0, clip released and destroyed) when the director is destroyed and on NextLotChosen / RunCompleted; the director starts the new theme from a clean set.
+Tests: EditMode 1911/1911 passed (5 new LayerSet tests). PlayMode ThemedLotAudio and LevelAudioReset: 6/6 passed. Not verified by ear.

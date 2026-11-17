@@ -32,6 +32,8 @@ namespace UncannyValet.Audio
         private MusicThemeDefinition _theme;
         private float _sfxGain;
         private AudioSource _music;
+        private SourceLayer _musicLayer;
+        private readonly LayerSet _layers = new LayerSet();
         private AudioSource[] _voices;
         private int _nextVoice;
 
@@ -57,7 +59,7 @@ namespace UncannyValet.Audio
             Services.TryGet<ILotAudio>(out var lotAudio);
             _theme = lotAudio != null ? lotAudio.Theme : null;
             BuildAudio();
-            _session = new ThemeSession(bus, gameObject, _theme, lotAudio != null ? lotAudio.Ambience : null,
+            _session = new ThemeSession(bus, gameObject, _layers, _theme, lotAudio != null ? lotAudio.Ambience : null,
                 _config.SampleRate, _config.TempoSmoothingSeconds, _worldTuning);
             ApplyVolumes();
             Services.TryGet<IModifierCatalog>(out var modifiers);
@@ -91,6 +93,9 @@ namespace UncannyValet.Audio
             _session?.Unsubscribe();
         }
 
+        // Level audio never outlives its scene: every layer is stopped, muted and released when the director goes.
+        private void OnDestroy() => _layers.SilenceAll();
+
         private void Update()
         {
             if (_music == null) return;
@@ -106,10 +111,11 @@ namespace UncannyValet.Audio
         private void BuildAudio()
         {
             var settings = new LoopSettings(_config.SampleRate, _config.TempoBpm, _config.RootMidiNote, _config.Swing);
+            _layers.SilenceAll();
             _music = gameObject.AddComponent<AudioSource>();
-            _music.clip = MusicClip(settings);
-            _music.loop = true;
-            _music.playOnAwake = false;
+            var clip = MusicClip(settings);
+            _musicLayer = new SourceLayer(_music, clip, _theme != null && _theme.ClipOverride == clip ? null : clip);
+            _layers.Hold(_musicLayer);
             _bank = new SfxBank(settings.SampleRate, _tyreTuning.Sharpness);
             _voices = new AudioSource[_config.SfxVoices];
             for (int i = 0; i < _voices.Length; i++)
@@ -121,7 +127,7 @@ namespace UncannyValet.Audio
                 _config.SquealMaxPitch, _config.SquealFadeSeconds, _config.SquealAttackSeconds);
             _tyres = new TyreAudio(gameObject.AddComponent<AudioSource>(), SquealClip(), squeal);
             ApplyVolumes();
-            _music.Play();
+            _musicLayer.Play();
         }
 
         // The theme's clip override, else the theme rendered by the synth; no theme keeps the funk loop.
@@ -147,7 +153,7 @@ namespace UncannyValet.Audio
         private void ApplyVolumes()
         {
             float master = _mute.Apply(_config.MasterVolume);
-            _music.volume = master * _config.MusicVolume * (_theme != null ? _theme.MusicVolume : 1f);
+            _musicLayer.SetVolume(master * _config.MusicVolume * (_theme != null ? _theme.MusicVolume : 1f));
             _session?.SetGain(master * _config.SfxVolume);
             _sfxGain = master * _config.SfxVolume;
             for (int i = 0; i < _voices.Length; i++) _voices[i].volume = _sfxGain;
