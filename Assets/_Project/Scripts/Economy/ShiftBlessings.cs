@@ -23,7 +23,11 @@ namespace UncannyValet.Economy
         private readonly Func<ILotGoal> _goal;
         private readonly PedestrianCurseRule _pedestrianCurses = new PedestrianCurseRule();
         private readonly SlightCurseRule _slightCurses = new SlightCurseRule();
+        private readonly OvertimeCurseRule _overtime = new OvertimeCurseRule();
         private bool _open;
+
+        /// <summary>Overtime curse numbers; null uses the rule's defaults.</summary>
+        public OvertimeCurseConfig OvertimeConfig { get; set; }
 
         /// <summary>Seconds clock the pedestrian curse lockout reads (the game time by default; tests replace it).</summary>
         public Func<float> Clock { get; set; } = () => Time.time;
@@ -45,6 +49,8 @@ namespace UncannyValet.Economy
             _bus.Subscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<PedestrianHit>(OnPedestrianHit);
+            _bus.Subscribe<CarDelivered>(OnCarDelivered);
+            _bus.Subscribe<TicketClosed>(OnTicketClosed);
         }
 
         public void Dispose()
@@ -54,6 +60,8 @@ namespace UncannyValet.Economy
             _bus.Unsubscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<PedestrianHit>(OnPedestrianHit);
+            _bus.Unsubscribe<CarDelivered>(OnCarDelivered);
+            _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
         }
 
         /// <summary>
@@ -79,6 +87,7 @@ namespace UncannyValet.Economy
             _open = true;
             _pedestrianCurses.Reset();
             _slightCurses.Reset();
+            _overtime.Reset();
             Publish();
         }
 
@@ -117,7 +126,22 @@ namespace UncannyValet.Economy
         }
 
         // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.
-        private void OnTimerExpired(TicketTimerExpired e) => ApplyCurse(e.Ticket, _config.DefaultCurse);
+        private void OnTimerExpired(TicketTimerExpired e)
+        {
+            _overtime.MarkExpired(e.Ticket, Clock());
+            ApplyCurse(e.Ticket, _config.DefaultCurse);
+        }
+
+        // The late car finally reaches its angry patron: a further, milder curse that grows with the wait beyond the timer.
+        private void OnCarDelivered(CarDelivered e)
+        {
+            var seconds = OvertimeConfig != null ? OvertimeConfig.SecondsPerPoint : OvertimeCurseRule.DefaultSecondsPerPoint;
+            var cap = OvertimeConfig != null ? OvertimeConfig.Cap : OvertimeCurseRule.DefaultCap;
+            var amount = _overtime.Take(e.Ticket, Clock(), seconds, cap);
+            if (amount > 0) ApplyCurse(e.Ticket, amount);
+        }
+
+        private void OnTicketClosed(TicketClosed e) => _overtime.Forget(e.Ticket);
 
         // The driven car hit a walker (no ticket belongs to the curse). A patron where the lot allows it gets the full curse;
         // anyone else, on every lot, the slight one. One curse per hit: the bigger wins, so a patron the full curse covers
