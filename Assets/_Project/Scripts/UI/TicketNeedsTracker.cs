@@ -22,7 +22,6 @@ namespace UncannyValet.UI
             _bus.Subscribe<ModifierProgressChanged>(OnProgress);
             _bus.Subscribe<ModifierCleared>(OnCleared);
             _bus.Subscribe<CarParked>(OnParked);
-            _bus.Subscribe<CarDamaged>(OnDamaged);
         }
 
         public void Dispose()
@@ -31,10 +30,8 @@ namespace UncannyValet.UI
             _bus.Unsubscribe<ModifierProgressChanged>(OnProgress);
             _bus.Unsubscribe<ModifierCleared>(OnCleared);
             _bus.Unsubscribe<CarParked>(OnParked);
-            _bus.Unsubscribe<CarDamaged>(OnDamaged);
         }
 
-        private void OnDamaged(CarDamaged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Damage01 = e.Damage01; }
 
         /// <summary>The open row of a car, or null.</summary>
         public static TicketRow FindByCar(SortedDictionary<int, TicketRow> rows, int car)
