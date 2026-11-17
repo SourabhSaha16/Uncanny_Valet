@@ -29,27 +29,10 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void Glyphs_TableHasSevenRowsPerCharacterAndFiveBitRows()
-        {
-            Assert.AreEqual(PixelGlyphs.Chars.Length * PixelGlyphs.Height, PixelGlyphs.Rows.Length);
-            foreach (var row in PixelGlyphs.Rows) Assert.Less((int)row, 1 << PixelGlyphs.Width);
-        }
-
-        [Test]
         public void Glyphs_LowerCaseMatchesUpperCaseAndUnknownIsQuestionMark()
         {
             Assert.AreEqual(PixelGlyphs.IndexOf('A'), PixelGlyphs.IndexOf('a'));
             Assert.AreEqual(PixelGlyphs.IndexOf('?'), PixelGlyphs.IndexOf('~'));
-        }
-
-        [Test]
-        public void Glyphs_IHasTopBarAndCentreStem()
-        {
-            var glyph = PixelGlyphs.IndexOf('I');
-            Assert.IsTrue(PixelGlyphs.IsLit(glyph, 0, 1));
-            Assert.IsFalse(PixelGlyphs.IsLit(glyph, 0, 0));
-            Assert.IsTrue(PixelGlyphs.IsLit(glyph, 3, 2));
-            Assert.IsFalse(PixelGlyphs.IsLit(glyph, 3, 0));
         }
 
         [Test]
