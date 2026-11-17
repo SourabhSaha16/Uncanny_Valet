@@ -1150,3 +1150,9 @@ Date: 2026-11-16
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #157 #158 #159. Beta now flashes the bay border on a clean park and with the pickup timer, adds a little power for a clean park, and shows a bigger pie.
 Tests: tools/build-web.ps1 exit 0, build-info shows aa0258a; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: Midgard training starts, no console errors. The border flash, the power gain and the bigger pie were not seen in the browser (no car was parked).
+
+## lead: exempt lot wip commit fabdc77 from the changelog check, Refs #157 [Claude]
+Date: 2026-11-16
+Files: tools/changelog-exempt.txt, docs/changelogs/lead.md
+Why: CI failed the deploy because the lot agent's wip commit had no entry; its final commit fee8963 has one. History is not rewritten (CLAUDE.md).
+Tests: bash tools/check-changelog.sh passes locally for the pushed range.
