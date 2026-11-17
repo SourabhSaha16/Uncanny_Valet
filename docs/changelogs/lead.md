@@ -1162,3 +1162,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Core/Events/PowerEvents.cs, docs/changelogs/lead.md
 Why: the HUD shows +X bolts when the power bar gains from a perfect park, clean park, perfect drop-off or a slide (design.md power bar section). Contract only; Powers publishes it, UI shows it.
 Tests: none (data types only); EditMode run at the merge.
+
+## lead: merge powers and UI for +X power pops, Refs #160 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild)
+Why: merged agent work for the PowerFilled event and the +X bolt pops (design.md log 2026-11-17).
+Tests: EditMode exit 0 on the combined tree; PlayMode not run (no physics code changed); RunBatch not needed (no Editor/Data/Scenes change).
