@@ -16,10 +16,18 @@ MonoBehaviour:
   _forwardGrip: 0.6
   _gripLowSpeed: 3
   _gripHighSpeed: 6
-  _gripAtSpeed: 0.55
-  _driftGripScale: 0.25
+  _gripAtSpeed: 0.75
+  _driftGripScale: 0.2
   _driftMinSpeed: 1
-  _turnFullSpeed: 4
+  _driftKick:
+    _kickRate: 3
+    _kickSeconds: 0.12
+    _turnScale: 1.3
+    _holdSeconds: 0.25
+    _blendSeconds: 0.2
+  _turnFullSpeed: 6
+  _turnFalloff: 0.12
+  _turnMinShare: 0.55
   _tightestRadius: 2.2
   _measuredAisleWidth: 6
   _radiusMargin: 1

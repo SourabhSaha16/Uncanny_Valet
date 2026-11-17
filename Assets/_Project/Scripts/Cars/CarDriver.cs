@@ -18,6 +18,7 @@ namespace UncannyValet.Cars
         private float _steer;
         private bool _drift;
         private CarHandlingLive _handling;
+        private readonly DriftState _driftState = new DriftState();
 
         public CarId Id => _id;
         public Transform Transform => transform;
@@ -99,15 +100,18 @@ namespace UncannyValet.Cars
             var input = HasDriver ? Modifiers.Apply(new DriveInput(_throttle, _steer, _drift)) : default;
             Vector2 up = transform.up;
             Observe(_body.linearVelocity, up, input);
-            var velocity = DriftModel.Step(_body.linearVelocity, up, input.Drift, _handling.Drift, Time.fixedDeltaTime,
+            _driftState.Advance(input, _body.linearVelocity.magnitude, Vector2.Dot(_body.linearVelocity, up),
+                _handling.DriftKick, Time.fixedDeltaTime);
+            var velocity = DriftModel.Step(_body.linearVelocity, up, _driftState.GripBlend, _handling.Drift, Time.fixedDeltaTime,
                 input.GripLossScale);
             var forward = Vector2.Dot(velocity, up);
             var drive = _handling.DriveFor(_definition);
             var next = CarPhysicsMath.NextForwardSpeed(forward, input.Throttle, drive.Acceleration * input.AccelerationScale,
                 drive.Braking, drive.CoastDrag, drive.TopSpeed * input.TopSpeedScale, drive.ReverseFactor, Time.fixedDeltaTime);
             _body.linearVelocity = PreSolveVelocity = velocity + up * (next - forward);
-            _body.angularVelocity = Mathf.Rad2Deg
-                * SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed);
+            var turn = SteeringModel.TurnRate(input.Steer, next, _handling.MaxTurnRate, _handling.TurnFullSpeed,
+                _handling.TurnFalloff, _handling.TurnMinShare);
+            _body.angularVelocity = Mathf.Rad2Deg * (turn * _driftState.TurnScale + _driftState.KickYaw);
         }
 
         // The slide the player sees: velocity against the facing before this step's damping (skid marks and tyre sound read it).

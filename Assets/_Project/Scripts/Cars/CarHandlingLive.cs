@@ -13,7 +13,8 @@ namespace UncannyValet.Cars
     {
         private readonly SkidConfig _skid;
         private float _lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed, _gripAtSpeed, _driftGripScale;
-        private float _driftMinSpeed, _turnFullSpeed, _rMin;
+        private float _driftMinSpeed, _turnFullSpeed, _rMin, _turnFalloff, _turnMinShare;
+        private float _kickRate, _kickSeconds, _driftTurnScale, _holdSeconds, _blendSeconds;
         private float _slideThreshold, _shiftSlideSpeed, _markOpacity, _markFadeSeconds;
         private float _topSpeedScale, _accelerationScale, _brakingScale, _coastDragScale, _reverseScale;
 
@@ -35,6 +36,13 @@ namespace UncannyValet.Cars
             _driftMinSpeed = config.DriftMinSpeed;
             _turnFullSpeed = config.TurnFullSpeed;
             _rMin = config.RMin;
+            _turnFalloff = config.TurnFalloff;
+            _turnMinShare = config.TurnMinShare;
+            _kickRate = config.DriftKick.KickRate;
+            _kickSeconds = config.DriftKick.KickSeconds;
+            _driftTurnScale = config.DriftKick.TurnScale;
+            _holdSeconds = config.DriftKick.HoldSeconds;
+            _blendSeconds = config.DriftKick.BlendSeconds;
             _skid = config.Skid;
             _slideThreshold = _skid.SlideThreshold;
             _shiftSlideSpeed = _skid.ShiftSlideSpeed;
@@ -55,6 +63,14 @@ namespace UncannyValet.Cars
         /// <summary>The drift model's numbers.</summary>
         public DriftSettings Drift => new DriftSettings(_lateralFriction, _forwardGrip, _gripLowSpeed, _gripHighSpeed,
             _gripAtSpeed, _driftGripScale, _driftMinSpeed);
+
+        /// <summary>The drift entry kick, turn boost and grip hold numbers.</summary>
+        public DriftKickSettings DriftKick => new DriftKickSettings(_kickRate, _kickSeconds, _driftTurnScale,
+            _holdSeconds, _blendSeconds, _driftMinSpeed);
+        /// <summary>Share of the turn rate lost per unit of speed above the full-steering speed.</summary>
+        public float TurnFalloff => _turnFalloff;
+        /// <summary>Lowest share of the turn rate a fast car keeps.</summary>
+        public float TurnMinShare => _turnMinShare;
 
         /// <summary>The skid rule's numbers.</summary>
         public SkidSettings Skid => new SkidSettings(_slideThreshold, _shiftSlideSpeed, _markOpacity, _skid.ExitShare,
@@ -89,6 +105,13 @@ namespace UncannyValet.Cars
             tuning.Seed(TuningKey.HandlingBrakingScale, _brakingScale);
             tuning.Seed(TuningKey.HandlingCoastDragScale, _coastDragScale);
             tuning.Seed(TuningKey.HandlingReverseScale, _reverseScale);
+            tuning.Seed(TuningKey.HandlingTurnFalloff, _turnFalloff);
+            tuning.Seed(TuningKey.HandlingTurnMinShare, _turnMinShare);
+            tuning.Seed(TuningKey.HandlingDriftKick, _kickRate);
+            tuning.Seed(TuningKey.HandlingDriftKickSeconds, _kickSeconds);
+            tuning.Seed(TuningKey.HandlingDriftTurnScale, _driftTurnScale);
+            tuning.Seed(TuningKey.HandlingDriftHoldSeconds, _holdSeconds);
+            tuning.Seed(TuningKey.HandlingDriftBlendSeconds, _blendSeconds);
             tuning.Seed(TuningKey.DamageMinForce, DamageMinForce);
             tuning.Seed(TuningKey.DamagePercentPerForce, DamagePercentPerForce);
         }
@@ -115,6 +138,13 @@ namespace UncannyValet.Cars
                 case TuningKey.HandlingBrakingScale: _brakingScale = value; return true;
                 case TuningKey.HandlingCoastDragScale: _coastDragScale = value; return true;
                 case TuningKey.HandlingReverseScale: _reverseScale = value; return true;
+                case TuningKey.HandlingTurnFalloff: _turnFalloff = value; return true;
+                case TuningKey.HandlingTurnMinShare: _turnMinShare = value; return true;
+                case TuningKey.HandlingDriftKick: _kickRate = value; return true;
+                case TuningKey.HandlingDriftKickSeconds: _kickSeconds = value; return true;
+                case TuningKey.HandlingDriftTurnScale: _driftTurnScale = value; return true;
+                case TuningKey.HandlingDriftHoldSeconds: _holdSeconds = value; return true;
+                case TuningKey.HandlingDriftBlendSeconds: _blendSeconds = value; return true;
                 case TuningKey.DamageMinForce: DamageMinForce = value; return true;
                 case TuningKey.DamagePercentPerForce: DamagePercentPerForce = value; return true;
                 default: return false;

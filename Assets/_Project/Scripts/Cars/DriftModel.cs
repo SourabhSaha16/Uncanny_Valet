@@ -8,28 +8,37 @@ namespace UncannyValet.Cars
     /// </summary>
     public static class DriftModel
     {
-        /// <summary>
-        /// Grip for this step: 1 up to GripLowSpeed, blending to GripAtSpeed at GripHighSpeed, scaled while the handbrake is held.
-        /// <paramref name="gripLossScale"/> scales the loss (1 minus grip): 1 changes nothing, 0.4 keeps 40% of the loss.
-        /// </summary>
+        /// <summary>Grip for this step with the handbrake as a switch (see the blend overload).</summary>
         public static float Grip(float speed, bool drift, in DriftSettings s, float gripLossScale = 1f)
+            => Grip(speed, drift && speed > s.DriftMinSpeed ? 1f : 0f, s, gripLossScale);
+
+        /// <summary>
+        /// Grip for this step: 1 up to GripLowSpeed, blending to GripAtSpeed at GripHighSpeed, scaled by DriftGripScale as
+        /// <paramref name="driftBlend"/> goes from 0 to 1. <paramref name="gripLossScale"/> scales the loss (1 minus grip):
+        /// 1 changes nothing, 0.4 keeps 40% of the loss.
+        /// </summary>
+        public static float Grip(float speed, float driftBlend, in DriftSettings s, float gripLossScale = 1f)
         {
             var blend = Mathf.InverseLerp(s.GripLowSpeed, s.GripHighSpeed, speed);
             var grip = Mathf.Lerp(1f, s.GripAtSpeed, blend);
-            var normal = drift && speed > s.DriftMinSpeed ? grip * s.DriftGripScale : grip;
+            var normal = grip * Mathf.Lerp(1f, s.DriftGripScale, Mathf.Clamp01(driftBlend));
             return gripLossScale == 1f ? normal : 1f - (1f - normal) * gripLossScale;
         }
+
+        /// <summary>One step with the handbrake as a switch (see the blend overload).</summary>
+        public static Vector2 Step(Vector2 velocity, Vector2 facing, bool drift, in DriftSettings s, float dt, float gripLossScale = 1f)
+            => Step(velocity, facing, drift && velocity.magnitude > s.DriftMinSpeed ? 1f : 0f, s, dt, gripLossScale);
 
         /// <summary>
         /// One step: damps the sideways part of <paramref name="velocity"/> (relative to the unit <paramref name="facing"/>)
         /// and hands part of the speed that removal costs back along the direction of travel.
         /// </summary>
-        public static Vector2 Step(Vector2 velocity, Vector2 facing, bool drift, in DriftSettings s, float dt, float gripLossScale = 1f)
+        public static Vector2 Step(Vector2 velocity, Vector2 facing, float driftBlend, in DriftSettings s, float dt, float gripLossScale = 1f)
         {
             var right = new Vector2(facing.y, -facing.x);
             var forward = Vector2.Dot(velocity, facing);
             var sideways = Vector2.Dot(velocity, right);
-            var grip = Grip(velocity.magnitude, drift, s, gripLossScale);
+            var grip = Grip(velocity.magnitude, driftBlend, s, gripLossScale);
             var kept = sideways * Mathf.Exp(-s.LateralFriction * grip * dt);
             // Damping the sideways part lowers the speed (hypot); ForwardGrip of that loss is handed back along the
             // travel direction. 1 keeps the speed exactly (a slide turns into a curve), 0 scrubs it.

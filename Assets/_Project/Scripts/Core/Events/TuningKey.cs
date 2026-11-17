@@ -435,5 +435,20 @@ namespace UncannyValet.Core.Events
         PedestrianFreeRoutes,
         /// <summary>Blessings a slight curse takes off when the driven car hits any other pedestrian (every lot).</summary>
         PedestrianSlightCurseAmount,
+        // Car turning and drift kick (Cars owns). Issue 151.
+        /// <summary>Share of the turn rate lost per unit of speed above full-steering speed.</summary>
+        HandlingTurnFalloff,
+        /// <summary>Lowest share of the full turn rate a fast car keeps.</summary>
+        HandlingTurnMinShare,
+        /// <summary>Yaw rate (radians per second) of the quick kick when the drift button starts.</summary>
+        HandlingDriftKick,
+        /// <summary>Seconds the drift entry kick takes to fade out.</summary>
+        HandlingDriftKickSeconds,
+        /// <summary>Turn rate multiplier while drifting.</summary>
+        HandlingDriftTurnScale,
+        /// <summary>Seconds the drift grip lasts after the button is released.</summary>
+        HandlingDriftHoldSeconds,
+        /// <summary>Seconds grip takes to blend back to normal after the hold.</summary>
+        HandlingDriftBlendSeconds,
     }
 }
