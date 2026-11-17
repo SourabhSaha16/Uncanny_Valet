@@ -37,9 +37,9 @@ namespace UncannyValet.Tests.Cars
             var live = new CarHandlingLive(_config);
             var d = live.DriveFor(car);
             Assert.AreEqual(car.TopSpeed, d.TopSpeed);
-            Assert.AreEqual(car.Acceleration, d.Acceleration);
-            Assert.AreEqual(car.Braking, d.Braking);
-            Assert.AreEqual(car.CoastDrag, d.CoastDrag);
+            Assert.AreEqual(car.Acceleration * 1.7f, d.Acceleration, 1e-4f, "responsive from the first frame (issue 174)");
+            Assert.AreEqual(car.Braking * 1.3f, d.Braking, 1e-4f);
+            Assert.AreEqual(car.CoastDrag * 1.7f, d.CoastDrag, 1e-4f);
             Assert.AreEqual(car.ReverseFactor, d.ReverseFactor);
             live.TrySet(TuningKey.HandlingTopSpeedScale, 1.5f);
             live.TrySet(TuningKey.HandlingAccelerationScale, 2f);
@@ -74,8 +74,8 @@ namespace UncannyValet.Tests.Cars
             Assert.AreEqual(2f, s.ShiftSlideSpeed);
             Assert.AreEqual(0.8f, s.MaxOpacity);
             Assert.AreEqual(4f, s.HardBrakeSpeed);
-            Assert.AreEqual(6f, live.MarkFadeSeconds);
-            Assert.AreEqual(40, _config.Skid.DecalCap);
+            Assert.AreEqual(30f, live.MarkFadeSeconds, "marks stay 30 s (issue 175)");
+            Assert.AreEqual(640, _config.Skid.DecalCap);
             live.TrySet(TuningKey.HandlingSlideThreshold, 2f);
             live.TrySet(TuningKey.HandlingShiftSlideSpeed, 3f);
             live.TrySet(TuningKey.HandlingMarkOpacity, 0.5f);

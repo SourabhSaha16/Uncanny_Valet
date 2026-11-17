@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UncannyValet.Cars;
 using UncannyValet.Cars.Fx;
 using UnityEngine;
 
@@ -41,6 +42,44 @@ namespace UncannyValet.Tests.Cars
             ledger.Tick(3f);
             Assert.IsFalse(ledger.IsActive(slot));
             Assert.AreEqual(0, ledger.ActiveCount);
+        }
+
+        [Test]
+        public void Alpha_HoldsThenFadesOverTheTailOnly()
+        {
+            var ledger = new DecalLedger(1);
+            var slot = ledger.Acquire(30f, 0.8f, 8f);
+            ledger.Tick(21f);
+            Assert.AreEqual(0.8f, ledger.Alpha(slot), 1e-5f, "full opacity until the tail starts");
+            ledger.Tick(5f);
+            Assert.AreEqual(0.8f * 4f / 8f, ledger.Alpha(slot), 1e-4f);
+            ledger.Tick(4f);
+            Assert.IsFalse(ledger.IsActive(slot));
+        }
+
+        [Test]
+        public void Alpha_TailLongerThanTheLifeFallsBackToTheWholeLife()
+        {
+            var ledger = new DecalLedger(1);
+            var slot = ledger.Acquire(4f, 1f, 99f);
+            ledger.Tick(1f);
+            Assert.AreEqual(0.75f, ledger.Alpha(slot), 1e-5f);
+        }
+
+        [Test]
+        public void DefaultPool_HoldsThirtySecondsOfNonStopFullSpeedDrifting()
+        {
+            var config = ScriptableObject.CreateInstance<CarHandlingConfig>();
+            var car = ScriptableObject.CreateInstance<CarDefinition>();
+            var skid = config.Skid;
+            var marksPerSecond = 2f * car.TopSpeed * config.TopSpeedScale / skid.MarkSpacing;
+            var ledger = new DecalLedger(skid.DecalCap);
+            var steps = Mathf.FloorToInt(marksPerSecond * (skid.MarkFadeSeconds - 1f));
+            for (var i = 0; i < steps; i++) { ledger.Acquire(skid.MarkFadeSeconds, 1f, skid.MarkFadeOutSeconds); ledger.Tick(1f / marksPerSecond); }
+            Assert.AreEqual(steps, ledger.ActiveCount, "no mark recycled or expired before its 30 s are up");
+            Assert.Less(marksPerSecond * skid.MarkFadeSeconds, skid.DecalCap);
+            Object.DestroyImmediate(car);
+            Object.DestroyImmediate(config);
         }
 
         [Test]

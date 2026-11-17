@@ -77,7 +77,7 @@ namespace UncannyValet.Cars.Fx
                 skid.TyreSideShare, skid.TyreRearShare, right);
             if (!trail.TryAdvance(tyre, skid.MarkSpacing, skid.MarkThickness, out var mark)) return;
             _pool.Place(mark.Center, mark.AngleDegrees, mark.Length, skid.MarkThickness, skid.MarkColor, opacity,
-                _kit.Live.MarkFadeSeconds);
+                _kit.Live.MarkFadeSeconds, skid.MarkFadeOutSeconds);
         }
     }
 }

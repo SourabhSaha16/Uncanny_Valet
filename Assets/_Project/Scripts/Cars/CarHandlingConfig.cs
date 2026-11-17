@@ -47,12 +47,12 @@ namespace UncannyValet.Cars
         [Header("Driving scales (multiply each CarDefinition value; 1 = unchanged)")]
         [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's top speed.")]
         private float _topSpeedScale = 1f;
-        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's acceleration.")]
-        private float _accelerationScale = 1f;
-        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's braking.")]
-        private float _brakingScale = 1f;
-        [SerializeField, Range(0.25f, 3f), Tooltip("Multiplier on each car's coasting slow-down.")]
-        private float _coastDragScale = 1f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's acceleration (1.7 = responsive from a standstill, issue 174).")]
+        private float _accelerationScale = 1.7f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's braking (raised with the acceleration so stops stay short).")]
+        private float _brakingScale = 1.3f;
+        [SerializeField, Range(0.25f, 3f), Tooltip("Multiplier on each car's coasting slow-down (raised with the acceleration so a tap does not roll on).")]
+        private float _coastDragScale = 1.7f;
         [SerializeField, Range(0.5f, 2f), Tooltip("Multiplier on each car's reverse top speed.")]
         private float _reverseScale = 1f;
 
