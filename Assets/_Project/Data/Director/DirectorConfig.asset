@@ -37,6 +37,7 @@ MonoBehaviour:
     _maxIntervalSeconds: 40
     _spawnAckSeconds: 8
     _maxEmptyQueueSeconds: 2
+    _firstCarSeconds: 0.5
     _idleCutoffSeconds: 45
   _relief:
     _workload: 1.4
@@ -81,6 +82,7 @@ MonoBehaviour:
   _returns:
     _windowPercent: 25
     _spacingSeconds: 4
+    _peakSpacingSeconds: 3
     _lateStartSeconds: 60
     _lastLeadSeconds: 20
     _minLeadSeconds: 3

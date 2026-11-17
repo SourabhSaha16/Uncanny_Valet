@@ -158,9 +158,18 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void TheSpacingIsWaivedInAWavePeak()
+        public void AWavePeakKeepsTheShorterPeakSpacing()
         {
-            Assert.AreEqual(0, Plan(Lot(Parked(30f), Parked(31f)), In(wave: true)));
+            var lot = Lot(Parked(30f), Parked(31f));
+            Assert.AreEqual(1, Plan(lot, In(wave: true)), "issue 177: crazy peaks no longer summon patrons at once");
+            Assert.AreEqual(_settings.PeakSpacingSeconds, TimeOf(lot, 1, _out) - TimeOf(lot, 0, _out), 0.001f);
+            Assert.Less(_settings.PeakSpacingSeconds, _settings.SpacingSeconds);
+        }
+
+        [Test]
+        public void ReturnsAlreadyAPeakSpacingApartAreLeftAloneInAWavePeak()
+        {
+            Assert.AreEqual(0, Plan(Lot(Parked(30f), Parked(30f + _settings.PeakSpacingSeconds)), In(wave: true)));
         }
 
         [Test]

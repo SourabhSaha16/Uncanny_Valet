@@ -66,6 +66,7 @@ namespace UncannyValet.Bootstrap
 
             var plan = shift.Plan;
             t.Seed(TuningKey.PlanMaxWaitingCars, plan.MaxWaitingCars);
+            t.Seed(TuningKey.PlanMinQueuedCars, 0f); // a lot's queue minimum overrides this in SeedPacing below
             t.Seed(TuningKey.PlanArrivalGapScale, plan.ArrivalGapScale);
             t.Seed(TuningKey.PlanActiveSpots, plan.ActiveSpots > 0 ? plan.ActiveSpots : spotCount);
             if (lot == null) SeedDefaultChances(t);

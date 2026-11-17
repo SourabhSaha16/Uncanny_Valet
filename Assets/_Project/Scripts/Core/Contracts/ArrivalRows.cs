@@ -14,6 +14,8 @@ namespace UncannyValet.Core.Contracts
                 advanced: false),
             new TuningInfo(TuningKey.ArrivalIdleCutoff, Group, "No new cars in the last (s)", 0f, 120f, 1f,
                 "No car is sent when fewer than this many seconds are left: it could not be parked, called back and delivered in time. Allow park time, the walk to the curb and the delivery."),
+            new TuningInfo(TuningKey.PlanMinQueuedCars, Group, "Minimum cars queued", 0f, 4f, 1f,
+                "The arrival queue is topped up to this many waiting cars whenever it drops below (0 = off, the Director paces arrivals). Set per lot."),
         };
     }
 }

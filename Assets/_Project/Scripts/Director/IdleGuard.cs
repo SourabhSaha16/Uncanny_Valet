@@ -16,11 +16,13 @@ namespace UncannyValet.Director
         private readonly PacingSettings _settings;
         private float _emptySeconds;
         private bool _armed;
+        private bool _firstCarPending = true;
 
         public IdleGuard(PacingSettings settings) { _settings = settings; }
 
-        /// <summary>Seconds the queue may stay empty at most; the pacer also uses it to shorten a lost-send wait.</summary>
-        public float Limit => _settings.MaxEmptyQueueSeconds;
+        /// <summary>Seconds the queue may stay empty at most; the pacer also uses it to shorten a lost-send wait. The shift's first car waits only the first-car delay.</summary>
+        public float Limit => _firstCarPending
+            ? Mathf.Min(_settings.FirstCarSeconds, _settings.MaxEmptyQueueSeconds) : _settings.MaxEmptyQueueSeconds;
 
         /// <summary>True while the queue is empty and the guard may send, so the limit is counting down.</summary>
         public bool Armed => _armed;
@@ -28,9 +30,10 @@ namespace UncannyValet.Director
         /// <summary>Seconds until a car is forced, or <see cref="NotArmed"/>.</summary>
         public float SecondsUntilForced => _armed ? Mathf.Max(0f, Limit - _emptySeconds) : NotArmed;
 
-        /// <summary>Starts a new shift: the first car is due one limit after the shift starts.</summary>
+        /// <summary>Starts a new shift: the first car is due after the short first-car delay (issue 179), not a whole limit.</summary>
         public void Reset()
         {
+            _firstCarPending = true;
             _emptySeconds = 0f;
             _armed = false;
         }
@@ -40,13 +43,16 @@ namespace UncannyValet.Director
         {
             if (input.Queue > 0)
             {
+                _firstCarPending = false;
                 _emptySeconds = 0f;
                 _armed = false;
                 return false;
             }
             _emptySeconds += dt;
             _armed = input.ArrivalsUsed < _settings.MaxArrivals && input.ShiftSecondsLeft >= _settings.IdleCutoffSeconds;
-            return _armed && _emptySeconds >= Limit;
+            var due = _armed && _emptySeconds >= Limit;
+            if (due) _firstCarPending = false; // a lost first send is retried after the normal limit, not every half second
+            return due;
         }
     }
 }

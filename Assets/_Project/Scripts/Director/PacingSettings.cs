@@ -34,6 +34,8 @@ namespace UncannyValet.Director
 
         [SerializeField, Range(0.5f, 30f), Tooltip("Longest the arrival queue may stay empty, in seconds, before a car is sent whatever the pacing says.")]
         private float _maxEmptyQueueSeconds = 2f;
+        [SerializeField, Min(0f), Tooltip("Seconds into a shift at which the first car is sent, whatever the pacing says (issue 179). The empty-queue limit applies after that.")]
+        private float _firstCarSeconds = 0.5f;
         [SerializeField, Min(0f), Tooltip("No car is sent (forced or paced) when fewer seconds than this are left in the shift: it could not be parked, called back and delivered in time.")]
         private float _idleCutoffSeconds = 45f;
 
@@ -54,6 +56,7 @@ namespace UncannyValet.Director
         public float SpawnAckSeconds => _spawnAckSeconds;
         public float MaxEmptyQueueSeconds => _maxEmptyQueueSeconds;
         public float IdleCutoffSeconds => _idleCutoffSeconds;
+        public float FirstCarSeconds => _firstCarSeconds;
         public int ArrivalBudget => _arrivalBudget;
         public int BudgetSlack => _budgetSlack;
 
