@@ -58,8 +58,8 @@ namespace UncannyValet.Tests.Cars
         {
             var config = ScriptableObject.CreateInstance<CarHandlingConfig>();
             Assert.AreEqual(2.2f, config.RMin, 1e-4f);
-            Assert.AreEqual(4f / 2.2f, config.MaxTurnRate, 1e-4f);
-            Assert.AreEqual(104f, config.MaxTurnRate * Mathf.Rad2Deg, 0.5f);
+            Assert.AreEqual(6f / 2.2f, config.MaxTurnRate, 1e-4f);
+            Assert.AreEqual(156.3f, config.MaxTurnRate * Mathf.Rad2Deg, 0.5f);
             Object.DestroyImmediate(config);
         }
 
