@@ -1132,3 +1132,9 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/Core/Events/ParkEvents.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, docs/changelogs/lead.md
 Why: Contract for the bay border flash and the small power gain for parking completely inside a bay (new playtest notes). Append-only.
 Tests: none run yet; the Lot and Powers agents use them next.
+
+## lead: add ISpotGeometry and SpotBounds to Core [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Core/Contracts/{ISpotGeometry,SpotBounds}.cs, docs/changelogs/lead.md
+Why: Contract so the HUD can draw bay borders (#158) without referencing Lot. Lot implements it, Bootstrap registers it.
+Tests: none (a contract); the Lot and integration agents add theirs.
