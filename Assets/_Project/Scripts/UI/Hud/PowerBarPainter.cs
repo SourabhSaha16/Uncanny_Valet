@@ -13,15 +13,15 @@ namespace UncannyValet.UI.Hud
     public sealed class PowerBarPainter
     {
         private const int BarWidth = 3;
-        private const int BarHeight = 112;
-        private const int BarTop = 46;
-        private const int ColumnWidth = BoltGlyph.Width + 2;
-        private const int IconSide = 17;
+        public const int BarHeight = 112;
+        public const int BarTop = 46;
+        public const int ColumnWidth = BoltGlyph.Width + 2;
+        public const int IconSide = 17;
         private const int KeyInset = 2;
         private const int LetterInset = 2;
         private const int Slots = 4;
         private const float FlashFill = 0.6f;
-        private const int IconGap = 3;
+        public const int IconGap = 3;
         private const float GlowAlpha = 0.75f;
         private const int Buckets = 3;
 

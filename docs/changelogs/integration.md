@@ -230,6 +230,12 @@ Files: Assets/_Project/Scripts/UI/Hud/CursePopRule.cs, CursePopTracker.cs, Bless
 Why: the slight and full pedestrian curses took blessings with no feedback. A red "-N" (prayer hands after it) now rises at the hit spot, N = blessings really lost (clamped at 0, no pop when none). Uses existing events only: PedestrianHit (spot), CurseApplied with no ticket (amount), BlessingsChanged (running total); the two arrive in either order and pair within one frame, so one pop per hit and a locked-out hit never pops. Font scale and lift are tunable in BlessingPopSettings.
 Tests: EditMode CursePopTests (11); full suite 1937 passed.
 
+## ui: +X bolt pop beside the power bar on PowerFilled, Refs #160 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/ (new: PowerFillPopSettings, PowerFillPops, PowerFillPopRule, PowerFillPopTracker, PowerFillPopPainter; edited PlayingHud, BoltGlyph (alpha), PowerBarPainter (layout consts public)); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/PowerFillPopTests.cs (new)
+Why: #160 each PowerFilled shows "+X" (amount rounded, nothing under 0.5) with the lightning bolt, rising and fading left of the power icons. Pops arriving together take different stack slots (lowest slot no recent pop still holds) so they never overlap; fixed pool, no per-frame allocation; cleared on ShiftStarted and ShiftEnded. Colour per source is its tint pulled toward gold. Tunables in PowerFillPopSettings inside HudEmotionConfig (new field takes its default from the code, no asset edit). Drawn only while the power bar itself is visible.
+Tests: EditMode 1969 passed (PowerFillPopTests, 15 cases). PlayMode and Web build not run.
+
 ## integration: remove CAR SLOTS board and plates, add pickup timer pie, Refs #154 #155 #156 [Claude]
 Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Pie/ (new: PickupPieRule, PiePixels, PickupPieSprites, PickupPieView, PickupPieLayer, PickupPieSettings, PieObjects); UI/Hud/PlayingHud.cs, WorldTicketPainter.cs, PickupMark.cs; UI/TicketBoard.cs, TicketRow.cs, TicketNeedsTracker.cs, GameUi.cs; UI/Mood/EmotionStyle.cs, HudEmotionConfig.cs; deleted UI/Status/ (9 classes), UI/Hud/KeyBoardPainter, KeyBoardRows, PlatePainter, PlateLayout, DamageTag; Tests/EditMode/UI/PickupPieTests.cs (new), PickupMarkTests, TicketBoardTests, HudRulesTests, EmotionTests edited; CarStatusTests, PlateUiTests, DamageTagTests deleted (+ .meta)
