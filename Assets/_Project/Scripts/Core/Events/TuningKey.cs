@@ -450,5 +450,7 @@ namespace UncannyValet.Core.Events
         HandlingDriftHoldSeconds,
         /// <summary>Seconds grip takes to blend back to normal after the hold.</summary>
         HandlingDriftBlendSeconds,
+        /// <summary>Power bar gained when a car is parked completely inside a bay (a Perfect Park adds its own, larger amount on top).</summary>
+        PowerFillParkedInside,
     }
 }

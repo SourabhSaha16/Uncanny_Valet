@@ -1126,3 +1126,9 @@ Date: 2026-11-16
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #154 #155 #156. Beta now has no CAR SLOTS panel or plates, and the pickup timer pie.
 Tests: tools/build-web.ps1 exit 0, build-info shows d191f26; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: Midgard training starts, HUD has no key board, no console errors. The pie was not seen (no pickup was reached).
+
+## lead: add CarParkedInside event and PowerFillParkedInside key to Core [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Core/Events/ParkEvents.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, docs/changelogs/lead.md
+Why: Contract for the bay border flash and the small power gain for parking completely inside a bay (new playtest notes). Append-only.
+Tests: none run yet; the Lot and Powers agents use them next.
