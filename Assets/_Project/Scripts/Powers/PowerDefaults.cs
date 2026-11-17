@@ -17,7 +17,7 @@ namespace UncannyValet.Powers
             switch (power)
             {
                 case StoryPower.ThunderStride:
-                    return upgraded ? ThunderStrideNumbers(7f, 2f) : ThunderStrideNumbers(5f, 1.6f);
+                    return upgraded ? ThunderStrideNumbers(7f, 6f) : ThunderStrideNumbers(5f, 5f);
                 case StoryPower.StormWind:
                     return upgraded ? new PowerLevelValues(8f, 2f, 10f, 8f, 4f) : new PowerLevelValues(10f, 1.5f, 8f, 6f, 3f);
                 case StoryPower.FreezeTime:
@@ -29,7 +29,7 @@ namespace UncannyValet.Powers
             }
         }
 
-        // Cooldown 4 s (after the boost ends); the boost time (5 s level 1, 7 s level 2, issue 150) and the on-foot walking speed multiplier (Secondary) differ per level;
+        // Cooldown 4 s (after the boost ends); the boost time (5 s level 1, 7 s level 2, issue 150) and the on-foot walking speed multiplier (Secondary) differ per level (issue 176: 5x and 6x the 4 walking speed, so 20 and 24 per second against the 15 per second Shift dash);
         // car boost top speed x1.5 and acceleration x2 (issue 88). Distance is unused (the old on-foot dash, issue 146).
         private static PowerLevelValues ThunderStrideNumbers(float boostSeconds, float walkSpeedTimes) =>
             new PowerLevelValues(4f, boostSeconds, 0f, 1.5f, 2f, walkSpeedTimes);

@@ -7,7 +7,10 @@ namespace UncannyValet.Valet
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed class OnFootMover : MonoBehaviour
     {
-        [SerializeField] private float _speed = 4f;
+        /// <summary>The shipped walking speed, units per second.</summary>
+        public const float DefaultSpeed = 4f;
+
+        [SerializeField, Min(0.1f)] private float _speed = DefaultSpeed;
 
         private Rigidbody2D _body;
         private IInputSource _input;
@@ -33,6 +36,7 @@ namespace UncannyValet.Valet
         private void Awake()
         {
             _body = GetComponent<Rigidbody2D>();
+            _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // the Thunder stride run is faster than a dash step
         }
 
         private void FixedUpdate()

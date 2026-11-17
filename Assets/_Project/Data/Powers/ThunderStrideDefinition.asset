@@ -23,11 +23,11 @@ MonoBehaviour:
     _distance: 0
     _pushStrength: 1.5
     _width: 2
-    _secondary: 1.6
+    _secondary: 5
   _level2:
     _cooldown: 4
     _duration: 7
     _distance: 0
     _pushStrength: 1.5
     _width: 2
-    _secondary: 2
+    _secondary: 6

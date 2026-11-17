@@ -13,10 +13,15 @@ namespace UncannyValet.Valet
     [RequireComponent(typeof(Rigidbody2D), typeof(OnFootMover), typeof(SeatController))]
     public sealed class ShiftDash : MonoBehaviour
     {
+        /// <summary>The shipped dash distance, world units.</summary>
+        public const float DefaultDistance = 3f;
+        /// <summary>The shipped dash time, seconds.</summary>
+        public const float DefaultSeconds = 0.2f;
+
         [SerializeField, Min(0.1f), Tooltip("How far one dash goes, in world units.")]
-        private float _distance = 3f;
+        private float _distance = DefaultDistance;
         [SerializeField, Min(0.05f), Tooltip("How long one dash takes, in seconds.")]
-        private float _seconds = 0.2f;
+        private float _seconds = DefaultSeconds;
         [SerializeField, Min(0f), Tooltip("Seconds after a dash ends before the next one can start.")]
         private float _cooldown = 0.7f;
 
