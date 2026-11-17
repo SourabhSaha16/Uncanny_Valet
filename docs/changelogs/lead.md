@@ -1240,3 +1240,9 @@ Date: 2026-11-17
 Files: site/, docs/changelogs/lead.md
 Why: player-visible changes #174 and #175 (design.md log 2026-11-17).
 Tests: EditMode 2036/2036, PlayMode 89/89, web build exit 0 (build-info commit d86f05d); local smoke test loads to the lot intro with no console errors (driving not tested by hand).
+
+## lead: merge playtest batch 10, rebuild site/ for beta, Refs #176 #177 #178 #179 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (valet, pacing)
+Why: playtest notes 1 to 4 (design.md log 2026-11-17).
+Tests: EditMode 2055/2055, PlayMode 89/89 on the combined tree.
