@@ -29,6 +29,9 @@ namespace UncannyValet.UI.Mood
         [Header("Pickup timer pie over a waiting car")]
         [SerializeField] private PickupPieSettings _pickupPie = new PickupPieSettings();
 
+        [Header("Bay border flash (green on a clean park, pickup-timer colour while a patron waits)")]
+        [SerializeField] private BayBorderSettings _bayBorder = new BayBorderSettings();
+
         [Header("Blessing pop over a boarding patron")]
         [SerializeField] [FormerlySerializedAs("_tipPop")] private BlessingPopSettings _blessingPop = new BlessingPopSettings();
 
@@ -41,6 +44,7 @@ namespace UncannyValet.UI.Mood
 
         public SpeechBubbleSettings SpeechBubble => _speechBubble;
         public PickupPieSettings PickupPie => _pickupPie;
+        public BayBorderSettings BayBorder => _bayBorder;
         public BlessingPopSettings BlessingPop => _blessingPop;
         public PowerBarSettings PowerBar => _powerBar;
         public float ImpatientFrom => _impatientFrom;

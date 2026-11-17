@@ -23,6 +23,7 @@ namespace UncannyValet.UI.Hud
         private readonly HudPainter _hud;
         private readonly NoticePainter _notices;
         private readonly PickupPieLayer _pies;
+        private readonly BayBorderLayer _bayBorders;
         private readonly WorldTicketPainter _world;
         private readonly PatronMoodPainter _mood;
         private readonly BlessingPopTracker _blessingPopTracker;
@@ -40,8 +41,11 @@ namespace UncannyValet.UI.Hud
         private readonly SpeechBubblePainter _speechPainter;
 
         public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
-            BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null, PickupPieSettings pickupPie = null)
+            BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null, PickupPieSettings pickupPie = null,
+            ISpotGeometry spots = null, BayBorderSettings bayBorder = null)
         {
+            if (spots != null)
+                _bayBorders = new BayBorderLayer(bus, spots, cars, style, bayBorder ?? new BayBorderSettings(), style.ColorOf(Emotion.Happy), UnscaledTime);
             _powerTracker = new PowerBarTracker(bus, powerBar, goal: goal);
             _power = new PowerBarPainter(canvas, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
@@ -76,6 +80,7 @@ namespace UncannyValet.UI.Hud
             _board.CollectRows(_rows);
             _world.Draw(_rows, camera);
             _pies.Update(_rows);
+            _bayBorders?.Update(_rows);
             _mood.Draw(_rows, camera);
             _blessingPops.Draw(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
@@ -90,6 +95,7 @@ namespace UncannyValet.UI.Hud
         {
             _board.Dispose();
             _pies.Dispose();
+            _bayBorders?.Dispose();
             _blessingPopTracker.Dispose();
             _cursePopTracker.Dispose();
             _powerTracker.Dispose();

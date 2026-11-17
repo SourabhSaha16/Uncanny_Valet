@@ -94,7 +94,8 @@ namespace UncannyValet.UI
             var style = new EmotionStyle(EmotionConfig());
             _emotionLink = new EmotionTuningLink(_bus, Services.Get<ITuning>(), style.Rule, EmotionConfig().AngryFrom, EmotionConfig().WillNotBlessFrom);
             _playing = new PlayingHud(_canvas, _bus, Services.Get<IGameClock>(), Services.Get<IShiftBlessingsView>(),
-                goal, Services.Get<ICarFactory>(), style, EmotionConfig().BlessingPop, EmotionConfig().PowerBar, EmotionConfig().SpeechBubble, EmotionConfig().PickupPie);
+                goal, Services.Get<ICarFactory>(), style, EmotionConfig().BlessingPop, EmotionConfig().PowerBar, EmotionConfig().SpeechBubble, EmotionConfig().PickupPie,
+                Services.TryGet<ISpotGeometry>(out var spots) ? spots : null, EmotionConfig().BayBorder);
             _resultsPainter = new ResultsPainter(_canvas);
             _titlePainter = new TitlePainter(_canvas);
             _howToPlayPainter = new HowToPlayPainter(_canvas);
