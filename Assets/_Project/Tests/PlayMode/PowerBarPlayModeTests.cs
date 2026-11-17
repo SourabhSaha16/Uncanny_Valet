@@ -70,13 +70,14 @@ namespace UncannyValet.Tests.PlayMode
             Assert.AreEqual(1f, world.Scale, "one Perfect Park is not a full bucket");
 
             bus.Publish(new PerfectPark(new CarId(2), TicketId.None));
+            bus.Publish(new PerfectPark(new CarId(3), TicketId.None));
             yield return null;
             Assert.AreEqual(1f, world.Scale);
             key.Pressed = true;
             yield return null;
             key.Pressed = false;
             Assert.AreEqual(0f, world.Scale, "freeze time runs");
-            Assert.AreEqual(36f - PowerBar.BucketSize, bar.Bar.Value, 0.01f);
+            Assert.AreEqual(45f - PowerBar.BucketSize, bar.Bar.Value, 0.01f);
 
             Services.Get<ITuning>().Set(TuningKey.DevOwnFreezeTime, 0f);
             Assert.IsFalse(Services.Get<IRunProgress>().EarnedPowers.Count > 0);

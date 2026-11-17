@@ -8,8 +8,8 @@ using UnityEngine;
 namespace UncannyValet.UI.Pie
 {
     /// <summary>
-    /// Keeps one <see cref="PickupPieView"/> over every car whose pickup timer runs. A pie is taken from a pool when its car's timer
-    /// starts and returned the frame the timer stops, the ticket closes or the car is gone. Allocates nothing once the pool has grown.
+    /// Keeps one pie over every car whose pickup timer runs (green to yellow to red). The pie is released the frame the timer stops,
+    /// the ticket closes or the car is gone. When the car also shows a wash pie the two sit side by side (see <see cref="PieSlots"/>).
     /// </summary>
     public sealed class PickupPieLayer : IDisposable
     {
@@ -17,11 +17,7 @@ namespace UncannyValet.UI.Pie
         private readonly EmotionStyle _style;
         private readonly PickupPieSettings _settings;
         private readonly PickupPieSprites _sprites;
-        private readonly Transform _root;
-        private readonly Dictionary<int, PickupPieView> _active = new Dictionary<int, PickupPieView>();
-        private readonly HashSet<int> _seen = new HashSet<int>();
-        private readonly List<int> _stale = new List<int>(8);
-        private readonly Stack<PickupPieView> _spare = new Stack<PickupPieView>();
+        private readonly PieSet _pies;
 
         public PickupPieLayer(ICarFactory cars, EmotionStyle style, PickupPieSettings settings)
         {
@@ -29,57 +25,34 @@ namespace UncannyValet.UI.Pie
             _style = style;
             _settings = settings;
             _sprites = new PickupPieSprites(settings.DiameterPixels, settings.Steps);
-            _root = new GameObject("Pickup Pies").transform;
+            _pies = new PieSet("Pickup Pies", _sprites.Back, settings.SortingOrder);
         }
 
         /// <summary>How many pies are showing right now.</summary>
-        public int ActiveCount => _active.Count;
+        public int ActiveCount => _pies.ActiveCount;
 
         /// <summary>Shows a pie for every row with a running pickup timer and releases the pies of all other cars.</summary>
         public void Update(List<TicketRow> rows)
         {
-            _seen.Clear();
+            _pies.Begin();
             for (var i = 0; i < rows.Count; i++)
-                if (PickupPieRule.IsShown(rows[i], _settings.Steps) && TryShow(rows[i])) _seen.Add(rows[i].Car);
-            ReleaseUnseen();
+                if (PickupPieRule.IsShown(rows[i], _settings.Steps)) Show(rows[i]);
+            _pies.End();
         }
 
         public void Dispose()
         {
-            foreach (var pair in _active) pair.Value.Destroy();
-            foreach (var view in _spare) view.Destroy();
-            _active.Clear();
-            _spare.Clear();
-            if (_root != null) PieObjects.Release(_root.gameObject);
+            _pies.Dispose();
             _sprites.Dispose();
         }
 
-        private bool TryShow(TicketRow row)
+        private void Show(TicketRow row)
         {
-            if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return false;
-            if (!_active.TryGetValue(row.Car, out var view))
-            {
-                view = _spare.Count > 0 ? _spare.Pop() : new PickupPieView(_root, _sprites.Back, _settings.SortingOrder);
-                _active.Add(row.Car, view);
-            }
+            if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return;
             var step = PickupPieRule.Step(row.Elapsed01, _settings.Steps);
             var color = _style.ColorOf(PickupPieRule.ColorState(row, _style.Rule));
-            view.Show(car.Transform.position + (Vector3)_settings.Offset, step, _sprites.Wedge(step), color);
-            return true;
-        }
-
-        private void ReleaseUnseen()
-        {
-            _stale.Clear();
-            foreach (var pair in _active)
-                if (!_seen.Contains(pair.Key)) _stale.Add(pair.Key);
-            for (var i = 0; i < _stale.Count; i++)
-            {
-                var view = _active[_stale[i]];
-                view.Hide();
-                _spare.Push(view);
-                _active.Remove(_stale[i]);
-            }
+            var shift = PieSlots.PickupShift(row, _settings.Steps, _settings.SideGap);
+            _pies.Show(row.Car, car.Transform.position + (Vector3)_settings.Offset + Vector3.right * shift, step, _sprites.Wedge(step), color);
         }
     }
 }

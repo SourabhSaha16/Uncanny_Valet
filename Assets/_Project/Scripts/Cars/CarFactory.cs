@@ -23,6 +23,7 @@ namespace UncannyValet.Cars
         private CarHandlingConfig _handling;
 
         private readonly Dictionary<CarId, CarDriver> _cars = new Dictionary<CarId, CarDriver>();
+        private ShiftEndCleanup _shiftEnd;
         private Sprite _sprite;
         private CarFlashConfig _fallbackFlash;
         private CarHandlingKit _kit;
@@ -35,11 +36,15 @@ namespace UncannyValet.Cars
         private void Start()
         {
             Services.Register<ISlipSource>(_slip);
-            if (Services.TryGet<IEventBus>(out var bus))
-                Kit.Link(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null);
+            if (!Services.TryGet<IEventBus>(out var bus)) return;
+            Kit.Link(bus, Services.TryGet<ITuning>(out var tuning) ? tuning : null);
+            _shiftEnd = new ShiftEndCleanup(bus, DespawnAll);
         }
 
-        private void OnDestroy() => _kit?.Dispose();
+        private void OnDestroy() { _shiftEnd?.Dispose(); _kit?.Dispose(); }
+
+        /// <summary>Despawns every car at once, with no drive-away (once per shift end, so the copy of the ids is fine).</summary>
+        public void DespawnAll() { foreach (var id in new List<CarId>(_cars.Keys)) Despawn(id); }
 
         private CarHandlingKit Kit => _kit ?? (_kit = CreateKit());
 

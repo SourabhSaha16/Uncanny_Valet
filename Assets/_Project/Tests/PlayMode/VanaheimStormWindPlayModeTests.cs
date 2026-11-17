@@ -39,6 +39,7 @@ namespace UncannyValet.Tests.PlayMode
             bus.Subscribe<PowerActivated>(activated.Add);
             bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
             bus.Publish(new PerfectPark(new CarId(2), TicketId.None));
+            bus.Publish(new PerfectPark(new CarId(3), TicketId.None));
             yield return null;
             var open = bar.Bar.OpenBuckets;
             var value = bar.Bar.Value;
