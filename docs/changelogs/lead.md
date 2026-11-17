@@ -1138,3 +1138,9 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/Core/Contracts/{ISpotGeometry,SpotBounds}.cs, docs/changelogs/lead.md
 Why: Contract so the HUD can draw bay borders (#158) without referencing Lot. Lot implements it, Bootstrap registers it.
 Tests: none (a contract); the Lot and integration agents add theirs.
+
+## lead: merge lot-parked-inside, power-parked-inside, bay-border-flash, Refs #157 #158 #159 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merges of the Lot, Powers and UI branches; two duplicate .meta files for the new Core contract resolved)
+Why: Issues #157 to #159. CarParkedInside, the small power gain, the bay border flash and the bigger pie.
+Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
