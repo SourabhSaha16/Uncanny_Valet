@@ -587,7 +587,7 @@ MonoBehaviour:
     _cornerClearance: 0
     _washTroughs: 1
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0.5
   _groundColour: {r: 0.63, g: 0.48, b: 0.29, a: 1}
   _mudPatches: []
   _palette: {fileID: 11400000, guid: 437ebdaf4106d614783ded5e5783e489, type: 2}
@@ -1203,7 +1203,7 @@ MonoBehaviour:
     _cornerClearance: 0
     _washTroughs: 1
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0.5
   _buildingSign: BARN
 --- !u!4 &1379459940
 Transform:

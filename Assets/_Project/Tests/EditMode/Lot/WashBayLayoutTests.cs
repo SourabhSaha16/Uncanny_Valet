@@ -9,9 +9,10 @@ namespace UncannyValet.Tests.Lot
     public sealed class WashBayLayoutTests
     {
         private const float Extension = 13.5f;
-        private const float Distance = 14f;
-        private static readonly LotLayoutOptions Beside = new LotLayoutOptions(true, 0f, 1);
-        private static readonly LotLayoutOptions Far = new LotLayoutOptions(true, 0f, 3, Extension, Distance);
+        private const float Gap = 0.5f;
+        private static readonly LotLayoutOptions Beside = new LotLayoutOptions(true, 0f, 1, 0f, Gap);
+        private static readonly LotLayoutOptions Far = new LotLayoutOptions(true, 0f, 3, Extension, Gap);
+        private static readonly LotLayoutOptions Next = new LotLayoutOptions(true, 0f, 3, 0f, Gap);
 
         private LotConfig _config;
 
@@ -73,19 +74,34 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
-        public void ThreeWashBays_StandAtTheFarEnd_AtLeastFourteenUnitsFromEveryBay()
+        public void ThreeWashBays_StandRightNextToTheBayBlock_ExactlyTheGapAway()
         {
             var g = new LotGeometry(_config, 4, Far);
             Assert.AreEqual(3, g.WashBays.Length);
             foreach (var washBay in g.WashBays)
-                foreach (var spot in g.Spots) Assert.GreaterOrEqual(washBay.xMin - spot.xMax, Distance - 0.001f, "gap to bay " + spot);
-            Assert.AreEqual(Distance, g.WashBays[0].xMin - g.Spots[3].xMax, 0.001f, "exactly the asked distance from the nearest bay");
+                Assert.AreEqual(Gap, washBay.xMin - g.Spots[3].xMax, 0.001f, "the gap to the bay block");
+        }
+
+        [Test]
+        public void TheWashBayGap_IsOneKnob_AndMovesEveryWashBay()
+        {
+            var near = new LotGeometry(_config, 4, Next);
+            var wider = new LotGeometry(_config, 4, new LotLayoutOptions(true, 0f, 3, 0f, Gap + 2f));
+            for (var i = 0; i < 3; i++) Assert.AreEqual(near.WashBays[i].x + 2f, wider.WashBays[i].x, 0.001f);
+        }
+
+        [Test]
+        public void TheTopWashBay_SharesARowWithTheTopBays_AndTheSecondWithTheBottomBays()
+        {
+            var g = new LotGeometry(_config, 4, Next);
+            Assert.AreEqual(g.Spots[3].y, g.WashBays[0].y, 0.001f);
+            Assert.AreEqual(g.Spots[7].y, g.WashBays[1].y, 0.001f);
         }
 
         [Test]
         public void TheThreeWashBays_AreInsideTheLot_ClearOfEachOther_TheStrip_TheAisleAndTheQueue()
         {
-            var g = new LotGeometry(_config, 4, Far);
+            var g = new LotGeometry(_config, 4, Next);
             var aisle = Rect.MinMaxRect(g.Spots[0].xMin, g.AisleY - _config.AisleWidth * 0.5f, g.Strip.xMin, g.AisleY + _config.AisleWidth * 0.5f);
             for (var i = 0; i < g.WashBays.Length; i++)
             {
@@ -120,7 +136,7 @@ namespace UncannyValet.Tests.Lot
             var o = new LotLayoutOptions(true, -1f, 9, -4f, -2f);
             Assert.AreEqual(LotLayoutOptions.MaxWashTroughs, o.WashTroughs);
             Assert.AreEqual(0f, o.ExtensionWidth);
-            Assert.AreEqual(0f, o.TroughDistance);
+            Assert.AreEqual(0f, o.WashBayGap);
             Assert.AreEqual(0f, o.CornerClearance);
         }
     }

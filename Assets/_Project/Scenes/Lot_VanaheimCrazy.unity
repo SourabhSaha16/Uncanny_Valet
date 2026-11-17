@@ -669,8 +669,8 @@ MonoBehaviour:
     _servicesClosed: 1
     _cornerClearance: 0
     _washTroughs: 3
-    _extensionWidth: 13.5
-    _troughDistance: 14
+    _extensionWidth: 0
+    _washBayGap: 0.5
   _groundColour: {r: 0.4, g: 0.3, b: 0.21, a: 1}
   _mudPatches:
   - _center: {x: 13.999999, y: -5.65}
@@ -1493,8 +1493,8 @@ MonoBehaviour:
     _servicesClosed: 1
     _cornerClearance: 0
     _washTroughs: 3
-    _extensionWidth: 13.5
-    _troughDistance: 14
+    _extensionWidth: 0
+    _washBayGap: 0.5
   _buildingSign: BARN
 --- !u!4 &1996539092
 Transform:

@@ -36,6 +36,7 @@ MonoBehaviour:
     _perfectDropOff: 10
     _driftPerSecond: 0.6
     _driftCap: 4
+  _showPowerBar: 1
   _modifiers:
   - {fileID: 11400000, guid: ac3d58131c5fff34bb2506f29fed5965, type: 2}
   _blessingThreshold: 300
@@ -53,42 +54,30 @@ MonoBehaviour:
     _position: {x: -1.1500001, y: 7.2}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
-    _position: {x: 3.35, y: 7.2}
+    _position: {x: 2.4499998, y: 7.2}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
-    _position: {x: 7.85, y: 7.2}
+    _position: {x: 6.0499997, y: 7.2}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
-    _position: {x: 12.35, y: 7.2}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
-    _position: {x: 16.85, y: 7.2}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
-    _position: {x: 21.35, y: 7.2}
+    _position: {x: 9.65, y: 7.2}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
-    _position: {x: 1.0999999, y: 4.6}
+    _position: {x: 0.64999986, y: 4.6}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
-    _position: {x: 5.6, y: 4.6}
+    _position: {x: 4.25, y: 4.6}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
-    _position: {x: 10.1, y: 4.6}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
-    _position: {x: 14.6, y: 4.6}
-    _sortingOrder: 3
-  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
-    _position: {x: 19.1, y: 4.6}
+    _position: {x: 7.8499994, y: 4.6}
     _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: f578e7b872709cf4d9fcf846f9468968, type: 2}
   _layoutOptions:
     _servicesClosed: 1
     _cornerClearance: 0
     _washTroughs: 3
-    _extensionWidth: 13.5
-    _troughDistance: 14
+    _extensionWidth: 0
+    _washBayGap: 0.5
   _buildingSign: BARN
   _groundColour: {r: 0.4, g: 0.3, b: 0.21, a: 1}
   _ambientTraffic: 1

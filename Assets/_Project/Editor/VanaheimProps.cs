@@ -24,12 +24,11 @@ namespace UncannyValet.EditorTools
         private const int FenceCount = 6;
         private const float HayY = 1f;
         private const float StallY = 4.7f;
-        internal const float StallSpacing = 4.5f;
-        private const int StallCount = 6;
+        internal const float StallSpacing = 3.6f;
+        private const float StallToStrip = 2.5f; // the last stall's centre stays this far west of the right strip
         internal const float BannerY = 2.1f;
-        internal const float BannerOffset = 2.25f;
+        internal const float BannerOffset = 1.8f;
         internal const float StallFromCrossing = 3.5f;
-        internal const int BannerCount = 5;
         private const int BarnOrder = 6;
 
         public static List<PropPlacement> Training(LotGeometry g)
@@ -58,10 +57,16 @@ namespace UncannyValet.EditorTools
             var banner = Load(VanaheimArt.BannerPath);
             var x0 = g.CrossingX + StallFromCrossing;
             var top = g.Curb.yMax;
-            for (var i = 0; i < StallCount; i++) list.Add(new PropPlacement(stall, new Vector2(x0 + i * StallSpacing, top + StallY)));
-            for (var i = 0; i < BannerCount; i++) list.Add(new PropPlacement(banner, new Vector2(x0 + BannerOffset + i * StallSpacing, top + BannerY)));
+            for (var i = 0; i < StallCount(g); i++) list.Add(new PropPlacement(stall, new Vector2(x0 + i * StallSpacing, top + StallY)));
+            for (var i = 0; i < BannerCount(g); i++) list.Add(new PropPlacement(banner, new Vector2(x0 + BannerOffset + i * StallSpacing, top + BannerY)));
             return list;
         }
+
+        // As many stalls as fit between the crossing and the right strip (the lot is as wide as the diner's); a banner hangs between two stalls.
+        internal static int StallCount(LotGeometry g)
+            => Mathf.FloorToInt((g.Strip.xMin - StallToStrip - (g.CrossingX + StallFromCrossing)) / StallSpacing) + 1;
+
+        internal static int BannerCount(LotGeometry g) => Mathf.Max(0, StallCount(g) - 1);
 
         // The barn stands on the re-skinned building, facing the lot.
         private static PropPlacement Barn(LotGeometry g)

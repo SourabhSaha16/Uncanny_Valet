@@ -35,7 +35,7 @@ namespace UncannyValet.EditorTools
                 so.FindProperty("_options._cornerClearance").floatValue = definition.LayoutOptions.CornerClearance;
                 so.FindProperty("_options._washTroughs").intValue = definition.LayoutOptions.WashTroughs;
                 so.FindProperty("_options._extensionWidth").floatValue = definition.LayoutOptions.ExtensionWidth;
-                so.FindProperty("_options._troughDistance").floatValue = definition.LayoutOptions.TroughDistance;
+                so.FindProperty("_options._washBayGap").floatValue = definition.LayoutOptions.WashBayGap;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
             var lotSo = new SerializedObject(lot);

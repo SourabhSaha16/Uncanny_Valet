@@ -16,7 +16,7 @@ namespace UncannyValet.Tests.Run
     {
         private const string TrainingScene = "Assets/_Project/Scenes/Lot_VanaheimTraining.unity";
         private const string CrazyScene = "Assets/_Project/Scenes/Lot_VanaheimCrazy.unity";
-        private const float BayToWashBay = 14f;
+        private const float MaxWashBayGap = 1f;
 
         [Test]
         public void TheRun_ListsTheVanaheimLotsAfterMidgardsTwo_AndValidates()
@@ -67,25 +67,25 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheTrainingLot_IsTodaysWidth_TheCrazyLotIsWiderOnTheFarSide()
+        public void BothLots_KeepTodaysWidth()
         {
             var plain = new LotGeometry(Config(), 4, new LotLayoutOptions(true, 0f));
             Assert.AreEqual(0f, LotAt(TrainingPath).LayoutOptions.ExtensionWidth);
-            var crazy = Geometry(LotAt(CrazyPath));
-            Assert.AreEqual(LotAt(CrazyPath).LayoutOptions.ExtensionWidth, crazy.Bounds.xMax - plain.Bounds.xMax, 0.001f);
-            Assert.That(LotAt(CrazyPath).LayoutOptions.ExtensionWidth, Is.InRange(11f, 15f), "about twelve units wider");
+            Assert.AreEqual(0f, LotAt(CrazyPath).LayoutOptions.ExtensionWidth);
+            Assert.AreEqual(plain.Bounds.xMax, Geometry(LotAt(CrazyPath)).Bounds.xMax, 0.001f);
         }
 
-        [Test]
-        public void TheCrazyWashBays_AreAtLeastFourteenUnitsFromEveryBay_AndTheTrainingWashBayIsBesideTheBlock()
+        [TestCase(TrainingPath)]
+        [TestCase(CrazyPath)]
+        public void TheWashBays_StandRightNextToTheBayBlock(string path)
         {
-            var crazy = Geometry(LotAt(CrazyPath));
-            foreach (var washBay in crazy.WashBays)
-                foreach (var bay in crazy.Spots)
-                    Assert.GreaterOrEqual(washBay.xMin - bay.xMax, BayToWashBay - 0.001f);
-            var training = Geometry(LotAt(TrainingPath));
-            Assert.Less(training.WashBays[0].xMin - training.Spots[3].xMax, BayToWashBay, "the compact lot's wash bay is close to the bays");
-            Assert.Greater(training.WashBays[0].xMin, training.Spots[3].xMax);
+            var g = Geometry(LotAt(path));
+            foreach (var washBay in g.WashBays)
+            {
+                var gap = washBay.xMin - g.Spots[3].xMax;
+                Assert.That(gap, Is.InRange(0.01f, MaxWashBayGap), "gap to the bay block");
+                Assert.Less(washBay.xMax, g.Strip.xMin);
+            }
         }
 
         [Test]
@@ -99,17 +99,15 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheMudPatches_SitBetweenTheBaysAndTheWashBays_OffTheBays_AndInsideTheLot()
+        public void TheMudPatches_SitOnTheWayToTheWashBays_OffTheBays_AndInsideTheLot()
         {
             var lot = LotAt(CrazyPath);
             var g = Geometry(lot);
             foreach (var patch in lot.BuildWorldSpec().MudPatches)
             {
-                var half = patch.Size * 0.5f;
                 var box = LotGeometry.Box(patch.Center, new Vector2(patch.Size, patch.Size));
                 Assert.IsTrue(g.Bounds.Contains(box.min) && g.Bounds.Contains(box.max), patch.Center + " is inside the lot");
-                Assert.Greater(patch.Center.x - half, g.Spots[3].xMax, "east of the bays");
-                Assert.Less(patch.Center.x, g.WashBays[0].xMin, "west of the wash bays");
+                Assert.Less(patch.Center.x + patch.Size * 0.5f, g.Strip.xMin, "west of the right strip");
                 foreach (var spot in g.Spots) Assert.IsFalse(box.Overlaps(spot));
                 foreach (var washBay in g.WashBays) Assert.IsFalse(box.Overlaps(washBay), "a puddle on a wash bay");
             }
