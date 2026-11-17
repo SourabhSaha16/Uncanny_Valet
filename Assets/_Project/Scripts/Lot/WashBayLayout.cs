@@ -4,9 +4,9 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Pure placement of the wash bays, which stand outside the bay grid. With no extension a single wash bay sits beside the bay block in the
-    /// top row (in the open ground before the right strip); with an extension they are stacked at the far end, the first in the top row, the
-    /// second in the bottom row and the rest below it, all a fixed distance east of the bay block. Each wash bay is as big as a bay.
+    /// Pure placement of the wash bays, which stand outside the bay grid: one column right beside the bay block, a small
+    /// <see cref="LotLayoutOptions.WashBayGap"/> east of it, the first in the top row, the second in the bottom row and the rest below it.
+    /// Each wash bay is as big as a bay.
     /// </summary>
     public static class WashBayLayout
     {
@@ -17,8 +17,7 @@ namespace UncannyValet.Lot
         {
             var rects = new Rect[options.WashTroughs];
             var size = config.SpotSize;
-            var far = options.ExtensionWidth > 0f;
-            var x = far ? baysRight + options.TroughDistance + size.x * 0.5f : baysRight + config.Site.StripGap * 0.5f;
+            var x = baysRight + options.WashBayGap + size.x * 0.5f;
             var y = curbTop - size.y * 0.5f;
             for (var i = 0; i < rects.Length; i++)
             {

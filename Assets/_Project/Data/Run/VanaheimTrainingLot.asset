@@ -36,9 +36,11 @@ MonoBehaviour:
     _perfectDropOff: 10
     _driftPerSecond: 0.6
     _driftCap: 4
+  _showPowerBar: 1
   _modifiers: []
   _blessingThreshold: 150
   _pedestrianCurses: 0
+  _freePedestrianRoutes: 0
   _grant:
     _power: 0
     _level: 1
@@ -270,10 +272,10 @@ MonoBehaviour:
     _position: {x: 7.85, y: 3.9}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
-    _position: {x: 11.95, y: 3.5}
+    _position: {x: 12, y: 3.5}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
-    _position: {x: 13.05, y: 3.5}
+    _position: {x: 13.1, y: 3.5}
     _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: db5a7dbe51205a54788a7d56dd3d6d74, type: 2}
   _layoutOptions:
@@ -281,7 +283,7 @@ MonoBehaviour:
     _cornerClearance: 0
     _washTroughs: 1
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0.5
   _buildingSign: BARN
   _groundColour: {r: 0.63, g: 0.48, b: 0.29, a: 1}
   _ambientTraffic: 1

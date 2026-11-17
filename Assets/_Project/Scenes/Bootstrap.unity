@@ -1001,7 +1001,7 @@ MonoBehaviour:
     _cornerClearance: 0
     _washTroughs: 0
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0
   _groundColour: {r: 0, g: 0, b: 0, a: 0}
   _mudPatches: []
   _palette: {fileID: 11400000, guid: 4d54ee916fde2774fb2f1ba28ab178f8, type: 2}
@@ -1463,7 +1463,7 @@ MonoBehaviour:
     _cornerClearance: 0
     _washTroughs: 0
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0
   _buildingSign: DINER
 --- !u!4 &1913346217
 Transform:

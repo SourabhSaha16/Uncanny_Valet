@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.MudPatchModifier
   _displayName: Mud patches
   _patches:
-  - _center: {x: 13.999999, y: -5.65}
+  - _center: {x: 7.699999, y: -5.65}
     _size: 3.5
-  - _center: {x: 18.5, y: -5.65}
+  - _center: {x: 2.6999989, y: -5.65}
     _size: 4
-  - _center: {x: 22, y: -2.3}
+  - _center: {x: 12.5, y: -4.15}
     _size: 3
-  - _center: {x: 22, y: -9}
+  - _center: {x: 12.5, y: -7.15}
     _size: 3
-  - _center: {x: 21.5, y: -14.4}
+  - _center: {x: 8.7, y: -17}
     _size: 3.5
   _topSpeedScale: 0.6
   _accelerationScale: 0.6

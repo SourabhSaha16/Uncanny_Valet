@@ -76,7 +76,7 @@ MonoBehaviour:
     _cornerClearance: 6
     _washTroughs: 0
     _extensionWidth: 0
-    _troughDistance: 0
+    _washBayGap: 0
   _buildingSign: DINER
   _groundColour: {r: 0, g: 0, b: 0, a: 0}
   _ambientTraffic: 1

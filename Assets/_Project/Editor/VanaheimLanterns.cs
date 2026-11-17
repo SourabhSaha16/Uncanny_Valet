@@ -24,7 +24,7 @@ namespace UncannyValet.EditorTools
             if (preset == null) return;
             var lights = new List<PointLightSpec>();
             var x0 = g.CrossingX + VanaheimProps.StallFromCrossing + VanaheimProps.BannerOffset;
-            for (var i = 0; i < VanaheimProps.BannerCount; i++)
+            for (var i = 0; i < VanaheimProps.BannerCount(g); i++)
                 lights.Add(new PointLightSpec(new Vector2(x0 + i * VanaheimProps.StallSpacing, g.Curb.yMax + VanaheimProps.BannerY + LanternAboveBanner), LanternRadius, Lantern,
                     LanternIntensity, 0.35f, 2f + i * 0.3f));
             Write(preset, lights);

@@ -13,10 +13,10 @@ using UnityEngine;
 namespace UncannyValet.EditorTools
 {
     /// <summary>
-    /// Fills in the two Vanaheim lots (task 107) once: closed services plus the wash bays (one beside the bay block in Freyr's Harvest Barn,
-    /// three at the far end of the widened storm feast lot), the Muddy shares, the crowd, the barn sign and the dirt ground, the props and the
-    /// lantern lights, the mud patches of the crazy lot and the gag lines. A lot that already has gag lines is left alone, so the owner's edits
-    /// survive a rebuild.
+    /// Fills in the two Vanaheim lots (task 107) once: closed services plus the wash bays (one right beside the bay block in Freyr's Harvest Barn,
+    /// three in a column right beside it in the storm feast lot), the Muddy shares, the crowd, the barn sign and the dirt ground, the props and the
+    /// lantern lights, the mud patches of the crazy lot and the gag lines. A lot that already has gag lines keeps the owner's edits; only what follows
+    /// the wash bays (layout options, props, mud, lanterns) is rebuilt each time.
     /// </summary>
     public static class VanaheimWorldSetup
     {
@@ -28,9 +28,8 @@ namespace UncannyValet.EditorTools
         private const int CrazyPedestrians = 8;
         private const float TrainingMuddy = 0.3f;
         private const float CrazyMuddy = 0.6f;
-        // The lot is widened by this much; the wash bays stand this far from the bay block (14), and the strip keeps clear of the last wash bay.
-        private const float CrazyExtension = 13.5f;
-        private const float CrazyWashBayDistance = 14f;
+        // The wash bays stand this far from the bay block, right beside it; the strip keeps clear of them (the lot is not widened).
+        private const float WashBayGap = 0.5f;
         private const string BuildingSign = "BARN";
         private static readonly Color TrainingGround = new Color(0.63f, 0.48f, 0.29f);
         private static readonly Color CrazyGround = new Color(0.4f, 0.3f, 0.21f);
@@ -48,18 +47,21 @@ namespace UncannyValet.EditorTools
         private static void Fill(string lotPath, string gagPath, System.Func<GagLineAsset> makeGag, LotConfig config, bool crazy)
         {
             var lot = AssetDatabase.LoadAssetAtPath<LotDefinition>(lotPath);
-            if (lot == null || lot.GagLines != null) return;
+            if (lot == null) return;
+            if (lot.GagLines == null) FillOnce(lot, gagPath, makeGag, crazy);
+            ApplyLayout(lot, config, crazy);
+        }
+
+        private static void FillOnce(LotDefinition lot, string gagPath, System.Func<GagLineAsset> makeGag, bool crazy)
+        {
             var gag = AssetDatabase.LoadAssetAtPath<GagLineAsset>(gagPath);
             if (gag == null)
             {
                 AssetDatabase.CreateAsset(makeGag(), gagPath);
                 gag = AssetDatabase.LoadAssetAtPath<GagLineAsset>(gagPath);
             }
-            var options = crazy ? new LotLayoutOptions(true, 0f, 3, CrazyExtension, CrazyWashBayDistance) : new LotLayoutOptions(true, 0f, 1);
-            var geometry = new LotGeometry(config, lot.QueueSlots, options);
             var so = new SerializedObject(lot);
             so.FindProperty("_gagLines").objectReferenceValue = gag;
-            SetOptions(so, options);
             so.FindProperty("_ambientTraffic").boolValue = true;
             so.FindProperty("_ambientPedestrians").intValue = crazy ? CrazyPedestrians : TrainingPedestrians;
             so.FindProperty("_pedestrianCurses").boolValue = false;
@@ -69,6 +71,17 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_palette").objectReferenceValue = AssetDatabase.LoadAssetAtPath<WorldPalette>(VanaheimArt.PalettePath);
             so.FindProperty("_lighting").objectReferenceValue = AssetDatabase.LoadAssetAtPath<LightingPreset>(crazy ? VanaheimArt.StormyPath : VanaheimArt.SunnyPath);
             SetMuddyShare(so, crazy ? CrazyMuddy : TrainingMuddy);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(lot);
+        }
+
+        // Everything that follows the wash bays (layout options, props, mud, lanterns) is rebuilt from the geometry on every run.
+        private static void ApplyLayout(LotDefinition lot, LotConfig config, bool crazy)
+        {
+            var options = new LotLayoutOptions(true, 0f, crazy ? 3 : 1, 0f, WashBayGap);
+            var geometry = new LotGeometry(config, lot.QueueSlots, options);
+            var so = new SerializedObject(lot);
+            SetOptions(so, options);
             so.FindProperty("_props").arraySize = 0;
             MidgardWorldSetup.AddProps(so, crazy ? VanaheimProps.Crazy(geometry) : VanaheimProps.Training(geometry));
             if (crazy) AddMud(so, geometry);
@@ -83,7 +96,7 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_layoutOptions._cornerClearance").floatValue = options.CornerClearance;
             so.FindProperty("_layoutOptions._washTroughs").intValue = options.WashTroughs;
             so.FindProperty("_layoutOptions._extensionWidth").floatValue = options.ExtensionWidth;
-            so.FindProperty("_layoutOptions._troughDistance").floatValue = options.TroughDistance;
+            so.FindProperty("_layoutOptions._washBayGap").floatValue = options.WashBayGap;
         }
 
         // No EV cars anywhere in the story (their chance is 0; the entry stays listed); the Muddy share is the lot's.
@@ -100,12 +113,9 @@ namespace UncannyValet.EditorTools
 
         private static void AddMud(SerializedObject so, LotGeometry g)
         {
+            AssetDatabase.DeleteAsset(MudPath); // the patches follow the wash bays, so they are rebuilt from the geometry every time
+            AssetDatabase.CreateAsset(VanaheimMud.Create(g), MudPath);
             var mud = AssetDatabase.LoadAssetAtPath<MudPatchModifier>(MudPath);
-            if (mud == null)
-            {
-                AssetDatabase.CreateAsset(VanaheimMud.Create(g), MudPath);
-                mud = AssetDatabase.LoadAssetAtPath<MudPatchModifier>(MudPath);
-            }
             var list = so.FindProperty("_modifiers");
             list.arraySize = 1;
             list.GetArrayElementAtIndex(0).objectReferenceValue = mud;
