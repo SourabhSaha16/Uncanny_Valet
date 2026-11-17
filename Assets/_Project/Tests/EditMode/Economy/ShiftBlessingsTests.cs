@@ -28,7 +28,7 @@ namespace UncannyValet.Tests.Economy
             _bus = new EventBus();
             _config = ScriptableObject.CreateInstance<ShiftConfig>();
             _goal = new FakeGoal();
-            _blessings = new ShiftBlessings(_bus, _config, () => _goal);
+            _blessings = new ShiftBlessings(_bus, _config, () => _goal) { Clock = () => _now };
             _bus.Publish(new ShiftStarted());
         }
 
@@ -40,7 +40,14 @@ namespace UncannyValet.Tests.Economy
         }
 
         private void Blessing(int amount) => _bus.Publish(new BlessingEarned(new TicketId(1), amount));
-        private void Angry() => _bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Pickup));
+        private const int AngryCurse = 3;
+        private float _now;
+        private void Angry()
+        {
+            _bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Pickup));
+            _now += 100f;
+            _bus.Publish(new CarDelivered(new TicketId(1), new CarId(1)));
+        }
 
         [Test]
         public void Blessings_AreAdded_AndRaiseTheFavour()
@@ -65,12 +72,12 @@ namespace UncannyValet.Tests.Economy
         }
 
         [Test]
-        public void AngryPatron_IsACurseWithTheDefaultAmount_AndResetsTheFavour()
+        public void AngryPatron_IsACurseOnDelivery_AndResetsTheFavour()
         {
             Blessing(20);
             Blessing(40);
             Angry();
-            Assert.AreEqual(60 - _config.DefaultCurse, _blessings.Blessings);
+            Assert.AreEqual(60 - AngryCurse, _blessings.Blessings);
             Assert.AreEqual(1, _blessings.Curses);
             Assert.AreEqual(1, _blessings.FavourMultiplier);
         }
@@ -93,7 +100,7 @@ namespace UncannyValet.Tests.Economy
             CurseApplied seen = default;
             _bus.Subscribe<CurseApplied>(e => seen = e);
             Angry();
-            Assert.AreEqual(_config.DefaultCurse, seen.Amount);
+            Assert.AreEqual(AngryCurse, seen.Amount);
             Assert.AreEqual(new TicketId(1), seen.Ticket);
         }
 
@@ -116,7 +123,7 @@ namespace UncannyValet.Tests.Economy
             Assert.AreEqual(2, seen.Count);
             Assert.AreEqual(200, seen[0].Blessings);
             Assert.AreEqual(2, seen[0].FavourMultiplier);
-            Assert.AreEqual(200 - _config.DefaultCurse, seen[1].Blessings);
+            Assert.AreEqual(200 - AngryCurse, seen[1].Blessings);
             Assert.AreEqual(1, seen[1].Curses);
             Assert.AreEqual(1, seen[1].FavourMultiplier);
         }
@@ -134,11 +141,11 @@ namespace UncannyValet.Tests.Economy
             Angry();
 
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(320 - _config.DefaultCurse, results[0].Blessings);
+            Assert.AreEqual(320 - AngryCurse, results[0].Blessings);
             Assert.AreEqual(1, results[0].Curses);
             Assert.AreEqual(2, results[0].PeakFavour);
             Assert.AreEqual(30, results[0].Threshold);
-            Assert.AreEqual(320 - _config.DefaultCurse, _blessings.Blessings);
+            Assert.AreEqual(320 - AngryCurse, _blessings.Blessings);
         }
 
         [Test]

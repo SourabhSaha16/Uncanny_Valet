@@ -10,7 +10,7 @@ namespace UncannyValet.Economy
 {
     /// <summary>
     /// Owns the shift's blessings, favour and curses (the run state owner that replaces the debt ledger). A blessing
-    /// adds its amount and raises the favour; a blessing halved for a missed service leaves the favour where it is; a zero blessing resets it; a curse (an angry patron: the pickup
+    /// adds its amount and raises the favour; a blessing halved for a missed service leaves the favour where it is; a zero blessing resets it; a curse (a late pickup after the pickup
     /// timer ran out) takes blessings off, never below 0, and resets the favour. Everything starts clean on
     /// ShiftStarted. At ShiftEnded the lot is judged against its threshold: ShiftResultReady goes out, then
     /// LotCleared or LotFailed.
@@ -25,9 +25,6 @@ namespace UncannyValet.Economy
         private readonly SlightCurseRule _slightCurses = new SlightCurseRule();
         private readonly OvertimeCurseRule _overtime = new OvertimeCurseRule();
         private bool _open;
-
-        /// <summary>Overtime curse numbers; null uses the rule's defaults.</summary>
-        public OvertimeCurseConfig OvertimeConfig { get; set; }
 
         /// <summary>Seconds clock the pedestrian curse lockout reads (the game time by default; tests replace it).</summary>
         public Func<float> Clock { get; set; } = () => Time.time;
@@ -125,18 +122,19 @@ namespace UncannyValet.Economy
             PeakFavour = Math.Max(PeakFavour, _favour.Multiplier);
         }
 
-        // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.
-        private void OnTimerExpired(TicketTimerExpired e)
-        {
-            _overtime.MarkExpired(e.Ticket, Clock());
-            ApplyCurse(e.Ticket, _config.DefaultCurse);
-        }
+        // The pickup timer running out means an angry patron: the blessing is 0; the curse waits for the delivery.
+        private void OnTimerExpired(TicketTimerExpired e) => _overtime.MarkExpired(e.Ticket, Clock());
 
-        // The late car finally reaches its angry patron: a further, milder curse that grows with the wait beyond the timer.
+        // The late car finally reaches its angry patron: the only curse an angry patron costs, growing with the wait beyond the timer.
         private void OnCarDelivered(CarDelivered e)
         {
-            var seconds = OvertimeConfig != null ? OvertimeConfig.SecondsPerPoint : OvertimeCurseRule.DefaultSecondsPerPoint;
-            var cap = OvertimeConfig != null ? OvertimeConfig.Cap : OvertimeCurseRule.DefaultCap;
+            var seconds = OvertimeCurseRows.SecondsPerPoint;
+            var cap = Mathf.RoundToInt(OvertimeCurseRows.Cap);
+            if (Services.TryGet<ITuning>(out var tuning))
+            {
+                if (tuning.TryGet(TuningKey.OvertimeCurseSecondsPerPoint, out var s)) seconds = s;
+                if (tuning.TryGet(TuningKey.OvertimeCurseCap, out var c)) cap = Mathf.RoundToInt(c);
+            }
             var amount = _overtime.Take(e.Ticket, Clock(), seconds, cap);
             if (amount > 0) ApplyCurse(e.Ticket, amount);
         }

@@ -56,7 +56,7 @@ namespace UncannyValet.Tests.Economy
         }
 
         [Test]
-        public void ShiftBlessings_CursesOnDelivery_AfterTheExpiryCurse()
+        public void ShiftBlessings_ExpiryCostsNothing_TheCurseLandsOnDelivery()
         {
             var bus = new EventBus();
             var config = ScriptableObject.CreateInstance<ShiftConfig>();
@@ -66,11 +66,12 @@ namespace UncannyValet.Tests.Economy
             bus.Subscribe<CurseApplied>(c => curses.Add(c.Amount));
             bus.Publish(new ShiftStarted());
             bus.Publish(new TicketTimerExpired(T, new CarId(1), TimerKind.Pickup));
+            Assert.AreEqual(0, curses.Count);
             now = 21f;
             bus.Publish(new CarDelivered(T, new CarId(1)));
-            CollectionAssert.AreEqual(new[] { config.DefaultCurse, 2 }, curses);
+            CollectionAssert.AreEqual(new[] { 2 }, curses);
             bus.Publish(new CarDelivered(T, new CarId(1)));
-            Assert.AreEqual(2, curses.Count);
+            Assert.AreEqual(1, curses.Count);
             blessings.Dispose();
             Object.DestroyImmediate(config);
         }

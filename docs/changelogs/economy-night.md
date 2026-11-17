@@ -74,3 +74,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Economy/OvertimeCurseRule.cs, OvertimeCurseConfig.cs, ShiftBlessings.cs; Tests/EditMode/Economy/OvertimeCurseTests.cs
 Why: Refs #166. Waiting past the pickup timer must cost something: on CarDelivered the player takes a curse of round(overtime s / 10), 1..3, measured from TicketTimerExpired. On-time costs nothing.
 Tests: OvertimeCurseTests (zero, scaling, rounding, cap, wiring); EditMode suite run.
+
+## economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Economy/ShiftBlessings.cs, OvertimeCurseRule.cs; removed OvertimeCurseConfig.cs; Tests/EditMode/Economy/ShiftBlessingsTests.cs, ShiftBlessingsLotTests.cs, OvertimeCurseTests.cs; Tests/EditMode/Integration/ShiftHarness.cs, FullShiftTests.cs
+Why: Issue #166 (lead decision). TicketTimerExpired no longer curses; only the late-pickup curse on CarDelivered applies, read from TuningKey.OvertimeCurseSecondsPerPoint/Cap (OvertimeCurseRows fallbacks). Config class dropped: the tuning store is the single source.
+Tests: ShiftBlessings tests now deliver late for a cap-3 curse (Lot test seeds 32 so 29 fails); OvertimeCurseTests updated; EditMode suite run.

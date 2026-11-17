@@ -11,11 +11,6 @@ namespace UncannyValet.Economy
     /// </summary>
     public sealed class OvertimeCurseRule
     {
-        /// <summary>Default overtime seconds that cost one blessing.</summary>
-        public const float DefaultSecondsPerPoint = 10f;
-        /// <summary>Default largest overtime curse.</summary>
-        public const int DefaultCap = 3;
-
         private readonly Dictionary<TicketId, float> _expiredAt = new Dictionary<TicketId, float>();
 
         /// <summary>The curse for a given overtime (0 when the patron was not late).</summary>
