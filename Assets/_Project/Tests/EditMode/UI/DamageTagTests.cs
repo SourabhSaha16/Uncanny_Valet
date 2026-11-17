@@ -20,7 +20,7 @@ namespace UncannyValet.Tests.UI
         public void TheTagShowsOnlyOnceTheTicketRowHasDamage()
         {
             var bus = new EventBus();
-            var board = new TicketBoard(bus);
+            var board = new TicketBoard(bus, ModifierTestKit.Catalog());
             bus.Publish(new TicketOpened(new TicketId(1), new CarId(7), 10f));
             var rows = new System.Collections.Generic.List<TicketRow>();
             board.CollectRows(rows);

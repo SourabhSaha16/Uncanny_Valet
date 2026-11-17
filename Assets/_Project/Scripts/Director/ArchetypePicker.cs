@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Director
 {
@@ -15,6 +16,7 @@ namespace UncannyValet.Director
         private readonly IDirectorRandom _random;
         private readonly IReadOnlyList<IDilemmaRule> _rules;
         private readonly PickerSettings _settings;
+        private readonly IModifierCatalog _modifiers;
         private readonly ArchetypeHistory _history = new ArchetypeHistory();
         private readonly float[] _base = new float[ArchetypeKinds.Count];
         private readonly float[] _scaled = new float[ArchetypeKinds.Count];
@@ -22,9 +24,11 @@ namespace UncannyValet.Director
         private readonly float[] _bestBoost = new float[ArchetypeKinds.Count];
         private readonly DilemmaKind[] _bestRule = new DilemmaKind[ArchetypeKinds.Count];
 
-        public ArchetypePicker(IDirectorRandom random, IReadOnlyList<IDilemmaRule> rules, PickerSettings settings)
+        /// <param name="modifiers">The modifier definitions: which station kind each modifier of an archetype needs.</param>
+        public ArchetypePicker(IDirectorRandom random, IReadOnlyList<IDilemmaRule> rules, PickerSettings settings,
+            IModifierCatalog modifiers)
         {
-            _random = random; _rules = rules; _settings = settings;
+            _random = random; _rules = rules; _settings = settings; _modifiers = modifiers;
         }
 
         /// <summary>What has been picked this shift (counts and streaks).</summary>
@@ -48,15 +52,21 @@ namespace UncannyValet.Director
         // An archetype is drawable only when the lot has unlocked the stations it needs (a slot of that kind exists).
         private void FillUnlocked(in PickRequest r)
         {
-            var wash = DilemmaSolvable.SlotsOf(r.Lot, StationKind.Wash) > 0;
-            var charge = DilemmaSolvable.SlotsOf(r.Lot, StationKind.Charging) > 0;
             for (var i = 0; i < _base.Length; i++)
             {
                 var a = (CarArchetype)i;
-                var open = (!ArchetypeKinds.NeedsWash(a) || wash) && (!ArchetypeKinds.NeedsCharge(a) || charge);
-                _base[i] = open ? r.Weights.Of(a) : 0f;
+                _base[i] = StationsOpen(r.Lot, a) ? r.Weights.Of(a) : 0f;
                 _bestBoost[i] = 1f;
             }
+        }
+
+        // Every modifier of the archetype must be clearable: the lot has a slot of the station kind that clears it.
+        private bool StationsOpen(in LotSnapshot lot, CarArchetype archetype)
+        {
+            var carried = ArchetypeKinds.Modifiers(archetype);
+            for (var i = 0; i < carried.Count; i++)
+                if (!_modifiers.TryGet(carried.At(i), out var def) || DilemmaSolvable.SlotsOf(lot, def.ClearedAt) == 0) return false;
+            return true;
         }
 
         private void ScaleForBand(ScheduleReason band)
@@ -65,8 +75,8 @@ namespace UncannyValet.Director
             var over = band == ScheduleReason.OverTarget;
             if (!under && !over) return;
             var heavy = under ? _settings.UnderHeavy : _settings.OverHeavy;
-            _scaled[(int)CarArchetype.Dirty] *= heavy;
-            _scaled[(int)CarArchetype.DirtyEv] *= heavy;
+            _scaled[(int)CarArchetype.Muddy] *= heavy;
+            _scaled[(int)CarArchetype.MuddyEv] *= heavy;
             if (over) _scaled[(int)CarArchetype.Plain] *= _settings.OverPlain;
         }
 
@@ -96,12 +106,18 @@ namespace UncannyValet.Director
             if (withMix) MixLimit.Apply(_limited, _base, _history, budget, _settings.MixTolerance, _settings.StreakLimit);
             for (var i = 0; i < _limited.Length; i++)
             {
-                var a = (CarArchetype)i;
-                var dirtyRun = ArchetypeKinds.NeedsWash(a) && _history.DirtyStreak >= _settings.StreakLimit;
-                var evRun = ArchetypeKinds.NeedsCharge(a) && _history.EvStreak >= _settings.StreakLimit;
-                if (dirtyRun || evRun) _limited[i] = 0f;
+                if (StreakReached((CarArchetype)i)) _limited[i] = 0f;
             }
             return Sum() > 0f;
+        }
+
+        // True when the archetype carries a modifier that has already come as many times in a row as the limit allows.
+        private bool StreakReached(CarArchetype archetype)
+        {
+            var carried = ArchetypeKinds.Modifiers(archetype);
+            for (var i = 0; i < carried.Count; i++)
+                if (_history.StreakOf(carried.At(i)) >= _settings.StreakLimit) return true;
+            return false;
         }
 
         private float Sum()

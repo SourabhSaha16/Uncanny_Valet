@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55a7187e48a39a4cbd6d6f2f70474df, type: 3}
+  m_Name: FreezeTimeDefinition
+  m_EditorClassIdentifier: UncannyValet.Powers::UncannyValet.Powers.PowerDefinition
+  _power: 3
+  _displayName: Freeze time
+  _description: Stop the world for a few seconds while you keep moving.
+  _icon: {fileID: 0}
+  _sting: {fileID: 0}
+  _level1:
+    _cooldown: 20
+    _duration: 6
+    _distance: 0
+    _pushStrength: 0
+    _width: 0
+  _level2:
+    _cooldown: 16
+    _duration: 8
+    _distance: 0
+    _pushStrength: 0
+    _width: 0

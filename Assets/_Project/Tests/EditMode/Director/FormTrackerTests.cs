@@ -8,7 +8,7 @@ namespace UncannyValet.Tests.Director
 {
     public class FormTrackerTests
     {
-        private const int MaxCombo = 4;
+        private const int MaxFavour = 4;
 
         private readonly FormSettings _settings = new FormSettings();
         private EventBus _bus;
@@ -20,7 +20,7 @@ namespace UncannyValet.Tests.Director
         {
             _bus = new EventBus();
             _clock = new FakeClock();
-            _form = new FormTracker(_bus, _settings, _clock, null, MaxCombo);
+            _form = new FormTracker(_bus, _settings, _clock, 0, MaxFavour);
         }
 
         [TearDown]
@@ -48,9 +48,9 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void TargetIsClampedAndCombinesTheThreeTerms()
         {
-            Assert.AreEqual(-1f, FormMath.Target(0f, 2f, 5, 1, MaxCombo, _settings), 0.0001f);
-            Assert.AreEqual(1f, FormMath.Target(10f, 2f, 0, MaxCombo, MaxCombo, _settings), 0.0001f);
-            Assert.AreEqual(0f, FormMath.Target(2f, 2f, 0, 1, MaxCombo, _settings), 0.0001f);
+            Assert.AreEqual(-1f, FormMath.Target(0f, 2f, 5, 1, MaxFavour, _settings), 0.0001f);
+            Assert.AreEqual(1f, FormMath.Target(10f, 2f, 0, MaxFavour, MaxFavour, _settings), 0.0001f);
+            Assert.AreEqual(0f, FormMath.Target(2f, 2f, 0, 1, MaxFavour, _settings), 0.0001f);
         }
 
         [Test]
@@ -78,35 +78,24 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void TipsAheadOfPaceAndAComboPushFormUp()
+        public void BlessingsAheadOfPaceAndAFavourPushFormUp()
         {
-            var score = new FakeScore();
             _form.Dispose();
-            _form = new FormTracker(_bus, _settings, _clock, score, MaxCombo);
-            _bus.Publish(new ScoreChanged(0, MaxCombo, 0, 0));
+            _form = new FormTracker(_bus, _settings, _clock, 450, MaxFavour);
+            _bus.Publish(new BlessingsChanged(0, MaxFavour, 0));
             _clock.SetElapsed(40f);
-            for (var i = 0; i < 6; i++) _bus.Publish(new TipEarned(new TicketId(i + 1), 100));
+            for (var i = 0; i < 6; i++) _bus.Publish(new BlessingEarned(new TicketId(i + 1), 100));
             _form.Tick(At(45f));
             Assert.Greater(_form.Value, 0f);
         }
 
         [Test]
-        public void NewShiftResetsFormAndCombo()
+        public void NewShiftResetsFormAndFavour()
         {
             _form.Tick(At(45f, 40f, 41f));
             _bus.Publish(new ShiftStarted());
             Assert.AreEqual(0f, _form.Value);
         }
 
-        private sealed class FakeScore : IShiftScoreView
-        {
-            public int Score => 0;
-            public int ComboMultiplier => 1;
-            public int Complaints => 0;
-            public int Stars => 0;
-            public int OneStarScore => 150;
-            public int TwoStarScore => 300;
-            public int ThreeStarScore => 450;
-        }
     }
 }

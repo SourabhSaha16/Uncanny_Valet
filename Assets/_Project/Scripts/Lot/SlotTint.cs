@@ -1,12 +1,13 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Lot
 {
     /// <summary>
     /// Lights up the fill of one wash slot or charging bay while a car is washed or charged there. Reads the Core
-    /// events (enter, leave, clean and charge progress, finished, ticket closed) and lets <see cref="SlotTintRule"/> decide.
+    /// events (enter, leave, modifier progress and cleared, ticket closed) and lets <see cref="SlotTintRule"/> decide.
     /// Sits next to the slot's <see cref="StopZone"/>, which says whether a car is really in this slot.
     /// </summary>
     [DisallowMultipleComponent]
@@ -19,6 +20,7 @@ namespace UncannyValet.Lot
         private Color _idle;
         private Color _lit;
         private IEventBus _bus;
+        private IModifierCatalog _modifiers;
 
         public void Init(StopZone zone, StationKind kind, SpriteRenderer fill, Color lit, LotConfig config)
         {
@@ -33,6 +35,7 @@ namespace UncannyValet.Lot
         private void Start()
         {
             _bus = Services.Get<IEventBus>();
+            _modifiers = Services.Get<IModifierCatalog>();
             Subscribe();
         }
 
@@ -46,10 +49,8 @@ namespace UncannyValet.Lot
             if (_bus == null) return;
             _bus.Unsubscribe<CarEnteredStation>(OnEntered);
             _bus.Unsubscribe<CarLeftStation>(OnLeft);
-            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Unsubscribe<CarCleaned>(OnCleaned);
-            _bus.Unsubscribe<CarChargeChanged>(OnChargeChanged);
-            _bus.Unsubscribe<CarFullyCharged>(OnCharged);
+            _bus.Unsubscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Unsubscribe<ModifierCleared>(OnCleared);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
         }
 
@@ -57,10 +58,8 @@ namespace UncannyValet.Lot
         {
             _bus.Subscribe<CarEnteredStation>(OnEntered);
             _bus.Subscribe<CarLeftStation>(OnLeft);
-            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Subscribe<CarCleaned>(OnCleaned);
-            _bus.Subscribe<CarChargeChanged>(OnChargeChanged);
-            _bus.Subscribe<CarFullyCharged>(OnCharged);
+            _bus.Subscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Subscribe<ModifierCleared>(OnCleared);
             _bus.Subscribe<TicketClosed>(OnClosed);
         }
 
@@ -76,29 +75,19 @@ namespace UncannyValet.Lot
             Apply();
         }
 
-        private void OnCleanChanged(CarCleanChanged e)
+        private void OnProgress(ModifierProgressChanged e)
         {
-            if (_kind == StationKind.Wash) _rule.Progress(e.Car, e.Clean01);
+            if (ClearedHere(e.Modifier)) _rule.Progress(e.Car, e.Progress01);
             Apply();
         }
 
-        private void OnCleaned(CarCleaned e)
+        private void OnCleared(ModifierCleared e)
         {
-            if (_kind == StationKind.Wash) _rule.Finished(e.Car);
+            if (ClearedHere(e.Modifier)) _rule.Finished(e.Car);
             Apply();
         }
 
-        private void OnChargeChanged(CarChargeChanged e)
-        {
-            if (_kind == StationKind.Charging) _rule.Progress(e.Car, e.Charge01);
-            Apply();
-        }
-
-        private void OnCharged(CarFullyCharged e)
-        {
-            if (_kind == StationKind.Charging) _rule.Finished(e.Car);
-            Apply();
-        }
+        private bool ClearedHere(ModifierId id) => _modifiers.TryGet(id, out var def) && def.ClearedAt == _kind;
 
         private void OnClosed(TicketClosed e)
         {

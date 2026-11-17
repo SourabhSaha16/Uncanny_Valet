@@ -1,13 +1,15 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// Dark brown overlay on a dirty car. Created inactive; CarTraitLook activates it. Washing
-    /// (CarCleanChanged) wipes it away left to right, revealing the car colour; CarCleaned hides it.
+    /// Dark brown overlay on a Muddy car. Created inactive; CarTraitLook activates it. Washing
+    /// (ModifierProgressChanged of a mud-look modifier) wipes it away left to right, revealing the car colour;
+    /// ModifierCleared hides it.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CarMudOverlay : MonoBehaviour
@@ -16,6 +18,7 @@ namespace UncannyValet.Cars
         private CarDefinition _definition;
         private SpriteRenderer _renderer;
         private IEventBus _bus;
+        private IModifierCatalog _modifiers;
         private float _shownClean;
         private float _targetClean;
 
@@ -42,26 +45,27 @@ namespace UncannyValet.Cars
             _targetClean = 0f;
             Apply();
             if (!Services.TryGet<IEventBus>(out _bus)) return;
-            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Subscribe<CarCleaned>(OnCleaned);
+            Services.TryGet(out _modifiers);
+            _bus.Subscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Subscribe<ModifierCleared>(OnCleared);
         }
 
         private void OnDisable()
         {
             if (_bus == null) return;
-            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
-            _bus.Unsubscribe<CarCleaned>(OnCleaned);
+            _bus.Unsubscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Unsubscribe<ModifierCleared>(OnCleared);
             _bus = null;
         }
 
-        private void OnCleanChanged(CarCleanChanged e)
+        private void OnProgress(ModifierProgressChanged e)
         {
-            if (e.Car == _id) _targetClean = Mathf.Clamp01(e.Clean01);
+            if (e.Car == _id && ModifierLooks.Is(_modifiers, e.Modifier, ModifierLook.MudOverlay)) _targetClean = Mathf.Clamp01(e.Progress01);
         }
 
-        private void OnCleaned(CarCleaned e)
+        private void OnCleared(ModifierCleared e)
         {
-            if (e.Car == _id) gameObject.SetActive(false);
+            if (e.Car == _id && ModifierLooks.Is(_modifiers, e.Modifier, ModifierLook.MudOverlay)) gameObject.SetActive(false);
         }
 
         private void Update()

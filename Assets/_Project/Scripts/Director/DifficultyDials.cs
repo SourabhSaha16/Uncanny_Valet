@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UncannyValet.Director
 {
     /// <summary>
-    /// Pure rule: turns the eight difficulty dials into every underlying tuning key they drive, by piecewise-linear
+    /// Pure rule: turns the six difficulty dials into every underlying tuning key they drive, by piecewise-linear
     /// interpolation through the config's anchors (easy, default, hard). Each key keeps its starting value (captured
     /// once, after seeding), so the default dial positions reproduce the authored numbers exactly.
     /// </summary>
@@ -15,8 +15,8 @@ namespace UncannyValet.Director
         /// <summary>The dial keys, in panel order. (The seed dial drives nothing and is not listed.)</summary>
         public static readonly TuningKey[] DialKeys =
         {
-            TuningKey.DialIntensity, TuningKey.DialRamp, TuningKey.DialLateRush, TuningKey.DialDirtyCars,
-            TuningKey.DialEvCars, TuningKey.DialDilemmas, TuningKey.DialMercy, TuningKey.DialSkillReward,
+            TuningKey.DialIntensity, TuningKey.DialRamp, TuningKey.DialLateRush,
+            TuningKey.DialDilemmas, TuningKey.DialMercy, TuningKey.DialSkillReward,
         };
 
         private readonly float _min;

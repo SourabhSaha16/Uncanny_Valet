@@ -1,5 +1,6 @@
 using UncannyValet.Core.Events;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.Director
 {
@@ -29,9 +30,9 @@ namespace UncannyValet.Director
 
         [Header("Base archetype weights (the archetype picker)")]
         [SerializeField, Min(0f)] private float _plainWeight = 50f;
-        [SerializeField, Min(0f)] private float _dirtyWeight = 20f;
+        [SerializeField, Min(0f), FormerlySerializedAs("_dirtyWeight")] private float _muddyWeight = 20f;
         [SerializeField, Min(0f)] private float _evWeight = 20f;
-        [SerializeField, Min(0f)] private float _dirtyEvWeight = 10f;
+        [SerializeField, Min(0f), FormerlySerializedAs("_dirtyEvWeight")] private float _muddyEvWeight = 10f;
 
         [Header("Arrival budget")]
         [SerializeField, Min(1), Tooltip("Cars the shift is meant to bring.")]
@@ -73,16 +74,16 @@ namespace UncannyValet.Director
             => Sample(shiftFraction + _risingLookahead) > Sample(shiftFraction);
 
         /// <summary>The base weights of all archetypes.</summary>
-        public ArchetypeWeights Weights => new ArchetypeWeights(_plainWeight, _dirtyWeight, _evWeight, _dirtyEvWeight);
+        public ArchetypeWeights Weights => new ArchetypeWeights(_plainWeight, _muddyWeight, _evWeight, _muddyEvWeight);
 
         /// <summary>Base weight of an archetype in the draw.</summary>
         public float WeightOf(CarArchetype archetype)
         {
             switch (archetype)
             {
-                case CarArchetype.Dirty: return _dirtyWeight;
+                case CarArchetype.Muddy: return _muddyWeight;
                 case CarArchetype.Ev: return _evWeight;
-                case CarArchetype.DirtyEv: return _dirtyEvWeight;
+                case CarArchetype.MuddyEv: return _muddyEvWeight;
                 default: return _plainWeight;
             }
         }

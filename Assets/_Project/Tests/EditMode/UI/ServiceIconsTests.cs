@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI;
 using UncannyValet.UI.Hud;
 using UncannyValet.UI.Kit;
@@ -14,10 +15,7 @@ namespace UncannyValet.Tests.UI
         private EventBus _bus;
         private TicketBoard _board;
 
-        private static TicketRow ArrivedRow(bool dirty, bool ev)
-        {
-            return new TicketRow { Arrived = true, IsDirty = dirty, IsEv = ev, Charge01 = ev ? 0.4f : TicketRow.UnknownCharge };
-        }
+        private static TicketRow ArrivedRow(bool muddy, bool ev) => new TicketRow { Arrived = true }.Give(ev, muddy);
 
         [Test]
         public void CarNotArrivedYet_ShowsNothing()
@@ -28,12 +26,12 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void ArrivedDirtyCar_ShowsDroplet()
+        public void ArrivedMuddyCar_ShowsMudSplat()
         {
             var row = ArrivedRow(true, false);
             Assert.AreEqual(1, ServiceIcons.Count(row));
             Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
-            Assert.AreEqual(PixelIcon.Wash, icon);
+            Assert.AreEqual(PixelIcon.Mud, icon);
             Assert.IsFalse(ServiceIcons.TryGet(row, 1, out _));
         }
 
@@ -43,20 +41,20 @@ namespace UncannyValet.Tests.UI
             var row = ArrivedRow(false, true);
             Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
             Assert.AreEqual(PixelIcon.Plug, icon);
-            row.Charge01 = 1f;
+            row.Clear(ModifierId.NeedsCharge);
             Assert.AreEqual(0, ServiceIcons.Count(row));
         }
 
         [Test]
-        public void DirtyEv_ShowsDropletThenPlug_AndWashedDropsTheDroplet()
+        public void MuddyEv_ShowsMudThenPlug_AndWashedDropsTheMud()
         {
             var row = ArrivedRow(true, true);
             Assert.AreEqual(2, ServiceIcons.Count(row));
             ServiceIcons.TryGet(row, 0, out var first);
             ServiceIcons.TryGet(row, 1, out var second);
-            Assert.AreEqual(PixelIcon.Wash, first);
+            Assert.AreEqual(PixelIcon.Mud, first);
             Assert.AreEqual(PixelIcon.Plug, second);
-            row.Washed = true;
+            row.Clear(ModifierId.Muddy);
             ServiceIcons.TryGet(row, 0, out var left);
             Assert.AreEqual(PixelIcon.Plug, left);
         }
@@ -82,7 +80,7 @@ namespace UncannyValet.Tests.UI
         public void SetUp()
         {
             _bus = new EventBus();
-            _board = new TicketBoard(_bus);
+            _board = new TicketBoard(_bus, ModifierTestKit.Catalog());
         }
 
         [TearDown]
@@ -99,13 +97,13 @@ namespace UncannyValet.Tests.UI
         public void Replay_ArriveCarryWashClose()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(false, true)));
             Assert.AreEqual(0, ServiceIcons.Count(Only()));
             _bus.Publish(new CarArrived(C));
             Assert.AreEqual(1, ServiceIcons.Count(Only()));
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
             Assert.AreEqual(1, ServiceIcons.Count(Only()));
-            _bus.Publish(new CarCleaned(C));
+            _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
             Assert.AreEqual(0, ServiceIcons.Count(Only()));
             _bus.Publish(new TicketClosed(T, C, 0f, 0));
             Assert.IsNull(Only());
@@ -115,13 +113,13 @@ namespace UncannyValet.Tests.UI
         public void Replay_EvChargesToFull()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, true, false));
-            _bus.Publish(new CarChargeChanged(C, 0.3f));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(true, false)));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.NeedsCharge, 0.3f));
             _bus.Publish(new CarArrived(C));
             Assert.AreEqual(1, ServiceIcons.Count(Only()));
             _bus.Publish(new CarEnteredStation(C, StationKind.Charging));
-            _bus.Publish(new CarChargeChanged(C, 1f));
-            _bus.Publish(new CarFullyCharged(C));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.NeedsCharge, 1f));
+            _bus.Publish(new ModifierCleared(C, ModifierId.NeedsCharge));
             Assert.AreEqual(0, ServiceIcons.Count(Only()));
         }
 
@@ -129,7 +127,7 @@ namespace UncannyValet.Tests.UI
         public void Replay_CarThatNeedsNothing_NeverShowsAnIcon()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, false));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierSet.None));
             _bus.Publish(new CarArrived(C));
             Assert.AreEqual(0, ServiceIcons.Count(Only()));
         }

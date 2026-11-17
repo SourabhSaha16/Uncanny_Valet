@@ -27,11 +27,11 @@ namespace UncannyValet.Core.Contracts
             new TuningInfo(TuningKey.DirFormInfluence, Skill, "How much good play raises the target workload", 0f, 0.5f, 0.01f),
             new TuningInfo(TuningKey.DirFormUpdate, Skill, "How often your form is re-judged (s)", 1, 60, 1),
             new TuningInfo(TuningKey.DirFormMaxStep, Skill, "Biggest form change per re-judging", 0.05f, 1f, 0.05f),
-            new TuningInfo(TuningKey.DirFormWindow, Skill, "How far back tips and angry patrons count (s)", 10, 180, 1),
+            new TuningInfo(TuningKey.DirFormWindow, Skill, "How far back blessings and angry patrons count (s)", 10, 180, 1),
             new TuningInfo(TuningKey.DirFormWarmup, Skill, "Grace period at shift start (s)", 0, 120, 1),
-            new TuningInfo(TuningKey.DirFormTipWeight, Skill, "Weight of tip pace", 0f, 1.5f, 0.05f),
+            new TuningInfo(TuningKey.DirFormBlessingWeight, Skill, "Weight of blessing pace", 0f, 1.5f, 0.05f),
             new TuningInfo(TuningKey.DirFormAngryWeight, Skill, "Weight of angry patrons (lowers form)", 0f, 1.5f, 0.05f),
-            new TuningInfo(TuningKey.DirFormComboWeight, Skill, "Weight of the combo", 0f, 1.5f, 0.05f),
+            new TuningInfo(TuningKey.DirFormFavourWeight, Skill, "Weight of the favour", 0f, 1.5f, 0.05f),
             new TuningInfo(TuningKey.DirFormAngryFull, Skill, "Angry patrons that give the full penalty", 1, 6, 1),
         };
     }

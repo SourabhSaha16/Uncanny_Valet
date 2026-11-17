@@ -1,0 +1,119 @@
+using NUnit.Framework;
+using UncannyValet.Bootstrap;
+using UncannyValet.Core.Config;
+using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
+using UncannyValet.Director;
+using UncannyValet.Economy;
+using UncannyValet.Patrons;
+using UnityEngine;
+
+namespace UncannyValet.Tests.Run
+{
+    /// <summary>The lot's numbers win over the shared configs when Bootstrap seeds the tuning store.</summary>
+    public sealed class LotSeedingTests
+    {
+        private RunFixtures _fx;
+        private ShiftConfig _shift;
+        private PatronConfig _patrons;
+        private BlessingConfig _blessings;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _fx = new RunFixtures();
+            _shift = ScriptableObject.CreateInstance<ShiftConfig>();
+            _patrons = ScriptableObject.CreateInstance<PatronConfig>();
+            _blessings = ScriptableObject.CreateInstance<BlessingConfig>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _fx.Dispose();
+            Object.DestroyImmediate(_shift);
+            Object.DestroyImmediate(_patrons);
+            Object.DestroyImmediate(_blessings);
+        }
+
+        [Test]
+        public void Seed_WithALot_UsesItsShiftLengthAndPacing()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Training);
+            var tuning = new TuningStore(new EventBus());
+            TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(lot.Pacing.ShiftLengthSeconds, tuning.Get(TuningKey.ShiftLengthSeconds));
+            Assert.AreEqual(lot.Pacing.ArrivalGapMinSeconds, tuning.Get(TuningKey.ArrivalGapMinMinutes));
+            Assert.AreEqual(lot.Pacing.MaxWaitingCars, tuning.Get(TuningKey.PlanMaxWaitingCars));
+            Assert.AreNotEqual(_shift.ShiftLengthSeconds, tuning.Get(TuningKey.ShiftLengthSeconds));
+        }
+
+        [Test]
+        public void Seed_SeedsThePedestrianCurseSwitchFromTheLot()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Crazy);
+            var off = new TuningStore(new EventBus());
+            TuningSeeder.Seed(off, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(0f, off.Get(TuningKey.PedestrianCurses), "the switch defaults to off");
+            var so = new UnityEditor.SerializedObject(lot);
+            so.FindProperty("_pedestrianCurses").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var on = new TuningStore(new EventBus());
+            TuningSeeder.Seed(on, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(1f, on.Get(TuningKey.PedestrianCurses));
+            Assert.AreEqual(5f, on.Get(TuningKey.PedestrianCurseAmount));
+        }
+
+        [Test]
+        public void Seed_SeedsTheFreePedestrianRoutesSwitchFromTheLot()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Crazy);
+            var so = new UnityEditor.SerializedObject(lot);
+            so.FindProperty("_freePedestrianRoutes").boolValue = false;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var off = new TuningStore(new EventBus());
+            TuningSeeder.Seed(off, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(0f, off.Get(TuningKey.PedestrianFreeRoutes));
+            so.FindProperty("_freePedestrianRoutes").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var on = new TuningStore(new EventBus());
+            TuningSeeder.Seed(on, _shift, _patrons, _blessings, 6, lot: lot);
+            Assert.AreEqual(1f, on.Get(TuningKey.PedestrianFreeRoutes));
+        }
+
+        [Test]
+        public void Seed_WithoutALot_KeepsTheSharedDefaults()
+        {
+            var tuning = new TuningStore(new EventBus());
+            TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6);
+            Assert.AreEqual(_shift.ShiftLengthSeconds, tuning.Get(TuningKey.ShiftLengthSeconds));
+            Assert.AreEqual(_patrons.ArrivalIntervalRange.x, tuning.Get(TuningKey.ArrivalGapMinMinutes));
+        }
+
+        [Test]
+        public void Seed_WithALot_AppliesItsDialPositionBeforeTheDialsDeriveTheirKeys()
+        {
+            var lot = _fx.Lot(World.Midgard, LotKind.Crazy);
+            var so = new UnityEditor.SerializedObject(lot);
+            var dials = so.FindProperty("_dials");
+            dials.arraySize = 1;
+            dials.GetArrayElementAtIndex(0).FindPropertyRelative("_dial").intValue = (int)TuningKey.DialIntensity;
+            dials.GetArrayElementAtIndex(0).FindPropertyRelative("_position").floatValue = 2f;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var tuning = new TuningStore(new EventBus());
+            var director = ScriptableObject.CreateInstance<DirectorConfig>();
+            var profile = ScriptableObject.CreateInstance<DirectorProfile>();
+            try
+            {
+                TuningSeeder.Seed(tuning, _shift, _patrons, _blessings, 6, director, profile, bus: new EventBus(), lot: lot);
+                Assert.AreEqual(2f, tuning.Get(TuningKey.DialIntensity));
+            }
+            finally
+            {
+                Object.DestroyImmediate(director);
+                Object.DestroyImmediate(profile);
+            }
+        }
+    }
+}

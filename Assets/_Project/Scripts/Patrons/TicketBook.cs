@@ -13,17 +13,15 @@ namespace UncannyValet.Patrons
         private readonly PlatePool _plates;
         private readonly Dictionary<int, Ticket> _byTicket = new Dictionary<int, Ticket>();
         private readonly Dictionary<int, Ticket> _byCar = new Dictionary<int, Ticket>();
+        private readonly ModifierFactory _modifiers;
         private int _nextId = 1;
 
         /// <param name="plates">Plate source; null uses a pool seeded with <see cref="DefaultPlateSeed"/>.</param>
-        public TicketBook(ServiceTuning tuning, PlatePool plates = null)
+        public TicketBook(ModifierFactory modifiers, PlatePool plates = null)
         {
-            Tuning = tuning;
+            _modifiers = modifiers;
             _plates = plates ?? new PlatePool(new SeededPatronRandom(DefaultPlateSeed));
         }
-
-        /// <summary>Service numbers given to tickets created from now on.</summary>
-        public ServiceTuning Tuning { get; set; }
 
         public int Count => _byTicket.Count;
 
@@ -41,7 +39,8 @@ namespace UncannyValet.Patrons
         /// <summary>Creates a ticket with the lowest free tag colour and a fresh plate, and stores it.</summary>
         public Ticket Add(CarId car, PatronRequest request)
         {
-            var ticket = new Ticket(new TicketId(_nextId++), car, request, _tags.Acquire(), _plates.Acquire(), Tuning);
+            var ticket = new Ticket(new TicketId(_nextId++), car, request, _tags.Acquire(), _plates.Acquire(),
+                _modifiers.Build(request.Modifiers));
             _byTicket[ticket.TicketId.Value] = ticket;
             _byCar[car.Value] = ticket;
             return ticket;

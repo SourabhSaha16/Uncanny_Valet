@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60fdf7af48f0c04bb5b0a365447b174, type: 3}
+  m_Name: FreyjaText
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherTextAsset
+  _tips:
+  - _situation: 0
+    _text: WELCOME TO THE FARM! PARK WITH CARE.
+  - _situation: 1
+    _text: MUDDY WHEELS! SEND IT THROUGH THE WASH.
+  - _situation: 2
+    _text: THIS ONE'S THIRSTY. GIVE IT A CHARGE.
+  - _situation: 3
+    _text: PATIENCE IS RUNNING DRY. BE QUICK, LOVE.
+  - _situation: 4
+    _text: A FULL QUEUE! CLEAR IT, DARLING.
+  - _situation: 5
+    _text: OUCH! EVERY DENT COSTS BLESSINGS.
+  _curse:
+  - CURSES ARE SO UNBECOMING, DARLING.
+  - SOMEONE'S SULKING. HOW DRAMATIC.
+  - I FELT THAT ONE FROM HERE.
+  _perfectPark:
+  - GORGEOUS PARKING, DARLING!
+  - PERFECTLY PLACED. I ADORE IT.
+  - NOW THAT IS ELEGANCE.
+  _perfectDropOff:
+  - A DROP-OFF FIT FOR A GODDESS!
+  - THEY'RE SMITTEN. WELL DONE, LOVE.
+  - SMOOTH AS HONEY. DELIGHTFUL.
+  _bigCrash:
+  - THE BARN FELT THAT, DARLING.
+  - WHAT A CRUNCH. DREADFUL!
+  - MY FARM! HAVE SOME DECENCY!
+  _halfwayToGoal:
+  - HALFWAY BLESSED. HOW DELIGHTFUL!
+  - THE HARVEST IS HALF IN, LOVE.
+  - KEEP GOING. THE FIELDS ARE WATCHING.
+  _goalReached:
+  - THE FIELDS ARE BLESSED. WELL DONE!
+  - ENOUGH BLESSINGS. I'M DELIGHTED.
+  - A BOUNTIFUL HARVEST, VALET!
+  _last30Seconds:
+  - THIRTY SECONDS, DARLING. SHINE!
+  - THE SUN IS SETTING. FINISH WELL.
+  - ONE LAST FLOURISH, LOVE!
+  _verdictFailed:
+  - A POOR HARVEST. DO TRY AGAIN, LOVE.
+  - THE FIELDS WANTED MORE.
+  - NOT YOUR BEST, DARLING.
+  _verdictCleared:
+  - A FINE HARVEST. YOU MAY PASS.
+  - I'M QUITE FOND OF YOU NOW.
+  - YOU'VE EARNED MY FAVOUR.
+  _verdictClearedWell:
+  - SPLENDID! YOU ARE A TREASURE.
+  - THE WHOLE FARM ADORES YOU.
+  - MY HEART IS YOURS. ALMOST.

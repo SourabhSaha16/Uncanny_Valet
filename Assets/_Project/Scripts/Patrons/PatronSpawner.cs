@@ -2,6 +2,7 @@ using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Patrons
@@ -18,6 +19,7 @@ namespace UncannyValet.Patrons
         private ICarFactory _cars;
         private ILotLayout _lot;
         private QueueSlotAllocator _slots;
+        private QueueAdvancer _queue;
         private PatronTuning _tuning;
         private PatronDeparture _departure;
         private float _nextArrivalMinute;
@@ -27,8 +29,10 @@ namespace UncannyValet.Patrons
         private PatronRequestRoller _roller;
         private IGameClock _clock;
         private ITuning _liveTuning;
+        private IModifierCatalog _catalog;
         private PatronRequest _pending;
         private bool _hasPending;
+        private IArrivalPacing _pacing = new DirectorArrivalPacing();
 
         public TicketRegistry Registry { get; private set; }
 
@@ -44,15 +48,18 @@ namespace UncannyValet.Patrons
             _lot = Services.Get<ILotLayout>();
             _plan = new PatronPlan(_config.MaxWaitingCars);
             _liveTuning = Services.Get<ITuning>();
+            _catalog = Services.Get<IModifierCatalog>();
             var tuning = _tuning = new PatronTuning(_liveTuning, _config);
-            _roller = new PatronRequestRoller(_config, tuning, _plan, Random);
+            _roller = new PatronRequestRoller(_config, tuning, _plan, Random, _catalog);
             _clock = Services.Get<IGameClock>();
-            Services.TryGet<IShiftScoreView>(out var score);
-            Registry = new TicketRegistry(_bus, _clock, Services.Get<ITipCalculator>(), tuning, score);
+            Services.TryGet<IShiftBlessingsView>(out var score);
+            Registry = new TicketRegistry(_bus, _clock, Services.Get<IBlessingCalculator>(), tuning, score, _catalog);
             Registry.CurbWalkTimeoutMinutes = _config.CurbWalkTimeoutMinutes;
             Services.Register<IPickupAcceptance>(new PickupAcceptance(Registry));
-            _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), _plan);
+            var capacity = Mathf.Min(_config.Pickup.MaxQueuedCars, _lot.ArrivalSlots.Count);
+            _slots = new QueueSlotAllocator(_bus, Registry, new ArrivalSlotScanner(_arrivalClearSize, _lot), capacity);
             Services.Register<IQueueSlotSource>(_slots);
+            _queue = new QueueAdvancer(_bus, _cars, _lot, new ArrivalSlotScanner(_config.Pickup.AdvanceClearSize, _lot), _config.Pickup);
             _departure = new PatronDeparture(_bus, _cars, _clock, _config.BoardingTimeoutMinutes);
             _bus.Subscribe<ShiftStarted>(OnShiftStarted);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -71,12 +78,20 @@ namespace UncannyValet.Patrons
             _bus.Unsubscribe<PatronScheduled>(OnPatronScheduled);
             Registry.Dispose();
             _slots.Dispose();
+            _queue.Dispose();
             _departure.Dispose();
         }
 
+        private void Update()
+        {
+            if (_queue == null) return;
+            if (_queue.Focus == null && Services.TryGet<IPlayerFocus>(out var focus)) _queue.Focus = focus;
+            _queue.Tick();
+        }
+
         /// <summary>
-        /// The single entry point for a patron arrival (story cards call this too). Fails when the waiting
-        /// cap is reached or no queue slot is clear; the caller may retry later.
+        /// The single entry point for a patron arrival (story cards call this too). Fails when the queue is
+        /// full (every position holds a car); the caller may retry later.
         /// </summary>
         public bool TrySpawn(PatronRequest request, out Ticket ticket)
         {
@@ -86,23 +101,28 @@ namespace UncannyValet.Patrons
             if (slot == ArrivalGate.NoSlot) return false;
             var car = new CarId(_nextCarId++);
             _cars.SpawnArriving(car, _lot.ArrivalSlots[slot], _lot.ArrivalRotationDegrees, slot);
-            ticket = Registry.Create(car, FitStay(request));
+            ticket = Registry.Create(car, FitStay(request, car));
             _slots.Reserve(car, slot);
             Registry.AnnounceArrival(ticket);
             return true;
         }
 
-        // A late arrival's stay is cut so its patron is back asking for the car before the shift ends.
-        private PatronRequest FitStay(PatronRequest request)
+        // The stay is jittered per car so returns spread out, then a late arrival's stay is cut so its patron is back
+        // asking for the car before the shift ends (the cut comes last, so the stay always fits the shift).
+        private PatronRequest FitStay(PatronRequest request, CarId car)
         {
             var remaining = _clock.SecondsRemaining * _tuning.MinutesPerSecond;
-            var stay = StayFit.Clamp(request.StayMinutes, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
-            return stay < request.StayMinutes ? request.WithStay(stay) : request;
+            var spread = StayJitter.Apply(request.StayMinutes, _tuning.StayJitter, _tuning.LateStayFloor, car.Value);
+            var stay = StayFit.Clamp(spread, remaining, _tuning.LateStayLead, _tuning.LateStayFloor);
+            return stay != request.StayMinutes ? request.WithStay(stay) : request;
         }
 
         private void OnShiftStarted(ShiftStarted e)
         {
             _shiftOpen = true;
+            var kind = Services.TryGet<IRunProgress>(out var run) && run.HasCurrentLot ? run.CurrentLot.Kind : LotKind.None;
+            _pacing = ArrivalPacings.For(kind, _config.TopUpSpacingMinutes);
+            _pacing.Reset();
             _nextArrivalMinute = 0f;
             _hasPending = false;
         }
@@ -120,7 +140,7 @@ namespace UncannyValet.Patrons
         // Rolls the request once when the director asks, then keeps it until a queue slot is clear.
         private void OnPatronScheduled(PatronScheduled e)
         {
-            if (!DirectorOn || !_shiftOpen) return;
+            if (_pacing.TopsUpQueue || !DirectorOn || !_shiftOpen) return;
             var progress = ShiftProgress();
             _pending = e.ArchetypeChosen ? _roller.Roll(progress, e.Archetype) : _roller.Roll(progress);
             _hasPending = true;
@@ -141,8 +161,19 @@ namespace UncannyValet.Patrons
             return length > 0f ? Mathf.Clamp01(1f - _clock.SecondsRemaining / length) : 0f;
         }
 
+        // Crazy lots: every free queue slot is filled, one car per pacing spacing, whatever the director says.
+        private void TopUpQueue(float elapsedMinutes)
+        {
+            while (_shiftOpen && _pacing.Due(elapsedMinutes) && _slots.ChooseForSpawn() != ArrivalGate.NoSlot)
+            {
+                if (!TrySpawn(_roller.Roll(ShiftProgress()), out _)) return;
+                _pacing.Spawned(elapsedMinutes);
+            }
+        }
+
         private void OnShiftTick(ShiftTick e)
         {
+            if (_pacing.TopsUpQueue) { TopUpQueue(e.ElapsedMinutes); return; }
             if (DirectorOn) { TrySpawnPending(); return; }
             _hasPending = false;
             if (e.ElapsedMinutes < _nextArrivalMinute) return;

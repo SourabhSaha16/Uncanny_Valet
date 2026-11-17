@@ -4,35 +4,45 @@ using UnityEngine;
 namespace UncannyValet.UI.Screens
 {
     /// <summary>
-    /// The results screen from the style guide's Scene 11: a dimmed lot, one big panel, three stamped stars,
-    /// total tips with a coin, stats lines, a placeholder box for Mrs. Okafor, and Retry / Next Lot buttons
-    /// (Next Lot is disabled and marked Soon because there is only one lot).
+    /// The results screen: a dimmed lot, one big panel, the verdict (CLEARED or FAILED), the blessings against the
+    /// threshold with the bolt, the stats in two columns, the local god's speech panel (a trainer line without a panel on a training lot), and the Retry and Next Lot buttons.
     /// </summary>
     public sealed class ResultsPainter
     {
         /// <summary>The Retry button, in canvas pixels. Clicks are tested against it.</summary>
         public static readonly PixelRect RetryButton = new PixelRect(96, 224, 128, 24);
 
-        private static readonly PixelRect NextButton = new PixelRect(256, 224, 128, 24);
+        /// <summary>The Next Lot button, in canvas pixels. Clicks are tested against it.</summary>
+        public static readonly PixelRect NextButton = new PixelRect(256, 224, 128, 24);
         private static readonly PixelRect Card = new PixelRect(48, 12, 384, 252);
-        private static readonly PixelRect BossBox = new PixelRect(324, 84, 88, 100);
 
-        private const string RetryHint = "ENTER TO RETRY";
+        private const string KeyHint = "ENTER: RETRY   ANY OTHER KEY: NEXT LOT";
+        private const string NextOnlyHint = "ANY KEY: NEXT LOT";
         private const int TitleScale = 2;
-        private const int StarScale = 4;
-        private const int StarStep = 44;
-        private const int StarsTop = 40;
+        private const int VerdictScale = 4;
+        private const int VerdictTop = 44;
+        private const int HeadingTop = 82;
         private const int ScoreTop = 92;
-        private const int StatsLeft = 76;
+        private const int ScoreGap = 6;
         private const int StatsTop = 124;
-        private const int StatsRight = 292;
         private const int StatStep = 16;
-        private const int BurstRadius = 26;
-        private const int BurstGrow = 22;
-        private const int GoalTop = 200;
+        private const int StatColumns = 2;
+        private const int StatColumnWidth = 180;
+        private const int StatsLeft = 72;
+        private const int StatValueRight = 152;
+        private const int GoalTop = 160;
+        private const int TrainerTop = 184;
+        private const int SpeechStep = 9;
+        private const int SpeechPad = 8;
+        private const int SpeechNameTop = 5;
+        private const int SpeechTextTop = 17;
+        private static readonly PixelRect SpeechPanel = new PixelRect(72, 174, 336, 44);
 
-        private static readonly int[] DirX = { 1, 1, 0, -1, -1, -1, 0, 1 };
-        private static readonly int[] DirY = { 0, 1, 1, 1, 0, -1, -1, -1 };
+        /// <summary>Longest line of the speech, in characters, that fits the panel.</summary>
+        public const int SpeechChars = 50;
+
+        /// <summary>Most lines of the speech the panel holds.</summary>
+        public const int MaxSpeechLines = 3;
 
         private readonly PixelCanvas _canvas;
 
@@ -41,53 +51,27 @@ namespace UncannyValet.UI.Screens
             _canvas = canvas;
         }
 
-        public void Draw(ResultsContent content, float secondsOpen)
+        public void Draw(ResultsContent content, bool canRetry)
         {
             _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, PixelPalette.Dim);
             _canvas.Panel(Card.X, Card.Y, Card.Width, Card.Height, PixelPalette.PanelDark);
             DrawCentered(content.Title, Card.Y + 12, TitleScale, PixelPalette.Gold);
-            for (var star = 0; star < ResultsFormatter.MaxStars; star++) DrawStar(star, content.Stars, secondsOpen);
-            DrawScore(content.Score);
+            DrawCentered(content.Verdict, VerdictTop, VerdictScale, content.Cleared ? PixelPalette.Green : PixelPalette.OrangeRed);
+            DrawCentered(ResultsFormatter.BlessingsHeading, HeadingTop, 1, PixelPalette.Cream);
+            DrawBlessings(content.Blessings);
             DrawStats(content);
-            DrawBoss();
             DrawCentered(content.Goal, GoalTop, 1, PixelPalette.Cream);
-            DrawButtons();
+            DrawSpeech(content);
+            DrawButtons(canRetry);
         }
 
-        private void DrawStar(int star, int earned, float seconds)
+        private void DrawBlessings(string blessings)
         {
-            var centerX = PixelGrid.Width / 2 + (star - 1) * StarStep;
-            var size = _canvas.IconWidth(PixelIcon.StarLit);
-            var centerY = StarsTop + size * StarScale / 2;
-            _canvas.Icon(PixelIcon.StarUnlit, centerX - size * StarScale / 2, StarsTop, StarScale, Color.white);
-            if (star >= earned) return;
-            var scale = Mathf.RoundToInt(StarScale * StarStamp.Scale(star, seconds));
-            if (scale > 0)
-                _canvas.Icon(PixelIcon.StarLit, centerX - size * scale / 2, centerY - size * scale / 2, scale, Color.white);
-            var burst = StarStamp.BurstProgress(star, earned, seconds);
-            if (burst >= 0f) DrawBurst(centerX, centerY, burst);
-        }
-
-        private void DrawBurst(int cx, int cy, float progress)
-        {
-            var radius = BurstRadius + (int)(progress * BurstGrow);
-            var color = PixelPalette.Gold;
-            color.a = 1f - progress;
-            for (var i = 0; i < DirX.Length; i++)
-            {
-                var diagonal = DirX[i] != 0 && DirY[i] != 0;
-                var d = diagonal ? radius * 7 / 10 : radius;
-                _canvas.Fill(cx + DirX[i] * d - 1, cy + DirY[i] * d - 1, 3, 3, color);
-            }
-        }
-
-        private void DrawScore(string score)
-        {
-            var coin = _canvas.IconWidth(PixelIcon.Coin) * TitleScale;
-            var width = coin + 6 + PixelTextLayout.Width(score.Length, TitleScale);
+            var bolt = _canvas.IconWidth(PixelIcon.PrayerHands) * TitleScale;
+            var width = bolt + ScoreGap + PixelTextLayout.Width(blessings.Length, TitleScale);
             var x = PixelTextLayout.Centered(0, PixelGrid.Width, width);
-            _canvas.Icon(PixelIcon.Coin, x, ScoreTop, TitleScale, Color.white);
-            _canvas.Text(score, x + coin + 6, ScoreTop + 1, PixelPalette.Gold, TitleScale);
+            _canvas.Icon(PixelIcon.PrayerHands, x, ScoreTop, TitleScale, Color.white);
+            _canvas.Text(blessings, x + bolt + ScoreGap, ScoreTop + 5, PixelPalette.Gold, TitleScale);
         }
 
         private void DrawStats(ResultsContent content)
@@ -95,30 +79,38 @@ namespace UncannyValet.UI.Screens
             for (var i = 0; i < content.Stats.Length; i++)
             {
                 var line = content.Stats[i];
-                var y = StatsTop + i * StatStep;
-                _canvas.Icon(line.Icon, StatsLeft, y, 1, Color.white);
-                _canvas.Text(line.Label, StatsLeft + 16, y + 1, PixelPalette.Cream);
+                var left = StatsLeft + i % StatColumns * StatColumnWidth;
+                var y = StatsTop + i / StatColumns * StatStep;
+                _canvas.Icon(line.Icon, left, y, 1, Color.white);
+                _canvas.Text(line.Label, left + 16, y + 1, PixelPalette.Cream);
                 var width = PixelTextLayout.Width(line.Value.Length, 1);
-                _canvas.Text(line.Value, StatsRight - width, y + 1, PixelPalette.Gold);
+                _canvas.Text(line.Value, left + StatValueRight + 16 - width, y + 1, PixelPalette.Gold);
             }
         }
 
-        private void DrawBoss()
+        private void DrawSpeech(ResultsContent content)
         {
-            _canvas.Panel(BossBox.X, BossBox.Y, BossBox.Width, BossBox.Height, PixelPalette.PanelCream);
-            var width = PixelTextLayout.Width(ResultsFormatter.BossName.Length, 1);
-            _canvas.Text(ResultsFormatter.BossName, PixelTextLayout.Centered(BossBox.X, BossBox.Width, width),
-                BossBox.Y + BossBox.Height / 2 - 3, PixelPalette.Ink, 1, false);
+            if (content.SpeechLines.Length == 0) return;
+            var godPanel = content.Speaker.Length > 0;
+            var top = godPanel ? SpeechPanel.Y + SpeechTextTop : TrainerTop;
+            if (godPanel)
+            {
+                _canvas.Panel(SpeechPanel.X, SpeechPanel.Y, SpeechPanel.Width, SpeechPanel.Height, PixelPalette.Ink);
+                _canvas.Text(content.Speaker + ":", SpeechPanel.X + SpeechPad, SpeechPanel.Y + SpeechNameTop, PixelPalette.Gold);
+            }
+            for (var i = 0; i < content.SpeechLines.Length; i++)
+            {
+                var line = content.SpeechLines[i];
+                var x = godPanel ? SpeechPanel.X + SpeechPad : PixelTextLayout.Centered(0, PixelGrid.Width, PixelTextLayout.Width(line.Length, 1));
+                _canvas.Text(line, x, top + i * SpeechStep, PixelPalette.Cream);
+            }
         }
 
-        private void DrawButtons()
+        private void DrawButtons(bool canRetry)
         {
-            DrawButton(RetryButton, ResultsFormatter.RetryLabel, PixelPalette.Green, PixelPalette.Ink);
-            DrawButton(NextButton, ResultsFormatter.NextLotLabel, PixelPalette.Grey, PixelPalette.Track);
-            var tag = PixelTextLayout.Width(ResultsFormatter.SoonLabel.Length, 1);
-            _canvas.Text(ResultsFormatter.SoonLabel, NextButton.X + NextButton.Width - tag - 6, NextButton.Y - 10,
-                PixelPalette.Amber);
-            DrawCentered(RetryHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
+            DrawButton(RetryButton, ResultsFormatter.RetryLabel, canRetry ? PixelPalette.Green : PixelPalette.Grey, canRetry ? PixelPalette.Ink : PixelPalette.Track);
+            DrawButton(NextButton, ResultsFormatter.NextLotLabel, PixelPalette.Gold, PixelPalette.Ink);
+            DrawCentered(canRetry ? KeyHint : NextOnlyHint, RetryButton.Y + RetryButton.Height + 4, 1, PixelPalette.Cream);
         }
 
         private void DrawButton(PixelRect rect, string label, Color fill, Color text)

@@ -21,10 +21,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 25;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(25, 0, 0, 0, 25, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 25;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(25, 0, 0, 25, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -39,7 +39,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus = new EventBus();
             _clock = new FakeClock();
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips()) { CurbWalkTimeoutMinutes = 30f };
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings()) { CurbWalkTimeoutMinutes = 30f };
             _shifted.Clear();
             _summoned = 0;
             _bus.Subscribe<PatronReturnShifted>(e => _shifted.Add(e));
@@ -48,6 +48,8 @@ namespace UncannyValet.Tests.Patrons
             _registry.Open(_car, new PatronRequest(Stay, 20, false, 60f));
             _bus.Publish(new CarArrived(_car));
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
         }
 
         private void Tick(float minute)

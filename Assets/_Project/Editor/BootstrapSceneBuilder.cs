@@ -2,18 +2,22 @@ using UncannyValet.Audio;
 using UncannyValet.Bootstrap;
 using UncannyValet.Cars;
 using UncannyValet.Core.Config;
+using UncannyValet.Core.Story;
 using UncannyValet.Director;
 using UncannyValet.EditorTools.Art;
+using UncannyValet.EditorTools.Watchers;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
 using UncannyValet.Powers;
+using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.UI.Mood;
 using UncannyValet.Valet;
+using UncannyValet.Watchers;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -24,13 +28,38 @@ namespace UncannyValet.EditorTools
     public static class BootstrapSceneBuilder
     {
         public const string ScenePath = "Assets/_Project/Scenes/Bootstrap.unity";
+        private const string SceneFolder = "Assets/_Project/Scenes/";
         private const string DefaultCarPath = "Assets/_Project/Data/Cars/Sedan.asset";
         private const string CarFlashConfigPath = "Assets/_Project/Data/Cars/CarFlashConfig.asset";
         private const string HudEmotionConfigPath = "Assets/_Project/Data/UI/HudEmotionConfig.asset";
 
+        /// <summary>Builds one generated scene per lot of the run definition and lists them all in Build Settings (Bootstrap first).</summary>
         public static void Build()
         {
+            var run = RequireAsset<RunDefinition>(RunAssetSetup.RunPath);
+            if (run == null) return;
+            if (!run.TryValidate(out var problem)) Debug.LogError("Invalid run definition: " + problem, run);
+            var entries = new EditorBuildSettingsScene[run.Lots.Count];
+            for (var i = 0; i < entries.Length; i++) // asset references die when a scene is created, so only paths are kept
+                entries[i] = new EditorBuildSettingsScene(SceneFolder + run.Lots[i].SceneName + ".unity", true);
+            for (var i = 0; i < entries.Length; i++) BuildLot(i, entries[i].path);
+            EditorBuildSettings.scenes = entries;
+            AssetDatabase.SaveAssets();
+        }
+
+        private static string LotConfigFor(LotLayoutKind layout)
+        {
+            if (layout != LotLayoutKind.Diner) Debug.LogError("No lot config for layout " + layout + "; using the diner's.");
+            return ProjectSetup.LotConfigPath;
+        }
+
+        private static void BuildLot(int lotIndex, string scenePath)
+        {
+            var lotConfigPath = LotConfigFor(Load<RunDefinition>(RunAssetSetup.RunPath).Lots[lotIndex].Layout);
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            // Loaded after NewScene: creating a scene unloads unused assets, which would null earlier references.
+            var run = Load<RunDefinition>(RunAssetSetup.RunPath);
+            var definition = run.Lots[lotIndex];
             var root = new GameObject("Bootstrap");
             var bootstrap = root.AddComponent<GameBootstrap>();
 
@@ -47,7 +76,7 @@ namespace UncannyValet.EditorTools
             var carArt = CarArtBuilder.Build();
             var lotArt = LotArtBuilder.Build();
             var valet = ValetSceneBuilder.BuildValet(root, ValetArtBuilder.Build());
-            var decor = BuildDecor(root, lotArt);
+            var decor = BuildDecor(root, lotArt, Load<LotConfig>(lotConfigPath));
             var crowd = Child<PedestrianCrowd>(root, "Pedestrians");
             Set(crowd, "_config", PedestrianArtBuilder.Build());
             var traffic = Child<TrafficModule>(root, "Traffic");
@@ -57,19 +86,25 @@ namespace UncannyValet.EditorTools
             var powers = PowersSceneBuilder.Build(root, camera);
 
             Set(factory, "_defaultDefinition", Load<CarDefinition>(DefaultCarPath));
-            Set(lot, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
+            Set(lot, "_config", Load<LotConfig>(lotConfigPath));
             Set(lot, "_art", lotArt);
+            SetInt(lot, "_queueSlots", definition.QueueSlots);
+            LotWorldSceneSetup.Apply(lot, definition);
+            SetInt(decor, "_queueSlots", definition.QueueSlots);
+            LotWorldSceneSetup.ApplyLayout(lot, decor, definition);
+            LotWorldSceneSetup.ApplyArt(lot, decor, definition);
             Set(factory, "_art", carArt);
             Set(factory, "_flash", ArtAssetUtil.LoadOrCreate<CarFlashConfig>(CarFlashConfigPath));
-            AddHandling(root, factory, Load<LotConfig>(ProjectSetup.LotConfigPath));
+            AddHandling(root, factory, Load<LotConfig>(lotConfigPath));
             Set(ui, "_emotions", ArtAssetUtil.LoadOrCreate<HudEmotionConfig>(HudEmotionConfigPath));
+            Set(ui, "_story", RequireAsset<StoryTextAsset>(StoryAssetSetup.StoryTextPath));
             var patronConfig = Load<PatronConfig>(ProjectSetup.PatronConfigPath);
             Set(spawner, "_config", patronConfig);
             Set(audio, "_config", RequireAsset<AudioConfig>(ProjectSetup.AudioConfigPath));
 
             var so = new SerializedObject(bootstrap);
             so.FindProperty("_shiftConfig").objectReferenceValue = RequireAsset<ShiftConfig>(ProjectSetup.ShiftConfigPath);
-            so.FindProperty("_tipConfig").objectReferenceValue = Load<TipConfig>("Assets/_Project/Data/Economy/TipConfig.asset");
+            so.FindProperty("_blessingConfig").objectReferenceValue = Load<BlessingConfig>("Assets/_Project/Data/Economy/BlessingConfig.asset");
             so.FindProperty("_patronConfig").objectReferenceValue = patronConfig;
             so.FindProperty("_tuningPanel").objectReferenceValue = tuningPanel;
             so.FindProperty("_carFactory").objectReferenceValue = factory;
@@ -89,14 +124,16 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_traffic").objectReferenceValue = traffic;
             so.FindProperty("_trafficConfig").objectReferenceValue = trafficConfig;
             so.FindProperty("_powers").objectReferenceValue = powers;
-            so.FindProperty("_powerConfig").objectReferenceValue = RequireAsset<PowerMeterConfig>(ProjectSetup.PowerMeterConfigPath);
+            so.FindProperty("_powerConfig").objectReferenceValue = RequireAsset<PowerBarConfig>(ProjectSetup.PowerBarConfigPath);
+            so.FindProperty("_watcherConfig").objectReferenceValue = RequireAsset<WatcherConfig>(WatcherAssetSetup.ConfigPath);
+            so.FindProperty("_lotDefinition").objectReferenceValue = definition;
+            so.FindProperty("_runDefinition").objectReferenceValue = run;
+            StoryAssetSetup.AssignPowerDefinitions(so.FindProperty("_powerDefinitions"));
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ScenePath));
-            EditorSceneManager.SaveScene(scene, ScenePath);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
-            AssetDatabase.SaveAssets();
-            Debug.Log("Bootstrap scene built: " + ScenePath);
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(scenePath));
+            EditorSceneManager.SaveScene(scene, scenePath);
+            Debug.Log("Lot scene built: " + scenePath);
         }
 
         private static T Child<T>(GameObject parent, string name) where T : Component
@@ -107,12 +144,12 @@ namespace UncannyValet.EditorTools
             return go.AddComponent<T>();
         }
 
-        private static LotDecor BuildDecor(GameObject parent, LotArtConfig art)
+        private static LotDecor BuildDecor(GameObject parent, LotArtConfig art, LotConfig config)
         {
             var go = new GameObject("LotDecor"); // active: builds its scenery in Awake, independent of the lot
             go.transform.SetParent(parent.transform, false);
             var decor = go.AddComponent<LotDecor>();
-            Set(decor, "_config", Load<LotConfig>(ProjectSetup.LotConfigPath));
+            Set(decor, "_config", config);
             Set(decor, "_art", art);
             return decor;
         }
@@ -125,6 +162,13 @@ namespace UncannyValet.EditorTools
             var check = root.AddComponent<HandlingAisleCheck>();
             Set(check, "_lot", lot);
             Set(check, "_handling", handling);
+        }
+
+        private static void SetInt(Object target, string field, int value)
+        {
+            var so = new SerializedObject(target);
+            so.FindProperty(field).intValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void Set(Object target, string field, Object value)

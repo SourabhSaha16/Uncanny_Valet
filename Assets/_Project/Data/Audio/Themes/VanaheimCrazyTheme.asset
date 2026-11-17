@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3c7e25986bea17448a62a0c7f5871ec, type: 3}
+  m_Name: VanaheimCrazyTheme
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Music.MusicThemeDefinition
+  _tempoBpm: 108
+  _rootMidiNote: 55
+  _swing: 0.06
+  _minor: 1
+  _melody: 070000009cffffff9cffffff0a0000000c0000009cffffff0a0000009cffffff0c0000009cffffff9cffffff9cffffff0a0000009cffffff070000009cffffff070000009cffffff9cffffff05000000070000009cffffff030000009cffffff050000009cffffff9cffffff9cffffff070000009cffffff9cffffff9cffffff
+  _chordRoots: 00000000050000000000000007000000
+  _voices:
+  - _voice: 2
+    _volume: 0.9
+  - _voice: 3
+    _volume: 0.5
+  - _voice: 4
+    _volume: 0.5
+  - _voice: 7
+    _volume: 0.8
+  - _voice: 8
+    _volume: 0.7
+  _musicVolume: 1
+  _ambienceVolume: 0.8
+  _escalationTempoRise: 0.15
+  _escalationLayer: 2
+  _escalationVolume: 0.7
+  _escalationRampSeconds: 25
+  _clipOverride: {fileID: 0}

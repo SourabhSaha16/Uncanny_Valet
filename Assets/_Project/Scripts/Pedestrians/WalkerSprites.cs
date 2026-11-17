@@ -27,6 +27,17 @@ namespace UncannyValet.Pedestrians
             _hair.transform.localRotation = rotation;
         }
 
+        /// <summary>Multiplies the colours of each layer by a tint (white keeps them); the renderer colour, so no material is copied.</summary>
+        public void Tint(Color model, Color outfit, Color hair)
+        {
+            _model.color = model;
+            _outfit.color = outfit;
+            _hair.color = hair;
+        }
+
+        /// <summary>The sprite on the body layer (null before the first Show); its size and pivot place accessories.</summary>
+        public Sprite BodySprite => _model.sprite;
+
         /// <summary>Shows sheet <paramref name="column"/> of this look on every layer.</summary>
         public void Show(PedestrianLook look, int column, bool flip)
         {

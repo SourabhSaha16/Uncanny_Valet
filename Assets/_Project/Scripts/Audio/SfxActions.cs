@@ -1,6 +1,6 @@
 namespace UncannyValet.Audio
 {
-    /// <summary>Sound effects for what the valet does: enter, exit, park, earn a tip.</summary>
+    /// <summary>Sound effects for what the valet does: enter, exit, park, earn a blessing.</summary>
     public static class SfxActions
     {
         private const float ClickSeconds = 0.02f;
@@ -46,7 +46,7 @@ namespace UncannyValet.Audio
             return Finish(b);
         }
 
-        public static float[] TipEarned(int rate)
+        public static float[] BlessingEarned(int rate)
         {
             var b = new MixBuffer(rate * 6 / 10, rate, false);
             var env = new Adsr(0.002f, 0.06f, 0.3f, 0.12f);

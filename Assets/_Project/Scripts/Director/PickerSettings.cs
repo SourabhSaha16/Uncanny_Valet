@@ -9,13 +9,13 @@ namespace UncannyValet.Director
     [Serializable]
     public sealed class PickerSettings
     {
-        [SerializeField, Min(0.1f), Tooltip("Under target: Dirty and Dirty EV weights are multiplied by this.")]
+        [SerializeField, Min(0.1f), Tooltip("Under target: Muddy and Muddy EV weights are multiplied by this.")]
         private float _underHeavy = 1.5f;
-        [SerializeField, Min(0.1f), Tooltip("Over target: Dirty and Dirty EV weights are multiplied by this.")]
+        [SerializeField, Min(0.1f), Tooltip("Over target: Muddy and Muddy EV weights are multiplied by this.")]
         private float _overHeavy = 0.5f;
         [SerializeField, Min(0.1f), Tooltip("Over target: the Plain weight is multiplied by this.")]
         private float _overPlain = 1.5f;
-        [SerializeField, Min(1), Tooltip("At most this many Dirty (or EV) arrivals in a row.")]
+        [SerializeField, Min(1), Tooltip("At most this many arrivals in a row carrying the same service modifier (Muddy, or needing a charge).")]
         private int _streakLimit = 2;
         [SerializeField, Range(0.02f, 0.5f), Tooltip("Each archetype's share of the shift stays within this of its base share (0.1 = 10 points).")]
         private float _mixTolerance = 0.1f;

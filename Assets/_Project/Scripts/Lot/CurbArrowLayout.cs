@@ -1,6 +1,6 @@
 namespace UncannyValet.Lot
 {
-    /// <summary>Pure maths: where the pickup arrows sit so they stay clear of the vertical VALET PICKUP text.</summary>
+    /// <summary>Pure maths: where the pickup arrows sit so they stay clear of the vertical VALET DROP-OFF text.</summary>
     public static class CurbArrowLayout
     {
         /// <summary>

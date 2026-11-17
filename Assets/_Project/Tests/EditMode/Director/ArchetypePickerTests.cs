@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using static UncannyValet.Tests.Director.PickerTestKit;
 
@@ -23,8 +24,8 @@ namespace UncannyValet.Tests.Director
         public void LockedStationsNeverEnterTheDraw()
         {
             AssertNever(Stations(false, false), a => a != CarArchetype.Plain, "no stations");
-            AssertNever(Stations(false, true), a => ArchetypeKinds.NeedsWash(a), "no wash");
-            AssertNever(Stations(true, false), a => ArchetypeKinds.NeedsCharge(a), "no bays");
+            AssertNever(Stations(false, true), a => ArchetypeKinds.Modifiers(a).Contains(ModifierId.Muddy), "no wash");
+            AssertNever(Stations(true, false), a => ArchetypeKinds.Modifiers(a).Contains(ModifierId.NeedsCharge), "no bays");
         }
 
         private void AssertNever(SnapshotBuilderForTests lot, Func<CarArchetype, bool> forbidden, string why)
@@ -51,22 +52,22 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void StreakLimitHoldsEvenWhenDirtyAndEvDominate()
+        public void StreakLimitHoldsEvenWhenMuddyAndEvDominate()
         {
             var heavy = new ArchetypeWeights(1f, 50f, 50f, 50f);
             var lot = Stations(true, true);
             for (var seed = 1; seed <= 20; seed++)
             {
                 var picker = Picker(seed);
-                var dirtyRun = 0;
+                var muddyRun = 0;
                 var evRun = 0;
                 for (var i = 0; i < 40; i++)
                 {
                     var request = new PickRequest(lot.Build(), heavy, ScheduleReason.OnTarget, false, false, BigBudget);
                     var a = picker.Pick(request).Archetype;
-                    dirtyRun = ArchetypeKinds.NeedsWash(a) ? dirtyRun + 1 : 0;
-                    evRun = ArchetypeKinds.NeedsCharge(a) ? evRun + 1 : 0;
-                    Assert.LessOrEqual(dirtyRun, 2, "seed " + seed + " pick " + i);
+                    muddyRun = ArchetypeKinds.Modifiers(a).Contains(ModifierId.Muddy) ? muddyRun + 1 : 0;
+                    evRun = ArchetypeKinds.Modifiers(a).Contains(ModifierId.NeedsCharge) ? evRun + 1 : 0;
+                    Assert.LessOrEqual(muddyRun, 2, "seed " + seed + " pick " + i);
                     Assert.LessOrEqual(evRun, 2, "seed " + seed + " pick " + i);
                 }
             }

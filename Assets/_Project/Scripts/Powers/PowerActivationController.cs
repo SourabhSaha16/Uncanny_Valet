@@ -5,11 +5,14 @@ using UnityEngine;
 
 namespace UncannyValet.Powers
 {
-    /// <summary>Fires the highest unlocked power on the activate button and runs the active powers' timers. Registers IWorldTime.</summary>
+    /// <summary>
+    /// Fires an owned power on its number key (keys fill in the player's earn order) by spending one bucket of the power
+    /// bar, and runs the powers' timers and cooldowns in real time. Registers IWorldTime and IPowerView.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class PowerActivationController : MonoBehaviour
     {
-        [SerializeField] private PowerMeterController _meter;
+        [SerializeField] private PowerBarController _bar;
 
         private IEventBus _bus;
         private IPowerInput _input;
@@ -17,24 +20,24 @@ namespace UncannyValet.Powers
         private bool _started;
         private bool _subscribed;
 
-        /// <summary>The speed boost state, for the Valet module to read its walk multiplier (null before Start).</summary>
-        public SpeedBoostEffect SpeedBoost { get; private set; }
+        /// <summary>The running powers and their cooldowns; null until Start.</summary>
+        public PowerStack Stack => _stack;
 
         private void Start()
         {
-            if (_meter == null)
+            if (_bar == null)
             {
-                Debug.LogError("PowerActivationController on " + name + " has no PowerMeterController assigned.", this);
+                Debug.LogError("PowerActivationController on " + name + " has no PowerBarController assigned.", this);
                 enabled = false;
                 return;
             }
             _bus = Services.Get<IEventBus>();
             _input = Services.TryGet<IPowerInput>(out var input) ? input : new KeyboardPowerInput();
-            SpeedBoost = new SpeedBoostEffect(_meter.Settings);
-            var freeze = new FreezeTimeEffect(_meter.Settings);
-            _stack = new PowerStack(_bus, new IPowerEffect[] { SpeedBoost, freeze, new ParkSmashEffect() });
+            var freeze = new FreezeTimeEffect(_bar.Settings);
+            var thunder = new ThunderStridePower();
+            _stack = new PowerStack(_bus, new IPower[] { thunder, freeze }, new PowerCooldowns());
             Services.Register<IWorldTime>(freeze);
-            Services.Register<IPowerBoost>(SpeedBoost);
+            Services.Register<IPowerView>(new PowerView(() => _bar.Progress, _bar.Settings, _stack));
             _started = true;
             Subscribe();
         }
@@ -46,8 +49,16 @@ namespace UncannyValet.Powers
         private void Update()
         {
             if (_stack == null) return;
-            if (_input.ActivatePressed && _meter.TrySpend(out var level)) _stack.Fire((PowerKind)level);
-            _stack.Tick(Time.deltaTime);
+            for (var slot = 0; slot < PowerKeyMap.SlotCount; slot++)
+                if (_input.PowerPressed(slot)) TryFire(slot);
+            _stack.Tick(Time.unscaledDeltaTime);
+        }
+
+        private void TryFire(int slot)
+        {
+            if (!_bar.IsActive || !PowerKeyMap.TryGetPower(_bar.Progress.EarnedPowers, slot, out var power)) return;
+            var level = _bar.Progress.PowerLevel(power);
+            if (_bar.Settings.TryGetValues(power, level, out var values)) _stack.TryFire(power, level, values, _bar);
         }
 
         private void OnShiftStarted(ShiftStarted e) => _stack.EndAll();

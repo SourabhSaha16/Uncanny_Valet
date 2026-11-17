@@ -6,13 +6,13 @@ namespace UncannyValet.Director
     public readonly struct ArchetypeWeights
     {
         public readonly float Plain;
-        public readonly float Dirty;
+        public readonly float Muddy;
         public readonly float Ev;
-        public readonly float DirtyEv;
+        public readonly float MuddyEv;
 
-        public ArchetypeWeights(float plain, float dirty, float ev, float dirtyEv)
+        public ArchetypeWeights(float plain, float muddy, float ev, float muddyEv)
         {
-            Plain = plain; Dirty = dirty; Ev = ev; DirtyEv = dirtyEv;
+            Plain = plain; Muddy = muddy; Ev = ev; MuddyEv = muddyEv;
         }
 
         /// <summary>The Diner's base weights from the spec: 50, 20, 20, 10.</summary>
@@ -23,9 +23,9 @@ namespace UncannyValet.Director
         {
             switch (archetype)
             {
-                case CarArchetype.Dirty: return Dirty;
+                case CarArchetype.Muddy: return Muddy;
                 case CarArchetype.Ev: return Ev;
-                case CarArchetype.DirtyEv: return DirtyEv;
+                case CarArchetype.MuddyEv: return MuddyEv;
                 default: return Plain;
             }
         }

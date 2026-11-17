@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
-    /// <summary>Owns every ticket. Reacts to park, tick, drive and curb events; pays out the tip on close.</summary>
+    /// <summary>Owns every ticket. Reacts to park, tick, drive and curb events; pays out the blessing on close.</summary>
     public sealed class TicketRegistry
     {
         private readonly IEventBus _bus;
@@ -16,11 +17,9 @@ namespace UncannyValet.Patrons
         private readonly StationService _stations;
         private readonly CurbCall _call;
         private readonly LiveTicketTuning _live;
-        private readonly PerfectBonusLedger _perfect;
         private readonly DamageLedger _damage;
         private readonly ReturnShifter _returns;
         private readonly StayStarter _stays;
-        private readonly SmashSettler _smash;
         private readonly List<Ticket> _scratch = new List<Ticket>();
 
         /// <summary>Game minutes a summoned patron may walk before the pickup is requested anyway; 0 = no walk (see <see cref="CurbCall"/>).</summary>
@@ -31,30 +30,31 @@ namespace UncannyValet.Patrons
         /// <summary>Tickets whose car has not been parked yet.</summary>
         public int AwaitingParkCount => _book.AwaitingParkCount;
 
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, IShiftScoreView score = null)
-            : this(bus, clock, tips, ServiceTuning.Default, score) { }
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, IShiftBlessingsView score = null)
+            : this(bus, clock, blessings, score, null, null, null) { }
 
-        /// <summary>Registry whose charge, wash and window numbers follow the live tuning.</summary>
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, PatronTuning tuning,
-            IShiftScoreView score = null)
-            : this(bus, clock, tips, tuning.Service, score)
+        /// <summary>Registry whose clear times and windows follow the live tuning. A null catalog uses the shipped modifiers.</summary>
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings, PatronTuning tuning,
+            IShiftBlessingsView score = null, IModifierCatalog catalog = null)
+            : this(bus, clock, blessings, score, null, catalog, tuning)
         {
             _live = new LiveTicketTuning(bus, tuning, _book);
         }
 
-        public TicketRegistry(IEventBus bus, IGameClock clock, ITipCalculator tips, ServiceTuning tuning,
-            IShiftScoreView score = null, PlatePool plates = null)
+        /// <param name="catalog">The modifier definitions; null uses the shipped Muddy and NeedsCharge numbers.</param>
+        /// <param name="live">The live numbers the modifier clear times follow; null uses the definitions' values.</param>
+        public TicketRegistry(IEventBus bus, IGameClock clock, IBlessingCalculator blessings,
+            IShiftBlessingsView score, PlatePool plates = null, IModifierCatalog catalog = null, PatronTuning live = null)
         {
             _bus = bus; _clock = clock;
             _timers = new TicketTimerPublisher(bus);
-            _book = new TicketBook(tuning, plates);
-            _perfect = new PerfectBonusLedger(bus);
+            var modifiers = new ModifierFactory(catalog ?? ModifierDefaults.CreateCatalog(), live);
+            _book = new TicketBook(modifiers, plates);
             _damage = new DamageLedger(bus);
-            _settler = new TicketSettler(bus, clock, tips, _timers, _book, score, _perfect, _damage);
+            _settler = new TicketSettler(bus, clock, blessings, _timers, _book, score, _damage);
             _stations = new StationService(bus, _book);
             _returns = new ReturnShifter(bus, clock, _book);
             _stays = new StayStarter(bus, clock, _book);
-            _smash = new SmashSettler(bus, _book, _settler, score);
             _call = new CurbCall(bus);
             _bus.Subscribe<CarParked>(OnCarParked);
             _bus.Subscribe<ShiftTick>(OnShiftTick);
@@ -71,8 +71,6 @@ namespace UncannyValet.Patrons
             _stations.Dispose();
             _returns.Dispose();
             _stays.Dispose();
-            _smash.Dispose();
-            _perfect.Dispose();
             _damage.Dispose();
             _live?.Dispose();
             _bus.Unsubscribe<CarParked>(OnCarParked);
@@ -104,16 +102,8 @@ namespace UncannyValet.Patrons
             return _book.Add(car, request);
         }
 
-        /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, traits, then initial levels.</summary>
-        public void AnnounceArrival(Ticket t)
-        {
-            _bus.Publish(new CarSpawned(t.CarId, t.TicketId));
-            _bus.Publish(new TicketOpened(t.TicketId, t.CarId, t.StayMinutes));
-            _bus.Publish(new CarTagAssigned(t.CarId, t.Tag));
-            _bus.Publish(new CarPlateAssigned(t.CarId, t.Plate));
-            _bus.Publish(new TicketTraitsAssigned(t.TicketId, t.CarId, t.IsEv, t.IsDirty));
-            _stations.Announce(t);
-        }
+        /// <summary>Announces a created ticket in listener order: CarSpawned, TicketOpened, tag, plate, modifiers, then initial progress.</summary>
+        public void AnnounceArrival(Ticket t) => TicketAnnouncer.Announce(_bus, _stations, t);
 
         private void OnCarParked(CarParked e)
         {
@@ -184,7 +174,7 @@ namespace UncannyValet.Patrons
             _book.ResetTags();
         }
 
-        /// <summary>Shift over: every open ticket ends with wait 0 and tip 0 (no TipEarned). Safe to repeat.</summary>
+        /// <summary>Shift over: every open ticket ends with wait 0 and blessing 0 (no BlessingEarned). Safe to repeat.</summary>
         private void CloseAllUnpaid()
         {
             _book.CopyTo(_scratch);

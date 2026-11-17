@@ -1,3 +1,4 @@
+using UncannyValet.Core.Contracts;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -13,8 +14,14 @@ namespace UncannyValet.Lot
         public Rect[] Spots { get; }
         /// <summary>Charging bays; their ids continue after the regular spots.</summary>
         public Rect[] ChargingSpots { get; }
-        /// <summary>The wash slot.</summary>
+        /// <summary>The wash slot; an empty rect when <see cref="HasWash"/> is false.</summary>
         public Rect Wash { get; }
+        /// <summary>False in a lot with its services closed: no wash slot and no charging bay, eight regular bays.</summary>
+        public bool HasWash { get; }
+        /// <summary>The wash troughs outside the bay grid (empty in a lot without troughs), top to bottom.</summary>
+        public Rect[] WashBays { get; }
+        /// <summary>Every wash station of the lot: the wash slot of the classic grid, or the wash bays.</summary>
+        public Rect[] WashStations { get; }
         public Rect Curb { get; }
         /// <summary>The open ground between the diner wall and the curb zone, where waiting patrons stand (same height as the curb).</summary>
         public Rect CurbGap { get; }
@@ -54,25 +61,31 @@ namespace UncannyValet.Lot
         /// <summary>Id of the first charging bay.</summary>
         public int FirstChargingId => Spots.Length + 1;
 
-        public LotGeometry(LotConfig c)
+        /// <param name="queueSlots">Arrival queue slots for this lot; 0 or less uses the config's count.</param>
+        /// <param name="options">Whether the services exist and how much corner room the lot keeps under the bays; the default is today's diner.</param>
+        public LotGeometry(LotConfig c, int queueSlots = 0, LotLayoutOptions options = default)
         {
             var s = c.Site;
             Curb = Box(c.CurbPosition, c.CurbSize);
             var spotsLeft = Curb.xMax + c.CurbToSpotsGap;
-            Spots = Cells(c, spotsLeft, BayPlan.Regular);
-            ChargingSpots = Cells(c, spotsLeft, BayPlan.Charging);
-            Wash = Cells(c, spotsLeft, new[] { BayPlan.Wash })[0];
-            AisleY = Curb.yMax - c.SpotSize.y - c.AisleWidth * 0.5f;
-            QueueSlots = QueueSlotsFor(c);
+            HasWash = !options.ServicesClosed;
+            Spots = Cells(c, spotsLeft, HasWash ? BayPlan.Regular : BayPlan.RegularWithoutServices);
+            ChargingSpots = HasWash ? Cells(c, spotsLeft, BayPlan.Charging) : new Rect[0];
+            Wash = HasWash ? Cells(c, spotsLeft, new[] { BayPlan.Wash })[0] : default;
+            AisleY = Curb.yMax - c.SpotSize.y - (c.AisleWidth + c.BottomRowDrop) * 0.5f;
+            QueueSlots = QueueSlotsFor(c, queueSlots > 0 ? queueSlots : c.QueueSlotCount);
             QueueCars = Boxes(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
 
             var baysRight = spotsLeft + (BayPlan.Columns - 1) * (c.SpotSize.x + c.SpotGap) + c.SpotSize.x;
-            var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - c.AisleWidth * (BayPlan.Rows - 1);
+            WashBays = WashBayLayout.Place(c, options, Curb.yMax, baysRight);
+            WashStations = HasWash ? new[] { Wash } : WashBays;
+            var bottomRow = Curb.yMax - c.SpotSize.y * BayPlan.Rows - (c.AisleWidth + c.BottomRowDrop) * (BayPlan.Rows - 1);
+            var lowest = LowestEdge(WashBays, bottomRow);
             var sideY = Curb.yMax + s.SideDoorRise;
             var top = Mathf.Max(sideY + s.DoorSize.y * 0.5f, Curb.yMax) + c.Margin + s.ExitRunway;
             var queue = ArrivalQueue.Bounds(QueueSlots, c.QueueCarSize, c.QueueRotationDegrees);
-            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, bottomRow - c.Margin);
-            Strip = new Rect(baysRight + s.StripGap, bottom, s.StripWidth, top - bottom);
+            var bottom = Mathf.Min(queue.yMin - c.QueuePadding, lowest - c.Margin - options.CornerClearance);
+            Strip = new Rect(baysRight + s.StripGap + options.ExtensionWidth, bottom, s.StripWidth, top - bottom);
             var dinerRight = Curb.xMin - s.CurbGap;
             Bounds = Rect.MinMaxRect(dinerRight - s.DinerWidth, bottom, Strip.xMax, top);
             Diner = Rect.MinMaxRect(Bounds.xMin, bottom + s.DinerInset, dinerRight, top - s.DinerInset);
@@ -95,25 +108,32 @@ namespace UncannyValet.Lot
 
         public static Rect Box(Vector2 center, Vector2 size) => new Rect(center - size * 0.5f, size);
 
+        private static float LowestEdge(Rect[] rects, float fallback)
+        {
+            var lowest = fallback;
+            for (var i = 0; i < rects.Length; i++) lowest = Mathf.Min(lowest, rects[i].yMin);
+            return lowest;
+        }
+
         private Rect[] Cells(LotConfig c, float left, Vector2Int[] plan)
         {
             var cells = new Rect[plan.Length];
             for (var i = 0; i < cells.Length; i++)
             {
                 var x = left + c.SpotSize.x * 0.5f + plan[i].x * (c.SpotSize.x + c.SpotGap);
-                var y = Curb.yMax - c.SpotSize.y * 0.5f - plan[i].y * (c.SpotSize.y + c.AisleWidth);
+                var y = Curb.yMax - c.SpotSize.y * 0.5f - plan[i].y * (c.SpotSize.y + c.AisleWidth + c.BottomRowDrop);
                 cells[i] = Box(new Vector2(x, y), c.SpotSize);
             }
             return cells;
         }
 
-        private Vector2[] QueueSlotsFor(LotConfig c)
+        private Vector2[] QueueSlotsFor(LotConfig c, int count)
         {
             var footprint = ArrivalQueue.Footprint(Vector2.zero, c.QueueCarSize, c.QueueRotationDegrees);
             var dir = c.QueueDirection.sqrMagnitude < 0.0001f ? Vector2.down : c.QueueDirection.normalized;
             var along = Mathf.Abs(dir.x) * footprint.width + Mathf.Abs(dir.y) * footprint.height;
             var first = new Vector2(c.CurbPosition.x, Curb.yMin - c.QueueStartGap - footprint.height * 0.5f);
-            return ArrivalQueue.Slots(first, c.QueueSlotCount, dir, ArrivalQueue.Pitch(along, c.QueueSlotGap));
+            return ArrivalQueue.Slots(first, count, dir, ArrivalQueue.Pitch(along, c.QueueSlotGap));
         }
 
         private static Rect[] Boxes(Vector2[] centres, Vector2 size, float degrees)

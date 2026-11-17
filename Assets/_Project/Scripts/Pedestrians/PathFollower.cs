@@ -53,6 +53,21 @@ namespace UncannyValet.Pedestrians
             }
         }
 
+        /// <summary>
+        /// Puts the walker at <paramref name="position"/> (knocked or pushed there). A walk in progress then heads straight for its
+        /// final point from there, with no return to the route; a standing walker just stays at the new spot.
+        /// </summary>
+        public void Displace(Vector2 position)
+        {
+            _position = position;
+            if (!Walking) return;
+            var destination = _points[_points.Count - 1];
+            _points.Clear();
+            _points.Add(position);
+            _points.Add(destination);
+            _next = 1;
+        }
+
         /// <summary>Stops walking and keeps the current position.</summary>
         public void Stop() => Walking = false;
 

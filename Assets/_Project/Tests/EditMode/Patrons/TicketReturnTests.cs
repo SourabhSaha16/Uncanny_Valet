@@ -20,24 +20,24 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public TipInput Last;
-            public int Calculate(in TipInput input) { Last = input; return 10; }
-            public TipBreakdown Explain(in TipInput input) { Last = input; return new TipBreakdown(10, 0, 0, 0, 10, TipZeroReason.None); }
+            public BlessingInput Last;
+            public int Calculate(in BlessingInput input) { Last = input; return 10; }
+            public BlessingBreakdown Explain(in BlessingInput input) { Last = input; return new BlessingBreakdown(10, 0, 0, 10, BlessingZeroReason.None); }
         }
 
         private EventBus _bus;
         private FakeClock _clock;
-        private FakeTips _tips;
+        private FakeBlessings _blessings;
         private TicketRegistry _registry;
         private int _summoned, _requested, _closed;
 
         [SetUp]
         public void SetUp()
         {
-            _bus = new EventBus(); _clock = new FakeClock(); _tips = new FakeTips();
-            _registry = new TicketRegistry(_bus, _clock, _tips);
+            _bus = new EventBus(); _clock = new FakeClock(); _blessings = new FakeBlessings();
+            _registry = new TicketRegistry(_bus, _clock, _blessings);
             _summoned = _requested = _closed = 0;
             _bus.Subscribe<PatronSummoned>(e => _summoned++);
             _bus.Subscribe<PickupRequested>(e => _requested++);
@@ -45,7 +45,7 @@ namespace UncannyValet.Tests.Patrons
         }
 
         private static Ticket NewTicket() =>
-            new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1", ServiceTuning.Default);
+            new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1");
 
         private void Tick(float minute)
         {
@@ -111,7 +111,8 @@ namespace UncannyValet.Tests.Patrons
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
             Tick(3f);
             _bus.Publish(new CarArrived(t.CarId));
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(3f + Stay - 1f);
             Assert.AreEqual(0, _summoned);
             Tick(3f + Stay);
@@ -127,7 +128,8 @@ namespace UncannyValet.Tests.Patrons
         {
             _registry.CurbWalkTimeoutMinutes = WalkTimeout;
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(Stay);
             Tick(Stay + WalkTimeout);
             Assert.AreEqual(TicketState.PickupRequested, t.State);
@@ -136,24 +138,27 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void DeliveryFromTheQueueAndFromAStation_ClosesTheTicket()
         {
-            var queued = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false, 60f, true, false));
-            var washing = _registry.Open(new CarId(2), new PatronRequest(Stay, 20, false, 60f, false, true));
+            var queued = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false, 60f, ModifierTestKit.Of(true, false)));
+            var washing = _registry.Open(new CarId(2), new PatronRequest(Stay, 20, false, 60f, ModifierTestKit.Of(false, true)));
             _bus.Publish(new CarEnteredStation(washing.CarId, StationKind.Wash));
-            _bus.Publish(new CarClearedQueue(queued.CarId));
-            _bus.Publish(new CarClearedQueue(washing.CarId));
+            _bus.Publish(new PatronEnteredDiner(queued.CarId));
+            _bus.Publish(new CarLeftPickup(queued.CarId));
+            _bus.Publish(new PatronEnteredDiner(washing.CarId));
+            _bus.Publish(new CarLeftPickup(washing.CarId));
             Tick(Stay);
             _bus.Publish(new CarAtCurb(queued.CarId));
             _bus.Publish(new CarAtCurb(washing.CarId));
             Assert.AreEqual(2, _closed);
             Assert.AreEqual(0, _registry.OpenCount);
-            Assert.IsTrue(_tips.Last.UncleanedDirty, "an unfinished wash is reported to the tip rules, not hidden");
+            Assert.IsFalse(_blessings.Last.OpenModifiers.IsEmpty, "an unfinished wash is reported to the blessing rules, not hidden");
         }
 
         [Test]
         public void CarAtCurbBeforeTheStayEnds_IsIgnored_ThenClosesOnceAsked()
         {
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _bus.Publish(new CarAtCurb(t.CarId));
             Assert.AreEqual(0, _closed);
             Tick(Stay);
@@ -171,14 +176,15 @@ namespace UncannyValet.Tests.Patrons
                 tickets[i] = _registry.Open(new CarId(i + 1), new PatronRequest(20f + i, 20, false));
                 _bus.Publish(new CarArrived(tickets[i].CarId));
                 if (i % 3 == 1) _bus.Publish(new CarParked(tickets[i].CarId, i));
-                if (i % 3 == 2) _bus.Publish(new CarClearedQueue(tickets[i].CarId));
+                _bus.Publish(new PatronEnteredDiner(tickets[i].CarId));
+                _bus.Publish(new CarLeftPickup(tickets[i].CarId));
             }
             for (var m = 12; m <= 120; m++)
             {
                 Tick(m);
                 foreach (var t in tickets)
                 {
-                    if (m > t.ArrivedMinute + 4f) Assert.IsTrue(t.StayStarted, "stay never started for ticket " + t.TicketId.Value);
+                    Assert.IsTrue(t.StayStarted, "stay never started for ticket " + t.TicketId.Value);
                     if (m < t.ReturnMinute + WalkTimeout + 1f) continue;
                     Assert.AreEqual(TicketState.PickupRequested, t.State, "ticket " + t.TicketId.Value + " stuck at minute " + m);
                 }
@@ -191,7 +197,8 @@ namespace UncannyValet.Tests.Patrons
             var acceptance = new PickupAcceptance(_registry);
             var t = _registry.Open(new CarId(1), new PatronRequest(Stay, 20, false));
             Assert.IsFalse(acceptance.WillAccept(t.CarId));
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             Tick(Stay);
             Assert.IsTrue(acceptance.WillAccept(t.CarId));
         }

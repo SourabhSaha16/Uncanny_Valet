@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.Patrons
 {
@@ -12,30 +13,26 @@ namespace UncannyValet.Patrons
         [Tooltip("Game minutes a car stays parked before pickup is requested (min, max).")]
         [SerializeField] private Vector2 _stayRange = new Vector2(20f, 45f);
 
-        [SerializeField, Min(0)] private int _baseTip = 20;
+        [SerializeField, Range(0f, 0.9f), Tooltip("Each patron's stay is moved by a random amount up to this fraction of itself, either way, so returns spread out instead of all coming at once. 0 turns it off.")]
+        private float _stayJitterFraction = 0.3f;
+
+        [SerializeField, Min(0)] [FormerlySerializedAs("_baseTip")] private int _baseBlessing = 20;
         [SerializeField, Range(0f, 1f)] private float _impatientChance = 0.25f;
 
-        [Tooltip("Cars waiting at the arrival slots at once. Parked cars do not count.")]
-        [SerializeField, Range(1, 3)] private int _maxWaitingCars = 3;
+        [Tooltip("The shift plan's starting cap on cars waiting to be parked, which the Patron Director reads. The queue itself holds up to Pickup.MaxQueuedCars.")]
+        [SerializeField, Range(1, 4)] private int _maxWaitingCars = 3;
 
-        [Tooltip("Game minutes to bring a requested car to the curb before the tip drops to $0.")]
+        [Tooltip("Game minutes to bring a requested car to the curb before the blessing drops to 0.")]
         [SerializeField, Min(1f)] private float _pickupWindowMinutes = PatronRequest.DefaultPickupWindowMinutes;
 
         [Tooltip("Impatient patrons wait this fraction of the pickup window (1 = same as everyone).")]
         [SerializeField, Range(0.3f, 1f)] private float _impatientWindowScale = 0.6f;
 
-        [Tooltip("Charge an EV arrives with (0..1).")]
-        [SerializeField, Range(0f, 1f)] private float _evStartCharge = 0.2f;
+        [Header("Valet pickup spot and queue")]
+        [SerializeField] private PickupQueueSettings _pickup = new PickupQueueSettings();
 
-        [Tooltip("Game minutes in a charging bay to go from empty to full.")]
-        [SerializeField, Min(1f)] private float _chargeMinutes = 20f;
-
-        [Tooltip("Game minutes in the wash bay to get a dirty car clean.")]
-        [SerializeField, Min(1f)] private float _washMinutes = 15f;
-
-        [Header("Stay start")]
-        [SerializeField, Min(0.5f), Tooltip("Game minutes a car may sit in the arrival queue before the patron's stay starts anyway. Normally the stay starts when the car first rests clear of the queue.")]
-        private float _queueWaitMinutes = ServiceTuning.DefaultQueueWaitMinutes;
+        [Tooltip("Crazy lots only: game minutes between two cars sent to keep the queue full, so arriving cars do not appear on top of each other. 0 sends every free slot at once. Training lots keep the director's pacing.")]
+        [SerializeField, Min(0f)] private float _topUpSpacingMinutes = 1f;
 
         [Header("Late arrivals")]
         [SerializeField, Min(0f), Tooltip("Game minutes before the end of the shift by which a patron must be asking for the car, so every parked car gets its patron back. A stay that would run later is cut short.")]
@@ -49,20 +46,19 @@ namespace UncannyValet.Patrons
         [SerializeField, Min(0f), Tooltip("Game minutes a delivered car waits for its patron to get in before driving off anyway. 0 sends it off at once.")]
         private float _boardingTimeoutMinutes = 6f;
 
+        public float TopUpSpacingMinutes => _topUpSpacingMinutes;
         public float CurbWalkTimeoutMinutes => _curbWalkTimeoutMinutes;
+        public float StayJitterFraction => _stayJitterFraction;
         public float LateStayLeadMinutes => _lateStayLeadMinutes;
         public float LateStayFloorMinutes => _lateStayFloorMinutes;
         public float BoardingTimeoutMinutes => _boardingTimeoutMinutes;
-        public float QueueWaitMinutes => _queueWaitMinutes;
-        public ServiceTuning Tuning => new ServiceTuning(_evStartCharge, _chargeMinutes, _washMinutes, _queueWaitMinutes);
+        public PickupQueueSettings Pickup => _pickup;
         public int MaxWaitingCars => _maxWaitingCars;
         public Vector2 ArrivalIntervalRange => _arrivalIntervalRange;
         public Vector2 StayRange => _stayRange;
-        public int BaseTip => _baseTip;
+        public int BaseBlessing => _baseBlessing;
         public float ImpatientChance => _impatientChance;
         public float PickupWindowMinutes => _pickupWindowMinutes;
         public float ImpatientWindowScale => _impatientWindowScale;
-        public float ChargeMinutes => _chargeMinutes;
-        public float WashMinutes => _washMinutes;
     }
 }

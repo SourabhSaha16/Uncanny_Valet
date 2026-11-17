@@ -5,8 +5,7 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Applies a changed tuning value to open tickets. Charge and wash minutes reach tickets created afterwards;
-    /// the pickup window (and the impatient scale) also reaches timers already running (progress so far is kept).
+    /// Applies a changed tuning value to open tickets. Modifier clear times are read when a ticket is created; the pickup window (and the impatient scale) also reaches timers already running (progress so far is kept).
     /// </summary>
     public sealed class LiveTicketTuning
     {
@@ -27,11 +26,6 @@ namespace UncannyValet.Patrons
         {
             switch (e.Key)
             {
-                case TuningKey.ChargeMinutes:
-                case TuningKey.WashMinutes:
-                case TuningKey.QueueMaxWaitMinutes:
-                    _book.Tuning = _tuning.Service;
-                    break;
                 case TuningKey.PickupWindowMinutes:
                 case TuningKey.ImpatientWindowScale:
                     _book.CopyTo(_scratch);

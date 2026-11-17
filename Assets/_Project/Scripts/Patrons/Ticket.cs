@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Patrons
 {
@@ -20,14 +23,8 @@ namespace UncannyValet.Patrons
         /// <summary>Game minute the stay clock started (see <see cref="StartStay"/>); meaningless until <see cref="StayStarted"/>.</summary>
         public float StayStartMinute { get; private set; }
 
-        /// <summary>True once the stay clock started: the car first rested clear of the queue, was parked, or waited out the queue limit.</summary>
+        /// <summary>True once the stay clock started: the patron walked into the diner (issue 126).</summary>
         public bool StayStarted { get; private set; }
-
-        /// <summary>Game minute the car arrived in the queue; meaningless until <see cref="HasArrived"/>.</summary>
-        public float ArrivedMinute { get; private set; }
-
-        /// <summary>True once the car finished driving in.</summary>
-        public bool HasArrived { get; private set; }
 
         /// <summary>Game minute the stay ends and the patron wants the car, wherever it is; infinity while the stay has not started.</summary>
         public float ReturnMinute => StayStarted ? StayStartMinute + StayMinutes + StayShiftMinutes : float.PositiveInfinity;
@@ -43,31 +40,49 @@ namespace UncannyValet.Patrons
         /// <summary>Game minute at which the patron was sent to the curb.</summary>
         public float SummonedMinute { get; private set; }
 
-        /// <summary>True once the pickup window ran out; the tip is then $0 but the car is still owed.</summary>
+        /// <summary>True once the pickup window ran out; the blessing is then 0 but the car is still owed.</summary>
         public bool PickupExpired => PickupTimer.IsExpired;
 
         public float StayMinutes => Request.StayMinutes;
 
-        public bool IsEv => Request.IsEv;
-        public bool IsDirty => Request.IsDirty;
-        public ChargeRule Charge { get; }
-        public WashRule Wash { get; }
+        /// <summary>The car's service modifiers, each with its own progress (a list: a car may hold several).</summary>
+        public IReadOnlyList<ModifierInstance> Modifiers { get; }
 
         /// <summary>A valet is driving the car.</summary>
         public bool Driven { get; set; }
-        /// <summary>An EV is parked in a charging spot.</summary>
-        public bool InChargingBay { get; set; }
-        public bool InWashBay { get; set; }
-        public bool ChargedEv => IsEv && Charge.IsFull;
-        public bool CleanedDirty => IsDirty && Wash.IsClean;
-        public bool UncleanedDirty => IsDirty && !Wash.IsClean;
 
-        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate, ServiceTuning tuning)
+        private int _stationMask;
+
+        /// <summary>True while the car is stopped in a station of this kind.</summary>
+        public bool InStation(StationKind kind) => (_stationMask & (1 << (int)kind)) != 0;
+
+        /// <summary>Records that the car entered (true) or left (false) a station of this kind.</summary>
+        public void SetInStation(StationKind kind, bool inside)
+        {
+            if (inside) _stationMask |= 1 << (int)kind;
+            else _stationMask &= ~(1 << (int)kind);
+        }
+
+        /// <summary>The modifiers already cleared.</summary>
+        public ModifierSet ClearedModifiers => Select(true);
+
+        /// <summary>The modifiers still open (not cleared).</summary>
+        public ModifierSet OpenModifiers => Select(false);
+
+        private ModifierSet Select(bool cleared)
+        {
+            var set = ModifierSet.None;
+            for (var i = 0; i < Modifiers.Count; i++)
+                if (Modifiers[i].IsCleared == cleared) set = set.With(Modifiers[i].Id);
+            return set;
+        }
+
+        public Ticket(TicketId ticketId, CarId carId, PatronRequest request, int tag, string plate,
+            IReadOnlyList<ModifierInstance> modifiers = null)
         {
             TicketId = ticketId; CarId = carId; Request = request; Tag = tag; Plate = plate;
             PickupTimer = new TicketTimer(request.PickupWindowMinutes);
-            Charge = new ChargeRule(tuning.EvStartCharge, tuning.ChargeMinutes);
-            Wash = new WashRule(tuning.WashMinutes);
+            Modifiers = modifiers ?? new List<ModifierInstance>();
         }
 
         /// <summary>Game minutes the director has moved the end of the stay by; negative means earlier.</summary>
@@ -104,18 +119,6 @@ namespace UncannyValet.Patrons
             StayStartMinute = minute;
             return true;
         }
-
-        /// <summary>The car finished driving in; remembered for the queue wait limit. Only the first call counts.</summary>
-        public void MarkArrived(float minute)
-        {
-            if (HasArrived) return;
-            HasArrived = true;
-            ArrivedMinute = minute;
-        }
-
-        /// <summary>True when the car has sat in the queue for <paramref name="maxWaitMinutes"/> without the stay starting.</summary>
-        public bool QueueWaitOver(float minute, float maxWaitMinutes)
-            => !StayStarted && HasArrived && IsBeforePickup && minute >= ArrivedMinute + maxWaitMinutes;
 
         public void MarkParked()
         {

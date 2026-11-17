@@ -1,5 +1,6 @@
 using System;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 
 namespace UncannyValet.UI.Hud
 {
@@ -38,12 +39,12 @@ namespace UncannyValet.UI.Hud
 
         private void OnActivated(PowerActivated e)
         {
-            if (e.Power == PowerKind.FreezeTime) Fade.Frozen = true;
+            if (e.Power == StoryPower.FreezeTime) Fade.Frozen = true;
         }
 
         private void OnEnded(PowerEnded e)
         {
-            if (e.Power == PowerKind.FreezeTime) Fade.Frozen = false;
+            if (e.Power == StoryPower.FreezeTime) Fade.Frozen = false;
         }
 
         private void OnShiftStarted(ShiftStarted e) => Fade.Clear();

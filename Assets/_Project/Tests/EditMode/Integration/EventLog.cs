@@ -15,9 +15,10 @@ namespace UncannyValet.Tests.Integration
             Add<CarSpawned>(bus); Add<CarEntered>(bus); Add<CarExited>(bus); Add<CarParked>(bus);
             Add<CarLeftSpot>(bus); Add<CarAtCurb>(bus); Add<CarDeparted>(bus);
             Add<TicketOpened>(bus); Add<PickupRequested>(bus); Add<TicketClosed>(bus);
-            Add<TipEarned>(bus); Add<ScoreChanged>(bus); Add<ComplaintFiled>(bus);
+            Add<BlessingEarned>(bus); Add<BlessingsChanged>(bus); Add<CurseApplied>(bus);
             Add<TicketTimerExpired>(bus); Add<ShiftResultReady>(bus);
             Add<ShiftStarted>(bus); Add<ShiftEnded>(bus);
+            Add<LotCleared>(bus); Add<LotFailed>(bus);
         }
 
         public IReadOnlyList<IGameEvent> All => _events;

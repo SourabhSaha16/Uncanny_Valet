@@ -31,7 +31,7 @@ namespace UncannyValet.Tests.Director
             _state = new DirectorState();
             _settings = new DirectorSettings();
             var rules = DilemmaRules.CreateAll(_settings.Rules);
-            _director = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new TestRandom(5), rules, _settings.Picker),
+            _director = new DilemmaDirector(_bus, _clock, new ArchetypePicker(new TestRandom(5), rules, _settings.Picker, ModifierTestKit.Catalog()),
                 new DilemmaGate(_settings.Gate), rules, _state);
             _bus.Subscribe<DilemmaCreated>(e => _created.Add(e));
             _bus.Subscribe<DilemmaResolved>(e => _resolved.Add(e));
@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.Director
         private DilemmaContext Context(bool relief = false)
             => new DilemmaContext(ArchetypeWeights.Diner, ScheduleReason.UnderTarget, relief, 0f, false, 14);
 
-        // Draws until a rule wins (the x3 Dirty boost does within a few draws), then spawns that car.
+        // Draws until a rule wins (the x3 Muddy boost does within a few draws), then spawns that car.
         private CarId MakeDilemma(float at)
         {
             _clock.SetElapsed(at);

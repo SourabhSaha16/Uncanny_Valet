@@ -17,14 +17,15 @@ namespace UncannyValet.UI.Kit
         public static readonly Color OrangeRed = new Color32(0xFF, 0x5A, 0x2A, 255);
         public static readonly Color Green = new Color32(0x4C, 0xCB, 0x5E, 255);
         public static readonly Color Cyan = new Color32(0x38, 0xD6, 0xF0, 255);
+        public static readonly Color Blood = new Color32(0xE0, 0x2F, 0x3C, 255);
         public static readonly Color Grey = new Color32(0x8C, 0x8C, 0x9C, 255);
         public static readonly Color Track = new Color32(0x12, 0x0F, 0x1C, 255);
         public static readonly Color PanelDark = new Color32(0x3A, 0x30, 0x58, 255);
-        public static readonly Color PanelCombo = new Color32(0xD0, 0x5A, 0x1E, 255);
+        public static readonly Color PanelFavour = new Color32(0xD0, 0x5A, 0x1E, 255);
         public static readonly Color PanelCream = new Color32(0xE8, 0xDC, 0xB8, 255);
         public static readonly Color Dim = new Color(0f, 0f, 0f, 0.55f);
 
-        /// <summary>Dark brown of the dirt meter, matching the mud on a dirty car.</summary>
+        /// <summary>Dark brown of the mud meter, matching the mud on a Muddy car.</summary>
         public static readonly Color Mud = new Color32(0x7A, 0x4E, 0x2A, 255);
 
         /// <summary>The key tag colour for a spot number (title screen decoration); spot 0 is grey.</summary>

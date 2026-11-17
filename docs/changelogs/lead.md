@@ -790,3 +790,291 @@ Date: 2026-11-12
 Files: site/ (regenerated Web build, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: player-visible changes since the last build: issues 19 (impact damage lowers the tip, DMG % on the key board) and 20 (screen shake on hard impacts of the car you drive). Beta site only; main stays on the earlier build.
 Tests: 1324 of 1324 EditMode, 29 of 29 PlayMode (incl. Bootstrap scene smoke test); browser smoke test: title, how-to-play, shift starts (3:57), no console errors. Damage and shake were not seen in play.
+
+## lead: merge agent/integration run state, lot definitions and lot scenes (#80) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a1067622abbf49073 (Run module: RunProgress, RunHost, LotDefinition, RunDefinition, LotModifier; Core LotId/World/LotKind/events/contracts; Bootstrap RunBootstrap, TuningSeeder lot seeding, ValetSpawner, LotBounds; title lot picker; Editor scene-per-lot builder; Data/Run assets; two Midgard lot scenes; tests), docs/changelogs/lead.md
+Why: story epic 79, task 80. Open points reported by the agent: crazy waiting cap 4 is clamped to the 3 queue slots; the arrival budget caps the crazy lot near 16 cars; layout parameters are only a kind (Diner) for now; nothing publishes LotCleared/LotFailed/PowerGranted yet (tasks 81, 83, 84).
+Tests: 1361 of 1361 EditMode, 31 of 31 PlayMode after the merge and RunBatch (scene fileID churn reverted to the merged versions).
+
+## lead: merge agent/integration queue slots and arrival budget per lot (#80) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-ab668bba07086fc7d (LotDefinition QueueSlots, LotPacing arrival budget, LotGeometry/LotLayoutBuilder/LotDecor slot count, QueueSlotCheck, scene builder, Midgard lot assets and scenes, tests), docs/changelogs/lead.md
+Why: story epic 79, task 80 follow-up decisions: training lots have 3 queue slots and crazy lots 4 (so the crazy waiting cap of 4 is real); the Director's arrival budget is a per-lot value derived from shift length and mean gap (training 8, crazy 20) instead of the shared 14.
+Tests: 1371 of 1371 EditMode, 33 of 33 PlayMode after the merge.
+
+## lead: merge agent/powers shared power bar, remove speed boost and Park Smash (#86) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a9865e9ec0ff23d09 (PowerBar, PowerBarController, PowerBarConfig/Settings, PowerKeyMap, HUD PowerBar* with BoltGlyph, DevPowerLink, PowerRevoked event, RunProgress.RevokePower, F2 rows, removal of the speed boost, Park Smash and the old meter, tests), docs/changelogs/lead.md
+Why: story epic 79, task 86. One shared 0-100 power bar with three bolt buckets (open at 33.3, 66.7, 100; a use spends 33.3), filled by Perfect Park, perfect drop-off and drifting, shown and active only when a power is owned; keys 1 to 4 fire earned powers (only Freeze time has an effect); developer F2 row grants Freeze time. Retired TuningKey members renamed Retired..., SfxId gaps pinned. Open: per-lot fill overrides not built; WalkerStumbler needs a public entry for task 93.
+Tests: 1325 of 1325 EditMode, 28 of 28 PlayMode after the merge and RunBatch (scene fileID churn reverted to the merged versions).
+
+## lead: merge agent/services service modifiers (#121) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a2219297441badc7c (Core/Modifiers: ModifierId, ModifierSet, ServiceModifierDefinition, catalog; Muddy and NeedsCharge assets; Patrons ModifierInstance, StationService, ModifierRoller/Factory; Run LotDefinition modifier chances; Director on the modifier list; UI per-modifier icons and generic status words; the two Car Mix dials removed; tests), docs/changelogs/lead.md
+Why: story epic 79, task 121. One model for what a car needs: Dirty is replaced by Muddy and EV by NeedsCharge as service modifiers on a list-based car state (one per car now, stackable), cleared at a named station kind with their own clear time, bonus, icon and chance; arrival chances come from the LotDefinition; Car Mix dials removed (retired key slots kept). Deviation: the arrival roll is one cumulative draw, not independent rolls, so existing diner behaviour is identical; lot chances must sum to at most 1.
+Tests: 1350 of 1350 EditMode, 30 of 30 PlayMode after the merge and RunBatch (scene fileID churn reverted).
+
+## lead: merge agent/blessings tips become blessings, favour, curses, lot threshold (#81) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a957196a70b64ac89 (full rename Tip to Blessing across Core/Economy/Patrons/UI/Audio/Bootstrap/Director/Tests, FavourTracker, CurseApplied, ShiftBlessings, ILotGoal and LotGoal, LotCleared/LotFailed at shift end, results screen, bolt icon and blessing bar with threshold marker, stars removed, Perfect Park bonus removed, tests), Run/LotDefinition default threshold, RunAssetSetup thresholds, Midgard lot assets, docs/changelogs/lead.md
+Why: story epic 79, task 81. Blessings keep the tip numbers with a lightning-bolt symbol; favour keeps the combo rules; an angry patron is a curse of 15 subtracting blessings (never below 0); a lot is cleared if blessings reach the lot's threshold at shift end. The lead raised the placeholder thresholds from 3 and 5 to 150 (training) and 300 (crazy), the old one- and two-star scores, because 3 and 5 would clear every lot in the first handback.
+Tests: 1348 of 1348 EditMode, 30 of 30 PlayMode after the merge, the threshold change and RunBatch (scene fileID churn reverted).
+
+## lead: merge agent/blessings half a blessing when a needed service is missed (#82) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a75cdc1e4d3976704 (BlessingCalculator halving, BlessingBreakdown.ServiceMissed, BlessingEarned.serviceMissed, ShiftBlessings favour handling, TicketSettler, ServiceMissedTests), docs/changelogs/lead.md
+Why: story epic 79, task 82. A handback with any open service modifier pays half of its final total (after damage and favour), rounded to the nearest whole blessing with ties up, once; a missed-service handback neither adds nor resets favour; no on-screen feedback.
+Tests: 1364 of 1364 EditMode, 30 of 30 PlayMode after the merge.
+
+## lead: merge agent/powers power framework (#87) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a148e5573f10c1461 (StoryPower as the one power id, PowerDefinition and PowerLevelValues, IPower, PowerCooldowns, IPowerBucket, PowerStack.TryFire, PowerView/IPowerView, PowerKeyMap by earn order, per-level F2 keys, LotPowerFill per-lot fill overrides, generalised dev rows, HUD icons with ring, key digit and one-time flash, PowerAssetSetup and the four definition assets, tests), docs/changelogs/lead.md
+Why: story epic 79, task 87. Powers are data (two levels, cooldown starting after the use ends, one bucket per use), fired on number keys 1 to 4 in earn order, shown as HUD icons; Freeze time runs through the framework. Placeholder level numbers in PowerDefaults are for tasks 88 to 92 to tune.
+Tests: 1388 of 1388 EditMode, 31 of 31 PlayMode after the merge and RunBatch (scene fileID churn reverted).
+
+## lead: merge agent/valet Thunder stride (#88) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a8f0e534158c093f2 (ThunderStridePower, ThunderDash/DashRule/DashDirection, ThunderStreaks/BoltShape, ThunderBoostModifier/Link, DriveInput scales, SfxThunder (SfxId 25), ThunderKickLink, ThunderStrideStarted event, PowerField.Secondary and eight appended TuningKeys, spec values in PowerDefaults and ThunderStrideDefinition, tests), docs/changelogs/lead.md
+Why: story epic 79, task 88. Thunder stride: on foot a 0.2 s straight dash (5 units, 8 at level 2) that stops at solids and passes pedestrians; in a car a boost (1.5 s, 2.2 s at level 2) of top speed x1.5 and acceleration x2 through the drive modifier seam; one bucket and one 4 s cooldown; lightning streak, thunder crack, camera kick. The ThunderDash component is in Bootstrap.unity (real change).
+Tests: 1409 of 1409 EditMode, 37 of 37 PlayMode after the merge and RunBatch (scene churn reverted to the merged version, which holds the ThunderDash component).
+
+## lead: merge agent/pedestrians comic knockback, car slowdown and patron curse (#93) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a008fbb1a42b53c44 (PedestrianHit event, KnockbackCurve, WalkerKnockback, PedestrianWalker.TryKnockback, CarPedestrianSlow and PedestrianSlowRule, PedestrianCurseRule in ShiftBlessings, SfxYelp (SfxId 26), PedestrianHitRows with 11 appended TuningKeys, LotDefinition pedestrian curses switch, Midgard lot assets, tests), docs/changelogs/lead.md
+Why: story epic 79, task 93. Any pedestrian hit knocks the walker away 0.7 to 4 units by speed with a tumble and a comic yelp and slows the driven car 15% without a bounce; only the valet's driven car hitting a patron walker is a curse of 5 (3 s per-patron lockout, resets favour); a per-lot switch (on for Midgard crazy, off for training).
+Tests: 1429 of 1429 EditMode, 40 of 40 PlayMode after the merge and RunBatch (scene churn reverted).
+
+## lead: merge agent/cars mud patches slow cars and dull drifting (#94) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a2cf5ff2576594298 (MudPatch/IMudPatches/LotWorldSpec, LotModifier virtuals, MudPatchModifier, MudPatchBuilder/MudBlobArt, CarMudEffect/MudModifier/MudBlend/CarMudProbe, DriveInput.GripLossScale and DriftModel grip scale, CarAutoDrive scaling, MudRows with four appended TuningKeys, LotWorldSceneSetup, tests), docs/changelogs/lead.md
+Why: story epic 79, task 94. Mud patches are a lot modifier: any car with its centre or a wheel point inside a patch gets top speed and acceleration x0.6 and keeps 40% of its normal grip loss, releasing over 0.3 s; the valet on foot, pedestrians and service modifiers are unaffected; patches are brown pixel blobs. The Vanaheim lots (task 107) will list a MudPatchModifier asset and set the Muddy chances.
+Tests: 1455 of 1455 EditMode, 44 of 44 PlayMode after the merge and RunBatch (scene churn reverted).
+
+## lead: merge agent/art procedural prop toolkit and Midgard and Vanaheim props (#116) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a0bc285a8d198c81b (Core.Art WorldPalette/PropRecipe/LightingPreset, Lot ShapeRaster/PropPixels/PropSpriteCache/PropBuilder/PropAnimator/LightFlicker/LotLighting/DinerSkin/PixelRecolour, LotDefinition palette/props/lighting fields, ArtAssetSetup and the Data/Art assets for both worlds, Midgard lot assets, scenes, tests), docs/changelogs/lead.md
+Why: story epic 79, task 116. Props are recipe assets drawn in code on the 32 px grid with a per-world palette, hard-edged with outlines, cached once per lot, with an optional sprite override; each lot gets a LightingPreset (global light plus at most 16 point lights, no shadows). The Midgard lots now use the tan green-roof diner, the blinking OPEN sign and the day or night preset. Placing props into the Vanaheim lots and the Midgard fair is for tasks 106 and 107.
+Tests: 1489 of 1489 EditMode, 47 of 47 PlayMode after the merge and RunBatch (pure scene churn reverted to the merged versions).
+
+## lead: merge agent/watchers watching gods and trainers with speech bubbles (#115) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-af40d99be465a7b5b (Core Watchers types and SpeechEvents, new UncannyValet.Watchers module (WatcherHost, SpeechScheduler, TipBook, SituationRules, MilestoneTracker), Pedestrians WatcherBody, UI Speech bubbles, Bootstrap WatcherBootstrap/TrafficBootstrap, LotDefinition watcher and spot, Data/Watchers assets for Mrs. Okafor, Grandma, Freyja and Farmhand Arni, results placeholder box removed, tests), docs/changelogs/lead.md
+Why: story epic 79, task 115. Each lot has a watching character at a fixed spot (untouchable, no ticket) who speaks in pixel speech bubbles (one at a time, 4 s, at least 8 s apart; priority tip over comment over gag line): situational tips about the lot's mechanics (never powers) and event comments; text lives in an editable WatcherTextAsset. First scope: Midgard (Mrs. Okafor, Grandma) and the Vanaheim characters as assets.
+Tests: 1583 of 1583 EditMode, 51 of 51 PlayMode after the merge and RunBatch (pure scene churn reverted to the merged versions).
+
+## lead: merge agent/worlds World 1 Midgard lots (#106) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a55385531019ebf52 (LotLayoutOptions and ServicesClosed 8-bay layout, HasWashStation, Director no-wash handling, LotDefinition ambient traffic/pedestrians/layout/gag fields, LotWorldSeeding, GagLineAsset/Rule/Deck/Trigger, MidgardWorldSetup, props (trees, stalls, solid Ferris wheel), Midgard gag line assets, tests), docs/changelogs/lead.md
+Why: story epic 79, task 106. Midgard's two lots: no wash or EV (8 regular bays), Muddy and NeedsCharge chances 0, training with no ambient traffic and 3 walkers, crazy with today's traffic and 10 walkers, procedural props with a solid turning Ferris wheel, floating gag lines when Thor passes pedestrians (6 s global and 20 s per-walker lockouts, through the shared speech bubble system).
+Tests: 1617 of 1617 EditMode, 55 of 55 PlayMode after the merge and RunBatch (pure scene churn reverted to the merged versions).
+
+## lead: merge agent/worlds World 2 Vanaheim lots (#107) [Claude]
+Date: 2026-11-13
+Files: merge of worktree-agent-a30f08f255db785b8 (two Vanaheim LotDefinitions and scenes added to the RunDefinition, LotLayoutOptions wash troughs/extension/trough distance, TroughLayout, ILotLayout.WashStationCount and multi-station director support, BuildingSign and GroundColour, Vanaheim mud patches, props and lanterns, watchers and gag lines, VanaheimWorldSetup, RunAssetSetup.AppendMissing, tests), docs/changelogs/lead.md
+Why: story epic 79, task 107. Vanaheim: 8 bays, one wash trough (training) and three troughs 14 units from the bays in a lot widened by 13.5 units (crazy), Muddy 30% and 60%, 5 mud patches, crowd 4 and 8, traffic on, curses off, Freyja and a farmhand by the barn door, clearing crazy grants Storm wind (record only; effect is task 89). The title picker lists the new lots as 3 and 4.
+Tests: 1657 of 1657 EditMode, 64 of 64 PlayMode after the merge and RunBatch (pure scene churn reverted to the merged versions).
+
+## lead: merge agent/run roguelite run rules (#83) [Claude]
+Date: 2026-11-14
+Files: merge of worktree-agent-a73c363af3a1468ad (NextLotChosen and RunCompleted events, RunOutcome and RunEnd enums, IRunFlowState, NextLotRules, LotDecision, RunFlow, RunProgress flow state, RunBootstrap wiring, tests), docs/changelogs/lead.md
+Why: story epic 79, task 83. Pure rules: clearing a lot advances to the next (skipping already cleared training lots), failing a training lot restarts it, failing a crazy lot or the finale sends Thor back to Midgard's crazy lot keeping powers and cleared flags, powers are granted once, clearing the last lot of the RunDefinition completes the run with EndOfContent (the finale with Finale). Rules and events only; screens and scene loading are task 84.
+Tests: 1672 of 1672 EditMode, 64 of 64 PlayMode after the merge.
+
+## lead: merge agent/integration between-lot flow cards (#84) [Claude]
+Date: 2026-11-14
+Files: merge of worktree-agent-a1f36045156e2782a (UI/Flow FlowMachine, FlowController, card builders and painters; Core Story StoryTextAsset, IStoryFacts; Bootstrap FlowHost, FlowActions, FlowBootstrap, RunStoryFacts, StartLotRule; GameUi on the flow state; results Next Lot button; title lot picker behind F3; StoryText.asset and drafts; tests), docs/changelogs/lead.md
+Why: story epic 79, task 84. Title, how-to-play (once per page load), intro card, shift, results, reward card per power earned, thrown-back card after a failed crazy lot, end card (TO BE CONTINUED for the demo, THOR IS HOME for the finale), driven by the run rules of task 83; cards use the pixel panel with per-world accent colours and text from one editable StoryTextAsset; any key advances after a 0.3 s delay.
+Tests: 1721 of 1721 EditMode, 66 of 66 PlayMode after the merge and RunBatch (scene churn reverted to the merged versions).
+
+## lead: merge agent/integration retry rule and F4 picker [Claude]
+Date: 2026-11-14
+Files: UI flow (FlowMachine, FlowController, UiInput), flow tests, docs/changelogs/integration.md
+Why: #84 follow-up: Retry disabled after a failed crazy lot or finale; lot picker moved to F4 (decided with the owner).
+Tests: EditMode 1723/1723 passed.
+
+## lead: merge audio themes, generate theme assets, fix PlayMode asmdef [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Data/Audio/Themes/*, Data/Run/*Lot.asset (theme links), .meta files, Tests/PlayMode asmdef (adds UncannyValet.Audio)
+Why: #117 procedural music themes and ambience; RunBatch generated the theme assets, the PlayMode test assembly lacked the Audio reference.
+Tests: EditMode 1751/1751, PlayMode 71/71 passed.
+
+## lead: merge agent/integration god verdict on results [Claude]
+Date: 2026-11-14
+Files: Core/Story verdict types, UI/Screens (VerdictPicker, ResultsFormatter, ResultsPainter), Editor verdict drafts, StoryText.asset, tests
+Why: #85 god verdict panel on the results screen.
+Tests: EditMode 1772/1772 (agent also ran PlayMode 71/71 and RunBatch).
+
+## lead: rebuild web site with the story flow for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of 12bbcc2)
+Why: Midgard and Vanaheim are playable end to end (epic #79): lot flow cards, blessings, powers, music, god verdicts.
+Tests: EditMode 1772/1772, PlayMode 71/71 on the source; Web build smoke test: title, how-to-play, Midgard intro card, shift with blessings counter, no console exceptions.
+
+## lead: merge agent/integration run-unity wrapper [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.*, tools/build-web.ps1, CLAUDE.md
+Why: Unity runs piled up and hung on 2026-11-14 and exhausted Windows commit memory; the wrapper serializes runs, checks headroom and kills hung process trees.
+Tests: agent ran tools/tests/test-run-unity.ps1, 12/12 passed (no Unity launched); the wrapper itself is not yet exercised by a real Unity run.
+
+## lead: CLAUDE.md rule to clean up agent worktrees after merge [Claude]
+Date: 2026-11-14
+Files: CLAUDE.md
+Why: finished agent worktrees (0.5 to 2 GB each) and orphan folders filled the disk; the lead now removes each worktree and branch right after merging.
+Tests: docs only.
+
+## lead: log 2026-11-14 playtest decisions in decisions.md [Claude]
+Date: 2026-11-14
+Files: docs/decisions.md, docs/changelogs/lead.md
+Why: playtest notes became issues #122 to #127; the valet pickup spot and timer decisions are recorded.
+Tests: docs only.
+
+## lead: merge agent/lot valet pickup spot and diner-entry timer [Claude]
+Date: 2026-11-14
+Files: Lot, Patrons, Cars (CarAutoDrive, CarFactory), Core (PatronStepsOut, PatronEnteredDiner, CarRepositioned, ICarFactory.TryDriveTo), lot scene builders, Bootstrap and Vanaheim training scenes, tests; tools/run-unity.ps1 (memory pattern tightened); docs/design.md (A2, A5, A9 updated)
+Why: issues #127 and #126: valet pickup spot and 4-car queue replace the curb flow; the patron timer starts when the patron enters the diner.
+Tests: EditMode 1790/1790, PlayMode 73/73, RunBatch ok (agent); wrapper self-test passes after the false-positive fix.
+
+## lead: merge agent/pedestrians free routes and no rubber band [Claude]
+Date: 2026-11-14
+Files: Pedestrians (WalkerRouteRule, WalkerRouter, PathFollower, PedestrianBounceRule), Core TuningKey.PedestrianFreeRoutes (appended), Run/LotDefinition, crazy lot assets, tests, docs/design.md
+Why: issues #124 (free routes on crazy lots) and #125 (no rubber band after a push).
+Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).
+
+## lead: merge agent/integration smaller speech bubbles and zoom out [Claude]
+Date: 2026-11-14
+Files: UI/Speech (SpeechBubbleSettings, bubble painter), PixelCanvas zoom, Bootstrap CameraFollow (_fitTightness 0.78 to 0.83), the four lot scenes
+Why: issues #122 (bubbles scale 0.72) and #123 (about 13% more visible area).
+Tests: EditMode 1801/1801, PlayMode 73/73 and RunBatch ok (agent).
+
+## lead: merge agent/integration camera fits taller lots [Claude]
+Date: 2026-11-14
+Files: Bootstrap/CameraFit.cs, CameraFollow tooltip, CameraFitTests, CameraFramingPlayModeTests
+Why: the 4th queue slot made the lots taller than the zoom cap, clipping the diner door and queue end (#123, #127); the play-area floor now beats the cap.
+Tests: EditMode 1802/1802, PlayMode 77/77 and RunBatch ok (agent).
+
+## lead: rebuild site/ with pickup spot, pedestrian fixes, smaller bubbles, camera fit [Claude]
+Date: 2026-11-14
+Files: site/ (Web build of fe91760)
+Why: playtest batch #122 to #127 (valet pickup spot and diner-entry timer, pedestrian free routes and no rubber band, smaller speech bubbles, zoom out, camera fit for the taller lots).
+Tests: EditMode 1802/1802, PlayMode 77/77 on the source; Web smoke test at 16:9: title, how-to-play, Midgard intro, shift with the whole lot in frame (diner door, yellow pickup slot and 3 queue slots, 8 bays), a car queued into the pickup spot.
+
+## lead: merge agent/patron-walkers [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (PatronPool, PatronPoolSizing, PendingStepOuts, PatronWalkers, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/EditMode/Pedestrians/PatronPoolTests.cs, docs/changelogs/pedestrians-patrons.md
+Why: Refs #128. The reserved patron pool is now sized by spots plus queue slots (config value is a floor) and a patron with no free walker waits and retries, so the diner timer cannot stall (design.md A2 pickup flow).
+Tests: EditMode suite passed (1809 of 1809 in the agent run, exit 0 again after merge). No PlayMode or web build; not yet in the beta site.
+
+## lead: rebuild site/ with the patron walker pool fix for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #128. Beta now includes the reserved patron walker pool sized by spots plus queue slots.
+Tests: tools/build-web.ps1 exit 0, build-info shows 390db5c; browser smoke test loaded the title screen with no console errors.
+
+## lead: merge agent/grandma-bubble [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/ (SpeechBubbleVisibility, SpeechBubblePainter, SpeechBubbleSettings), Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs, docs/changelogs/integration.md
+Why: Refs #129. Speech bubbles (Grandma's tip line included) are only drawn while the speaker is inside the camera view; tip money is unaffected.
+Tests: EditMode suite passed after merge (exit 0). Not checked in-game; not in beta yet.
+
+## lead: merge agent/ped-roam [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Pedestrians/ (EnterInterval, WanderPicker, RoamPath, KeepOutAreas, PedestrianBrain, PedestrianPhase, PedestrianWalker, WalkerRouter, PedestrianCrowd, PedestrianConfig), Assets/_Project/Tests/ (EditMode/Pedestrians, PlayMode/PedestrianHitTests.cs), docs/changelogs/pedestrians.md
+Why: Refs #130. Ambient pedestrians roam along their routes and enter the diner after a random interval instead of all heading to one entrance.
+Tests: EditMode suite passed after merge (exit 0). PlayMode not run. Parking-spot keep-out is built and tested but not fed at runtime (no Core contract exposes spot rectangles); roam targets stay on sidewalk/crosswalk routes. Not in beta yet.
+
+## lead: merge agent/crazy-queue and agent/lot-bottom-row [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (IArrivalPacing, QueueTopUpPacing, DirectorArrivalPacing, ArrivalPacings, PatronSpawner, PatronConfig); Scripts/Lot (LotConfig, LotGeometry, TroughLayout); Data/Lot/LotConfig.asset; Data/Run and Data/Art Vanaheim/Midgard lot assets; regenerated scenes Bootstrap, Lot_MidgardCrazy, Lot_VanaheimCrazy, Lot_VanaheimTraining; new EditMode tests ArrivalPacingTests and BottomRowDropTests; docs/changelogs/patrons.md, lot.md
+Why: Refs #132 and #131. Crazy lots keep the pickup queue topped up (Training and Finale unchanged); the bottom row of spots sits 1.5 units lower on every lot (tunable LotConfig.BottomRowDrop).
+Tests: EditMode suite passed on the merged tip (exit 0); the lot agent also ran RunBatch (exit 0) and CameraFramingPlayModeTests (4 of 4). Not played; MidgardNight light string may be about 1.5 units off (cosmetic). Not in beta yet.
+
+## lead: merge agent/ped-slowdown [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PedestrianHitRows.cs, Assets/_Project/Tests/EditMode/Cars/PedestrianSlowRuleTests.cs, docs/changelogs/cars.md
+Why: Refs #133. A pedestrian hit now slows the car by 35% by default (was 15%), still tunable in the F2 rows; floor stays 30% of top speed.
+Tests: EditMode suite passed after merge (exit 0). Not played; not in beta yet.
+
+## lead: fix BayEntryTests for the lowered bottom row [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Tests/PlayMode/BayEntryTests.cs, docs/changelogs/lead.md
+Why: Refs #131. The PlayMode gap-between-rows test still expected 6 units; it now expects 6 plus LotConfig.BottomRowDrop.
+Tests: Full PlayMode suite 77 of 77 passed (it was 76 of 77 before the fix); EditMode passed earlier on the same code.
+
+## lead: rebuild site/ with the playtest batch 2 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #129 #130 #131 #132 #133. Beta now includes the on-camera-only speech bubbles, roaming pedestrians, lowered bottom row of spots, topped-up queue on crazy lots and the 35% pedestrian slowdown.
+Tests: tools/build-web.ps1 exit 0, build-info shows 47467ee; EditMode and full PlayMode (77 of 77) passed on the same code; browser smoke test loaded Midgard training with the lowered bottom row, no console errors. Crazy lots and the other changes not played.
+
+## lead: merge agent/ui-bubbles-label and agent/ped-curse [Claude]
+Date: 2026-11-14
+Files: Scripts/UI/Speech (SpeechBubbleSettings, SpeechBubbleTracker), Scripts/UI/Hud/PlayingHud.cs, Scripts/UI/Status (CarStatusTable, CarStatusResolver), Scripts/Economy (SlightCurseRule, PedestrianCurseRule, ShiftBlessings), Scripts/Core (TuningKey append PedestrianSlightCurseAmount, EmotionRows, PedestrianHitRows), EditMode tests, docs/changelogs/integration.md, economy-night.md
+Why: Refs #134 #135 #138. Speech bubbles switched off behind one setting (default off); status label reads 'No blessing'; hitting any pedestrian with the valet's car costs a slight curse (2 blessings, tunable) on every lot, the patron curse (5) unchanged and never stacked with it.
+Tests: EditMode passed after each merge (exit 0). Not played; not in beta yet.
+
+## lead: merge agent/perfect-w2-powerbar [Claude]
+Date: 2026-11-14
+Files: Scripts/Run (LotDefinition, LotGoal), Scripts/Core/Contracts/ILotGoal.cs (default member ShowPowerBar), Scripts/Bootstrap/RunBootstrap.cs, Scripts/UI/Hud (PowerBarTracker, PlayingHud), Data/Run/MidgardCrazyLot.asset, MidgardTrainingLot.asset, EditMode tests, docs/changelogs/lot.md
+Why: Refs #137 #136. The power bar is hidden on the Midgard lots by a per-lot flag (ShowPowerBar). Perfect Park already runs on every lot including Vanaheim (18 power per perfect park); no gate existed, so #136 needed no code change.
+Tests: EditMode passed after merge (exit 0); the agent also ran PlayMode 77 of 77 and RunBatch. Not played; not in beta yet.
+
+## lead: merge agent/timer-after-pickup, update design log [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (StayStartRule, PickupLeaveWatcher, StayStarter, QueueAdvancer), Scripts/Core/Events/PickupEvents.cs (CarLeftPickup appended), EditMode tests, Tests/PlayMode/PedestrianHitTests.cs, docs/design.md, docs/decisions.md, docs/changelogs/patrons.md
+Why: Refs #139. The patron stay clock starts at the later of PatronEnteredDiner and CarLeftPickup. PlayMode PedestrianHitTests now expect the slight curse from #138 (2 blessings) instead of no curse.
+Tests: EditMode passed (1858, exit 0); full PlayMode 77 of 77 after updating the two stale curse assertions. Not played; not in beta yet.
+
+## lead: merge queue advance fix, wash bay without trough, power bolt and prayer hands [Claude]
+Date: 2026-11-14
+Files: Scripts/Patrons (AdvanceTracker, QueueAdvancer, IArrivalScan, ArrivalSlotScanner, PickupQueueSettings), Scripts/Cars/CarAutoDrive.cs, Scripts/Lot (WashBayLayout, LotGeometry, LotLayoutBuilder, SiteLayout, LotConfig, StationSwitch), Editor Vanaheim setup, Vanaheim lot/art assets and scenes, Scripts/Core/Contracts/PowerBarThresholds.cs (new), Scripts/Powers/PowerBar.cs, Scripts/UI (PowerBarPainter, blessing painters, PixelIcon.PrayerHands), tests, changelogs patrons.md, lot.md, integration.md
+Why: Refs #140 #141 #142 #143. Queue cars no longer freeze when one stops short of its slot (scan ignores the car behind, tolerance 2.2, retry after timeout, heading set toward the slot); the Vanaheim water trough prop is gone and wash bays are the regular blue bay with the muddy-car symbol; power markers and usability share one threshold list so 1T opens at the first bolt; blessings show prayer hands, the bolt stays for power.
+Tests: EditMode passed and full PlayMode 78 of 78 on the merged tip (exit 0). Not played.
+
+## lead: rebuild site/ with playtest batch 3 for beta [Claude]
+Date: 2026-11-14
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #134 to #143. Beta now includes bubbles off, 'No blessing' label, slight curse on any pedestrian hit, Midgard power bar hidden, patron timer after the car leaves the pickup spot, queue advance fix, wash bay without trough, power 1T at the first bolt and prayer hands for blessings.
+Tests: tools/build-web.ps1 exit 0, build-info shows e3c084b; EditMode and PlayMode (78 of 78) passed on the same code; browser smoke test: Midgard training loads, no console errors, blessing counter shows the prayer hands icon, no power bar, a car arrives into the pickup spot. Vanaheim, crazy lots and driving not played.
+
+## lead: merge agent/stay-jitter [Claude]
+Date: 2026-11-16
+Files: Scripts/Patrons (StayJitter, PatronSpawner, PatronConfig, PatronTuning), Tests/EditMode/Patrons/StayJitterTests.cs, docs/changelogs/patrons.md
+Why: Refs #144. Each car's stay gets a seeded random offset (default plus or minus 30%, PatronConfig stay jitter fraction, floor LateStayFloorMinutes) so returns no longer bunch up; applied before the shift fit so stays still end inside the shift.
+Tests: EditMode passed after merge (exit 0). Not played; not in beta yet. No F2 row (would need Core/Bootstrap edits).
+
+## lead: merge agent/shift-dash, update design log [Claude]
+Date: 2026-11-16
+Files: Scripts/Valet (ShiftDash, DashCooldown, WalkSpeedBoost, OnFootMover, ThunderDash), Scripts/Powers (ThunderStridePower, DrivingTracker deleted), Core power row labels, ThunderStrideDefinition.asset, UI/Screens/HowToPlayText.cs, Editor/ValetSceneBuilder.cs, four regenerated scenes, tests, docs/design.md, docs/decisions.md, docs/changelogs/valet.md
+Why: Refs #145 #146. Shift dash on foot (3 units, 0.2 s, 1.5 s cooldown, tunable, only moves Thor); power 1 is a temporary walking speed boost (1.6 at level 1, 2.0 at level 2) instead of the on-foot dash; how-to-play card lists the Shift dash.
+Tests: EditMode passed (exit 0) and full PlayMode 80 of 80 on the merged tip. Not played; not in beta yet. Scenes regenerated with RunBatch (fileID churn kept with the new ShiftDash component).
+
+## lead: rebuild site/ with playtest batch 4 for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #144 #145 #146. Beta now includes the patron stay jitter, the Shift dash on foot and the on-foot speed boost power.
+Tests: tools/build-web.ps1 exit 0, build-info shows 27d3d26; EditMode and PlayMode (80 of 80) passed on the same code; browser smoke test: Midgard training loads, how-to-play card lists the Shift dash, no console errors. The dash, the boost and the jitter were not exercised in the browser.
+
+## lead: merge agent/audio-reset [Claude]
+Date: 2026-11-16
+Files: Scripts/Audio (IAudioLayer, LayerSet, SourceLayer, AudioDirector, ThemeSession), Tests/EditMode/Audio/LayerSetTests.cs, Tests/PlayMode/LevelAudioResetPlayModeTests.cs, docs/changelogs/audio.md
+Why: Refs #147. Every level music, ambience and escalation loop is now a layer in one LayerSet that is silenced (stopped, volume 0, clip released) when the level changes, a lot is chosen, the run completes or the director is destroyed, so the previous level's tracks cannot overlap the next.
+Tests: EditMode passed after merge (exit 0); agent ran the audio PlayMode tests (6 of 6). Root cause inferred from code, not heard; not in beta yet.
+
+## lead: merge agent/power-visible [Claude]
+Date: 2026-11-16
+Files: Scripts/Valet (ThunderAuraClock, ThunderAuraTiming, ThunderAuraLook, ThunderAura, AuraTint, AuraGlow, ThunderDash), Scripts/Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, tests, docs/changelogs/valet.md
+Why: Refs #150. The first power lasts 5 s at level 1 and 7 s at level 2 (was 1.5 and 2.2) and shows a pulsing golden tint, a glow disc and lightning sparks on Thor or his car, with a blink in the last second.
+Tests: EditMode passed after merge (exit 0); agent ran full PlayMode (83 of 83) and RunBatch. Not seen in a running game (car tint relies on the sprite shader honouring _Color); not in beta yet.
+
+## lead: merge agent/wash-near-symbol, update design log [Claude]
+Date: 2026-11-16
+Files: Scripts/Core/Contracts (LotLayoutOptions, WashIconArt), Scripts/Lot/WashBayLayout.cs, Scripts/Run/LotDefinitionRules.cs, Editor Vanaheim setup files, Vanaheim and Midgard lot assets, Vanaheim mud and lighting assets, scenes (field rename; Lot_VanaheimCrazy gap and extension), tests, docs/design.md, docs/changelogs/lot.md
+Why: Refs #148 #149. Wash bays now sit in one column directly beside the bay block (gap WashBayGap 0.5; the Vanaheim crazy lot is no longer widened by 13.5); the muddy car and the wash station share the mud splat symbol.
+Tests: EditMode passed (exit 0) and full PlayMode 85 of 85 on the merged tip. Not seen in a game view; not in beta yet. Midgard lots keep ShowPowerBar off.
+
+## lead: rebuild site/ with playtest batch 5 for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #147 #148 #149 #150. Beta now includes the level audio reset, wash bays beside the lot, the shared mud symbol and the longer, visible first power.
+Tests: tools/build-web.ps1 exit 0, build-info shows 06dd88a; EditMode and PlayMode (85 of 85) passed on the same code; browser smoke test: Midgard training loads, no console errors. Vanaheim lots (F4 did not open the picker in the pane), audio and the power effect were not checked in the browser.

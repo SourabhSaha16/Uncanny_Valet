@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Mood;
+using UncannyValet.UI.Speech;
 using UnityEngine;
 
 namespace UncannyValet.UI.Hud
@@ -22,44 +25,49 @@ namespace UncannyValet.UI.Hud
         private readonly NoticePainter _notices;
         private readonly WorldTicketPainter _world;
         private readonly PatronMoodPainter _mood;
-        private readonly TipPopTracker _tipPopTracker;
-        private readonly TipPopPainter _tipPops;
+        private readonly BlessingPopTracker _blessingPopTracker;
+        private readonly CursePopTracker _cursePopTracker;
+        private readonly BlessingPopPainter _blessingPops;
         private readonly CurbHintTracker _curbHints;
         private readonly CurbHintPainter _hintPainter;
         private readonly OccupiedHintTracker _occupiedHints;
         private readonly OccupiedHintPainter _occupiedPainter;
-        private readonly PowerMeterTracker _powerTracker;
-        private readonly PowerMeterPainter _power;
+        private readonly PowerBarTracker _powerTracker;
+        private readonly PowerBarPainter _power;
         private readonly FreezeTracker _freezeTracker;
         private readonly FreezeVeilPainter _freezeVeil;
-        private readonly SmashFxTracker _smashTracker;
-        private readonly SmashFxPainter _smashPainter;
+        private readonly SpeechBubbleTracker _speech;
+        private readonly SpeechBubblePainter _speechPainter;
 
-        public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftScoreView score, ICarFactory cars, EmotionStyle style,
-            TipPopSettings tipPop, PowerMeterSettings powerMeter)
+        public PlayingHud(PixelCanvas canvas, IEventBus bus, IGameClock clock, IShiftBlessingsView blessings, ILotGoal goal, ICarFactory cars, EmotionStyle style,
+            BlessingPopSettings blessingPop, PowerBarSettings powerBar, SpeechBubbleSettings speechBubble = null)
         {
-            _powerTracker = new PowerMeterTracker(bus, powerMeter);
-            _power = new PowerMeterPainter(canvas, _powerTracker, powerMeter);
+            _powerTracker = new PowerBarTracker(bus, powerBar, goal: goal);
+            _power = new PowerBarPainter(canvas, _powerTracker);
             _freezeTracker = new FreezeTracker(bus, new FreezeFade(FreezeLook.FadeInSeconds, FreezeLook.FadeOutSeconds));
             _freezeVeil = new FreezeVeilPainter(canvas, _freezeTracker.Fade);
-            _smashTracker = new SmashFxTracker(bus, cars, new SmashFx(), UnscaledTime);
-            _smashPainter = new SmashFxPainter(canvas, _smashTracker.Fx);
-            _board = new TicketBoard(bus);
-            _hud = new HudPainter(canvas, clock, score);
+            _board = new TicketBoard(bus, Services.Get<IModifierCatalog>());
+            _hud = new HudPainter(canvas, clock, blessings, goal);
             _keyBoard = new KeyBoardPainter(canvas, style);
             _notices = new NoticePainter(canvas);
             _world = new WorldTicketPainter(canvas, cars, style);
             _mood = new PatronMoodPainter(canvas, style);
-            var pops = new TipPops(tipPop);
-            _tipPopTracker = new TipPopTracker(bus, cars, pops, tipPop, UnscaledTime);
-            _tipPops = new TipPopPainter(canvas, pops, tipPop);
+            var pops = new BlessingPops(blessingPop);
+            _blessingPopTracker = new BlessingPopTracker(bus, cars, pops, blessingPop, UnscaledTime);
+            _cursePopTracker = new CursePopTracker(bus, pops, blessingPop, UnscaledTime, FrameCount);
+            _blessingPops = new BlessingPopPainter(canvas, pops, blessingPop);
             _curbHints = new CurbHintTracker(bus);
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
             _occupiedHints = new OccupiedHintTracker(bus, UnscaledTime);
             _occupiedPainter = new OccupiedHintPainter(canvas, _occupiedHints);
+            var bubbles = speechBubble != null ? speechBubble.Enabled : SpeechBubbleSettings.DefaultEnabled;
+            _speech = new SpeechBubbleTracker(bus, UnscaledTime, bubbles);
+            if (bubbles) _speechPainter = new SpeechBubblePainter(canvas, _speech, speechBubble);
         }
 
         private static float UnscaledTime() => Time.unscaledTime;
+
+        private static int FrameCount() => Time.frameCount;
 
         public void Draw(Camera camera, float time, string prompt)
         {
@@ -68,27 +76,27 @@ namespace UncannyValet.UI.Hud
             _board.CollectRows(_rows);
             _world.Draw(_rows, camera, time);
             _mood.Draw(_rows, camera);
-            _tipPops.Draw(camera, Time.unscaledTime);
-            _smashPainter.DrawWorld(camera, Time.unscaledTime);
+            _blessingPops.Draw(camera, Time.unscaledTime);
             _hintPainter.Draw(camera);
             _occupiedPainter.Draw(camera);
+            _speechPainter?.Draw(camera, time);
             _hud.Draw(time);
             _power.Draw(time);
             _board.CollectKeyBoardRows(_keyRows);
             _keyBoard.Draw(_keyRows, time);
             _notices.Draw(prompt);
-            _smashPainter.DrawOverlay(Time.unscaledTime);
         }
 
         public void Dispose()
         {
             _board.Dispose();
-            _tipPopTracker.Dispose();
+            _blessingPopTracker.Dispose();
+            _cursePopTracker.Dispose();
             _powerTracker.Dispose();
             _freezeTracker.Dispose();
-            _smashTracker.Dispose();
             _curbHints.Dispose();
             _occupiedHints.Dispose();
+            _speech.Dispose();
         }
     }
 }

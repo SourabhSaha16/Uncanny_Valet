@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI.Hud;
 
 namespace UncannyValet.UI
@@ -18,10 +19,10 @@ namespace UncannyValet.UI
 
         public int Count => _rows.Count;
 
-        public TicketBoard(IEventBus bus)
+        public TicketBoard(IEventBus bus, IModifierCatalog catalog)
         {
             _bus = bus;
-            _needs = new TicketNeedsTracker(bus, _rows);
+            _needs = new TicketNeedsTracker(bus, _rows, catalog);
             _bus.Subscribe<TicketOpened>(OnOpened);
             _bus.Subscribe<CarTagAssigned>(OnTag);
             _bus.Subscribe<CarPlateAssigned>(OnPlate);

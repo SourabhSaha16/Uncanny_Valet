@@ -13,8 +13,15 @@ namespace UncannyValet.Audio
         {
             _sampleRate = sampleRate;
             var ids = (SfxId[])Enum.GetValues(typeof(SfxId));
-            _clips = new AudioClip[ids.Length];
+            _clips = new AudioClip[MaxId(ids) + 1]; // retired ids leave gaps in the numbering
             foreach (SfxId id in ids) _clips[(int)id] = Render(id, tyreSharpness);
+        }
+
+        private static int MaxId(SfxId[] ids)
+        {
+            var max = 0;
+            foreach (var id in ids) max = Math.Max(max, (int)id);
+            return max;
         }
 
         public AudioClip Get(SfxId id) => _clips[(int)id];

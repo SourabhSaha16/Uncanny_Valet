@@ -16,12 +16,12 @@ namespace UncannyValet.Bootstrap
         [SerializeField] private Transform _target;
         [SerializeField, Min(1f), Tooltip("Smallest zoom (half the visible height). Also the zoom used when no bounds are set.")]
         private float _orthographicSize = DefaultOrthographicSize;
-        [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot. Beyond this the camera follows instead of showing everything.")]
+        [SerializeField, Min(1f), Tooltip("Largest zoom when fitting the lot view (margin and decor). The lot itself is always fully shown, even when it needs a bigger zoom than this.")]
         private float _maxOrthographicSize = 15f;
         [SerializeField, Min(0f), Tooltip("World units of extra room around the lot bounds when fitting.")]
         private float _boundsMargin = 1f;
-        [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.78 = about 22% closer). The play area is never cropped.")]
-        private float _fitTightness = 0.78f;
+        [SerializeField, Range(0.5f, 1f), Tooltip("Zooms in on the fitted view by this factor (0.83 = about 17% closer than showing everything; was 0.78, widened 2026-11-14 for about 13% more visible area). The play area is never cropped.")]
+        private float _fitTightness = 0.83f;
         [SerializeField, Min(0f)] private float _smoothing = 8f;
         [SerializeField, Range(0f, 0.5f), Tooltip("Seconds the Perfect Park camera kick lasts (out and back).")]
         private float _kickSeconds = 0.08f;

@@ -100,6 +100,12 @@ namespace UncannyValet.Cars
             drive.BeginDeparting(car.Definition, () => Despawn(id));
         }
 
+        public bool TryDriveTo(CarId id, Vector2 target, float speed)
+        {
+            if (!_cars.TryGetValue(id, out var car) || car == null || car.HasDriver) return false;
+            return car.GetComponent<CarAutoDrive>().TryBeginAdvancing(car.Definition, target, speed);
+        }
+
         public bool TryGet(CarId id, out IDrivable car)
         {
             var found = _cars.TryGetValue(id, out var driver);
@@ -134,8 +140,10 @@ namespace UncannyValet.Cars
             var driver = go.AddComponent<CarDriver>();
             driver.Initialize(id, def, Kit.Live);
             go.AddComponent<CarAutoDrive>();
+            go.AddComponent<CarMudEffect>();
             go.AddComponent<CarCollisionResponse>().Initialize(Kit);
             go.AddComponent<CarDamage>().Initialize(Kit.Live);
+            go.AddComponent<CarPedestrianSlow>().Initialize(Kit);
             go.AddComponent<CarInteraction>();
             go.AddComponent<SkidEmitter>().Initialize(Kit, Decals, _slip);
             var art = AttachBodyArt(go, id, def, renderer);

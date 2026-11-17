@@ -9,8 +9,8 @@ namespace UncannyValet.UI.Kit
     /// </summary>
     public static class PixelIconData
     {
-        /// <summary>Palette keys: ink, white, gold, dark gold, amber, cyan, red, grey, light grey, dark, green.</summary>
-        public const string Keys = "kwyoacrgldn";
+        /// <summary>Palette keys: ink, white, gold, dark gold, amber, cyan, red, grey, light grey, dark, green, mud, dark mud, light mud.</summary>
+        public const string Keys = "kwyoacrgldnmbh";
 
         public static readonly Color32[] Colors =
         {
@@ -19,21 +19,21 @@ namespace UncannyValet.UI.Kit
             new Color32(0xFF, 0xB0, 0x20, 255), new Color32(0x38, 0xD6, 0xF0, 255),
             new Color32(0xE5, 0x48, 0x3C, 255), new Color32(0x8C, 0x8C, 0x9C, 255),
             new Color32(0xC8, 0xC8, 0xD4, 255), new Color32(0x4A, 0x42, 0x58, 255),
-            new Color32(0x4C, 0xCB, 0x5E, 255),
+            new Color32(0x4C, 0xCB, 0x5E, 255), new Color32(0x7A, 0x4E, 0x2D, 255),
+            new Color32(0x4E, 0x31, 0x1B, 255), new Color32(0xA8, 0x74, 0x48, 255),
         };
 
-        private static readonly string[] Coin =
+        private static readonly string[] Bolt =
         {
-            "..kkkk..", ".kyyyyk.", "kyywyyok", "kywyyyok", "kywyyyok", "kyyyyyok", ".kooook.", "..kkkk..",
+            "....kkkk.", "...kyyyyk", "..kyyyyk.", ".kyyyyk..", "kyyyyyyyk", "kkkkyyyk.",
+            "...kyyk..", "..kyyk...", "..kyyk...", ".kyyk....", ".kyk.....", ".kk......",
         };
 
-        private static readonly string[] StarLit =
+        private static readonly string[] PrayerHands =
         {
-            "....k....", "...kyk...", "...kyk...", "kkkkykkkk", "kyyyyyyyk",
-            ".kyyyyyk.", ".kyyyyyk.", "kyyykyyyk", "kkkk.kkkk",
+            "....k....", "...kyk...", "..kyyyk..", "..kywyk..", ".kyywyyk.", ".kyyoyyk.",
+            ".kyyoyyk.", "..kyoyk..", "..kyoyk..", ".kkkkkkk.", ".kwwkwwk.", ".kkkkkkk.",
         };
-
-        private static readonly string[] StarUnlit = Recolor(StarLit, 'y', 'd');
 
         private static readonly string[] Bell =
         {
@@ -52,7 +52,7 @@ namespace UncannyValet.UI.Kit
             "kwwwwwwwwwk", ".kkgkkkgkk.", "..kgk.kgk..",
         };
 
-        private static readonly string[] Wash = UncannyValet.Core.Contracts.WashIconArt.Rows;
+        private static readonly string[] Mud = UncannyValet.Core.Modifiers.MudIconArt.Rows;
 
         private static readonly string[] Tyre =
         {
@@ -67,24 +67,16 @@ namespace UncannyValet.UI.Kit
         {
             switch (icon)
             {
-                case PixelIcon.Coin: return Coin;
-                case PixelIcon.StarLit: return StarLit;
-                case PixelIcon.StarUnlit: return StarUnlit;
+                case PixelIcon.Bolt: return Bolt;
                 case PixelIcon.Bell: return Bell;
                 case PixelIcon.KeyTag: return KeyTag;
                 case PixelIcon.Car: return Car;
-                case PixelIcon.Wash: return Wash;
+                case PixelIcon.Mud: return Mud;
                 case PixelIcon.Tyre: return Tyre;
                 case PixelIcon.Plug: return Plug;
+                case PixelIcon.PrayerHands: return PrayerHands;
                 default: throw new ArgumentOutOfRangeException(nameof(icon), icon, "Icon has no bitmap.");
             }
-        }
-
-        private static string[] Recolor(string[] rows, char from, char to)
-        {
-            var result = new string[rows.Length];
-            for (var i = 0; i < rows.Length; i++) result[i] = rows[i].Replace(from, to);
-            return result;
         }
     }
 }

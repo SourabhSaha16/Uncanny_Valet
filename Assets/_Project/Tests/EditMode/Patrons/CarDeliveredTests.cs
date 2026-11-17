@@ -19,10 +19,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 25;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(25, 0, 0, 0, 25, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 25;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(25, 0, 0, 25, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -36,7 +36,7 @@ namespace UncannyValet.Tests.Patrons
         {
             _bus = new EventBus(); _clock = new FakeClock();
             var cars = new FakeCarFactory(_bus);
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips());
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings());
             new PatronDeparture(_bus, cars);
             _log = new List<IGameEvent>();
             _bus.Subscribe<CarDelivered>(e => _log.Add(e));
@@ -61,6 +61,8 @@ namespace UncannyValet.Tests.Patrons
         public void DeliveredClose_PublishesCarDeliveredThenTicketClosed()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             _bus.Publish(new CarAtCurb(_car));
 
@@ -74,6 +76,8 @@ namespace UncannyValet.Tests.Patrons
         public void LatePickupClose_PublishesCarDeliveredThenTicketClosed()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             Tick(90f);
             _bus.Publish(new CarAtCurb(_car));
@@ -94,6 +98,8 @@ namespace UncannyValet.Tests.Patrons
         public void NightEndWhileParkedOrRequested_ClosesWithoutCarDelivered()
         {
             _bus.Publish(new CarParked(_car, 1));
+            _bus.Publish(new PatronEnteredDiner(_car));
+            _bus.Publish(new CarLeftPickup(_car));
             Tick(20f);
             _bus.Publish(new ShiftEnded());
             AssertClosedWithoutDelivery();

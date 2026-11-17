@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
 using UncannyValet.Audio;
 using UncannyValet.Cars;
 using UncannyValet.Core;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
@@ -11,10 +14,13 @@ using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
 using UncannyValet.Powers;
+using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI;
 using UncannyValet.Valet;
+using UncannyValet.Watchers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UncannyValet.Bootstrap
 {
@@ -25,7 +31,7 @@ namespace UncannyValet.Bootstrap
     public sealed class GameBootstrap : MonoBehaviour
     {
         [SerializeField] private ShiftConfig _shiftConfig;
-        [SerializeField] private TipConfig _tipConfig;
+        [SerializeField, FormerlySerializedAs("_tipConfig")] private BlessingConfig _blessingConfig;
         [SerializeField] private CarFactory _carFactory;
         [SerializeField] private LotLayoutBuilder _lot;
         [SerializeField] private ShiftClock _clock;
@@ -52,95 +58,98 @@ namespace UncannyValet.Bootstrap
         private TrafficModule _traffic;
         [SerializeField, Tooltip("Seeds the traffic keys of the F2 panel.")]
         private TrafficConfig _trafficConfig;
-        [SerializeField, Tooltip("Valet powers: the meter, the activation and the Perfect feedback. Starts once the bus is registered.")]
+        [SerializeField, Tooltip("Valet powers: the power bar, the activation and the Perfect feedback. Starts once the bus is registered.")]
         private PerfectFeedback _powers;
         [SerializeField, Tooltip("Seeds the power keys of the F2 panel.")]
-        private PowerMeterConfig _powerConfig;
+        private PowerBarConfig _powerConfig;
+        [SerializeField, Tooltip("Speech bubble timings and the thresholds of what makes a watcher speak.")]
+        private WatcherConfig _watcherConfig;
+
+        [SerializeField, Tooltip("This scene's lot: shift length, pacing, dial positions, layout and blessing threshold.")]
+        private LotDefinition _lotDefinition;
+        [SerializeField, Tooltip("The power definitions the reward card reads names and descriptions from.")]
+        private List<PowerDefinition> _powerDefinitions = new List<PowerDefinition>();
+        [SerializeField, Tooltip("Every lot of the run, in play order; feeds the title-screen picker and the run state.")]
+        private RunDefinition _runDefinition;
 
         private const int DefaultSpotSeed = 6;
 
-        private ShiftScore _score;
+        private ShiftBlessings _blessings;
         private ShiftFlow _flow;
         private ShiftRandom _random;
         private DirectorBootstrap _directorBoot;
         private TrafficTuningLink _trafficLink;
         private DifficultyDialsLink _dialsLink;
+        private RunBootstrap _runBoot;
+        private IEventBus _bus;
 
         private void Awake()
         {
-            if (_shiftConfig == null)
+            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null)
             {
-                Debug.LogError("GameBootstrap has no ShiftConfig: rebuild with Uncanny Valet/Setup/Build Everything.", this);
+                Debug.LogError("GameBootstrap has no ShiftConfig, LotDefinition or RunDefinition: rebuild with Uncanny Valet/Setup/Build Everything.", this);
                 enabled = false;
                 return;
             }
+            if (!_lotDefinition.TryValidate(out var problem)) Debug.LogError("Invalid lot definition: " + problem, _lotDefinition);
             Services.Reset();
             var bus = new EventBus();
+            _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
-            var input = new GatedInputSource(keyboard, () => _tuningPanel.IsTyping || _ui.IsTitleShowing);
+            Func<bool> inputBlocked = () => _tuningPanel.IsTyping || _ui.IsFlowScreenShowing;
+            var input = new GatedInputSource(keyboard, inputBlocked);
             var tuning = new TuningStore(bus);
-            _score = new ShiftScore(bus, _shiftConfig);
+            _blessings = new ShiftBlessings(bus, _shiftConfig, () => Services.TryGet<ILotGoal>(out var goal) ? goal : null);
             _carFactory.Bus = bus;
 
             Services.Register<IEventBus>(bus);
             Services.Register<ITuning>(tuning);
+            var modifiers = ModifierBootstrap.Register(_lotDefinition);
             SeedTuning(tuning, 0);
             Services.Register<ICarFactory>(_carFactory);
             Services.Register<ILotLayout>(_lot);
             Services.Register<IInputSource>(input);
+            Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
-            Services.Register<ITipCalculator>(new TipCalculator(_tipConfig));
-            Services.Register<IShiftScoreView>(_score);
+            Services.Register<IBlessingCalculator>(new BlessingCalculator(_blessingConfig, null, modifiers));
+            Services.Register<IShiftBlessingsView>(_blessings);
             Services.Register<IPlayerFocus>(new TransformPlayerFocus(_valet.transform));
+            AudioBootstrap.Register(_lotDefinition);
 
             _carFactory.gameObject.SetActive(true);
             _lot.gameObject.SetActive(true);
             Services.Register<IRoadLayout>(_lot.Road);
+            QueueSlotCheck.Verify(_lotDefinition, _lot, this);
             SeedTuning(tuning, _lot.RegularSpotCount);
-            StartTraffic(bus);
-            FrameLot();
+            _trafficLink = TrafficBootstrap.Start(bus, _traffic, this); // after the lot registered the road
+            if (!LotBounds.TryFrame(_lot.gameObject, _decor, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
             PedestrianBootstrap.Start(_pedestrians, _decor);
             _powers.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
-            SpawnValet();
+            ValetSpawner.Spawn(_valet, _camera);
             _random = new ShiftRandom(bus, tuning);
             _spawner.Random = _random;
             StartDirector(bus, tuning);
             _spawner.gameObject.SetActive(true);
-            StartUi();
+            _runBoot = RunBootstrap.Start(bus, _runDefinition, _lotDefinition); // before the UI, which reads the lot picker
+            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
+            StartUi(bus);
+            WatcherBootstrap.Start(_lotDefinition, _watcherConfig, _pedestrians, _lot.transform);
             _tuningPanel.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
-            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
         }
-
-        // The shift (and with it the clock and the patrons) starts only when the title screen is dismissed. By then
-        // every component activated above has run Start (StationSwitch subscribes to ShiftPlanChanged there).
-        private void OnTitleDismissed() => _flow?.StartFirstShift();
 
         // Seeds before any module is active so none reads an unseeded key. Called again once the lot knows its
         // spot count, which only matters when the plan says 0 ("all spots open").
         private void SeedTuning(ITuning tuning, int spotCount)
         {
             _dialsLink?.Dispose();
-            _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _tipConfig,
+            _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _blessingConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
                 _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
-                emotions: _ui.Emotions, queueClear: _lot.QueueClear);
-        }
-
-        // After the road is registered: the module reads IRoadLayout in its Start and registers the trip routers.
-        private void StartTraffic(IEventBus bus)
-        {
-            if (_traffic == null)
-            {
-                Debug.LogError("GameBootstrap has no TrafficModule: rebuild with Uncanny Valet/Setup/Build Everything. Cars drive in and out without a road.", this);
-                return;
-            }
-            _trafficLink = new TrafficTuningLink(bus, _traffic.SetMinOnScreen, _traffic.SetSpeedScale,
-                _traffic.SetEntrySpeed, _traffic.SetExitSpeed, _traffic.SetTargetOnScreen);
-            _traffic.gameObject.SetActive(true);
+                emotions: _ui.Emotions, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
         }
 
         private void StartDirector(IEventBus bus, ITuning tuning)
@@ -152,48 +161,29 @@ namespace UncannyValet.Bootstrap
                 return;
             }
             _directorBoot = DirectorBootstrap.Start(bus, tuning, _clock, _lot, _director, _directorProfile, _random,
-                _shiftConfig.MaxComboMultiplier);
+                _shiftConfig.MaxFavourMultiplier);
             if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }
 
-        private void FrameLot()
-        {
-            if (LotBounds.TryMeasure(_lot.gameObject, out var rect))
-                _camera.SetWorldBounds(_decor != null ? _decor.ExtendView(rect) : rect, rect);
-            else Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
-        }
-
-        private void SpawnValet()
-        {
-            _valet.transform.position = Services.Get<ILotLayout>().ValetStartPoint;
-            if (_valet.GetComponent<ValetAnimator>() == null) // the animator owns the sprites when present
-            {
-                var body = _valet.GetComponentInChildren<SpriteRenderer>();
-                body.sprite = PlaceholderSprite.Create();
-                body.color = new Color(0.95f, 0.85f, 0.2f);
-            }
-            _valet.SetActive(true);
-            if (_camera != null) _camera.SetTarget(_valet.transform);
-        }
-
-        private void StartUi()
+        private void StartUi(IEventBus bus)
         {
             var interactor = _valet.GetComponent<Interactor>();
             _ui.Configure(() => interactor.CurrentPrompt);
-            _ui.TitleDismissed += OnTitleDismissed;
+            FlowBootstrap.Wire(_ui, _runBoot, bus, _flow, _powerDefinitions);
             _ui.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
         {
-            if (_ui != null) _ui.TitleDismissed -= OnTitleDismissed;
             _flow?.Dispose();
             _directorBoot?.Dispose();
             _trafficLink?.Dispose();
             _dialsLink?.Dispose();
             _random?.Dispose();
-            _score?.Dispose();
-            Services.Reset();
+            _blessings?.Dispose();
+            _runBoot?.Dispose();
+            // A newer lot scene may already have registered its own services; only the owner of the current bus clears them.
+            if (Services.TryGet<IEventBus>(out var current) && ReferenceEquals(current, _bus)) Services.Reset();
         }
     }
 }

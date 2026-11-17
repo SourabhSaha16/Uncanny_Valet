@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ff7d80e18323043b337527f2b0b7f1, type: 3}
+  m_Name: NeedsCharge
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Modifiers.ServiceModifierDefinition
+  _id: 2
+  _displayName: Needs charge
+  _clearedAt: 0
+  _clearMinutes: 20
+  _startProgress01: 0.2
+  _bonus: 15
+  _activeWord: Charging
+  _doneWord: Charged
+  _icon: 1
+  _look: 2
+  _rampsLate: 1
+  _clearMinutesKey: 13
+  _bonusKey: 18
+  _chanceKey: 157

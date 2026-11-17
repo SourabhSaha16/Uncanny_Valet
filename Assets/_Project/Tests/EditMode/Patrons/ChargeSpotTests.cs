@@ -16,10 +16,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 1;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(1, 0, 0, 0, 1, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 1;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(1, 0, 0, 1, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -33,15 +33,15 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus(); _clock = new FakeClock();
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips(), new ServiceTuning(0.2f, 20f, 15f));
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), null, null, ModifierTestKit.Catalog());
             _charges = 0; _expired = 0;
-            _bus.Subscribe<CarChargeChanged>(e => _charges++);
+            _bus.Subscribe<ModifierProgressChanged>(e => _charges++);
             _bus.Subscribe<TicketTimerExpired>(e => _expired++);
         }
 
         private Ticket Arrive(bool ev)
         {
-            var t = _registry.Create(_car, new PatronRequest(100f, 20, false, 60f, ev, false));
+            var t = _registry.Create(_car, new PatronRequest(100f, 20, false, 60f, ModifierTestKit.Of(ev, false)));
             _registry.AnnounceArrival(t);
             return t;
         }

@@ -35,16 +35,6 @@ namespace UncannyValet.Core.Events
         public CarArrived(CarId car) { Car = car; }
     }
 
-    /// <summary>
-    /// An arrived car came to rest clear of the arrival queue (the Lot module judges it). Patrons starts the patron's stay
-    /// from this, so a car left in the queue does not run the clock; only the first such rest of a car is published.
-    /// </summary>
-    public readonly struct CarClearedQueue : IGameEvent
-    {
-        public readonly CarId Car;
-        public CarClearedQueue(CarId car) { Car = car; }
-    }
-
     /// <summary>The valet got into the driver's seat.</summary>
     public readonly struct CarEntered : IGameEvent
     {
@@ -131,5 +121,12 @@ namespace UncannyValet.Core.Events
     {
         public readonly CarId Car;
         public CarHardBraked(CarId car) { Car = car; }
+    }
+
+    /// <summary>A car (driven or game-driven) drove into a mud patch: its mud weight rose above zero from zero. Published by Cars.</summary>
+    public readonly struct CarEnteredMud : IGameEvent
+    {
+        public readonly CarId Car;
+        public CarEnteredMud(CarId car) { Car = car; }
     }
 }

@@ -8,43 +8,51 @@ namespace UncannyValet.UI.Screens
     public static class ResultsFormatter
     {
         public const string Title = "SHIFT OVER";
+        public const string ClearedLabel = "CLEARED";
+        public const string FailedLabel = "FAILED";
+        public const string BlessingsHeading = "BLESSINGS / THRESHOLD";
         public const string RetryLabel = "RETRY";
         public const string NextLotLabel = "NEXT LOT";
-        public const string SoonLabel = "SOON";
-        public const string BossName = "MRS. OKAFOR";
-        public const string TopMarks = "THREE STARS! TOP MARKS!";
-        public const int MaxStars = 3;
+        public const string ReachedLine = "THRESHOLD REACHED!";
 
-        public static ResultsContent Build(in ShiftResult result, int carsParked, int bestCombo, int perfectParks = 0, int smashTips = 0)
+        public static ResultsContent Build(in ShiftResult result, int carsParked, int perfectParks = 0, VerdictSpeech speech = default)
         {
             return new ResultsContent
             {
                 Title = Title,
-                Score = "$" + result.Score,
-                Stars = result.Stars,
-                Goal = NextGoal(result),
-                Stats = Stats(result, carsParked, bestCombo, perfectParks, smashTips),
+                Verdict = result.Cleared ? ClearedLabel : FailedLabel,
+                Cleared = result.Cleared,
+                Blessings = result.Blessings + " / " + result.Threshold,
+                Goal = Goal(result),
+                Stats = Stats(result, carsParked, perfectParks),
+                Speaker = speech.Speaker ?? string.Empty,
+                SpeechLines = Wrap(speech.Line),
             };
         }
 
-        private static StatLine[] Stats(in ShiftResult result, int carsParked, int bestCombo, int perfectParks, int smashTips)
+        /// <summary>The verdict line broken to the width of the speech panel.</summary>
+        public static string[] Wrap(string line)
         {
-            var lines = new List<StatLine>(5)
+            if (string.IsNullOrEmpty(line)) return System.Array.Empty<string>();
+            var spans = new List<WordWrap.Span>();
+            WordWrap.Wrap(line, ResultsPainter.SpeechChars, spans);
+            var lines = new string[spans.Count];
+            for (var i = 0; i < lines.Length; i++) lines[i] = line.Substring(spans[i].Start, spans[i].Length);
+            return lines;
+        }
+
+        private static StatLine[] Stats(in ShiftResult result, int carsParked, int perfectParks)
+        {
+            return new[]
             {
                 new StatLine(PixelIcon.Tyre, "CARS PARKED", carsParked.ToString()),
-                new StatLine(PixelIcon.StarLit, "BEST COMBO", "X" + bestCombo),
-                new StatLine(PixelIcon.Bell, "COMPLAINTS", result.Complaints.ToString()),
+                new StatLine(PixelIcon.Bolt, "PEAK FAVOUR", "X" + result.PeakFavour),
+                new StatLine(PixelIcon.Bell, "CURSES", result.Curses.ToString()),
                 new StatLine(PixelIcon.Car, "PERFECT PARKS", perfectParks.ToString()),
             };
-            if (smashTips > 0) lines.Add(new StatLine(PixelIcon.Coin, "SMASH TIPS", "$" + smashTips));
-            return lines.ToArray();
         }
 
-        private static string NextGoal(in ShiftResult r)
-        {
-            if (r.Stars >= MaxStars) return TopMarks;
-            var target = r.Stars == 0 ? r.OneStarScore : r.Stars == 1 ? r.TwoStarScore : r.ThreeStarScore;
-            return "NEXT STAR AT $" + target + " (" + (target - r.Score) + " TO GO)";
-        }
+        private static string Goal(in ShiftResult r)
+            => r.Cleared ? ReachedLine : (r.Threshold - r.Blessings) + " MORE BLESSINGS NEEDED";
     }
 }

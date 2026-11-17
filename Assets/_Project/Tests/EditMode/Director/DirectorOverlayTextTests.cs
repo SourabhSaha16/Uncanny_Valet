@@ -42,8 +42,8 @@ namespace UncannyValet.Tests.Director
         public void BoostedDecisionNamesTheRuleItsMultiplierAndTheReason()
         {
             var d = new DirectorDecision(DecisionKind.Scheduled, 65f, ScheduleReason.UnderTarget, ReliefTrigger.Workload,
-                CarArchetype.Dirty, true, 6, 0.6f, 0.8f, true, DilemmaKind.WashBlocked, 3f);
-            StringAssert.StartsWith("1:05 sent Dirty (WashBlocked x3, UnderTarget)", DirectorOverlayText.Decision(d));
+                CarArchetype.Muddy, true, 6, 0.6f, 0.8f, true, DilemmaKind.WashBlocked, 3f);
+            StringAssert.StartsWith("1:05 sent Muddy (WashBlocked x3, UnderTarget)", DirectorOverlayText.Decision(d));
             var half = new DirectorDecision(DecisionKind.Scheduled, 65f, ScheduleReason.OnTarget, ReliefTrigger.Workload,
                 CarArchetype.Ev, true, 6, 0.6f, 0.8f, true, DilemmaKind.LastBay, 1.5f);
             StringAssert.Contains("(LastBay x1.5, OnTarget)", DirectorOverlayText.Decision(half));

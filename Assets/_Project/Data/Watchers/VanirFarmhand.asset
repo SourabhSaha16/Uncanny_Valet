@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 204175eebb5f1c84ead4764886092486, type: 3}
+  m_Name: VanirFarmhand
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherDefinition
+  _world: 2
+  _kind: 2
+  _speakerName: FARMHAND ARNI
+  _look:
+    _skin: 4
+    _hair: 0
+    _outfit: 4
+    _skinTint: {r: 1, g: 1, b: 1, a: 1}
+    _hairTint: {r: 1, g: 1, b: 1, a: 1}
+    _outfitTint: {r: 1, g: 1, b: 1, a: 1}
+    _accessories:
+    - _label: Hat Brim
+      _centerPixels: {x: 15.5, y: 6}
+      _sizePixels: {x: 15, y: 2}
+      _color: {r: 0.9, g: 0.76, b: 0.35, a: 1}
+      _order: 0
+    - _label: Hat Crown
+      _centerPixels: {x: 15.5, y: 4}
+      _sizePixels: {x: 8, y: 3}
+      _color: {r: 0.9, g: 0.76, b: 0.35, a: 1}
+      _order: 1
+    - _label: Pitchfork Handle
+      _centerPixels: {x: 25, y: 21}
+      _sizePixels: {x: 1, y: 14}
+      _color: {r: 0.55, g: 0.36, b: 0.18, a: 1}
+      _order: 0
+    - _label: Pitchfork Head
+      _centerPixels: {x: 25, y: 13.5}
+      _sizePixels: {x: 5, y: 1}
+      _color: {r: 0.62, g: 0.64, b: 0.68, a: 1}
+      _order: 1
+    - _label: Pitchfork Tine Left
+      _centerPixels: {x: 23, y: 11.5}
+      _sizePixels: {x: 1, y: 3}
+      _color: {r: 0.62, g: 0.64, b: 0.68, a: 1}
+      _order: 1
+    - _label: Pitchfork Tine Right
+      _centerPixels: {x: 27, y: 11.5}
+      _sizePixels: {x: 1, y: 3}
+      _color: {r: 0.62, g: 0.64, b: 0.68, a: 1}
+      _order: 1
+    _bobHeight: 0.03
+    _bobSpeed: 1.2
+  _text: {fileID: 11400000, guid: b126d36fa7e83e140829977dc34870bd, type: 2}

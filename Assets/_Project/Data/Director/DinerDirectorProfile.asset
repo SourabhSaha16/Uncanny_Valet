@@ -104,8 +104,8 @@ MonoBehaviour:
   - _phase: 4
     _start01: 0.78
   _plainWeight: 50
-  _dirtyWeight: 20
+  _muddyWeight: 20
   _evWeight: 20
-  _dirtyEvWeight: 10
+  _muddyEvWeight: 10
   _arrivalBudget: 14
   _budgetSlack: 2

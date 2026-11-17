@@ -23,6 +23,13 @@ namespace UncannyValet.Core.Contracts
         /// </summary>
         void DriveAwayAndDespawn(CarId id);
 
+        /// <summary>
+        /// Drives a standing, empty car straight ahead to <paramref name="target"/> at <paramref name="speed"/> (units per second)
+        /// and stops it there (the arrival queue moving up). The car stays solid. Publishes <c>CarRepositioned</c> when it
+        /// stops. Returns false when the car is missing, driven or already driving itself.
+        /// </summary>
+        bool TryDriveTo(CarId id, Vector2 target, float speed);
+
         bool TryGet(CarId id, out IDrivable car);
 
         void Despawn(CarId id);

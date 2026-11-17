@@ -35,12 +35,13 @@ debt, strikes or boss orders (all removed).
 
 1. Title screen: "UNCANNY VALET", blinking PRESS ANY KEY. The clock does not start until a key press (also
    unlocks browser audio).
-2. A car drives in to one of 3 arrival slots stacked under the curb and stops (CarArrived); only then does its info box
-   appear. Any waiting car can be taken. When all 3 slots are full no new car arrives. Waiting cars have no timer
-   and never leave on their own.
+2. A car drives in to the end of a 4-position queue stacked under the diner (CarArrived); position 1 is the VALET PICKUP spot. The patron stays
+   in the car until the valet comes up to the car in the pickup spot (PatronStepsOut), then walks to the diner. When Thor drives that car away the car
+   behind advances into the pickup spot (CarRepositioned) and the freed tail position accepts the next arrival; with all 4 positions full the next arrival waits.
+   Waiting cars have no timer and never leave on their own.
 3. The valet walks to it (E to enter), drives it to a free numbered spot or a station (the EV charging bay 7, the wash slot) and parks it. The wash slot holds one car: a second car is physically blocked and an OCCUPIED
    hint shows.
-4. The patron returns, the pickup is requested, the valet drives the car to the curb, tip is paid.
+4. The patron returns, the pickup is requested, the valet drives the car to the VALET DROP-OFF (the curb zone), tip is paid. The stay clock starts at the later of two moments: the patron enters the diner (PatronEnteredDiner) and Thor drives the car out of the pickup spot (CarLeftPickup).
 5. At 0:00 the results screen shows stars, score and Retry (click, Enter or Space). Next Lot is disabled.
 
 Only the pickup timer exists (game minutes; 1 game minute is 1 real second); it drives the tip and the angry
@@ -86,7 +87,7 @@ separate pickup banner is gone.
 > **Lot v2 (2026-11-10), layout and traffic merged.** Spec: `docs/redesign/lot_v2_layout.md` (binding).
 
 - Lot layout (v2): diner on the left with a side door (ambient people) and a main door (patrons); the curb touches
-  the diner right of the main door; a 3-slot arrival queue sits in a column under the curb (nose up); two rows of 4
+  the diner right of the main door; a 4-slot arrival queue (slot 1 is the valet pickup spot) sits in a column under the curb (nose up); two rows of 4
   tall bays (2.6 x 4.4, pitch 3.2): top row regular spots 1 to 4, bottom row EV bay (id 7), regular 5, wash, regular 6;
   a wide aisle with a long crosswalk between the rows; a right strip (x 10.7 to 14.2) is the road and bus stop where
   ambient walkers appear. The frame is fixed (spots open and close but the walls never move). Below the lot a
@@ -97,22 +98,22 @@ separate pickup banner is gone.
   Angry (shortened to Angry when it does not fit) instead of the timer bar. A new status is one enum id, one rule
   class and one row in the label/colour table (`Scripts/UI/Status/`), in priority order Cust. Angry > Pick Up >
   Washing > Charging > Washed > Charged > Parked.
-- Lot v4 (2026-11-10): the VALET PICKUP zone sits 1.75 units right of the diner wall (`SiteLayout.CurbGap`);
+- Lot v4 (2026-11-10): the VALET DROP-OFF zone (the curb) sits 1.75 units right of the diner wall (`SiteLayout.CurbGap`);
   patrons wait in that gap and always face east to the zone (set in `WalkerRouter.Apply` while Waiting); the queue
   column stays under the zone; the exit route has about 4 arrows (5.5 units apart). The key board panel is titled
   CAR SLOTS and lists a car only once it is parked in a spot or station (it stays until its ticket closes). The
   results screen no longer shows cars returned. Traffic defaults from the human's F2 tuning: 13 ambient cars a
   minute, ambient speed scale 1.25, entry speed 7.3 and exit speed 5 units/s (the panel value is the real speed).
-- Lot v3 look (2026-11-10): the curb zone is labelled VALET PICKUP (two stacked columns); patrons at the curb face it
-  (`IPedestrianPaths.CurbCenter`); the arrival queue is three dotted car-sized boxes (no arrows); crosswalks are white
+- Lot v3 look (2026-11-10): the curb zone is labelled VALET DROP-OFF (two stacked columns); patrons at the curb face it
+  (`IPedestrianPaths.CurbCenter`); the arrival queue is four dotted car-sized boxes, the first yellow and labelled VALET PICKUP (no arrows); crosswalks are white
   zebra stripes; the ground outside the lot is dark asphalt (no grass or trees); small arrows along the delivered
   car's exit route (curb, down the corridor, east onto the road) show where cars will drive off.
 - Lot art: grass, sidewalks, road, the tan green-roof building as the diner, trees; the old placeholder
-  rectangles are gone. Spots are painted bays; the curb is a cobbled zone with CURB text.
+  rectangles are gone. Spots are painted bays; the curb is a cobbled zone with DROP-OFF text.
 - Zebra crosswalks across the drive aisle and between bay rows with painted arrows; a crossing on the road.
 - 8 ambient pedestrians loop on fixed routes (MetroCity character parts, 4-direction run cycles). Scenery only
   for now: no collision, no honk.
-- Patron flow: the patron steps out of the arrived car, crosses to the diner and goes inside; when the stay
+- Patron flow: the patron steps out only when Thor comes up to the car in the pickup spot, crosses to the diner and goes inside; the stay clock starts when they are in the diner and Thor has driven the car out of the pickup spot (PatronEnteredDiner and CarLeftPickup, whichever is last); when the stay
   ends they come out (PatronSummoned), cross to the curb and wait. The pickup and its patience timer start only
   when they stand at the curb (PatronReachedCurb; fallback after 40 game minutes). Ambient walkers come from
   the road sides, walk to the diner door, vanish inside and come out again. Walkers have no colliders, so routes
@@ -155,7 +156,7 @@ state, pure rules with EditMode tests, assemblies referencing only Core. Changes
 | Impact damage, shake, smoke, debris | planned |
 | Pedestrian reactions: honk, tumble, courtesy tips | planned |
 | Patron Director steps 1-3 (snapshot, pacing, archetype picker, dilemmas) and the soak test | done; step 4 (return scheduler) planned |
-| Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 3), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
+| Lot v2: new layout (6 regular, 1 EV, 1 wash, queue of 4 since 2026-11-14), road below, new ambient spawn points, director retuned | done (layout and road drawn; not played) |
 | Lot v3 polish: patrons face the pickup, VALET PICKUP label, dotted queue boxes, zebra crosswalks, real building, asphalt surround, exit-route arrows, F2 entry and exit speed | done, first browser check only |
 | Lot v4: pickup zone gap, CAR SLOTS board (parked cars only), fewer arrows, traffic defaults, results without cars returned | done, first browser check only |
 | CAR SLOTS status words, plate only when parked, pickup emotions (patron bubble, plate flash colours and speeds) | done, not played |
@@ -202,9 +203,11 @@ Spec: `docs/redesign/patron_director_spec.md` (binding). A pacing AI replaces th
 
 **Difficulty dials.** The F2 panel shows nine designer dials (0 to 10; baseline 8, 8, 6, 5, 5, 6.5, 4, 5.5, seed 0; the neutral anchor position is 5): Overall Intensity, Ramp Over the Shift, Late-Shift Rush, Car Mix Dirty %, Car Mix EV %, Dilemma Frequency, Mercy, Skill Reward and Randomness Seed. They derive every underlying Director and plan value (`Director/DifficultyDials`, anchors in `DifficultyDialsConfig`; tables in `docs/redesign/difficulty_dials.md`). The default position reproduces the old defaults exactly. All other rows sit behind the panel's Advanced toggle (off by default) with plain-language names. A dial move re-derives all driven rows, overwriting hand edits.
 
+**Update 2026-11-13 (story epic 79).** The two Car Mix dials (Dirty % and EV %) were removed: 6 dials plus the seed remain. What a car needs is now a service modifier (Muddy replaces Dirty, NeedsCharge is the EV need) whose arrival chances come from each lot's LotDefinition (`docs/changelogs/services.md`). The text above that mentions nine dials, Dirty or EV chances is superseded.
+
 ## A11. Valet powers (spec binding; meter, activation and stacking built, effects not yet)
 
-Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 2026-11-11). A vertical meter on the side of the screen listens to events and fills: Perfect Park gives a high amount, a perfect drop-off a medium amount, drifting a very slight amount. Three powers unlock at three meter levels: level 1 speed boost for a few seconds (Mario-star style), level 2 freeze time, level 3 (the longest to fill) Park Smash, which instantly completes every pending job (cars parked in bays, EVs charged, dirty cars washed and placed, waiting patrons paid and gone) for a clean slate and pays the patrons' tips. Each power has its own art and sound. Spending a power resets the meter. Powers stack: an active power keeps running while the player refills the meter and fires a higher one. The level 1 speed boost replaces the Golden Valet dash (dropped). Decisions: perfect drop-off is a tight angle (about 15 degrees), stopped in the zone, before half the pickup timer; freeze lasts 6 s with a tunable time scale; one key fires the highest level; Park Smash pays full tips with the speed bonus times the combo; the Director sends more cars after a Smash and none during freeze; the meter starts each shift empty. Architecture: a pure `PowerMeter` rule plus `PowerMeterConfig`, a new `UncannyValet.Powers` module that references only Core, powers behind `IPowerEffect`, events `PowerMeterChanged`, `PowerActivated`, `PowerEnded`, `PerfectDropOff`.
+Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 2026-11-11). A vertical meter on the side of the screen listens to events and fills: Perfect Park gives a high amount, a perfect drop-off a medium amount, drifting a very slight amount. Three powers unlock at three meter levels: level 1 speed boost for a few seconds (Mario-star style), level 2 freeze time, level 3 (the longest to fill) Park Smash, which instantly completes every pending job (cars parked in bays, EVs charged, dirty cars washed and placed, waiting patrons paid and gone) for a clean slate and pays the patrons' tips. Each power has its own art and sound. Spending a power resets the meter. Powers stack: an active power keeps running while the player refills the meter and fires a higher one. The level 1 speed boost replaces the Golden Valet dash (dropped); on foot it multiplies Thor's walking speed (1.6 at level 1) for the boost time, in a car it boosts the car as before. Thor also has a free Shift dash on foot (3 units in 0.2 s, 1.5 s cooldown, pedestrians still block him). Decisions: perfect drop-off is a tight angle (about 15 degrees), stopped in the zone, before half the pickup timer; freeze lasts 6 s with a tunable time scale; one key fires the highest level; Park Smash pays full tips with the speed bonus times the combo; the Director sends more cars after a Smash and none during freeze; the meter starts each shift empty. Architecture: a pure `PowerMeter` rule plus `PowerMeterConfig`, a new `UncannyValet.Powers` module that references only Core, powers behind `IPowerEffect`, events `PowerMeterChanged`, `PowerActivated`, `PowerEnded`, `PerfectDropOff`.
 
 ## A9. Design log
 
@@ -244,6 +247,11 @@ Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 
 ---
 
 # Part B. Pre-pivot design (superseded, kept for history)
+| 2026-11-14 | Valet pickup spot and diner-entry timer merged (#127, #126): queue of 4 whose first slot is the VALET PICKUP spot, the curb zone is the VALET DROP-OFF; the patron stays in the car until Thor approaches it (`PatronStepsOut`); queued cars advance (`CarRepositioned`, `ICarFactory.TryDriveTo`) and a full queue holds arrivals; the stay clock starts on `PatronEnteredDiner` (issue #78's queue-distance rule and 3-minute fallback are removed; the tuning keys are kept as retired); new tunables in `PatronConfig.Pickup` (MaxQueuedCars 4, ApproachRange 4, AdvanceSpeed 5). Supersedes the queue of 3 and the pickup labelling in `docs/redesign/lot_v2_layout.md` |
+| 2026-11-14 | Pedestrian fixes merged (#124, #125): on crazy lots (`LotDefinition.FreePedestrianRoutes`, seeded as `TuningKey.PedestrianFreeRoutes`) walkers take a straight route to the door instead of the crosswalk path, so they no longer queue at the crosswalk; a pushed or bumped pedestrian now stays where they land and walks on from there (`PathFollower.Displace`; the old return-to-route bounce curve is replaced by `PedestrianBounceRule.Slide`) |
+| 2026-11-14 | Playtest batch 2 merged (#129 to #139): speech bubbles switched off by `SpeechBubbleSettings.Enabled` (default off); status label 'No blessing'; any pedestrian hit by the valet's car costs a slight curse of 2 blessings on every lot (`TuningKey.PedestrianSlightCurseAmount`, patron curse stays 5 and is never stacked); car slowdown on a pedestrian hit 35% (was 15%); power bar hidden on Midgard lots (`LotDefinition.ShowPowerBar`); Perfect Park already runs on every lot (18 power per perfect); ambient pedestrians roam and enter the diner after a random 10 to 40 s; bottom row of spots 1.5 units lower (`LotConfig.BottomRowDrop`); crazy lots keep the queue topped up (`IArrivalPacing`); patron timer starts when the patron is in the diner and the car has left the pickup spot (`CarLeftPickup`). |
+| 2026-11-16 | Playtest batch 3 merged (#144 to #146): each car's stay gets a seeded random offset of plus or minus 30% (`PatronConfig` stay jitter fraction) so returns spread out; Shift dash on foot (`ShiftDash`, `DashCooldown`); power 1 (Thunder stride) is a temporary walking speed boost (`WalkSpeedBoost`, `PowerLevelValues.Secondary` is the multiplier) instead of the on-foot dash. |
+| 2026-11-16 | Playtest batch 4 merged (#147 to #150): all level audio is silenced and released on every level change (`LayerSet`, `SourceLayer`); wash bays sit in one column right beside the bay block (`LotLayoutOptions.WashBayGap`, the crazy lot is no longer widened); a muddy car and the wash station use the same mud splat symbol (`MudIconArt`); the first power lasts 5 s at level 1 and 7 s at level 2 and shows a pulsing golden tint, glow and sparks (`ThunderAura`). |
 
 ## 1. Overview
 

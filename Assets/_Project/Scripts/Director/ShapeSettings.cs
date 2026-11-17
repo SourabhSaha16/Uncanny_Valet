@@ -40,9 +40,9 @@ namespace UncannyValet.Director
             t.Seed(TuningKey.DirRampShape, NeutralScale);
             t.Seed(TuningKey.DirLateTargetBoost, NeutralBoost);
             t.Seed(TuningKey.DirWeightPlain, weights.Plain);
-            t.Seed(TuningKey.DirWeightDirty, weights.Dirty);
+            t.Seed(TuningKey.DirWeightMuddy, weights.Muddy);
             t.Seed(TuningKey.DirWeightEv, weights.Ev);
-            t.Seed(TuningKey.DirWeightDirtyEv, weights.DirtyEv);
+            t.Seed(TuningKey.DirWeightMuddyEv, weights.MuddyEv);
         }
 
         public void Read(ITuning t)
@@ -51,9 +51,9 @@ namespace UncannyValet.Director
             RampShape = TuningRead.Float(t, TuningKey.DirRampShape, RampShape);
             LateBoost = TuningRead.Float(t, TuningKey.DirLateTargetBoost, LateBoost);
             LateStart = TuningRead.Float(t, TuningKey.PlanLateEvStart, LateStart);
-            HasWeights = t.TryGet(TuningKey.DirWeightPlain, out var plain) & t.TryGet(TuningKey.DirWeightDirty, out var dirty)
-                & t.TryGet(TuningKey.DirWeightEv, out var ev) & t.TryGet(TuningKey.DirWeightDirtyEv, out var dirtyEv);
-            if (HasWeights) Weights = new ArchetypeWeights(plain, dirty, ev, dirtyEv);
+            HasWeights = t.TryGet(TuningKey.DirWeightPlain, out var plain) & t.TryGet(TuningKey.DirWeightMuddy, out var muddy)
+                & t.TryGet(TuningKey.DirWeightEv, out var ev) & t.TryGet(TuningKey.DirWeightMuddyEv, out var muddyEv);
+            if (HasWeights) Weights = new ArchetypeWeights(plain, muddy, ev, muddyEv);
         }
     }
 }

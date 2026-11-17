@@ -51,9 +51,10 @@ MonoBehaviour:
     _maxStep: 0.25
     _windowSeconds: 60
     _warmupSeconds: 30
-    _tipWeight: 0.6
+    _blessingWeight: 0.6
     _angryWeight: 1
-    _comboWeight: 0.4
+    _favourWeight: 0.4
+    _paceBlessings: 450
     _angryForFullPenalty: 2
   _rules:
     _washBlocked: 3

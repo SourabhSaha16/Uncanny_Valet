@@ -48,18 +48,31 @@ namespace UncannyValet.Tests.Director
         }
 
         [Test]
-        public void DirtyCarOwesTheTripAndTheWashLeft()
+        public void MuddyCarOwesTheTripAndTheWashLeft()
         {
-            _b.Car(CarLotState.Parked, dirty: true, washLeft: 1f);
+            _b.Car(CarLotState.Parked, muddy: true, washLeft: 1f);
             Assert.AreEqual(6f + 15f, Estimate().Seconds, 0.001f);
         }
 
         [Test]
         public void CarAlreadyInTheWashSlotOwesOnlyTheWashLeft()
         {
-            var car = _b.Car(CarLotState.InStation, dirty: true, washLeft: 0.5f);
+            var car = _b.Car(CarLotState.InStation, muddy: true, washLeft: 0.5f);
             _b.Slot(StationKind.Wash, StationSlotState.Working, car);
             Assert.AreEqual(7.5f, Estimate().Seconds, 0.001f);
+        }
+
+        [Test]
+        public void CarHoldingTwoModifiersOwesBothServices_AndDropsEachWhenCleared()
+        {
+            _b.Car(CarLotState.Parked, muddy: true, ev: true, washLeft: 1f);
+            Assert.AreEqual(6f + 15f + 6f, Estimate().Seconds, 0.001f, "wash trip + wash + bay trip");
+            _b = new SnapshotBuilderForTests();
+            _b.Car(CarLotState.Parked, muddy: true, ev: true, washDone: true);
+            Assert.AreEqual(6f, Estimate().Seconds, 0.001f, "only the bay trip is left");
+            _b = new SnapshotBuilderForTests();
+            _b.Car(CarLotState.Parked, muddy: true, ev: true, washDone: true, chargeDone: true);
+            Assert.AreEqual(0f, Estimate().Seconds, 0.001f);
         }
 
         [Test]
@@ -76,16 +89,16 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void FinishedCarBlockingAStationSomeoneNeedsCostsAnEviction()
         {
-            var clean = _b.Car(CarLotState.InStation, dirty: true, washDone: true);
+            var clean = _b.Car(CarLotState.InStation, muddy: true, washDone: true);
             _b.Slot(StationKind.Wash, StationSlotState.Blocked, clean);
-            _b.Car(CarLotState.Parked, dirty: true, washLeft: 1f);
+            _b.Car(CarLotState.Parked, muddy: true, washLeft: 1f);
             Assert.AreEqual(6f + 6f + 15f, Estimate().Seconds, 0.001f);
         }
 
         [Test]
         public void BlockedStationNobodyNeedsCostsNothing()
         {
-            var clean = _b.Car(CarLotState.InStation, dirty: true, washDone: true);
+            var clean = _b.Car(CarLotState.InStation, muddy: true, washDone: true);
             _b.Slot(StationKind.Wash, StationSlotState.Blocked, clean);
             Assert.AreEqual(0f, Estimate().Seconds, 0.001f);
         }
@@ -129,12 +142,10 @@ namespace UncannyValet.Tests.Director
         [Test]
         public void SlotRuleClassifiesOccupants()
         {
-            Assert.AreEqual(StationSlotState.Working, SlotStateRule.Occupied(StationKind.Wash, true, false, false, false));
-            Assert.AreEqual(StationSlotState.Blocked, SlotStateRule.Occupied(StationKind.Wash, true, true, false, false));
-            Assert.AreEqual(StationSlotState.Squatted, SlotStateRule.Occupied(StationKind.Wash, false, false, true, false));
-            Assert.AreEqual(StationSlotState.Working, SlotStateRule.Occupied(StationKind.Charging, false, false, true, false));
-            Assert.AreEqual(StationSlotState.Blocked, SlotStateRule.Occupied(StationKind.Charging, false, false, true, true));
-            Assert.AreEqual(StationSlotState.Squatted, SlotStateRule.Occupied(StationKind.Charging, true, false, false, false));
+            Assert.AreEqual(StationSlotState.Working, SlotStateRule.Occupied(true, true));
+            Assert.AreEqual(StationSlotState.Blocked, SlotStateRule.Occupied(true, false));
+            Assert.AreEqual(StationSlotState.Squatted, SlotStateRule.Occupied(false, false));
+            Assert.AreEqual(StationSlotState.Squatted, SlotStateRule.Occupied(false, true));
             Assert.AreEqual(StationSlotState.Reserved, SlotStateRule.Empty(0, 1));
             Assert.AreEqual(StationSlotState.Free, SlotStateRule.Empty(1, 1));
         }

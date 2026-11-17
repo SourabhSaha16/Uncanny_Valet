@@ -38,3 +38,27 @@ Date: 2026-11-07
 Files: Assets/_Project/Scripts/Night/{INightEnder,RunLossGuard,NightClock}.cs, Assets/_Project/Scripts/Economy/{NightTally,NightTallyRecorder}.cs, Assets/_Project/Tests/EditMode/Night/RunLossTests.cs
 Why: design.md sections 2 and 6 (boss strikes). RunLossGuard (plain class, Bootstrap must `new RunLossGuard(bus, clock)`) asks the clock to end on a final StrikeGiven while the night runs; NightClock.EndAtNextTick ends on the next Advance so every StrikeGiven subscriber has run first and the end goes through the normal NightEnded path. NightTallyRecorder flags a final strike during an active tally and the summary is published with RunLost = true (tips so far kept, DebtLeft floored at 1 so PaidOff stays false, no next-night note).
 Tests: RunLossTests (ends once with RunLost, non-final ignored, ignored when not running, no double end, new run after loss, never paid off); not run (sandbox refused the Unity batch command).
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Economy/{TipCalculator,TipConfig}.cs, Scripts/Night/ShiftPlanSource.cs, Data/Economy/TipConfig.asset, Tests/EditMode/Economy and Night
+Why: Issue #121. The tip pays each cleared modifier's own bonus (live key when tuned) as TipBreakdown.ModifierBonus; the old charge and clean bonuses move into the modifier definitions. The shift plan no longer carries the EV and wash chances (the lot owns them).
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## blessings: half a blessing when a needed service is missed [Claude]
+Date: 2026-11-13
+Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
+Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
+Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
+
+## economy-night: slight curse for hitting any pedestrian [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Economy/SlightCurseRule.cs, PedestrianCurseRule.cs (Covers), ShiftBlessings.cs; Core/Events/TuningKey.cs (appended PedestrianSlightCurseAmount); Core/Contracts/PedestrianHitRows.cs (row, default 2, seed); Tests/EditMode/Economy/SlightCurseTests.cs, PedestrianCurseTests.cs
+Why: Issue #138. The driven car hitting any walker costs a slight curse (2 blessings) on every lot, ignoring the lot curse switch; the full patron curse is unchanged and wins (one curse per hit, no stacking).
+Tests: SlightCurseTests added, PedestrianCurseTests updated; EditMode 1850 passed, 0 failed.

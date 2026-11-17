@@ -23,7 +23,7 @@ namespace UncannyValet.UI
         private readonly string _format;
         private string _text = string.Empty;
         private float _shown = float.NaN;
-        private bool _dirty;
+        private bool _stale;
 
         private TuningRowView(TuningInfo info, bool isHeader, string fieldName)
         {
@@ -66,12 +66,12 @@ namespace UncannyValet.UI
         private void DrawField(Rect rect, ITuning tuning, string focusedField, GUIStyle style, ref float value)
         {
             var focused = focusedField == _fieldName;
-            if (!focused && (_dirty || !Mathf.Approximately(_shown, value))) Refresh(value);
+            if (!focused && (_stale || !Mathf.Approximately(_shown, value))) Refresh(value);
             GUI.SetNextControlName(_fieldName);
             var typed = GUI.TextField(rect, _text, 8, style);
             if (typed == _text) return;
             _text = typed;
-            _dirty = true;
+            _stale = true;
             if (float.TryParse(typed, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
                 Write(tuning, parsed, ref value);
         }
@@ -89,7 +89,7 @@ namespace UncannyValet.UI
         private void Refresh(float value)
         {
             _shown = value;
-            _dirty = false;
+            _stale = false;
             _text = value.ToString(_format, CultureInfo.InvariantCulture);
         }
     }

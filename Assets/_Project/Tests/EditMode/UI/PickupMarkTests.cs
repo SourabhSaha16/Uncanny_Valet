@@ -48,7 +48,7 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual(_config.HappyColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.1f), _style));
             Assert.AreEqual(_config.ImpatientColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.7f), _style));
             Assert.AreEqual(_config.AngryColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.9f), _style));
-            Assert.AreEqual(_config.WillNotTipColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true), _style));
+            Assert.AreEqual(_config.WillNotBlessColor, PickupMark.Tint(Row(TicketRowState.PickupRequested, 0.3f, true), _style));
         }
     }
 }

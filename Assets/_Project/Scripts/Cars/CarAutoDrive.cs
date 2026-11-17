@@ -16,12 +16,13 @@ namespace UncannyValet.Cars
     [DisallowMultipleComponent]
     public sealed class CarAutoDrive : MonoBehaviour
     {
-        private enum Mode { Idle, Arriving, Departing, TripArriving, TripDeparting }
+        private enum Mode { Idle, Arriving, Departing, TripArriving, TripDeparting, Advancing }
 
         private Rigidbody2D _body;
         private CarDriver _driver;
         private Collider2D _collider;
         private CarInteraction _interaction;
+        private CarMudEffect _mud;
         private CarAutoDriveStyle _style;
         private Action _onLeft;
         private Mode _mode;
@@ -33,6 +34,7 @@ namespace UncannyValet.Cars
         private readonly CarTrip _trip = new CarTrip();
         private readonly TripProbe _probe = new TripProbe();
         private float _tripSpeed;
+        private float _advanceSpeed;
         private readonly WorldTimeReader _world = new WorldTimeReader();
 
         /// <summary>True while the car is driving in or out on its own, by road trip or straight.</summary>
@@ -51,6 +53,24 @@ namespace UncannyValet.Cars
             _speed = 0f;
             SetAutoDriving(true);
             _mode = Mode.Arriving;
+        }
+
+        /// <summary>
+        /// Moves a standing car straight along its heading to <paramref name="target"/> at <paramref name="speed"/>, easing to a
+        /// stop (the arrival queue moving up). The car stays solid and publishes <see cref="CarRepositioned"/> when it stops.
+        /// Returns false while the car is already driving itself.
+        /// </summary>
+        public bool TryBeginAdvancing(CarDefinition definition, Vector2 target, float speed)
+        {
+            if (IsBusy) return false;
+            Cache(definition);
+            _target = target;
+            var toTarget = target - _body.position;
+            _heading = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : (Vector2)transform.up;
+            _advanceSpeed = speed;
+            SetAutoDriving(true, true);
+            _mode = Mode.Advancing;
+            return true;
         }
 
         /// <summary>Accelerates along the heading until out of view, then calls <paramref name="onLeft"/>.</summary>
@@ -79,7 +99,8 @@ namespace UncannyValet.Cars
             _trip.Begin(trips, tripId);
             SetAutoDriving(true, true);
             _mode = Mode.TripArriving;
-            if (_trip.Advance(0f, out TripPose first) == TripStatus.Running) Place(first);
+            _tripSpeed = 0f;
+            if (_trip.Advance(0f, out TripPose first) == TripStatus.Running) Snap(first.Position, first.HeadingDegrees);
         }
 
         /// <summary>
@@ -111,6 +132,7 @@ namespace UncannyValet.Cars
             if (_driver == null) _driver = GetComponent<CarDriver>();
             if (_collider == null) _collider = GetComponent<Collider2D>();
             if (_interaction == null) _interaction = GetComponent<CarInteraction>();
+            if (_mud == null) _mud = GetComponent<CarMudEffect>();
         }
 
         private void SetAutoDriving(bool on, bool solid = false)
@@ -125,8 +147,10 @@ namespace UncannyValet.Cars
 
         private void FixedUpdate()
         {
-            var dt = _world.Scaled(Time.fixedDeltaTime); // freeze time stops cars that drive themselves
+            // Freeze time stops cars that drive themselves; mud slows them like it slows a driven car.
+            var dt = _world.Scaled(Time.fixedDeltaTime) * (_mud != null ? _mud.SpeedScale : 1f);
             if (_mode == Mode.Arriving) StepArrive(dt);
+            else if (_mode == Mode.Advancing) StepAdvance(dt);
             else if (_mode == Mode.Departing) StepDepart(dt);
             else if (_mode != Mode.Idle) StepTrip(dt);
         }
@@ -155,12 +179,6 @@ namespace UncannyValet.Cars
             _onLeft?.Invoke();
         }
 
-        private void Place(TripPose pose)
-        {
-            _tripSpeed = 0f;
-            Snap(pose.Position, pose.HeadingDegrees);
-        }
-
         private void Snap(Vector2 position, float rotationDegrees)
         {
             _body.position = position;
@@ -184,6 +202,23 @@ namespace UncannyValet.Cars
             _speed = dt > 0f ? step / dt : 0f;
             if (step >= remaining || CarAutoDriveMath.HasArrived(remaining - step)) ArriveAtTarget();
             else _body.MovePosition(position + _heading * step);
+        }
+
+        private void StepAdvance(float dt)
+        {
+            Vector2 position = _body.position;
+            float remaining = Vector2.Distance(position, _target);
+            float step = CarAutoDriveMath.ArriveStep(remaining, _advanceSpeed, _style.ArriveEase, dt);
+            if (step < remaining && !CarAutoDriveMath.HasArrived(remaining - step))
+            {
+                _body.MovePosition(position + _heading * step);
+                return;
+            }
+            _body.position = _target;
+            transform.position = _target;
+            _mode = Mode.Idle;
+            SetAutoDriving(false);
+            if (Services.TryGet<IEventBus>(out var bus)) bus.Publish(new CarRepositioned(_driver.Id));
         }
 
         private void StepDepart(float dt)

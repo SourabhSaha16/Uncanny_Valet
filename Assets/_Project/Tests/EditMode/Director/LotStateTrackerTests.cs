@@ -60,14 +60,14 @@ namespace UncannyValet.Tests.Director
             Assert.AreEqual(6, RegularSpots);
             Assert.AreEqual(RegularSpots, snap.TotalSpots);
             Assert.AreEqual(RegularSpots, snap.FreeSpots);
-            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, 0f, 0f, true, true, 0)));
+            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, true, true, 0)));
             Assert.AreEqual(RegularSpots, Tracker.Capture().TotalSpots, "a plan of 0 opens every regular spot");
         }
 
         [Test]
         public void PlanLimitsTotalSpots()
         {
-            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, 0f, 0f, true, true, 4)));
+            Bus.Publish(new ShiftPlanChanged(new ShiftPlan(3, 1f, true, true, 4)));
             var snap = Tracker.Capture();
             Assert.AreEqual(4, snap.TotalSpots);
             Assert.AreEqual(4, snap.FreeSpots);
@@ -131,9 +131,9 @@ namespace UncannyValet.Tests.Director
         public void AngryPatronsAreCountedInsideTheWindow()
         {
             Clock.SetElapsed(10f);
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             Clock.SetElapsed(50f);
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             var snap = Tracker.Capture();
             Assert.AreEqual(1, snap.CountAngry(30f));
             Assert.AreEqual(2, snap.CountAngry(60f));
@@ -143,7 +143,7 @@ namespace UncannyValet.Tests.Director
         public void NewShiftClearsEverything()
         {
             Spawn();
-            Bus.Publish(new ComplaintFiled(Ticket, 15));
+            Bus.Publish(new CurseApplied(Ticket, 15));
             Bus.Publish(new ShiftStarted());
             var snap = Tracker.Capture();
             Assert.AreEqual(0, snap.Cars.Count);

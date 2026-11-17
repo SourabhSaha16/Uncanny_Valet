@@ -9,7 +9,7 @@ namespace UncannyValet.UI.Mood
         Impatient,
         /// <summary>Patience nearly gone: red, very fast flash.</summary>
         Angry,
-        /// <summary>Patience used up: the patron has given up and gives no tip; dark red, slow flash.</summary>
-        WillNotTip
+        /// <summary>Patience used up: the patron has given up and gives no blessing; dark red, slow flash.</summary>
+        WillNotBless
     }
 }

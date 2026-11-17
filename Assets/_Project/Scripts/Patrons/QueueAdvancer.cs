@@ -1,0 +1,144 @@
+using System;
+using System.Collections.Generic;
+using UncannyValet.Core.Contracts;
+using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
+using UnityEngine;
+
+namespace UncannyValet.Patrons
+{
+    /// <summary>
+    /// Runs the valet pickup spot and the queue behind it (issue 127). Every arrived car stands in a queue slot (slot 0 is the
+    /// pickup spot). When the valet comes up to the car in the pickup spot its patron is told to step out
+    /// (<see cref="PatronStepsOut"/>); when a slot is clear the car behind drives up into it (<see cref="QueueAdvanceRule"/>).
+    /// Call <see cref="Tick"/> every frame; it never allocates.
+    /// </summary>
+    public sealed class QueueAdvancer : IDisposable
+    {
+        private readonly IEventBus _bus;
+        private readonly ICarFactory _cars;
+        private readonly ILotLayout _lot;
+        private readonly IArrivalScan _scan;
+        private readonly PickupQueueSettings _settings;
+        private readonly PickupLeaveWatcher _leave;
+        private readonly PatronExitGate _gate = new PatronExitGate();
+        private readonly List<CarId> _standing = new List<CarId>();
+        private readonly AdvanceTracker _moving = new AdvanceTracker();
+        private readonly Func<float> _clock;
+        private readonly List<CarId> _inSlot = new List<CarId>();
+        private readonly List<bool> _occupied = new List<bool>();
+        private readonly List<QueueMove> _moves = new List<QueueMove>();
+
+        public QueueAdvancer(IEventBus bus, ICarFactory cars, ILotLayout lot, IArrivalScan scan, PickupQueueSettings settings, Func<float> clock = null)
+        {
+            _clock = clock ?? (() => Time.time);
+            _bus = bus; _cars = cars; _lot = lot; _scan = scan; _settings = settings;
+            _leave = new PickupLeaveWatcher(bus, cars, lot, settings.SlotTolerance);
+            _bus.Subscribe<CarArrived>(OnArrived);
+            _bus.Subscribe<CarRepositioned>(OnRepositioned);
+            _bus.Subscribe<CarEntered>(OnEntered);
+            _bus.Subscribe<TicketClosed>(OnClosed);
+            _bus.Subscribe<ShiftStarted>(OnShiftEdge);
+            _bus.Subscribe<ShiftEnded>(OnShiftEdge);
+        }
+
+        /// <summary>Where the valet is (on foot or in a car). Null until the game has one; the approach check waits for it.</summary>
+        public IPlayerFocus Focus { get; set; }
+
+        public void Dispose()
+        {
+            _leave.Dispose();
+            _bus.Unsubscribe<CarArrived>(OnArrived);
+            _bus.Unsubscribe<CarRepositioned>(OnRepositioned);
+            _bus.Unsubscribe<CarEntered>(OnEntered);
+            _bus.Unsubscribe<TicketClosed>(OnClosed);
+            _bus.Unsubscribe<ShiftStarted>(OnShiftEdge);
+            _bus.Unsubscribe<ShiftEnded>(OnShiftEdge);
+        }
+
+        /// <summary>Lets the patron at the pickup spot out when the valet is near, and moves the queue up where a slot is clear, and reports a car the valet drove out of the pickup spot.</summary>
+        public void Tick()
+        {
+            _leave.Tick();
+            _moving.Expire(_clock());
+            if (_standing.Count == 0) return;
+            var slots = _lot.ArrivalSlots;
+            FillSlotCars(slots);
+            ReleaseAtPickup(slots);
+            Advance(slots);
+        }
+
+        private void FillSlotCars(IReadOnlyList<Vector2> slots)
+        {
+            _inSlot.Clear();
+            for (var i = 0; i < slots.Count; i++) _inSlot.Add(CarId.None);
+            for (var i = 0; i < _standing.Count; i++)
+            {
+                if (_moving.IsMoving(_standing[i]) || !_cars.TryGet(_standing[i], out var car) || car.Transform == null) continue;
+                var slot = QueueSlotLocator.SlotAt(slots, car.Transform.position, _settings.SlotTolerance);
+                if (slot != QueueSlotLocator.None && _inSlot[slot] == CarId.None) _inSlot[slot] = _standing[i];
+            }
+        }
+
+        private void ReleaseAtPickup(IReadOnlyList<Vector2> slots)
+        {
+            var car = _inSlot[QueueAdvanceRule.PickupSlot];
+            if (car == CarId.None || Focus == null) return;
+            var distance = Vector2.Distance(Focus.Position, slots[QueueAdvanceRule.PickupSlot]);
+            if (_gate.TryReleaseByApproach(car, QueueAdvanceRule.PickupSlot, distance, _settings.ApproachRange))
+                _bus.Publish(new PatronStepsOut(car));
+        }
+
+        // A car whose nose reaches into the slot ahead (it stopped a little short) must not count itself as the blocker.
+        private void Advance(IReadOnlyList<Vector2> slots)
+        {
+            _occupied.Clear();
+            for (var i = 0; i < slots.Count; i++)
+                _occupied.Add(_scan.IsTaken(i, i + 1 < _inSlot.Count ? _inSlot[i + 1] : CarId.None));
+            _moving.MarkTargets(_occupied);
+            _moves.Clear();
+            QueueAdvanceRule.Moves(_inSlot, _occupied, _moves);
+            for (var i = 0; i < _moves.Count; i++) Drive(_moves[i], slots);
+        }
+
+        private void Drive(QueueMove move, IReadOnlyList<Vector2> slots)
+        {
+            if (!_cars.TryGet(move.Car, out var car) || car.Transform == null) return;
+            var target = slots[move.ToSlot];
+            var travel = Vector2.Distance(car.Transform.position, target) / _settings.AdvanceSpeed;
+            if (!_cars.TryDriveTo(move.Car, target, _settings.AdvanceSpeed)) return;
+            _moving.Start(move.Car, move.ToSlot, _clock() + travel * _settings.AdvanceTimeoutScale + _settings.AdvanceTimeoutPad);
+        }
+
+        private void OnArrived(CarArrived e)
+        {
+            if (!_standing.Contains(e.Car)) _standing.Add(e.Car);
+        }
+
+        private void OnRepositioned(CarRepositioned e) => _moving.Remove(e.Car);
+
+        // The valet took a queued car without the pickup approach: the patron must not ride along, so it gets out now.
+        private void OnEntered(CarEntered e)
+        {
+            if (!_standing.Remove(e.Car)) return;
+            _moving.Remove(e.Car);
+            if (_gate.TryReleaseByTakeover(e.Car)) _bus.Publish(new PatronStepsOut(e.Car));
+        }
+
+        private void OnClosed(TicketClosed e) => Forget(e.Car);
+
+        private void OnShiftEdge<T>(T e)
+        {
+            _standing.Clear();
+            _moving.Clear();
+            _gate.Clear();
+        }
+
+        private void Forget(CarId car)
+        {
+            _standing.Remove(car);
+            _moving.Remove(car);
+            _gate.Forget(car);
+        }
+    }
+}

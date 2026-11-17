@@ -4,7 +4,7 @@ namespace UncannyValet.Pedestrians
 {
     /// <summary>
     /// Pure rule for the tiny rubber-ball bounce a pedestrian does when a car or the valet bumps them: a short push away
-    /// from the bumper that eases out quickly and settles back to the route point (so the route is never disturbed).
+    /// from the bumper that eases out quickly and stays where it lands (the walker then carries on from there; nothing pulls them back).
     /// A cooldown stops a car that keeps touching them from re-triggering every step.
     /// </summary>
     public sealed class PedestrianBounceRule
@@ -20,7 +20,7 @@ namespace UncannyValet.Pedestrians
         /// <summary>True while the bounce plays.</summary>
         public bool Active { get; private set; }
 
-        /// <summary>Current displacement from the route point (zero when not bouncing).</summary>
+        /// <summary>Current displacement from the route point; after the bounce ends it stays at the landing offset until the next bounce.</summary>
         public Vector2 Offset { get; private set; }
 
         /// <summary>Sets the peak distance, bounce length and the pause before another bounce may start.</summary>
@@ -35,12 +35,11 @@ namespace UncannyValet.Pedestrians
         public static float Strength(float speed, float minSpeed, float fullSpeed)
             => speed < minSpeed || fullSpeed <= 0f ? 0f : Mathf.Clamp01(speed / fullSpeed);
 
-        /// <summary>Displacement shape for progress 0..1: leaves fast (ease-out), peaks early, settles back to 0.</summary>
-        public static float Shape(float progress)
+        /// <summary>Displacement share for progress 0..1: leaves fast (ease-out) and lands at 1 (it never returns).</summary>
+        public static float Slide(float progress)
         {
             var u = Mathf.Clamp01(progress);
-            var eased = 1f - (1f - u) * (1f - u);
-            return Mathf.Sin(Mathf.PI * eased);
+            return 1f - (1f - u) * (1f - u);
         }
 
         /// <summary>Starts a bounce away along <paramref name="away"/>. False while bouncing, cooling down, or when the strength is zero.</summary>
@@ -62,7 +61,7 @@ namespace UncannyValet.Pedestrians
             if (!Active) return;
             _elapsed += deltaSeconds;
             Active = _elapsed < _seconds;
-            Offset = Active ? _direction * (_distance * _strength * Shape(_elapsed / _seconds)) : Vector2.zero;
+            Offset = _direction * (_distance * _strength * Slide(_elapsed / _seconds));
         }
     }
 }

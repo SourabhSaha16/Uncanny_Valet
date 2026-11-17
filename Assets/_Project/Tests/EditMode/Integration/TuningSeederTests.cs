@@ -18,12 +18,12 @@ namespace UncannyValet.Tests.Integration
             var tuning = new TuningStore(new EventBus());
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             var director = ScriptableObject.CreateInstance<DirectorConfig>();
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, director, profile);
                 foreach (var info in TuningCatalog.All)
                     Assert.IsTrue(tuning.TryGet(info.Key, out _), info.Key + " was not seeded");
             }
@@ -31,7 +31,7 @@ namespace UncannyValet.Tests.Integration
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
                 Object.DestroyImmediate(director);
                 Object.DestroyImmediate(profile);
             }
@@ -43,11 +43,11 @@ namespace UncannyValet.Tests.Integration
             var tuning = new TuningStore(new EventBus());
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             var traffic = ScriptableObject.CreateInstance<UncannyValet.Traffic.TrafficConfig>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, traffic: traffic);
+                TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, traffic: traffic);
                 Assert.AreEqual(traffic.EntrySpeed, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
                 Assert.AreEqual(traffic.ExitSpeed, tuning.Get(TuningKey.TrafficExitSpeed), 0.0001f);
                 Assert.AreEqual(7.3f, tuning.Get(TuningKey.TrafficEntrySpeed), 0.0001f);
@@ -60,7 +60,7 @@ namespace UncannyValet.Tests.Integration
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
                 Object.DestroyImmediate(traffic);
             }
         }
@@ -73,10 +73,10 @@ namespace UncannyValet.Tests.Integration
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, director, profile);
                 Assert.AreEqual(1f, tuning.Get(TuningKey.DirEnabled));
                 Assert.AreEqual(14f, tuning.Get(TuningKey.DirArrivalBudget));
                 Assert.AreEqual(2f, tuning.Get(TuningKey.DirBudgetSlack));
@@ -90,7 +90,7 @@ namespace UncannyValet.Tests.Integration
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
                 Object.DestroyImmediate(director);
                 Object.DestroyImmediate(profile);
             }
@@ -102,12 +102,12 @@ namespace UncannyValet.Tests.Integration
             var tuning = new TuningStore(new EventBus());
             var shift = ScriptableObject.CreateInstance<ShiftConfig>();
             var patrons = ScriptableObject.CreateInstance<PatronConfig>();
-            var tips = ScriptableObject.CreateInstance<TipConfig>();
+            var blessings = ScriptableObject.CreateInstance<BlessingConfig>();
             var director = ScriptableObject.CreateInstance<DirectorConfig>();
             var profile = ScriptableObject.CreateInstance<DirectorProfile>();
             try
             {
-                TuningSeeder.Seed(tuning, shift, patrons, tips, 6, director, profile);
+                TuningSeeder.Seed(tuning, shift, patrons, blessings, 6, director, profile);
                 Assert.AreEqual(240f, tuning.Get(TuningKey.ShiftLengthSeconds));
                 Assert.AreEqual(6f, tuning.Get(TuningKey.PlanActiveSpots), "a plan of 0 opens every spot");
                 Assert.AreEqual(15f, patrons.ArrivalIntervalRange.x);
@@ -117,7 +117,7 @@ namespace UncannyValet.Tests.Integration
             {
                 Object.DestroyImmediate(shift);
                 Object.DestroyImmediate(patrons);
-                Object.DestroyImmediate(tips);
+                Object.DestroyImmediate(blessings);
                 Object.DestroyImmediate(director);
                 Object.DestroyImmediate(profile);
             }

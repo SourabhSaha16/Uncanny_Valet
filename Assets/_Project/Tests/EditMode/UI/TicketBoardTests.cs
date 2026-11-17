@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.UI;
 using UncannyValet.UI.Mood;
 using UncannyValet.UI.Status;
@@ -21,7 +22,7 @@ namespace UncannyValet.Tests.UI
         public void SetUp()
         {
             _bus = new EventBus();
-            _board = new TicketBoard(_bus);
+            _board = new TicketBoard(_bus, ModifierTestKit.Catalog());
         }
 
         [TearDown]
@@ -134,7 +135,7 @@ namespace UncannyValet.Tests.UI
         public void InfoBox_WaitsForTheCarToArrive_AndHidesWhenItLeaves()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, true, true));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(true, true)));
             Assert.IsFalse(Only().ShowsInfoBox);
             _bus.Publish(new CarArrived(C));
             Assert.IsTrue(Only().ShowsInfoBox);
@@ -147,7 +148,7 @@ namespace UncannyValet.Tests.UI
         {
             _bus.Publish(new CarArrived(C));
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(false, true)));
             Assert.IsTrue(Only().ShowsInfoBox);
         }
 
@@ -156,56 +157,49 @@ namespace UncannyValet.Tests.UI
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarArrived(C));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, false));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierSet.None));
             Assert.IsFalse(Only().ShowsInfoBox);
         }
 
         [Test]
-        public void DirtMeterDrainsWhileWashing_ThenTheLineGoes()
+        public void MudMeterFillsWhileWashing_ThenTheLineGoes()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarArrived(C));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
-            Assert.AreEqual(1f, Only().Dirt01, 1e-4f);
-            _bus.Publish(new CarCleanChanged(C, 0.75f));
-            Assert.AreEqual(0.25f, Only().Dirt01, 1e-4f);
-            _bus.Publish(new CarCleaned(C));
-            Assert.IsFalse(Only().ShowsDirtMeter);
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(false, true)));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.Muddy, 0f));
+            Assert.AreEqual(0f, Only().Find(ModifierId.Muddy).Progress01, 1e-4f);
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.Muddy, 0.75f));
+            Assert.AreEqual(0.75f, Only().Find(ModifierId.Muddy).Progress01, 1e-4f);
+            _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
+            Assert.IsFalse(Only().NeedsService);
             Assert.IsFalse(Only().ShowsInfoBox);
         }
 
         [Test]
-        public void ChargeMeterStaysForAnEv_EvenWhenFull()
+        public void ModifierTraits_ComeFromEvents_WithTheirStartingProgress()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new CarArrived(C));
-            _bus.Publish(new TicketTraitsAssigned(T, C, true, false));
-            _bus.Publish(new CarChargeChanged(C, 1f));
-            Assert.IsTrue(Only().ShowsChargeMeter);
-            Assert.IsTrue(Only().ShowsInfoBox);
-            Assert.AreEqual(1f, Only().ChargeShown, 1e-4f);
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(true, false)));
+            Assert.IsTrue(Only().NeedsService);
+            Assert.AreEqual(0.2f, Only().Find(ModifierId.NeedsCharge).Progress01, 0.001f, "starts at the definition's progress");
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.NeedsCharge, 0.45f));
+            Assert.AreEqual(0.45f, Only().Find(ModifierId.NeedsCharge).Progress01, 0.001f);
+            _bus.Publish(new ModifierCleared(C, ModifierId.NeedsCharge));
+            Assert.IsFalse(Only().NeedsService);
         }
 
         [Test]
-        public void EvTraits_ComeFromEvents()
+        public void TwoModifiers_AreTrackedSeparately()
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, true, false));
-            Assert.IsTrue(Only().NeedsCharge);
-            _bus.Publish(new CarChargeChanged(C, 0.45f));
-            Assert.AreEqual(0.45f, Only().Charge01, 0.001f);
-            _bus.Publish(new CarChargeChanged(C, 1f));
-            Assert.IsFalse(Only().NeedsCharge);
-        }
-
-        [Test]
-        public void DirtyTrait_ClearsWhenWashed()
-        {
-            _bus.Publish(new TicketOpened(T, C, 60f));
-            _bus.Publish(new TicketTraitsAssigned(T, C, false, true));
-            Assert.IsTrue(Only().NeedsWash);
-            _bus.Publish(new CarCleaned(C));
-            Assert.IsFalse(Only().NeedsWash);
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(true, true)));
+            _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
+            Assert.IsTrue(Only().NeedsService, "the charge is still open");
+            Assert.IsTrue(Only().Find(ModifierId.Muddy).IsCleared);
+            Assert.IsFalse(Only().Find(ModifierId.NeedsCharge).IsCleared);
+            _bus.Publish(new CarParked(C, 1));
+            Assert.IsFalse(Only().Find(ModifierId.Muddy).ShowDone, "parking ends the done word");
         }
 
         [Test]
@@ -260,11 +254,11 @@ namespace UncannyValet.Tests.UI
 
         private static readonly CarStatusResolver Status = CarStatusResolver.CreateDefault(new EmotionRule(0.6f, 0.85f));
 
-        private void OpenCar(bool ev, bool dirty)
+        private void OpenCar(bool ev, bool muddy)
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new CarArrived(C));
-            _bus.Publish(new TicketTraitsAssigned(T, C, ev, dirty));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(ev, muddy)));
         }
 
         [Test]
@@ -272,12 +266,12 @@ namespace UncannyValet.Tests.UI
         {
             OpenCar(false, true);
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
-            _bus.Publish(new CarCleanChanged(C, 0.5f));
-            Assert.AreEqual(CarStatus.Washing, Status.Resolve(Only()));
-            _bus.Publish(new CarCleaned(C));
-            Assert.AreEqual(CarStatus.Washed, Status.Resolve(Only()));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.Muddy, 0.5f));
+            Assert.AreEqual(CarStatus.Servicing, Status.Resolve(Only()));
+            _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
+            Assert.AreEqual(CarStatus.Serviced, Status.Resolve(Only()));
             _bus.Publish(new CarLeftStation(C, StationKind.Wash));
-            Assert.AreEqual(CarStatus.Washed, Status.Resolve(Only()), "still washed while being driven");
+            Assert.AreEqual(CarStatus.Serviced, Status.Resolve(Only()), "still washed while being driven");
             _bus.Publish(new CarParked(C, 3));
             Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
         }
@@ -288,11 +282,11 @@ namespace UncannyValet.Tests.UI
             OpenCar(true, false);
             _bus.Publish(new CarParked(C, 7));
             _bus.Publish(new CarEnteredStation(C, StationKind.Charging));
-            _bus.Publish(new CarChargeChanged(C, 0.4f));
-            Assert.AreEqual(CarStatus.Charging, Status.Resolve(Only()));
-            _bus.Publish(new CarChargeChanged(C, 1f));
-            _bus.Publish(new CarFullyCharged(C));
-            Assert.AreEqual(CarStatus.Charged, Status.Resolve(Only()));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.NeedsCharge, 0.4f));
+            Assert.AreEqual(CarStatus.Servicing, Status.Resolve(Only()));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.NeedsCharge, 1f));
+            _bus.Publish(new ModifierCleared(C, ModifierId.NeedsCharge));
+            Assert.AreEqual(CarStatus.Serviced, Status.Resolve(Only()));
             _bus.Publish(new CarLeftSpot(C, 7));
             _bus.Publish(new CarLeftStation(C, StationKind.Charging));
             _bus.Publish(new CarParked(C, 2));
@@ -304,7 +298,7 @@ namespace UncannyValet.Tests.UI
         {
             OpenCar(false, true);
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
-            _bus.Publish(new CarCleanChanged(C, 0.3f));
+            _bus.Publish(new ModifierProgressChanged(C, ModifierId.Muddy, 0.3f));
             _bus.Publish(new CarLeftStation(C, StationKind.Wash));
             Assert.AreEqual(CarStatus.Parked, Status.Resolve(Only()));
             _bus.Publish(new CarParked(C, 3));
@@ -315,7 +309,7 @@ namespace UncannyValet.Tests.UI
         public void PickupStillBeatsWashed_ThenParkingDoesNotHideIt()
         {
             OpenCar(false, true);
-            _bus.Publish(new CarCleaned(C));
+            _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
             _bus.Publish(new PickupRequested(T, C));
             Assert.AreEqual(CarStatus.PickUp, Status.Resolve(Only()));
             _bus.Publish(new CarParked(C, 3));

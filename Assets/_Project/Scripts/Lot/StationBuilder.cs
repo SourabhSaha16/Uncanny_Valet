@@ -11,9 +11,10 @@ namespace UncannyValet.Lot
         private static readonly Color WashFill = new Color(0.13f, 0.38f, 0.40f);
         private const string WashText = "WASH";
 
-        public static StationZone BuildWash(RectFactory rects, Transform parent, LotConfig c, Rect area)
+        /// <param name="number">1-based number of the station among the lot's wash stations; only the name shows it (when the lot has several).</param>
+        public static StationZone BuildWash(RectFactory rects, Transform parent, LotConfig c, Rect area, int number = 1)
         {
-            var root = new GameObject(StationKind.Wash + " Station");
+            var root = new GameObject(StationKind.Wash + " Station" + (number > 1 ? " " + number : string.Empty));
             root.transform.SetParent(parent, false);
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, area.size, WashLine, -7);

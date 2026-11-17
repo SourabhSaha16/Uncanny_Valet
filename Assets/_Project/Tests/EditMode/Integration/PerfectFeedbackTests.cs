@@ -70,13 +70,13 @@ namespace UncannyValet.Tests.Integration
         [Test]
         public void PopTracker_StartsAPerfectPopAboveTheCar()
         {
-            var settings = new TipPopSettings();
-            var pops = new TipPops(settings);
-            using (new TipPopTracker(_bus, _cars, pops, settings, () => 5f))
+            var settings = new BlessingPopSettings();
+            var pops = new BlessingPops(settings);
+            using (new BlessingPopTracker(_bus, _cars, pops, settings, () => 5f))
             {
                 _bus.Publish(new PerfectDropOff(_car, TicketId.None));
                 Assert.AreEqual(1, pops.ActiveCount);
-                Assert.AreEqual(TipPopText.PerfectLabel, pops[0].Text);
+                Assert.AreEqual(BlessingPopText.PerfectLabel, pops[0].Text);
                 Assert.AreEqual(2f, pops[0].World.x, 0.001f);
                 Assert.Greater(pops[0].World.y, 3f + settings.LiftWorldUnits);
                 _bus.Publish(new PerfectPark(new CarId(99), TicketId.None));
@@ -100,7 +100,7 @@ namespace UncannyValet.Tests.Integration
         [Test]
         public void Results_ShowPerfectParks()
         {
-            var content = ResultsFormatter.Build(new ShiftResult(100, 1, 0, 50, 100, 150), 3, 2, 5);
+            var content = ResultsFormatter.Build(new ShiftResult(100, 50, true, 0, 2), 3, 5);
             var line = content.Stats[content.Stats.Length - 1];
             Assert.AreEqual("PERFECT PARKS", line.Label);
             Assert.AreEqual("5", line.Value);

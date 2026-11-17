@@ -8,24 +8,6 @@ namespace UncannyValet.Tests.UI
     public class HowToPlayTests
     {
         [Test]
-        public void Gate_ShowsOnTheFirstStartOnly()
-        {
-            var gate = new HowToPlayGate();
-            Assert.IsFalse(gate.WasShown);
-            Assert.IsTrue(gate.TryShow());
-            Assert.IsTrue(gate.WasShown);
-            Assert.IsFalse(gate.TryShow());
-            Assert.IsFalse(gate.TryShow());
-        }
-
-        [Test]
-        public void Gate_NewInstanceShowsAgain_LikeANewPageLoad()
-        {
-            new HowToPlayGate().TryShow();
-            Assert.IsTrue(new HowToPlayGate().TryShow());
-        }
-
-        [Test]
         public void Wrap_BreaksAtSpacesAndNeverExceedsTheLimit()
         {
             const string text = "Customer cars will sometimes have SPECIAL REQUESTs like car wash or EV charging";
@@ -53,10 +35,9 @@ namespace UncannyValet.Tests.UI
         [Test]
         public void Mask_MarksEveryOccurrenceOfEveryPhrase()
         {
-            const string text = "paid TIPS $$ for PICK UPs and NOT for DROP OFFs";
+            const string text = "earn BLESSINGS only for PICK UPs, NOT for DROP OFFs";
             var mask = HighlightMask.Build(text, HowToPlayText.Highlights);
-            Assert.IsTrue(mask[text.IndexOf("TIPS", System.StringComparison.Ordinal)]);
-            Assert.IsTrue(mask[text.IndexOf("$$", System.StringComparison.Ordinal) + 1]);
+            Assert.IsTrue(mask[text.IndexOf("BLESSINGS", System.StringComparison.Ordinal)]);
             Assert.IsTrue(mask[text.IndexOf("PICK UP", System.StringComparison.Ordinal) + 6]);
             Assert.IsTrue(mask[text.IndexOf("DROP OFF", System.StringComparison.Ordinal)]);
             Assert.IsFalse(mask[0]);
@@ -77,7 +58,7 @@ namespace UncannyValet.Tests.UI
                         Assert.IsTrue(PixelGlyphs.Chars.Contains(char.ToUpperInvariant(c).ToString()), "glyph for " + c);
                 }
             Assert.AreEqual(5, HowToPlayText.Rules.Length);
-            Assert.AreEqual(3, HowToPlayText.Controls.Length);
+            Assert.AreEqual(4, HowToPlayText.Controls.Length);
         }
     }
 }

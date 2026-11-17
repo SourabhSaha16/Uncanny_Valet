@@ -1,40 +1,71 @@
+using System.Collections.Generic;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 
 namespace UncannyValet.Core.Contracts
 {
-    /// <summary>Advanced panel rows of the valet powers (docs/redesign/valet_powers.md), in designer language.</summary>
+    /// <summary>Advanced panel rows of the power bar and the valet powers, in designer language.</summary>
     public static class PowerRows
     {
-        public const string Group = "Valet powers";
+        public const string BarGroup = "Power bar";
+        public const string DeveloperGroup = "Developer: owned powers";
 
-        public static readonly TuningInfo[] Rows =
+        /// <summary>The power bar rows, then every power's rows grouped by power (Freeze time also holds its world speed row).</summary>
+        public static readonly TuningInfo[] Rows = BuildRows();
+
+        /// <summary>Test switches that give Thor a power (and its upgrade) for the session. They stand in until the sandbox power tab exists.</summary>
+        public static readonly TuningInfo[] DeveloperRows = BuildDeveloperRows();
+
+        /// <summary>The developer switch of a power (None has none).</summary>
+        public static bool TryGetDeveloperKey(StoryPower power, out TuningKey key)
         {
-            new TuningInfo(TuningKey.PowerFillPerfectPark, Group, "Meter per Perfect Park", 0f, 100f, 1f,
-                "How much of the power meter (0 to 100) one Perfect Park fills."),
-            new TuningInfo(TuningKey.PowerFillPerfectDropOff, Group, "Meter per perfect drop-off", 0f, 100f, 1f,
-                "How much meter a perfect delivery at the curb fills."),
-            new TuningInfo(TuningKey.PowerFillDriftPerSecond, Group, "Meter per second of drifting", 0f, 5f, 0.1f,
-                "Meter gained for every second the car slides."),
-            new TuningInfo(TuningKey.PowerFillDriftCap, Group, "Most meter from one drift", 0f, 20f, 0.5f,
-                "One long slide stops adding meter after this much."),
-            new TuningInfo(TuningKey.PowerLevel1Threshold, Group, "Speed boost unlocks at", 1f, 100f, 1f,
-                "Meter value that unlocks level 1, the speed boost."),
-            new TuningInfo(TuningKey.PowerLevel2Threshold, Group, "Freeze time unlocks at", 1f, 150f, 1f,
-                "Meter value that unlocks level 2, freeze time."),
-            new TuningInfo(TuningKey.PowerLevel3Threshold, Group, "Park Smash unlocks at (full bar)", 1f, 200f, 1f,
-                "Meter value that unlocks level 3, Park Smash. This is also the full bar."),
-            new TuningInfo(TuningKey.PowerSpeedBoostSeconds, Group, "Speed boost lasts (s)", 1f, 20f, 0.5f,
-                "How long the valet runs faster."),
-            new TuningInfo(TuningKey.PowerWalkMultiplier, Group, "Speed boost walk speed (x)", 1f, 3f, 0.05f,
-                "How much faster the valet walks during the boost."),
-            new TuningInfo(TuningKey.PowerFreezeSeconds, Group, "Freeze time lasts (s)", 1f, 20f, 0.5f,
-                "How long the world stands still."),
-            new TuningInfo(TuningKey.PowerFreezeTimeScale, Group, "Freeze time speed (x)", 0f, 1f, 0.05f,
-                "World speed during freeze time. 0 = completely stopped, 0.3 = slow motion."),
-            new TuningInfo(TuningKey.PowerStumbleSeconds, Group, "Boost: how long people stumble (s)", 0.1f, 2f, 0.05f,
-                "How long a pedestrian stumbles when the boosted valet runs through them."),
-            new TuningInfo(TuningKey.PowerTrailPerSecond, Group, "Boost: sparkles per second", 0f, 60f, 1f,
-                "How many sparkles the boosted valet leaves behind each second. 0 = no trail."),
-        };
+            key = default;
+            switch (power)
+            {
+                case StoryPower.ThunderStride: key = TuningKey.DevOwnThunderStride; return true;
+                case StoryPower.StormWind: key = TuningKey.DevOwnStormWind; return true;
+                case StoryPower.FreezeTime: key = TuningKey.DevOwnFreezeTime; return true;
+                case StoryPower.MjolnirRecall: key = TuningKey.DevOwnMjolnirRecall; return true;
+                default: return false;
+            }
+        }
+
+        private static TuningInfo[] BuildRows()
+        {
+            var rows = new List<TuningInfo>
+            {
+                new TuningInfo(TuningKey.PowerFillPerfectPark, BarGroup, "Power bar: Perfect Park adds", 0f, 100f, 1f,
+                    "How much of the power bar (0 to 100) one Perfect Park fills. A third of the bar is one bolt."),
+                new TuningInfo(TuningKey.PowerFillPerfectDropOff, BarGroup, "Power bar: perfect drop-off adds", 0f, 100f, 1f,
+                    "How much of the power bar a perfect delivery at the curb fills."),
+                new TuningInfo(TuningKey.PowerFillDriftPerSecond, BarGroup, "Power bar: drifting adds per second", 0f, 5f, 0.1f,
+                    "Power bar gained for every second the car slides."),
+                new TuningInfo(TuningKey.PowerFillDriftCap, BarGroup, "Power bar: most one drift can add", 0f, 20f, 0.5f,
+                    "One long slide stops adding power bar after this much."),
+            };
+            var powers = PowerLevelRows.All;
+            for (var i = 0; i < powers.Count; i++)
+            {
+                PowerLevelRows.AddRows(powers[i], rows);
+                if (powers[i] != StoryPower.FreezeTime) continue;
+                rows.Add(new TuningInfo(TuningKey.PowerFreezeTimeScale, PowerLevelRows.GroupOf(powers[i]), "Freeze time: world speed (x)", 0f, 1f, 0.05f,
+                    "World speed during freeze time. 0 = completely stopped, 0.3 = slow motion."));
+            }
+            return rows.ToArray();
+        }
+
+        private static TuningInfo[] BuildDeveloperRows()
+        {
+            var rows = new List<TuningInfo>();
+            var powers = PowerLevelRows.All;
+            for (var i = 0; i < powers.Count; i++)
+            {
+                TryGetDeveloperKey(powers[i], out var key);
+                var name = PowerLevelRows.GroupOf(powers[i]);
+                rows.Add(new TuningInfo(key, DeveloperGroup, "Developer: own " + name + " (0 = no, 1 = earned, 2 = upgraded)", 0f, 2f, 1f,
+                    "Gives Thor " + name + " for testing, so the power bar and the power keys work before the worlds exist. Set it back to 0 to take it away."));
+            }
+            return rows.ToArray();
+        }
     }
 }

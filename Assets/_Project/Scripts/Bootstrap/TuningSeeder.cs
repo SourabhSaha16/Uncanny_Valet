@@ -3,11 +3,13 @@ using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
 using UncannyValet.Patrons;
 using UncannyValet.Powers;
+using UncannyValet.Run;
 using UncannyValet.Traffic;
 using UncannyValet.UI.Mood;
 using UnityEngine;
@@ -27,13 +29,15 @@ namespace UncannyValet.Bootstrap
         /// <param name="audio">The audio config (tyre sound keys); null seeds the config defaults.</param>
         /// <param name="powers">The valet power config; null seeds the config defaults.</param>
         /// <param name="perfect">The Perfect Park and drop-off thresholds (the lot config's); null seeds the defaults.</param>
-        /// <param name="queueClear">How far from the queue a car must rest for its stay to start; null seeds the default.</param>
-        /// <param name="emotions">The pickup emotion levels (angry, will not tip); null seeds the config defaults.</param>
+        /// <param name="emotions">The pickup emotion levels (angry, will not bless); null seeds the config defaults.</param>
+        /// <param name="lot">The lot's overrides (shift length, arrival pacing, modifier chances, dial positions); null keeps the shared defaults.</param>
+        /// <param name="modifiers">The modifier definitions; they seed the clear time and bonus keys. Null uses the shipped defaults.</param>
         /// <returns>The dial link (the caller disposes it), or null when no bus was given.</returns>
-        public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, TipConfig tips, int spotCount,
+        public static DifficultyDialsLink Seed(ITuning t, ShiftConfig shift, PatronConfig patrons, BlessingConfig blessings, int spotCount,
             DirectorConfig director = null, DirectorProfile profile = null, int pedestrians = 0, TrafficConfig traffic = null,
-            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerMeterConfig powers = null,
-            PerfectSettings perfect = null, HudEmotionConfig emotions = null, QueueClearSettings queueClear = null)
+            IEventBus bus = null, CarHandlingConfig handling = null, AudioConfig audio = null, PowerBarConfig powers = null,
+            PerfectSettings perfect = null, HudEmotionConfig emotions = null,
+            LotDefinition lot = null, IModifierCatalog modifiers = null)
         {
             SeedEmotions(t, emotions);
             CameraShake.SeedDefaults(t);
@@ -48,7 +52,6 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.GameMinutesPerSecond, shift.GameMinutesPerSecond);
             t.Seed(TuningKey.ShiftLengthSeconds, shift.ShiftLengthSeconds);
 
-            var service = patrons.Tuning;
             t.Seed(TuningKey.PickupWindowMinutes, patrons.PickupWindowMinutes);
             t.Seed(TuningKey.StayMinMinutes, patrons.StayRange.x);
             t.Seed(TuningKey.StayMaxMinutes, patrons.StayRange.y);
@@ -56,29 +59,44 @@ namespace UncannyValet.Bootstrap
             t.Seed(TuningKey.ArrivalGapMaxMinutes, patrons.ArrivalIntervalRange.y);
             t.Seed(TuningKey.ImpatientChance, patrons.ImpatientChance);
             t.Seed(TuningKey.ImpatientWindowScale, patrons.ImpatientWindowScale);
-            t.Seed(TuningKey.ChargeMinutes, service.ChargeMinutes);
-            t.Seed(TuningKey.WashMinutes, service.WashMinutes);
-            t.Seed(TuningKey.QueueMaxWaitMinutes, service.QueueWaitMinutes);
-            t.Seed(TuningKey.QueueClearDistance, (queueClear ?? new QueueClearSettings()).ClearDistance);
 
-            t.Seed(TuningKey.BaseTip, patrons.BaseTip);
-            t.Seed(TuningKey.ChargeBonus, tips.ChargeBonus);
-            t.Seed(TuningKey.CleanBonus, tips.CleanBonus);
-            t.Seed(TuningKey.SpeedWindowMinutes, tips.SpeedBonusWindowMinutes);
+            t.Seed(TuningKey.BaseBlessing, patrons.BaseBlessing);
+            SeedModifiers(t, modifiers ?? ModifierDefaults.CreateCatalog());
+            t.Seed(TuningKey.SpeedWindowMinutes, blessings.SpeedBonusWindowMinutes);
 
             var plan = shift.Plan;
             t.Seed(TuningKey.PlanMaxWaitingCars, plan.MaxWaitingCars);
             t.Seed(TuningKey.PlanArrivalGapScale, plan.ArrivalGapScale);
             t.Seed(TuningKey.PlanActiveSpots, plan.ActiveSpots > 0 ? plan.ActiveSpots : spotCount);
-            t.Seed(TuningKey.PlanEvChance, plan.EvChance);
-            t.Seed(TuningKey.PlanDirtyChance, plan.DirtyChance);
+            if (lot == null) SeedDefaultChances(t);
             t.Seed(TuningKey.PlanLateEvChance, plan.LateEvChance);
             t.Seed(TuningKey.PlanLateEvStart, plan.LateEvStart);
-            return SeedDials(t, director, bus);
+            PedestrianHitRows.Seed(t, lot != null && lot.PedestrianCurses, lot != null && lot.FreePedestrianRoutes);
+            MudRows.SeedDefaults(t); // a lot's mud modifier overrides these in SeedPacing below
+            lot?.SeedPacing(t, shift.GameMinutesPerSecond); // the lot's numbers and arrival budget win over the shared defaults
+            return SeedDials(t, director, bus, lot);
+        }
+
+        // Each modifier's clear time and bonus live in its definition; the keys are what the F2 panel edits.
+        private static void SeedModifiers(ITuning t, IModifierCatalog modifiers)
+        {
+            for (var i = 0; i < modifiers.All.Count; i++)
+            {
+                var def = modifiers.All[i];
+                t.Seed(def.ClearMinutesKey, def.ClearMinutes);
+                t.Seed(def.BonusKey, def.Bonus);
+            }
+        }
+
+        // Without a lot the diner's chances apply (the lot's own list replaces them).
+        private static void SeedDefaultChances(ITuning t)
+        {
+            t.Seed(TuningKey.ModifierChanceNeedsCharge, ModifierDefaults.NeedsChargeChance);
+            t.Seed(TuningKey.ModifierChanceMuddy, ModifierDefaults.MuddyChance);
         }
 
         // Dials start at their default position and the mapper runs once, so every derived number is consistent at startup.
-        private static DifficultyDialsLink SeedDials(ITuning t, DirectorConfig director, IEventBus bus)
+        private static DifficultyDialsLink SeedDials(ITuning t, DirectorConfig director, IEventBus bus, LotDefinition lot)
         {
             var config = director != null ? director.Dials : null;
             var temporary = config == null;
@@ -89,6 +107,7 @@ namespace UncannyValet.Bootstrap
             }
             var dials = new DifficultyDials(config);
             dials.SeedDials(t);
+            lot?.SeedDialPositions(t);
             if (temporary) Object.DestroyImmediate(config);
             return bus != null ? new DifficultyDialsLink(bus, t, dials) : null;
         }
@@ -104,13 +123,13 @@ namespace UncannyValet.Bootstrap
         {
             var config = emotions != null ? emotions : ScriptableObject.CreateInstance<HudEmotionConfig>();
             t.Seed(TuningKey.EmotionAngryFrom, config.AngryFrom);
-            t.Seed(TuningKey.EmotionWillNotTipFrom, config.WillNotTipFrom);
+            t.Seed(TuningKey.EmotionWillNotBlessFrom, config.WillNotBlessFrom);
             if (emotions == null) Object.DestroyImmediate(config);
         }
 
-        private static void SeedPowers(ITuning t, PowerMeterConfig powers)
+        private static void SeedPowers(ITuning t, PowerBarConfig powers)
         {
-            var config = powers != null ? powers : ScriptableObject.CreateInstance<PowerMeterConfig>();
+            var config = powers != null ? powers : ScriptableObject.CreateInstance<PowerBarConfig>();
             config.SeedInto(t);
             if (powers == null) Object.DestroyImmediate(config);
         }
@@ -120,6 +139,9 @@ namespace UncannyValet.Bootstrap
             var config = audio != null ? audio : ScriptableObject.CreateInstance<AudioConfig>();
             t.Seed(TuningKey.TyreSoundVolume, config.TyreVolume);
             t.Seed(TuningKey.TyreSoundSharpness, config.TyreSharpness);
+            t.Seed(TuningKey.AmbienceVolume, config.AmbienceVolume);
+            t.Seed(TuningKey.EscalationVolume, config.EscalationVolume);
+            t.Seed(TuningKey.WorldSoundVolume, config.WorldSoundVolume);
             if (audio == null) Object.DestroyImmediate(config);
         }
 

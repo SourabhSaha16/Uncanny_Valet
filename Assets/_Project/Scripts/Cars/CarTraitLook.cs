@@ -1,13 +1,14 @@
 using UncannyValet.Core;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UnityEngine;
 
 namespace UncannyValet.Cars
 {
     /// <summary>
-    /// Applies a ticket's traits to the car's look once they arrive: EVs swap to an EV sprite (or a blue body),
-    /// dirty cars get the mud overlay. Until then the car looks normal.
+    /// Applies a ticket's modifiers to the car's look once they arrive: a modifier with the electric look swaps the car
+    /// to an EV sprite (or a blue body), one with the mud look gets the mud overlay. Until then the car looks normal.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CarTraitLook : MonoBehaviour
@@ -18,6 +19,7 @@ namespace UncannyValet.Cars
         private GameObject _mud;
         private CarBodyArt _art;
         private IEventBus _bus;
+        private IModifierCatalog _modifiers;
 
         /// <summary>
         /// Adds the component to <paramref name="car"/>. The mud child starts inactive.
@@ -38,22 +40,24 @@ namespace UncannyValet.Cars
         private void OnEnable()
         {
             if (!Services.TryGet<IEventBus>(out _bus)) return;
-            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
+            Services.TryGet(out _modifiers);
+            _bus.Subscribe<TicketModifiersAssigned>(OnModifiers);
         }
 
         private void OnDisable()
         {
             if (_bus == null) return;
-            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
+            _bus.Unsubscribe<TicketModifiersAssigned>(OnModifiers);
             _bus = null;
         }
 
-        private void OnTraits(TicketTraitsAssigned e)
+        private void OnModifiers(TicketModifiersAssigned e)
         {
             if (e.Car != _id) return;
-            if (_art != null) _art.SetEv(e.IsEv);
-            else _body.color = e.IsEv ? _definition.EvBodyColor : _definition.Color;
-            _mud.SetActive(e.IsDirty);
+            var electric = ModifierLooks.Has(_modifiers, e.Modifiers, ModifierLook.ElectricBody);
+            if (_art != null) _art.SetEv(electric);
+            else _body.color = electric ? _definition.EvBodyColor : _definition.Color;
+            _mud.SetActive(ModifierLooks.Has(_modifiers, e.Modifiers, ModifierLook.MudOverlay));
         }
     }
 }

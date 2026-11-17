@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157897eb05ca8e64b9c0c2d53a875c96, type: 3}
+  m_Name: MidgardTree
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Art.PropRecipe
+  _sizeUnits: {x: 2, y: 2}
+  _layers:
+  - _name: Tree
+    _shapes:
+    - _kind: 0
+      _area:
+        x: 28
+        y: 0
+        width: 8
+        height: 22
+      _colour: 9
+      _text: 
+    - _kind: 1
+      _area:
+        x: 6
+        y: 14
+        width: 52
+        height: 48
+      _colour: 8
+      _text: 
+    - _kind: 1
+      _area:
+        x: 12
+        y: 24
+        width: 20
+        height: 16
+      _colour: 3
+      _text: 
+    _outlined: 1
+    _glows: 0
+    _animation: 0
+    _speed: 0
+    _pivot: {x: 0, y: 0}
+    _orderOffset: 0
+  _spriteOverride: {fileID: 0}
+  _solid: 0
+  _colliderSize: {x: 0, y: 0}
+  _glowMaterial: {fileID: 0}

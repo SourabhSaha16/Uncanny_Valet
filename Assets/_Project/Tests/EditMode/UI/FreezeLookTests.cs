@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Audio;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Ids;
 using UncannyValet.UI.Hud;
 
 namespace UncannyValet.Tests.UI
@@ -35,24 +36,23 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void Tracker_FollowsFreezeTimeOnly_AndClearsOnANewShift()
+        public void Tracker_FollowsFreezeTime_AndClearsOnANewShift()
         {
             var bus = new EventBus();
             var tracker = new FreezeTracker(bus, new FreezeFade(0.1f, 0.1f));
             tracker.Tick(0f);
-            bus.Publish(new PowerActivated(PowerKind.SpeedBoost));
             Assert.IsFalse(tracker.Fade.Frozen);
-            bus.Publish(new PowerActivated(PowerKind.FreezeTime));
+            bus.Publish(new PowerActivated(StoryPower.FreezeTime, 1));
             tracker.Tick(1f);
             Assert.AreEqual(1f, tracker.Fade.Alpha01);
-            bus.Publish(new PowerEnded(PowerKind.FreezeTime));
+            bus.Publish(new PowerEnded(StoryPower.FreezeTime));
             Assert.IsFalse(tracker.Fade.Frozen);
-            bus.Publish(new PowerActivated(PowerKind.FreezeTime));
+            bus.Publish(new PowerActivated(StoryPower.FreezeTime, 1));
             bus.Publish(new ShiftStarted());
             Assert.AreEqual(0f, tracker.Fade.Alpha01);
             Assert.IsFalse(tracker.Fade.Frozen);
             tracker.Dispose();
-            bus.Publish(new PowerActivated(PowerKind.FreezeTime));
+            bus.Publish(new PowerActivated(StoryPower.FreezeTime, 1));
             Assert.IsFalse(tracker.Fade.Frozen, "no subscription left behind");
         }
 
@@ -86,10 +86,8 @@ namespace UncannyValet.Tests.UI
             var played = new List<SfxId>();
             var router = new SfxEventRouter(bus, played.Add);
             router.Subscribe();
-            bus.Publish(new PowerEnded(PowerKind.ParkSmash));
-            bus.Publish(new PowerEnded(PowerKind.SpeedBoost));
-            bus.Publish(new PowerActivated(PowerKind.FreezeTime));
-            bus.Publish(new PowerEnded(PowerKind.FreezeTime));
+            bus.Publish(new PowerActivated(StoryPower.FreezeTime, 1));
+            bus.Publish(new PowerEnded(StoryPower.FreezeTime));
             CollectionAssert.AreEqual(new[] { SfxId.TimeStop, SfxId.TimeResume }, played);
             router.Unsubscribe();
         }

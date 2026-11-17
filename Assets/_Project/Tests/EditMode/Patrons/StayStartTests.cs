@@ -6,11 +6,10 @@ using UncannyValet.Patrons;
 
 namespace UncannyValet.Tests.Patrons
 {
-    /// <summary>The stay clock starts at the first rest clear of the queue, a bay park, or the queue wait limit (issue 78).</summary>
+    /// <summary>The stay clock starts only when the patron walks into the diner (issue 126; replaces the queue-distance and fallback rules of issue 78).</summary>
     public class StayStartTests
     {
         private const float Stay = 30f;
-        private static readonly float Wait = ServiceTuning.DefaultQueueWaitMinutes;
 
         private sealed class FakeClock : IGameClock
         {
@@ -20,10 +19,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 10;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(10, 0, 0, 0, 10, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 10;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(10, 0, 0, 10, BlessingZeroReason.None);
         }
 
         private EventBus _bus;
@@ -35,7 +34,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus(); _clock = new FakeClock();
-            _registry = new TicketRegistry(_bus, _clock, new FakeTips());
+            _registry = new TicketRegistry(_bus, _clock, new FakeBlessings());
             _started.Clear();
             _bus.Subscribe<StayStarted>(e => _started.Add(e));
         }
@@ -55,50 +54,115 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ACarLeftInTheQueue_IsNotAskedForBeforeTheLimitPlusTheStay()
+        public void StayStartsWhenThePatronEntersTheDiner_NotBefore()
+        {
+            var t = Arrive(1, 1f);
+            Tick(10f);
+            Assert.IsFalse(t.StayStarted);
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _clock.ElapsedMinutes = 12f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.IsTrue(t.StayStarted);
+            Assert.AreEqual(12f + Stay, t.ReturnMinute);
+            Assert.AreEqual(1, _started.Count);
+            Assert.AreEqual(12f, _started[0].Minute);
+        }
+
+        [Test]
+        public void ACarThatStaysInTheQueue_NeverStartsItsStay_AndNeverFallsBackToATimer()
         {
             var requested = 0;
             _bus.Subscribe<PickupRequested>(e => requested++);
             var t = Arrive(1, 0f);
-            for (var m = 0.5f; m < Wait + Stay; m += 0.5f) Tick(m);
-            Assert.AreEqual(0, requested, "handing it back fast is no longer possible");
-            Tick(Wait + Stay);
-            Assert.AreEqual(TicketState.PickupRequested, t.State);
-        }
-
-        [Test]
-        public void StayStartsAtTheFirstRestClearOfTheQueue_AndMovingBackDoesNotRestartIt()
-        {
-            var t = Arrive(1, 1f);
-            _clock.ElapsedMinutes = 2f;
-            _bus.Publish(new CarClearedQueue(t.CarId));
-            _clock.ElapsedMinutes = 4f;
-            _bus.Publish(new CarClearedQueue(t.CarId));
-            Assert.AreEqual(2f + Stay, t.ReturnMinute);
-            Assert.AreEqual(1, _started.Count);
-            Assert.AreEqual(2f, _started[0].Minute);
-        }
-
-        [Test]
-        public void QueueWaitLimit_StartsTheStayAtArrivalPlusTheLimit_AndOnlyOnce()
-        {
-            var t = Arrive(1, 5f);
-            Tick(5f + Wait - 0.1f);
+            for (var m = 0.5f; m < 500f; m += 0.5f) Tick(m);
             Assert.IsFalse(t.StayStarted);
-            Tick(5f + Wait);
-            Assert.IsTrue(t.StayStarted);
-            Assert.AreEqual(5f + Wait + Stay, t.ReturnMinute);
-            Tick(5f + Wait + 1f);
-            Assert.AreEqual(1, _started.Count);
+            Assert.AreEqual(0, _started.Count);
+            Assert.AreEqual(0, requested);
         }
 
         [Test]
-        public void ParkingInABay_StartsTheStayEvenWithoutAClearReport()
+        public void ParkingTheCar_DoesNotStartTheStay_BeforeThePatronIsInside()
         {
             var t = Arrive(1, 0f);
             _clock.ElapsedMinutes = 1f;
             _bus.Publish(new CarParked(t.CarId, 3));
-            Assert.AreEqual(1f + Stay, t.ReturnMinute);
+            Assert.IsFalse(t.StayStarted, "the car was handed over but the patron has not reached the diner");
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(4f + Stay, t.ReturnMinute);
+        }
+
+        [Test]
+        public void EnteringTwice_StartsTheStayOnlyOnce()
+        {
+            var t = Arrive(1, 1f);
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _clock.ElapsedMinutes = 2f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(2f + Stay, t.ReturnMinute);
+            Assert.AreEqual(1, _started.Count);
+        }
+
+        [Test]
+        public void PatronInsideBeforeTheCarLeavesThePickup_TheClockWaitsForTheCar()
+        {
+            var t = Arrive(1, 0f);
+            _clock.ElapsedMinutes = 3f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.IsFalse(t.StayStarted, "the car is still in the pickup spot");
+            _clock.ElapsedMinutes = 7f;
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.AreEqual(7f + Stay, t.ReturnMinute);
+            Assert.AreEqual(7f, _started[0].Minute);
+        }
+
+        [Test]
+        public void CarLeavesBeforeThePatronIsInside_TheClockStartsWhenThePatronEnters()
+        {
+            var t = Arrive(1, 0f);
+            _clock.ElapsedMinutes = 2f;
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.IsFalse(t.StayStarted, "the car left but the patron is still walking");
+            _bus.Publish(new CarParked(t.CarId, 4));
+            Tick(5f);
+            Assert.IsFalse(t.StayStarted, "parked and still walking: no clock yet");
+            _clock.ElapsedMinutes = 6f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(6f + Stay, t.ReturnMinute);
+        }
+
+        [Test]
+        public void CarLeavingTwice_DoesNotStartTheClockOnItsOwn()
+        {
+            var t = Arrive(1, 0f);
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            Assert.IsFalse(t.StayStarted);
+            _clock.ElapsedMinutes = 4f;
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            Assert.AreEqual(1, _started.Count);
+        }
+
+        [Test]
+        public void ShiftEndWithOneMomentSeen_ReleasesTheFlag_SoAReusedCarIdStartsClean()
+        {
+            var t = Arrive(1, 0f);
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new ShiftEnded());
+            var again = Arrive(1, 1f);
+            _bus.Publish(new CarLeftPickup(again.CarId));
+            Assert.IsFalse(again.StayStarted, "the old patron-inside flag must not leak into the next ticket");
+        }
+
+        [Test]
+        public void EventsForAnUnknownCar_AreIgnored()
+        {
+            _bus.Publish(new CarLeftPickup(new CarId(99)));
+            _bus.Publish(new PatronEnteredDiner(new CarId(99)));
+            Assert.AreEqual(0, _started.Count);
         }
 
         [Test]
@@ -109,7 +173,8 @@ namespace UncannyValet.Tests.Patrons
             _bus.Subscribe<PatronReturnShifted>(e => shifted++);
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(0, shifted);
-            _bus.Publish(new CarClearedQueue(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
             _bus.Publish(new ReturnShiftRequested(t.CarId, -5f));
             Assert.AreEqual(1, shifted);
         }
@@ -117,9 +182,9 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void ATicketWhoseStayHasNotStarted_NeverEnds()
         {
-            var t = new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1", ServiceTuning.Default);
+            var t = new Ticket(new TicketId(1), new CarId(1), new PatronRequest(Stay, 20, false), 0, "KT 1");
             Assert.IsFalse(t.StayEnded(1000f));
-            Assert.IsFalse(t.QueueWaitOver(1000f, Wait), "never arrived, so no queue wait");
+            Assert.IsTrue(float.IsPositiveInfinity(t.ReturnMinute));
         }
     }
 }

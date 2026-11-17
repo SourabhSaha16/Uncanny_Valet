@@ -1,4 +1,5 @@
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Core.Events
 {
@@ -16,26 +17,25 @@ namespace UncannyValet.Core.Events
         }
     }
 
-    /// <summary>The traits of a new patron car, published right after TicketOpened.</summary>
-    public readonly struct TicketTraitsAssigned : IGameEvent
+    /// <summary>The service modifiers a new patron car carries, published right after TicketOpened.</summary>
+    public readonly struct TicketModifiersAssigned : IGameEvent
     {
         public readonly TicketId Ticket;
         public readonly CarId Car;
-        public readonly bool IsEv;
-        public readonly bool IsDirty;
-        public TicketTraitsAssigned(TicketId ticket, CarId car, bool isEv, bool isDirty)
+        public readonly ModifierSet Modifiers;
+        public TicketModifiersAssigned(TicketId ticket, CarId car, ModifierSet modifiers)
         {
-            Ticket = ticket; Car = car; IsEv = isEv; IsDirty = isDirty;
+            Ticket = ticket; Car = car; Modifiers = modifiers;
         }
     }
 
-    /// <summary>How a ticket's tip was made up, published just before TicketClosed.</summary>
-    public readonly struct TipExplained : IGameEvent
+    /// <summary>How a ticket's blessing was made up, published just before TicketClosed.</summary>
+    public readonly struct BlessingExplained : IGameEvent
     {
         public readonly TicketId Ticket;
         public readonly CarId Car;
-        public readonly TipBreakdown Breakdown;
-        public TipExplained(TicketId ticket, CarId car, TipBreakdown breakdown)
+        public readonly BlessingBreakdown Breakdown;
+        public BlessingExplained(TicketId ticket, CarId car, BlessingBreakdown breakdown)
         {
             Ticket = ticket; Car = car; Breakdown = breakdown;
         }
@@ -63,7 +63,7 @@ namespace UncannyValet.Core.Events
         }
     }
 
-    /// <summary>A ticket timer ran out. Park: the car is about to vanish. Pickup: the tip will be $0.</summary>
+    /// <summary>A ticket timer ran out. Park: the car is about to vanish. Pickup: the blessing will be 0.</summary>
     public readonly struct TicketTimerExpired : IGameEvent
     {
         public readonly TicketId Ticket;
@@ -89,10 +89,10 @@ namespace UncannyValet.Core.Events
         public readonly TicketId Ticket;
         public readonly CarId Car;
         public readonly float WaitMinutes;
-        public readonly int Tip;
-        public TicketClosed(TicketId ticket, CarId car, float waitMinutes, int tip)
+        public readonly int Blessing;
+        public TicketClosed(TicketId ticket, CarId car, float waitMinutes, int blessing)
         {
-            Ticket = ticket; Car = car; WaitMinutes = waitMinutes; Tip = tip;
+            Ticket = ticket; Car = car; WaitMinutes = waitMinutes; Blessing = blessing;
         }
     }
 
@@ -125,7 +125,7 @@ namespace UncannyValet.Core.Events
         public PatronReachedCurb(CarId car) { Car = car; }
     }
 
-    /// <summary>The patron's stay clock started (the car came to rest clear of the queue, was parked, or waited too long in it). Minute is the game minute.</summary>
+    /// <summary>The patron's stay clock started: the patron walked into the diner (<see cref="PatronEnteredDiner"/>). Minute is the game minute.</summary>
     public readonly struct StayStarted : IGameEvent
     {
         public readonly TicketId Ticket;

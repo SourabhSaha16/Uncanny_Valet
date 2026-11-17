@@ -13,16 +13,4 @@ namespace UncannyValet.Core.Events
         public readonly float Strength01;
         public PedestrianBumped(float worldX, float worldY, float strength01) { WorldX = worldX; WorldY = worldY; Strength01 = strength01; }
     }
-
-    /// <summary>
-    /// The boosted valet ran through a pedestrian (published by Valet). The pedestrian stumbles away along
-    /// (PushX, PushY), a unit vector from the valet to them.
-    /// </summary>
-    public readonly struct ValetBargedPedestrian : IGameEvent
-    {
-        public readonly PedestrianId Pedestrian;
-        public readonly float PushX;
-        public readonly float PushY;
-        public ValetBargedPedestrian(PedestrianId pedestrian, float pushX, float pushY) { Pedestrian = pedestrian; PushX = pushX; PushY = pushY; }
-    }
 }

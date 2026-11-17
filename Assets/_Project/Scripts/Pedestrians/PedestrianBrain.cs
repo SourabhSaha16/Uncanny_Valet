@@ -2,13 +2,15 @@ namespace UncannyValet.Pedestrians
 {
     /// <summary>
     /// Pure state machine of one pooled person. It only decides the next phase; the crowd turns phases into walks.
-    /// Ambient: Idle (timer) to Arriving to Inside (timer) to Leaving to Idle. Patron: ToDoor to Inside (until
+    /// Ambient: Idle (timer) to Roaming (timer) to Arriving to Inside (timer) to Roaming again; a person the F2 slider
+    /// switches off goes back to Idle after a roam leg. Patron: ToDoor to Inside (until
     /// summoned) to ToCurb to Waiting, then Leaving (to board the car) or Idle (quietly gone).
     /// </summary>
     public sealed class PedestrianBrain
     {
         private float _timer;
         private float _insideSeconds;
+        private float _roamSeconds;
         private bool _summoned;
 
         public PedestrianPhase Phase { get; private set; } = PedestrianPhase.Idle;
@@ -27,12 +29,29 @@ namespace UncannyValet.Pedestrians
             _timer = seconds;
         }
 
-        /// <summary>Ambient: walk in from the road side; spend <paramref name="insideSeconds"/> in the diner.</summary>
-        public void BeginAmbient(float insideSeconds)
+        /// <summary>Ambient: roam for <paramref name="roamSeconds"/>, then head for the door and spend <paramref name="insideSeconds"/> in the diner.</summary>
+        public void BeginAmbient(float insideSeconds, float roamSeconds)
         {
             IsPatron = false;
+            PlanVisit(insideSeconds, roamSeconds);
+            _timer = roamSeconds;
+            Phase = PedestrianPhase.Roaming;
+        }
+
+        /// <summary>Ambient: how long the next stay inside lasts and how long the roam after it lasts before the next door visit.</summary>
+        public void PlanVisit(float insideSeconds, float roamSeconds)
+        {
             _insideSeconds = insideSeconds;
-            Phase = PedestrianPhase.Arriving;
+            _roamSeconds = roamSeconds;
+        }
+
+        /// <summary>An ambient roaming person whose roam time is up: they decide to walk to the diner door.</summary>
+        public bool EnterDue => !IsPatron && Phase == PedestrianPhase.Roaming && _timer <= 0f;
+
+        /// <summary>Ambient: stop roaming and walk to the door.</summary>
+        public void GoToDoor()
+        {
+            if (!IsPatron && Phase == PedestrianPhase.Roaming) Phase = PedestrianPhase.Arriving;
         }
 
         /// <summary>Patron: just got out of the car, walking to the door.</summary>
@@ -55,8 +74,15 @@ namespace UncannyValet.Pedestrians
         public void Tick(float deltaSeconds)
         {
             if (IsPatron) return;
-            if (Phase == PedestrianPhase.Idle && _timer > 0f) _timer -= deltaSeconds;
-            else if (Phase == PedestrianPhase.Inside && (_timer -= deltaSeconds) <= 0f) Phase = PedestrianPhase.Leaving;
+            if ((Phase == PedestrianPhase.Idle || Phase == PedestrianPhase.Roaming) && _timer > 0f) _timer -= deltaSeconds;
+            else if (Phase == PedestrianPhase.Inside && (_timer -= deltaSeconds) <= 0f) CameOut();
+        }
+
+        // Out of the diner: roam again until the next decision to enter.
+        private void CameOut()
+        {
+            Phase = PedestrianPhase.Roaming;
+            _timer = _roamSeconds;
         }
 
         /// <summary>The current walk ended; moves to the next phase.</summary>

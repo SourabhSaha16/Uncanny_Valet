@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955474121033c354092908ff48dbc962, type: 3}
+  m_Name: StoryText
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Story.StoryTextAsset
+  _worlds:
+  - _world: 1
+    _worldName: MIDGARD
+    _accent: {r: 0.8901961, g: 0.7254902, b: 0.47843137, a: 1}
+    _accentSecond: {r: 0.43529412, g: 0.7019608, b: 0.41960785, a: 1}
+  - _world: 2
+    _worldName: VANAHEIM
+    _accent: {r: 1, g: 0.78431374, b: 0.22745098, a: 1}
+    _accentSecond: {r: 0.70980394, g: 0.2509804, b: 0.18039216, a: 1}
+  _lots:
+  - _lot:
+      _world: 1
+      _kind: 1
+    _introLines:
+    - A SUNNY DAY AT THE LOCAL DINER.
+    - PARK THE CARS, THEN BRING THEM BACK.
+    - EVERYONE LAUGHS AT THE NAME THOR.
+  - _lot:
+      _world: 1
+      _kind: 2
+    _introLines:
+    - THE TOWN FAIR LIGHTS UP THE NIGHT.
+    - THE WHOLE TOWN WANTS A PARKING SPOT.
+    - SHE KNOWS MORE THAN SHE SAYS.
+  - _lot:
+      _world: 2
+      _kind: 1
+    _introLines:
+    - A RED BARN AMONG GOLDEN WHEAT.
+    - MUDDY CARS NEED A WASH AT THE TROUGH.
+    - THE WATERWHEEL TURNS SLOWLY.
+  - _lot:
+      _world: 2
+      _kind: 2
+    _introLines:
+    - THE STORM IS OVER. THE FEAST IS ON.
+    - MUD EVERYWHERE, TROUGHS FAR AWAY.
+    - SOMETHING SMELLS LIKE THUNDER.
+  _powers:
+  - _power: 1
+    _description: DASH IN A FLASH OF LIGHTNING, OR BOOST YOUR CAR.
+    _farewell: WELL PARKED, DEAR. THE LIGHTNING IS YOURS NOW. MIND THE FAIR ON YOUR
+      WAY OUT.
+  - _power: 2
+    _description: BLOW A GUST THAT CLEARS A LANE OF CARS AND PEOPLE.
+    _farewell: THE STORM TOLD ME YOU WOULD COME. TAKE ITS WIND AND LEAVE MY BARN
+      STANDING.
+  - _power: 3
+    _description: STOP THE WORLD FOR A FEW SECONDS WHILE YOU MOVE.
+    _farewell: TIME IS A RIVER. FOR A MOMENT YOU MAY HOLD IT STILL.
+  - _power: 4
+    _description: CALL THE HAMMER BACK TO YOUR HAND.
+    _farewell: THE HAMMER HAS MISSED YOU, HEIR OF THUNDER.
+  _generic:
+    _trainingTag: TRAINING
+    _crazyTag: CRAZY
+    _finaleTag: FINALE
+    _godFrame: THE TEST OF {0}
+    _trainerFrame: 'TRAINER: {0}'
+    _goalLine: EARN {0} BLESSINGS TO CLEAR THE LOT
+    _newPowerHeading: NEW POWER!
+    _upgradeHeading: POWER UPGRADED!
+    _keyHint: PRESS {0} TO USE IT
+    _sentBackHeading: THROWN BACK!
+    _sentBackLines:
+    - THE TEST WAS FAILED.
+    - THOR FALLS BACK TO MIDGARD.
+    _keptHeading: 'POWERS KEPT:'
+    _keptNone: NONE YET
+    _upgradedMark: +
+    _continuedHeading: TO BE CONTINUED
+    _continuedLines:
+    - THE ROAD GOES ON. MORE REALMS
+    - AWAIT THE HAMMER'S HEIR.
+    _homeHeading: THOR IS HOME
+    _homeLines:
+    - ODIN OPENS THE GREAT DOORS.
+    - THE VALET SPEAKS FOR THE LAST TIME.
+    _earnedHeading: 'POWERS EARNED:'
+    _finaleBlessings: 'FINALE BLESSINGS: {0}'
+    _prompt: PRESS ANY KEY
+  _verdicts:
+  - _lot:
+      _world: 1
+      _kind: 2
+    _speaker: MRS. OKAFOR
+    _failedLine: OH, DEAR. THE FAIR DESERVED BETTER. GO HOME AND REST.
+    _clearedLine: WELL PARKED. YOU ARE MORE THAN YOU LOOK, YOUNG MAN.
+    _clearedWellLine: MAGNIFICENT! I HAVE NOT SEEN PARKING LIKE THAT IN AGES.
+  - _lot:
+      _world: 2
+      _kind: 2
+    _speaker: FREYJA
+    _failedLine: THE HARVEST ROTS ON THE VINE. GO AGAIN, VALET.
+    _clearedLine: THE HARVEST IS YOURS, VALET.
+    _clearedWellLine: A FEAST FOR THE AGES! MY BARNS ARE OVERFLOWING.
+  - _lot:
+      _world: 3
+      _kind: 2
+    _speaker: SKADI
+    _failedLine: WEAK. THE COLD HAS TAKEN YOUR NERVE.
+    _clearedLine: YOU DID NOT FREEZE. THAT IS ENOUGH.
+    _clearedWellLine: SHARP AS ICE. I HUNT THE WORTHY, AND YOU ARE ONE.
+  - _lot:
+      _world: 4
+      _kind: 2
+    _speaker: BROKKR AND EITRI
+    _failedLine: SCRAP! THE FORGE DEMANDS BETTER THAN THIS.
+    _clearedLine: SOUND WORK. WE WILL SMITH SOMETHING OF IT.
+    _clearedWellLine: FLAWLESS! EITRI, GET THE GOOD HAMMER.
+  - _lot:
+      _world: 5
+      _kind: 2
+    _speaker: FREYR
+    _failedLine: THE LIGHT FADES. TRY AGAIN WHEN THE SUN RETURNS.
+    _clearedLine: THE LIGHT HOLDS. YOU MAY PASS.
+    _clearedWellLine: RADIANT! THE ELVES SING OF YOUR PARKING.
+  - _lot:
+      _world: 6
+      _kind: 2
+    _speaker: SURTR
+    _failedLine: ASH! YOU BURN OUT LIKE A CANDLE.
+    _clearedLine: THE FLAME TOLERATES YOU. FOR NOW.
+    _clearedWellLine: YOU WALK THROUGH FIRE. I WILL REMEMBER YOUR NAME.
+  - _lot:
+      _world: 7
+      _kind: 2
+    _speaker: UTGARD-LOKI
+    _failedLine: HA! YOU SAW WHAT I WANTED YOU TO SEE.
+    _clearedLine: NOT BAD. ALMOST AS IF YOU SAW THROUGH ME.
+    _clearedWellLine: IMPOSSIBLE! NO TRICK OF MINE FOOLED YOU.
+  - _lot:
+      _world: 8
+      _kind: 2
+    _speaker: HEL
+    _failedLine: ANOTHER SOUL TURNED AWAY. HOW DULL.
+    _clearedLine: YOU MAY LEAVE. MOST DO NOT.
+    _clearedWellLine: THE DEAD APPLAUD. THAT IS RARE.
+  - _lot:
+      _world: 9
+      _kind: 3
+    _speaker: ODIN
+    _failedLine: NOT YET, HEIR OF THUNDER. THE DOORS STAY SHUT.
+    _clearedLine: THE ALLFATHER HAS WATCHED. THE DOORS OPEN.
+    _clearedWellLine: GLORIOUS. THUNDER ITSELF WOULD BE PROUD.
+  _trainers:
+  - _world: 1
+    _failedLine: NOT YET. EVEN A GOD WITHOUT A HAMMER CAN DO BETTER.
+    _clearedLine: NOT BAD FOR A GOD WITHOUT A HAMMER.
+  - _world: 2
+    _failedLine: THE FIELDS ARE NOT READY. TRY THE LOT AGAIN.
+    _clearedLine: THE BARN APPROVES. THE MUD STAYS OUTSIDE.
+  - _world: 3
+    _failedLine: TOO SLOW. THE ICE DOES NOT WAIT.
+    _clearedLine: STEADY HANDS ON THE FROZEN ROAD. GOOD.
+  - _world: 4
+    _failedLine: TOO LOOSE. A GOOD FIT TAKES PRACTICE.
+    _clearedLine: A GOOD FIT. THE DWARVES NOD.
+  - _world: 5
+    _failedLine: THE LIGHT WAS WITH YOU, BUT NOT ENOUGH.
+    _clearedLine: BRIGHT WORK. KEEP THAT SHINE.
+  - _world: 6
+    _failedLine: TOO COOL. THE HEAT WANTS MORE FROM YOU.
+    _clearedLine: YOU HELD THE LINE IN THE HEAT. WELL DONE.
+  - _world: 7
+    _failedLine: THE ILLUSIONS WON THIS ROUND. LOOK CLOSER.
+    _clearedLine: YOU LOOKED TWICE. SMART.
+  - _world: 8
+    _failedLine: THE DEAD ARE UNIMPRESSED. TRY AGAIN.
+    _clearedLine: THE DEAD ARE UNIMPRESSED, BUT YOU PASSED.
+  _clearedWellMultiple: 1.5

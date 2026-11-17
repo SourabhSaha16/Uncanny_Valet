@@ -23,14 +23,60 @@ namespace UncannyValet.Tests.Lot
         [TestCase(0f, true, 1f, false)]
         [TestCase(70f, true, 0f, false)]
         public void DropOffNeedsAngleZoneAndEarlyArrival(float rotation, bool inside, float elapsed, bool expected) =>
-            Assert.AreEqual(expected, new DropOffJudge(_tuning).IsPerfect(rotation, inside, elapsed));
+            Assert.AreEqual(expected, new DropOffJudge(_tuning).IsPerfect(rotation, inside, elapsed, 0f, new CurbArrowSpan(1.5f)));
+
+        // Arrows at plus and minus 1.5 from the zone centre, tolerance 0.25 (the PerfectSettings default).
+        [TestCase(0f, true)]
+        [TestCase(1.4f, true)]
+        [TestCase(-1.4f, true)]
+        [TestCase(1.5f, true)]
+        [TestCase(-1.5f, true)]
+        [TestCase(1.75f, true)]
+        [TestCase(-1.75f, true)]
+        [TestCase(1.76f, false)]
+        [TestCase(-1.76f, false)]
+        [TestCase(3f, false)]
+        public void DropOffNeedsTheCarCentreBetweenTheArrows(float offsetX, bool expected) =>
+            Assert.AreEqual(expected, new DropOffJudge(_tuning).IsPerfect(0f, true, 0f, offsetX, new CurbArrowSpan(1.5f)));
+
+        [Test]
+        public void OutsideTheArrowsStillFailsWhenAngleAndTimerAreFine()
+        {
+            var judge = new DropOffJudge(_tuning);
+            Assert.IsFalse(judge.IsPerfect(5f, true, 0.1f, 2.5f, new CurbArrowSpan(1.5f)));
+            Assert.IsTrue(judge.IsPerfect(5f, true, 0.1f, 0.5f, new CurbArrowSpan(1.5f)));
+        }
+
+        [Test]
+        public void ALotWithoutArrowsNeverBlocksPerfect()
+        {
+            Assert.IsFalse(CurbArrowSpan.None.IsMarked);
+            Assert.IsTrue(new DropOffJudge(_tuning).IsPerfect(0f, true, 0f, 40f, CurbArrowSpan.None));
+            Assert.IsTrue(new CurbArrowSpan(0f).Contains(-9f, 0f));
+        }
 
         [Test]
         public void DropOffLimitsFollowTheTuning()
         {
             _tuning.TrySet(TuningKey.PerfectDropOffAngle, 40f);
             _tuning.TrySet(TuningKey.PerfectDropOffTimerShare, 0.8f);
-            Assert.IsTrue(new DropOffJudge(_tuning).IsPerfect(30f, true, 0.7f));
+            Assert.IsTrue(new DropOffJudge(_tuning).IsPerfect(30f, true, 0.7f, 0f, CurbArrowSpan.None));
+        }
+
+        [Test]
+        public void ArrowToleranceComesFromTheSettingsAndNeverGoesNegative()
+        {
+            Assert.AreEqual(0.25f, _tuning.DropOffArrowTolerance, 0.0001f);
+            Assert.IsFalse(new CurbArrowSpan(1f).Contains(1.1f, -5f));
+        }
+
+        [Test]
+        public void SpanOfTheShippedLayoutIsMarkedAndSymmetric()
+        {
+            var x = CurbArrowLayout.SideX(6f, CurbArrowLayout.TextHalfExtent(2, 1f, 0.5f), 0.2f);
+            var span = new CurbArrowSpan(x);
+            Assert.IsTrue(span.IsMarked);
+            Assert.AreEqual(span.Contains(x, 0f), span.Contains(-x, 0f));
         }
 
         [TestCase(0f, 0f, 0f, false, ParkVerdict.Perfect)]

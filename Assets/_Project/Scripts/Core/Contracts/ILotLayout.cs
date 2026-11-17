@@ -25,6 +25,12 @@ namespace UncannyValet.Core.Contracts
         /// <summary>EV charging bays the lot has (ids n + 1..), open or not.</summary>
         int ChargingSpotCount { get; }
 
+        /// <summary>True when the lot has a wash slot (a lot with its services closed has none).</summary>
+        bool HasWashStation { get; }
+
+        /// <summary>Wash stations the lot has: 1 for the classic wash slot, the number of troughs in a lot that has them, 0 with no wash.</summary>
+        int WashStationCount { get; }
+
         bool IsSpotFree(int spotId);
 
         /// <summary>True for the charging spots (specialised spots only open on charging nights).</summary>

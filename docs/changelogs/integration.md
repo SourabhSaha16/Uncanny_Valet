@@ -121,3 +121,111 @@ Date: 2026-11-12
 Files: Assets/_Project/Scripts/Bootstrap/{CameraShake,ShakeLink,CameraFollow,PerfectFeedback,TuningSeeder}.cs, Assets/_Project/Scripts/Core/Contracts/{ShakeRows,TuningCatalog}.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Tests/EditMode/Integration/CameraShakeTests.cs
 Why: Refs #20. The camera shakes when the car the player drives has a counted hard hit (CarImpact with IsPlayerCar). Pure CameraShake (decaying two-sine offset, unscaled time, no allocation, weaker hits never replace a stronger running shake) is fed by ShakeLink, created from PerfectFeedback.Start; CameraFollow adds the offset beside the Perfect Park kick so smoothing never chases it. Three F2 Advanced rows (strength, length, full-strength force) with TuningKeys appended at the end; defaults seeded in TuningSeeder.
 Tests: 10 new EditMode (zero below limit, scales, cap, decay to zero, deterministic, no stacking, link player/non-player/below-limit). EditMode 1324 pass, PlayMode 29 pass (incl. BootstrapSceneSmokeTests). No scene or asset change, so no RunBatch.
+
+## integration: RunProgress, LotDefinition, lot scenes, picker [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Bootstrap/{GameBootstrap,TuningSeeder,LotBounds,RunBootstrap,ValetSpawner}.cs and asmdef, Assets/_Project/Scripts/UI/{GameUi.cs,Screens/TitlePicker.cs,Screens/TitlePainter.cs,Screens/UiInput.cs}, Assets/_Project/Editor/{BootstrapSceneBuilder,RunAssetSetup,ProjectSetup}.cs and asmdef, Assets/_Project/Scenes/{Bootstrap,Lot_MidgardCrazy}.unity, Assets/_Project/Data/Run/*.asset, ProjectSettings/EditorBuildSettings.asset, Core LotId, World, LotKind, StoryPower, LotEvents, IRunProgress, ILotPicker, LotChoice, Assets/_Project/Tests/PlayMode/BootstrapSceneSmokeTests.cs and asmdefs
+Why: Refs #80 (epic #79). GameBootstrap gets a LotDefinition and a RunDefinition; TuningSeeder applies the lot's shift length, arrival gaps, waiting cap (never above the layout's queue slots) and dial positions before the dials capture their baselines. RunBootstrap finds or creates the DontDestroyOnLoad RunHost, registers IRunProgress and ILotPicker, links the scene's events to RunProgress and publishes LotStarted. The scene builder generates one scene per lot of the RunDefinition (Bootstrap.unity stays scene 0 as the Midgard training lot, plus Lot_MidgardCrazy.unity). The title screen lists the lots (digit keys 1 to 9 and 0) in every build. GameBootstrap clears Services only while it still owns them, so a newer lot scene is never wiped by the old scene's teardown. Extracted ValetSpawner and LotBounds.TryFrame to keep GameBootstrap within the limit.
+Tests: EditMode 1361 pass (new: run progress, run definition, lot definition rules, seeding, picker); PlayMode 31 pass (both Midgard lots load and play 4 s with no logged errors; the picker switches lot and the run state survives). RunBatch run; Bootstrap.unity has real changes (the two definition references).
+
+## integration: queue slots and arrival budget per lot [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Run/{LotDefinition,LotDefinitionRules,LotPacing}.cs, Scripts/Lot/{LotGeometry,LotLayoutBuilder,LotDecor}.cs, Scripts/Bootstrap/{GameBootstrap,TuningSeeder,QueueSlotCheck}.cs, Editor/{BootstrapSceneBuilder,RunAssetSetup}.cs, Scenes/{Bootstrap,Lot_MidgardCrazy}.unity, Data/Run/Midgard{Training,Crazy}Lot.asset, Tests/EditMode/{Run/QueueSlotsAndBudgetTests,Lot/QueueSlotCountTests,Run/LotDefinitionTests,Patrons/QueueSlotAllocatorTests}.cs, Tests/PlayMode/BootstrapSceneSmokeTests.cs
+Why: Refs #80 follow-up. The queue slot count is a LotDefinition layout parameter (training 3, crazy 4); the scene builder writes it into the lot builder and the decor, and LotGeometry grows the lot below the curb for the extra slot (walls, entry gap, roads and camera frame follow from the geometry). The effective waiting cap stays min(cap, slots) (LotPacing.EffectiveMaxWaiting, now fed by the definition). Each lot has an arrival budget (0 = derived: shift length / mean arrival gap, rounded up, max 40) seeded to DirArrivalBudget before the dial link captures baselines, replacing the shared profile's 14 (slack stays the profile's 2). Training budget changes 14 to 8 (150 s / 20 s mean gap); crazy becomes 20 (was capped at 16). GameBootstrap verifies the built slot count against the definition. Seeder's queueSlots parameter removed (the definition owns it).
+Tests: 10 new EditMode (validation, derived and authored budget, per-lot seeding, effective cap, geometry with 4 slots, 4-slot allocator); EditMode 1371 pass; PlayMode 33 pass (training 3 slots and cap 2, crazy 4 slots with 4 cars parked in the slots, budgets not capped). RunBatch run; scene churn reverted, only the two `_queueSlots` fields kept per scene.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/UI/ (RowModifier, TicketRow, TicketNeedsTracker, TicketBoard, Hud/ServiceIcons, Hud/PlayingHud, Status/*, Kit/{PixelIcon,PixelIconData,PixelPalette,ModifierIcons}, TuningRowView), Scripts/Bootstrap/{TuningSeeder,GameBootstrap,ModifierBootstrap,DirectorBootstrap}.cs, Editor/{ModifierAssetSetup,ProjectSetup,RunAssetSetup}.cs, Data/Modifiers/*, Data/Shift/ShiftConfig.asset, Tests/PlayMode/ServiceModifierPlayModeTests.cs
+Why: Issue #121. The board rows hold a modifier list; icons next to the plate come from each open modifier (mud splat, plug); the key board status words are generic (Servicing and Serviced take their word from the modifier). Bootstrap registers the lot's IModifierCatalog, seeds clear times, bonuses and chances from the definitions and the lot, and the setup tool creates the two definition assets and fills the lots' chance lists.
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## valet: Thunder stride dash on foot and car boost with lightning, crack and kick [Claude]
+Date: 2026-11-13
+Files: Bootstrap: ThunderKickLink (new), PerfectFeedback (wires the kick and ThunderBoostLink); Editor/ValetSceneBuilder.cs. Part of the valet commit for issue #88.
+Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
+Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
+
+## integration: story flow between lots, intro, reward and end cards [Claude]
+Date: 2026-11-14
+Files: Core/Story/* (StoryTextAsset, WorldStory, LotStory, PowerStory, StoryGenericText, StoryTextRules), Core/Contracts/{IStoryFacts,StoryLotFacts,StoryPowerFacts,LotPickerExtensions}.cs, UI/Flow/* (FlowMachine, FlowState, FlowStep, FlowController, FlowEventLink, IFlowActions, DevLotPicker, StoryCard, StoryCardLayout, StoryCardBuilder, IntroCards, RewardCards, EndCards, StoryCardPainter, PendingReward), UI/GameUi.cs, UI/Screens/{UiInput,ResultsPainter,ResultsFormatter}.cs (UiPhase and HowToPlayGate removed), Bootstrap/{FlowHost,FlowActions,FlowBootstrap,RunStoryFacts,StartLotRule,RunBootstrap,GameBootstrap}.cs, Editor/{StoryAssetSetup,StoryTextDrafts,BootstrapSceneBuilder,ProjectSetup}.cs, Data/UI/StoryText.asset, the four lot scenes, Tests/EditMode/Flow/*, Tests/PlayMode/StoryFlowPlayModeTests.cs
+Why: Issue #84 of epic #79. The game flow is now title, how-to-play (once per page load), the lot's intro card, the shift, results, a reward card when a power is earned, the thrown-back card after a failed crazy lot, and the end card (TO BE CONTINUED or THOR IS HOME) then the title with a fresh run. A pure FlowMachine (persistent on the RunHost object through FlowHost) holds the state across scene loads and reacts to NextLotChosen, RunCompleted and PowerGranted; all card words live in one editable StoryTextAsset (drafted from the design notes); the lot picker shows only while F3 is held on the title; Next Lot on the results screen is live (any key but Enter or Space, or the button).
+Tests: EditMode FlowMachineTests, FlowControllerTests, StoryCardTests, StoryTextTests; PlayMode StoryFlowPlayModeTests.
+
+## integration: story cards fit the panel with the shipped text [Claude]
+Date: 2026-11-14
+Files: UI/Flow/{RewardCards,EndCards}.cs (tighter gaps), Tests/EditMode/Flow/{ShippedCardsTests,StoryCardTests}.cs
+Why: Issue #84. A test builds every intro, reward (both levels), thrown-back and end card from the shipped story text, run and power definitions and checks each line sits inside the panel and above the prompt; the finale end card with four powers overflowed by one row and its gaps were tightened.
+Tests: EditMode 1721 passed; PlayMode 66 passed (incl. StoryFlowPlayModeTests, BootstrapSceneSmokeTests).
+
+## integration: GameUi hands card building to StoryCardCache [Claude]
+Date: 2026-11-14
+Files: UI/GameUi.cs, UI/Flow/StoryCardCache.cs, Tests/PlayMode/StoryFlowPlayModeTests.cs
+Why: Issue #84. GameUi was over the 200-line limit; the once-per-screen card building moved into a small cache class.
+Tests: EditMode 1721 passed; PlayMode 66 passed.
+
+## integration: no retry after a failed crazy lot, lot picker on F4 [Claude]
+Date: 2026-11-14
+Files: UI/Flow/{FlowMachine,FlowController}.cs, UI/GameUi.cs, UI/Screens/{ResultsPainter,UiInput}.cs, Tests/EditMode/Flow/{FlowMachineTests,FlowControllerTests}.cs
+Why: Issue #84 owner decisions. After a failed crazy lot or finale the results screen offers only the continue path (Retry button greyed, Enter continues, hint reads ANY KEY: NEXT LOT); Retry stays for failed training and cleared lots. The title's lot picker is shown while F4 is held (F4 is unused elsewhere); F3 stays the Director overlay toggle.
+Tests: new EditMode tests FlowMachine Retry_IsOffAfterAFailedCrazyLot and FlowController Results_EnterContinuesInsteadOfRetrying; NOT run, see the report (Unity batch mode hung on a stuck bee_backend).
+
+## integration: results screen shows the local god verdict, Refs #85 [Claude]
+Date: 2026-11-14
+Files: Core/Story/{VerdictTier,VerdictRule,VerdictStory,TrainerStory,VerdictTextRules,StoryTextAsset,StoryTextRules}.cs, UI/Screens/{VerdictPicker,VerdictSpeech,ResultsContent,ResultsFormatter,ResultsPainter}.cs, UI/GameUi.cs, Editor/{VerdictTextDrafts,StoryAssetSetup}.cs, Data/UI/StoryText.asset, Tests/EditMode/Flow/VerdictTests.cs, Tests/EditMode/UncannyValet.Tests.EditMode.asmdef
+Why: Issue #85. Crazy lots and the finale show the god name and a failed, cleared or cleared-well speech line (cleared well at 1.5x the threshold, a field of the story text); training lots show a generic trainer line without a panel. Lines drafted for all nine gods and eight worlds in the editable story text asset (setup adds missing entries, never overwrites edits). Stats moved to two columns. GameUi reads the story text asset (Core), not the Run module. EditMode tests now reference the Editor assembly (for the drafts).
+Tests: EditMode 1772 passed (new VerdictTests); PlayMode 71 passed; RunBatch ok.
+
+## integration: run-unity wrapper guards Unity batch runs against commit exhaustion, Refs tooling [Claude]
+Date: 2026-11-14
+Files: tools/run-unity.ps1, tools/run-unity.sh, tools/README-unity.md, tools/tests/test-run-unity.ps1, tools/run-tests.ps1, tools/run-tests.sh, tools/build-web.ps1
+Why: Windows commit memory hit 67.5 of 68.5 GB on 2026-11-14 (paging file error 1455, hung Unity.exe and bee_backend.exe). The wrapper adds a machine-wide single-run lock, an 8 GB free-commit guard, a timeout that kills the process tree it started, memory-crash diagnosis and cleanup in finally; the test and web build scripts launch Unity through it.
+Tests: tools/tests/test-run-unity.ps1 with fake executables (12 checks: dry run, exit code passthrough, memory diagnosis, headroom refusal, timeout tree kill, lock release, lock contention, lock wait give-up) all passed. Unity was not launched.
+
+## integration: smaller watcher speech bubbles, tunable scale (Refs #122) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs, SpeechBubblePainter.cs; Assets/_Project/Scripts/UI/Kit/PixelCanvas.cs; Assets/_Project/Scripts/UI/Mood/HudEmotionConfig.cs; Assets/_Project/Scripts/UI/Hud/PlayingHud.cs; Assets/_Project/Scripts/UI/GameUi.cs
+Why: owner playtest note (#122): the bubbles were too big. The bubble (panel, name, text, tail) is drawn at a tunable share of its size (HudEmotionConfig "Speech Bubble" Scale, Range 0.4 to 1, default 0.72 = about 28% smaller) by a zoom in PixelCanvas that shrinks towards the tail, so the clamped box stays on screen.
+Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: zoom the game camera out a little (Refs #123) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFollow.cs; Assets/_Project/Scenes/Bootstrap.unity, Lot_MidgardCrazy.unity, Lot_VanaheimCrazy.unity, Lot_VanaheimTraining.unity (only the _fitTightness line)
+Why: owner playtest note (#123): the view was too close. CameraFollow Fit Tightness 0.78 to 0.83 (size x1.064, about 13% more visible area); the play area is still never cropped, and the Max Orthographic Size cap (15) is unchanged. Scene values were updated by RunBatch; its pure fileID churn was reverted.
+Tests: EditMode 1801 passed, PlayMode 73 passed, RunBatch ok.
+
+## integration: the camera always shows the whole lot, whatever the zoom cap (Refs #123 #127) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Bootstrap/CameraFit.cs, CameraFollow.cs (tooltip); Assets/_Project/Tests/EditMode/Integration/CameraFitTests.cs; Assets/_Project/Tests/PlayMode/CameraFramingPlayModeTests.cs (+ .meta)
+Why: root cause of the cut-off bottom of the taller lots (4th queue slot, #127): CameraFit clamped the zoom to Max Orthographic Size 15, which is below what the lot needs, so the play area was cropped. The play-area floor now wins over the cap (the cap only limits zoom-out for margin and decor). Zoom-out intent of #123 untouched (tightness 0.83 kept). PlayMode test asserts the valet, diner door, valet start and every queue slot are inside the camera view on all four lots at 16:9 and 16:10 (it failed before the fix on queue slot 3 at size 15).
+Tests: EditMode 1802 passed (new LotTallerThanTheCapStillFits), PlayMode 77 passed (4 new), RunBatch ok (scene fileID churn reverted).
+
+## integration: speech bubble only while the speaker is in the camera view (Refs #129) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleVisibility.cs, SpeechBubbleSettings.cs (ViewMargin), SpeechBubblePainter.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/SpeechBubbleVisibilityTests.cs (+ .meta)
+Why: Grandma tip bubble drew at the screen edge even when she was off screen. The painter now skips the bubble while the speaker viewport position is outside the view plus a tunable margin (ViewMargin, default 0.02); the tracker keeps its timer, so the bubble returns if she re-enters before it expires. Tip money is unaffected (display only). Uses the camera HUD already passes in; no per-frame allocation.
+Tests: EditMode SpeechBubbleVisibilityTests (7, incl. leave and re-enter regression).
+
+## integration: speech bubbles off by default, car status reads No blessing (Refs #134 #135) [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/UI/Speech/SpeechBubbleSettings.cs (Enabled switch, default off), SpeechBubbleTracker.cs (enabled gate), Hud/PlayingHud.cs, Status/CarStatusTable.cs, CarStatusResolver.cs (comment), Core/Contracts/EmotionRows.cs (tooltip wording only, approved); Assets/_Project/Tests/EditMode/UI/SpeechBubbleTests.cs, CarStatusTests.cs
+Why: playtest: speech bubbles distract (#134). One serialized bool on HudEmotionConfig's Speech Bubble settings turns them back on; off, the tracker never subscribes to SpeechShown and no painter is built, so nothing is wrapped, tracked or drawn (tips and other events unchanged; blessing and emotion icons untouched). #135: the Unblessed status label is now No blessing (fallback No bless when the box is too narrow; the key board box has room for the full label).
+Tests: EditMode SwitchedOff_NeverTracksABubble, TheSettingsDefaultIsOff, updated label-fitting test; full suite run before commit.
+
+## integration: power bar markers at real thresholds, prayer hands for blessings [Claude]
+Date: 2026-11-14
+Files: Assets/_Project/Scripts/Core/Contracts/PowerBarThresholds.cs (new, one threshold list), Powers/PowerBar.cs, UI/Hud/PowerBarPainter.cs, BlessingPopPainter.cs, BlessingPops.cs, HudPainter.cs, UI/Screens/ResultsPainter.cs, UI/Kit/PixelIcon.cs, PixelIconData.cs; Tests/EditMode/UI/PowerBarMarkerTests.cs, HudLayoutTests.cs (+ .meta)
+Why: #142 the bolt markers were drawn at the centre of each third of the bar (first bolt at about 17 percent) while the first power opens at 33.3, so the fill passed the bolt long before the power worked. Markers now sit at the threshold fraction from the same list the bar uses (new Core file, flagged to the lead), with one pixel rounding shared by fill and markers. #143 blessings show a new PrayerHands pixel icon (HUD counter, blessing pops, results score); the bolt stays on the power bar.
+Tests: EditMode 1883 passed (4 new marker tests).
+
+## integration: red -N pop when a pedestrian hit costs blessings (Refs #152) [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/UI/Hud/CursePopRule.cs, CursePopTracker.cs, BlessingPopKind.cs, BlessingPops.cs, BlessingPopPainter.cs, BlessingPopSettings.cs, PlayingHud.cs, UI/Kit/PixelPalette.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/CursePopTests.cs (+ .meta)
+Why: the slight and full pedestrian curses took blessings with no feedback. A red "-N" (prayer hands after it) now rises at the hit spot, N = blessings really lost (clamped at 0, no pop when none). Uses existing events only: PedestrianHit (spot), CurseApplied with no ticket (amount), BlessingsChanged (running total); the two arrive in either order and pair within one frame, so one pop per hit and a locked-out hit never pops. Font scale and lift are tunable in BlessingPopSettings.
+Tests: EditMode CursePopTests (11); full suite 1937 passed.

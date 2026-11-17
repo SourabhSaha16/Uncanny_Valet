@@ -16,7 +16,7 @@ namespace UncannyValet.Audio
                 case SfxId.CarEnter: return SfxActions.CarEnter(sampleRate);
                 case SfxId.CarExit: return SfxActions.CarExit(sampleRate);
                 case SfxId.CarParked: return SfxActions.CarParked(sampleRate);
-                case SfxId.TipEarned: return SfxActions.TipEarned(sampleRate);
+                case SfxId.BlessingEarned: return SfxActions.BlessingEarned(sampleRate);
                 case SfxId.PickupRequested: return SfxAlerts.PickupRequested(sampleRate);
                 case SfxId.CarVanished: return SfxAlerts.CarVanished(sampleRate);
                 case SfxId.CarArrives: return SfxAlerts.CarArrives(sampleRate);
@@ -28,14 +28,13 @@ namespace UncannyValet.Audio
                 case SfxId.PedestrianBump: return SfxAlerts.PedestrianBump(sampleRate);
                 case SfxId.CarBump: return SfxAlerts.CarBump(sampleRate);
                 case SfxId.PerfectDing: return SfxAlerts.PerfectDing(sampleRate);
-                case SfxId.SpeedBoost: return SfxPowers.SpeedBoostFanfare(sampleRate);
                 case SfxId.TimeStop: return SfxFreeze.TimeStop(sampleRate);
                 case SfxId.TimeResume: return SfxFreeze.TimeResume(sampleRate);
-                case SfxId.SmashBoom: return SfxSmash.Boom(sampleRate);
-                case SfxId.SmashChime0: return SfxSmash.Chime(sampleRate, 0);
-                case SfxId.SmashChime1: return SfxSmash.Chime(sampleRate, 1);
-                case SfxId.SmashChime2: return SfxSmash.Chime(sampleRate, 2);
-                case SfxId.SmashChime3: return SfxSmash.Chime(sampleRate, 3);
+                case SfxId.ThunderCrack: return SfxThunder.Crack(sampleRate);
+                case SfxId.PedestrianYelp: return SfxYelp.Yelp(sampleRate);
+                case SfxId.BlessingChime: return SfxWorld.BlessingChime(sampleRate);
+                case SfxId.WashSplash: return SfxWorld.WashSplash(sampleRate);
+                case SfxId.MudSquelch: return SfxWorld.MudSquelch(sampleRate);
                 case SfxId.TyreChirp: return SfxTyres.Chirp(sampleRate, tyreSharpness);
                 case SfxId.TyreScreech: return SfxTyres.Screech(sampleRate, tyreSharpness);
                 default: throw new ArgumentOutOfRangeException(nameof(id), id, "No recipe for this effect.");

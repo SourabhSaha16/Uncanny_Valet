@@ -13,6 +13,9 @@ namespace UncannyValet.Lot
         [SerializeField, Range(0.05f, 1f), Tooltip("The car must arrive before this share of the patron's pickup timer is gone.")]
         private float _dropOffTimerShare = 0.5f;
 
+        [SerializeField, Min(0f), Tooltip("How far the car centre may sit past either curb arrow's centre line sideways and still count as between the arrows.")]
+        private float _dropOffArrowTolerance = 0.25f;
+
         [Header("Perfect park")]
         [SerializeField, Range(1f, 20f), Tooltip("Largest angle off the bay's long axis, nose in or tail in.")]
         private float _parkAngleDegrees = 12f;
@@ -24,16 +27,14 @@ namespace UncannyValet.Lot
         private float _parkCooldownSeconds = 10f;
         [SerializeField, Min(0f), Tooltip("Units a car must have moved since it last stopped for a Perfect Park to count again.")]
         private float _parkMinTravel = 3f;
-        [SerializeField, Min(0f), Tooltip("Dollars a Perfect Park adds to the ticket before the combo multiplier (Patrons applies it).")]
-        private float _parkBonusDollars = 2f;
 
         public float DropOffAngleDegrees => _dropOffAngleDegrees;
         public float DropOffTimerShare => _dropOffTimerShare;
+        public float DropOffArrowTolerance => _dropOffArrowTolerance;
         public float ParkAngleDegrees => _parkAngleDegrees;
         public float ParkSideOffset => _parkSideOffset;
         public float ParkLengthOffset => _parkLengthOffset;
         public float ParkCooldownSeconds => _parkCooldownSeconds;
         public float ParkMinTravel => _parkMinTravel;
-        public float ParkBonusDollars => _parkBonusDollars;
     }
 }

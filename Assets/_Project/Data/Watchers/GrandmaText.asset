@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60fdf7af48f0c04bb5b0a365447b174, type: 3}
+  m_Name: GrandmaText
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherTextAsset
+  _tips:
+  - _situation: 0
+    _text: PARK HER NICE AND STRAIGHT, DEAR.
+  - _situation: 1
+    _text: THAT CAR'S MUDDY. THE WASH, SWEETIE.
+  - _situation: 2
+    _text: NEEDS A CHARGE, DEAR. PLUG IT IN.
+  - _situation: 3
+    _text: THEY'RE GETTING GRUMPY. FETCH THAT CAR!
+  - _situation: 4
+    _text: LOTS OF CARS WAITING. ONE AT A TIME.
+  - _situation: 5
+    _text: GENTLY, DEAR. DENTS COST BLESSINGS.
+  _curse:
+  - OH DEAR. THAT WON'T DO AT ALL.
+  - SOMEBODY'S UPSET. FIX IT, SWEETIE.
+  - MIND THE MANNERS, DEAR.
+  _perfectPark:
+  - LOVELY PARKING, DEAR!
+  - STRAIGHT AS A RULER! I'M PROUD.
+  - NOT A SCRATCH. BRAVO!
+  _perfectDropOff:
+  - RIGHT TO THE CURB. WONDERFUL!
+  - THAT PATRON IS BEAMING, DEAR.
+  - WHAT A SMOOTH HANDOVER!
+  _bigCrash:
+  - OH MY! ARE YOU ALL RIGHT, DEAR?
+  - THAT'S HOW WE LEARN, SWEETIE.
+  - THEIR POOR CAR! OH, MY POOR WALL!
+  _halfwayToGoal:
+  - HALFWAY THERE! KEEP IT UP, DEAR.
+  - WELL DONE, SWEETIE! HALF DONE.
+  - HALF THE BLESSINGS ALREADY!
+  _goalReached:
+  - YOU DID IT, DEAR! I KNEW YOU WOULD.
+  - PIE FOR YOU TONIGHT!
+  - THAT'S ENOUGH BLESSINGS. WELL DONE!
+  _last30Seconds:
+  - THIRTY SECONDS LEFT, DEAR!
+  - NEARLY CLOSING TIME. ONE LAST PUSH!
+  - FINISH PRETTY, SWEETIE!
+  _verdictFailed: []
+  _verdictCleared: []
+  _verdictClearedWell: []

@@ -18,7 +18,6 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(GameRows.Clock);
             all.AddRange(ArrivalRows.Rows);
             all.AddRange(ReturnRows.Rows);
-            all.AddRange(QueueRows.Rows);
             all.AddRange(DirectorPacingRows.PacingRows);
             all.AddRange(DirectorMixRows.MixRows);
             all.AddRange(DirectorMixRows.DilemmaRows);
@@ -29,10 +28,14 @@ namespace UncannyValet.Core.Contracts
             all.AddRange(HandlingRows.Rows);
             all.AddRange(HandlingRows.TyreRows);
             all.AddRange(PowerRows.Rows);
+            all.AddRange(PowerRows.DeveloperRows);
             all.AddRange(PerfectRows.Rows);
             all.AddRange(EmotionRows.Rows);
             all.AddRange(DamageRows.Rows);
             all.AddRange(ShakeRows.Rows);
+            all.AddRange(PedestrianHitRows.Rows);
+            all.AddRange(MudRows.Rows);
+            all.AddRange(WorldSoundRows.Rows);
             return all;
         }
     }

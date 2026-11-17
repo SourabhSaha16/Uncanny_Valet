@@ -1,6 +1,7 @@
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 
 namespace UncannyValet.Tests.Director
 {
@@ -8,7 +9,7 @@ namespace UncannyValet.Tests.Director
     internal sealed class SoakCar
     {
         public CarId Id;
-        public bool Dirty;
+        public bool Muddy;
         public bool Ev;
         public bool WashDone;
         public bool ChargeDone;
@@ -35,8 +36,21 @@ namespace UncannyValet.Tests.Director
         /// <summary>Order in which the pickup was requested (lower is older).</summary>
         public int RequestOrder;
 
-        public bool NeedsWash => Dirty && !WashDone;
+        public bool NeedsWash => Muddy && !WashDone;
         public bool NeedsCharge => Ev && !ChargeDone;
+
+        public ModifierSet Held => ModifierTestKit.Of(Ev, Muddy);
+
+        public ModifierSet Done
+        {
+            get
+            {
+                var done = ModifierSet.None;
+                if (Muddy && WashDone) done = done.With(ModifierId.Muddy);
+                if (Ev && ChargeDone) done = done.With(ModifierId.NeedsCharge);
+                return done;
+            }
+        }
 
         public bool AwaitingPark => State == CarLotState.Arriving || State == CarLotState.WaitingToPark
             || State == CarLotState.Driven;

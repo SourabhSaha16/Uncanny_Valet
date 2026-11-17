@@ -7,9 +7,11 @@ namespace UncannyValet.Core.Events
         PlanMaxWaitingCars,
         PlanArrivalGapScale,
         PlanActiveSpots,
-        PlanEvChance,
-        PlanDirtyChance,
-        /// <summary>EV chance reached at the end of the shift (ramps from PlanEvChance).</summary>
+        /// <summary>Retired: the shift plan's EV chance, now the lot's NeedsCharge chance (ModifierChanceNeedsCharge). Reserved slot, never reuse or remove.</summary>
+        RetiredPlanEvChance,
+        /// <summary>Retired: the shift plan's wash-need chance, now the lot's Muddy chance (ModifierChanceMuddy). Reserved slot, never reuse or remove.</summary>
+        RetiredPlanWashChance,
+        /// <summary>Chance of the late-ramping modifier (NeedsCharge) at the end of the shift (ramps from its lot chance).</summary>
         PlanLateEvChance,
         /// <summary>Fraction 0..1 of the shift after which the EV chance starts ramping.</summary>
         PlanLateEvStart,
@@ -29,8 +31,8 @@ namespace UncannyValet.Core.Events
         /// <summary>Real seconds in a shift. Read when a shift starts.</summary>
         ShiftLengthSeconds,
 
-        // Tips.
-        BaseTip,
+        // Blessings.
+        BaseBlessing,
         ChargeBonus,
         CleanBonus,
         SpeedWindowMinutes,
@@ -79,9 +81,9 @@ namespace UncannyValet.Core.Events
         DirFormMaxStep,
         DirFormWindow,
         DirFormWarmup,
-        DirFormTipWeight,
+        DirFormBlessingWeight,
         DirFormAngryWeight,
-        DirFormComboWeight,
+        DirFormFavourWeight,
         DirFormAngryFull,
 
         // Director: dilemma rule multipliers and thresholds.
@@ -126,10 +128,10 @@ namespace UncannyValet.Core.Events
         DialRamp,
         /// <summary>Dial: strength of the end-of-shift surge.</summary>
         DialLateRush,
-        /// <summary>Dial: share of cars that need a wash.</summary>
-        DialDirtyCars,
-        /// <summary>Dial: share of EVs that need a charge.</summary>
-        DialEvCars,
+        /// <summary>Retired: the Car Mix dial for the share of cars needing a wash (replaced by the lot's Muddy chance). Reserved slot, never reuse or remove.</summary>
+        RetiredDialCarMixWash,
+        /// <summary>Retired: the Car Mix dial for the share of EVs (replaced by the lot's NeedsCharge chance). Reserved slot, never reuse or remove.</summary>
+        RetiredDialCarMixEv,
         /// <summary>Dial: how often the director sets up squeeze moments.</summary>
         DialDilemmas,
         /// <summary>Dial: how readily the director backs off when the player is overwhelmed.</summary>
@@ -145,9 +147,9 @@ namespace UncannyValet.Core.Events
         /// <summary>Extra target workload at the very end of the shift, as a fraction; ramps in from PlanLateEvStart.</summary>
         DirLateTargetBoost,
         DirWeightPlain,
-        DirWeightDirty,
+        DirWeightMuddy,
         DirWeightEv,
-        DirWeightDirtyEv,
+        DirWeightMuddyEv,
 
         // Car handling (Cars module owns; applies live to every car). docs/redesign/car_handling_spec.md section 2.
         /// <summary>How fast sideways slide dies out at full grip, per second.</summary>
@@ -194,26 +196,26 @@ namespace UncannyValet.Core.Events
         ImpatientWindowScale,
 
         // Valet powers (Powers module; appended so earlier key numbers stay put).
-        /// <summary>Power meter fill for one Perfect Park (meter 0..100).</summary>
+        /// <summary>Power bar fill for one Perfect Park (bar 0..100).</summary>
         PowerFillPerfectPark,
-        /// <summary>Power meter fill for one perfect drop-off.</summary>
+        /// <summary>Power bar fill for one perfect drop-off.</summary>
         PowerFillPerfectDropOff,
-        /// <summary>Power meter fill per second of sliding.</summary>
+        /// <summary>Power bar fill per second of sliding.</summary>
         PowerFillDriftPerSecond,
-        /// <summary>Most meter one slide can add.</summary>
+        /// <summary>Most bar one slide can add.</summary>
         PowerFillDriftCap,
-        /// <summary>Meter value that unlocks level 1 (speed boost).</summary>
-        PowerLevel1Threshold,
-        /// <summary>Meter value that unlocks level 2 (freeze time).</summary>
-        PowerLevel2Threshold,
-        /// <summary>Meter value that unlocks level 3 (Park Smash); also the full bar.</summary>
-        PowerLevel3Threshold,
-        /// <summary>Seconds the speed boost lasts.</summary>
-        PowerSpeedBoostSeconds,
-        /// <summary>Walk speed multiplier while the speed boost runs.</summary>
-        PowerWalkMultiplier,
-        /// <summary>Seconds freeze time lasts.</summary>
-        PowerFreezeSeconds,
+        /// <summary>Retired: the old meter's level 1 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel1Threshold,
+        /// <summary>Retired: the old meter's level 2 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel2Threshold,
+        /// <summary>Retired: the old meter's level 3 threshold. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerLevel3Threshold,
+        /// <summary>Retired: seconds the removed speed boost lasted. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerSpeedBoostSeconds,
+        /// <summary>Retired: walk multiplier of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerWalkMultiplier,
+        /// <summary>Retired by issue 87: freeze time length is now the duration of its power level 1 and 2 keys. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerFreezeSeconds,
         /// <summary>World time scale during freeze time: 0 = stopped, 0.3 = slow.</summary>
         PowerFreezeTimeScale,
         // Perfect Park and Perfect drop-off judging (Lot owns). docs/redesign/car_handling_spec.md section 4, valet_powers.md Q1.
@@ -231,13 +233,13 @@ namespace UncannyValet.Core.Events
         PerfectParkCooldown,
         /// <summary>Units a car must have moved since it last stopped for a Perfect Park to count again.</summary>
         PerfectParkMinTravel,
-        /// <summary>Dollars a Perfect Park adds to the car's ticket (before the combo multiplier).</summary>
+        /// <summary>Retired: the Perfect Park bonus (a perfect park no longer adds blessings, it fills the power bar). Reserved slot, never reuse or remove.</summary>
         PerfectParkBonus,
         // Pickup emotions (UI owns). docs/design.md A8.
         /// <summary>Share (0..1) of the pickup patience used up from which the patron is angry (red).</summary>
         EmotionAngryFrom,
-        /// <summary>Share (0..1) of the pickup patience used up from which the patron will not tip any more.</summary>
-        EmotionWillNotTipFrom,
+        /// <summary>Share (0..1) of the pickup patience used up from which the patron will not bless any more.</summary>
+        EmotionWillNotBlessFrom,
         // Arrival idle guard (Director owns). Issue 70.
         /// <summary>Longest, in seconds, the arrival queue may stay empty before a car is sent whatever the pacing says.</summary>
         ArrivalIdleLimit,
@@ -257,16 +259,16 @@ namespace UncannyValet.Core.Events
         TrafficMinOnScreen,
         /// <summary>Ambient cars on screen that spawning aims for (0 = no ambient traffic).</summary>
         TrafficTargetOnScreen,
-        // Speed boost feel (Powers seeds, Valet and Pedestrians read). Issue 41.
-        /// <summary>Seconds a pedestrian stumbles when the boosted valet runs through them.</summary>
-        PowerStumbleSeconds,
-        /// <summary>Sparkles per second in the boosted valet's trail.</summary>
-        PowerTrailPerSecond,
-        // Patron stay start: when a queued car's clock starts (Lot and Patrons own). Issue 78.
-        /// <summary>World units a resting car must be from the nearest queue slot centre for the patron's stay to start.</summary>
-        QueueClearDistance,
-        /// <summary>Game minutes after arrival at which a car still in the queue gets its stay started anyway.</summary>
-        QueueMaxWaitMinutes,
+        // Retired speed boost feel keys (issue 41, removed with issue 86); the numbers stay reserved.
+        /// <summary>Retired: stumble length of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerStumbleSeconds,
+        /// <summary>Retired: sparkle trail of the removed speed boost. Reserved slot, never reuse or remove.</summary>
+        RetiredPowerTrailPerSecond,
+        // Retired queue stay-start keys (issue 78, replaced by issue 126: the stay starts when the patron enters the diner).
+        /// <summary>Retired: the queue clear distance of issue 78. Reserved slot, never reuse or remove.</summary>
+        RetiredQueueClearDistance,
+        /// <summary>Retired: the queue maximum wait of issue 78. Reserved slot, never reuse or remove.</summary>
+        RetiredQueueMaxWaitMinutes,
         // Car damage (Cars owns). Issue 19.
         /// <summary>Smallest impact force (speed change, units per second) that damages a car.</summary>
         DamageMinForce,
@@ -279,6 +281,160 @@ namespace UncannyValet.Core.Events
         ShakeSeconds,
         /// <summary>Impact force at which the shake reaches its full strength.</summary>
         ShakeFullForce,
+        // Developer grant of a power through the F2 panel (Bootstrap owns). Issue 86.
+        /// <summary>1 when Freeze time is granted to Thor for testing, 0 when not (the run progress is the real owner).</summary>
+        DevOwnFreezeTime,
+        // Service modifiers: arrival chance per modifier, seeded from the lot (Run owns the numbers). Issue 121.
+        /// <summary>Chance 0..1 that a new car arrives Muddy.</summary>
+        ModifierChanceMuddy,
+        /// <summary>Chance 0..1 that a new car arrives needing a charge (ramps up late in the shift).</summary>
+        ModifierChanceNeedsCharge,
+        // Developer grants of the other story powers (Bootstrap owns). Issue 87.
+        /// <summary>Thunder stride level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnThunderStride,
+        /// <summary>Storm wind level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnStormWind,
+        /// <summary>Mjolnir recall level granted to Thor for testing: 0 none, 1 earned, 2 upgraded.</summary>
+        DevOwnMjolnirRecall,
+        // Per-level numbers of every story power (Powers owns, seeded from the PowerDefinition assets). Issue 87.
+        // Order: power (Thunder stride, Storm wind, Freeze time, Mjolnir recall) x level (1, 2) x field (PowerField order). Contiguous: PowerTuningKeys maps by index.
+        /// <summary>Thunder stride level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerThunderStrideL1Cooldown,
+        /// <summary>Thunder stride level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerThunderStrideL1Duration,
+        /// <summary>Thunder stride level 1: distance or range, in world units.</summary>
+        PowerThunderStrideL1Distance,
+        /// <summary>Thunder stride level 1: push strength.</summary>
+        PowerThunderStrideL1PushStrength,
+        /// <summary>Thunder stride level 1: width, in world units.</summary>
+        PowerThunderStrideL1Width,
+        /// <summary>Thunder stride level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerThunderStrideL2Cooldown,
+        /// <summary>Thunder stride level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerThunderStrideL2Duration,
+        /// <summary>Thunder stride level 2: distance or range, in world units.</summary>
+        PowerThunderStrideL2Distance,
+        /// <summary>Thunder stride level 2: push strength.</summary>
+        PowerThunderStrideL2PushStrength,
+        /// <summary>Thunder stride level 2: width, in world units.</summary>
+        PowerThunderStrideL2Width,
+        /// <summary>Storm wind level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerStormWindL1Cooldown,
+        /// <summary>Storm wind level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerStormWindL1Duration,
+        /// <summary>Storm wind level 1: distance or range, in world units.</summary>
+        PowerStormWindL1Distance,
+        /// <summary>Storm wind level 1: push strength.</summary>
+        PowerStormWindL1PushStrength,
+        /// <summary>Storm wind level 1: width, in world units.</summary>
+        PowerStormWindL1Width,
+        /// <summary>Storm wind level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerStormWindL2Cooldown,
+        /// <summary>Storm wind level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerStormWindL2Duration,
+        /// <summary>Storm wind level 2: distance or range, in world units.</summary>
+        PowerStormWindL2Distance,
+        /// <summary>Storm wind level 2: push strength.</summary>
+        PowerStormWindL2PushStrength,
+        /// <summary>Storm wind level 2: width, in world units.</summary>
+        PowerStormWindL2Width,
+        /// <summary>Freeze time level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerFreezeTimeL1Cooldown,
+        /// <summary>Freeze time level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerFreezeTimeL1Duration,
+        /// <summary>Freeze time level 1: distance or range, in world units.</summary>
+        PowerFreezeTimeL1Distance,
+        /// <summary>Freeze time level 1: push strength.</summary>
+        PowerFreezeTimeL1PushStrength,
+        /// <summary>Freeze time level 1: width, in world units.</summary>
+        PowerFreezeTimeL1Width,
+        /// <summary>Freeze time level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerFreezeTimeL2Cooldown,
+        /// <summary>Freeze time level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerFreezeTimeL2Duration,
+        /// <summary>Freeze time level 2: distance or range, in world units.</summary>
+        PowerFreezeTimeL2Distance,
+        /// <summary>Freeze time level 2: push strength.</summary>
+        PowerFreezeTimeL2PushStrength,
+        /// <summary>Freeze time level 2: width, in world units.</summary>
+        PowerFreezeTimeL2Width,
+        /// <summary>Mjolnir recall level 1: seconds before it can be used again (counted after it ends).</summary>
+        PowerMjolnirRecallL1Cooldown,
+        /// <summary>Mjolnir recall level 1: seconds it lasts (0 for an instant power).</summary>
+        PowerMjolnirRecallL1Duration,
+        /// <summary>Mjolnir recall level 1: distance or range, in world units.</summary>
+        PowerMjolnirRecallL1Distance,
+        /// <summary>Mjolnir recall level 1: push strength.</summary>
+        PowerMjolnirRecallL1PushStrength,
+        /// <summary>Mjolnir recall level 1: width, in world units.</summary>
+        PowerMjolnirRecallL1Width,
+        /// <summary>Mjolnir recall level 2: seconds before it can be used again (counted after it ends).</summary>
+        PowerMjolnirRecallL2Cooldown,
+        /// <summary>Mjolnir recall level 2: seconds it lasts (0 for an instant power).</summary>
+        PowerMjolnirRecallL2Duration,
+        /// <summary>Mjolnir recall level 2: distance or range, in world units.</summary>
+        PowerMjolnirRecallL2Distance,
+        /// <summary>Mjolnir recall level 2: push strength.</summary>
+        PowerMjolnirRecallL2PushStrength,
+        /// <summary>Mjolnir recall level 2: width, in world units.</summary>
+        PowerMjolnirRecallL2Width,
+        /// <summary>Thunder stride level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerThunderStrideL1Secondary,
+        /// <summary>Thunder stride level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerThunderStrideL2Secondary,
+        /// <summary>Storm wind level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerStormWindL1Secondary,
+        /// <summary>Storm wind level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerStormWindL2Secondary,
+        /// <summary>Freeze time level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerFreezeTimeL1Secondary,
+        /// <summary>Freeze time level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerFreezeTimeL2Secondary,
+        /// <summary>Mjolnir recall level 1: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerMjolnirRecallL1Secondary,
+        /// <summary>Mjolnir recall level 2: a second time or number (Thunder stride: the dash time, in seconds). Appended after the first block.</summary>
+        PowerMjolnirRecallL2Secondary,
+        /// <summary>Pedestrian knockback: distance at the slowest hit, world units.</summary>
+        PedestrianKnockbackNear,
+        /// <summary>Pedestrian knockback: distance at the car's top speed, world units.</summary>
+        PedestrianKnockbackFar,
+        /// <summary>Pedestrian knockback: the hit speed that gives the near distance and tumble.</summary>
+        PedestrianKnockbackNearSpeed,
+        /// <summary>Pedestrian knockback: the hit speed that gives the far distance and tumble.</summary>
+        PedestrianKnockbackFarSpeed,
+        /// <summary>Pedestrian tumble length at the slowest hit, seconds.</summary>
+        PedestrianTumbleNear,
+        /// <summary>Pedestrian tumble length at the fastest hit, seconds.</summary>
+        PedestrianTumbleFar,
+        /// <summary>Share of the car's speed lost when it hits a pedestrian (0..1).</summary>
+        PedestrianCarSlowdown,
+        /// <summary>The slowdown never takes the car below this share of its top speed (0..1).</summary>
+        PedestrianCarSlowFloor,
+        /// <summary>Blessings a curse for hitting a patron walker takes off.</summary>
+        PedestrianCurseAmount,
+        /// <summary>Seconds after a patron was hit during which hitting them again is not a curse.</summary>
+        PedestrianCurseLockout,
+        /// <summary>Per-lot switch: 1 when hitting a patron walker with the driven car is a curse, 0 when it never is.</summary>
+        PedestrianCurses,
+        /// <summary>Mud patches: top speed multiplier of a car in mud (1 = no slowdown).</summary>
+        MudTopSpeedScale,
+        /// <summary>Mud patches: acceleration multiplier of a car in mud (1 = unchanged).</summary>
+        MudAccelerationScale,
+        /// <summary>Mud patches: share of the normal grip loss (drifting) a car keeps in mud (1 = unchanged).</summary>
+        MudGripLossKept,
+        /// <summary>Mud patches: seconds the slowdown takes to fade after leaving a puddle.</summary>
+        MudReleaseSeconds,
+        // Themed lot audio volumes (Audio owns). Issue 117.
+        /// <summary>Volume of the lot's ambience layers, 0..1 (on top of the theme's own ambience level).</summary>
+        AmbienceVolume,
+        /// <summary>Volume of the last-30-seconds layer (fireworks, thunder), 0..1.</summary>
+        EscalationVolume,
+        /// <summary>Volume of the world sounds (blessing chime, wash splash, mud squelch), 0..1.</summary>
+        WorldSoundVolume,
+        /// <summary>Per-lot switch: 1 when pedestrians may walk any direct route to the diner (crazy lots), 0 when they keep to the crosswalks.</summary>
+        PedestrianFreeRoutes,
+        /// <summary>Blessings a slight curse takes off when the driven car hits any other pedestrian (every lot).</summary>
+        PedestrianSlightCurseAmount,
         // Car turning and drift kick (Cars owns). Issue 151.
         /// <summary>Share of the turn rate lost per unit of speed above full-steering speed.</summary>
         HandlingTurnFalloff,

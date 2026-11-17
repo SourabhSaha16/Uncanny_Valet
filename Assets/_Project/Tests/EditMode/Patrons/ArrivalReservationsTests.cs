@@ -18,11 +18,11 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => input.BaseTip;
-            public TipBreakdown Explain(in TipInput input) =>
-                new TipBreakdown(input.BaseTip, 0, 0, 0, input.BaseTip, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => input.BaseBlessing;
+            public BlessingBreakdown Explain(in BlessingInput input) =>
+                new BlessingBreakdown(input.BaseBlessing, 0, 0, input.BaseBlessing, BlessingZeroReason.None);
         }
 
         private sealed class RecordingCars : ICarFactory
@@ -31,6 +31,7 @@ namespace UncannyValet.Tests.Patrons
             public IDrivable Spawn(CarId id, Vector2 position, float rotationDegrees) => null;
             public IDrivable SpawnArriving(CarId id, Vector2 stopPosition, float rotationDegrees, int arrivalSlot) => null;
             public void DriveAwayAndDespawn(CarId id) => DriveAways++;
+            public bool TryDriveTo(CarId id, Vector2 target, float speed) => false;
             public bool TryGet(CarId id, out IDrivable car) { car = null; return false; }
             public void Despawn(CarId id) => Despawns++;
         }
@@ -43,7 +44,7 @@ namespace UncannyValet.Tests.Patrons
         public void SetUp()
         {
             _bus = new EventBus();
-            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeTips());
+            _registry = new TicketRegistry(_bus, new FakeClock(), new FakeBlessings());
             _reservations = new ArrivalReservations();
         }
 

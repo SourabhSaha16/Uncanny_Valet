@@ -115,7 +115,7 @@ namespace UncannyValet.Tests.Audio
             tuning.Subscribe();
             bus.Publish(new TuningChanged(TuningKey.TyreSoundSharpness, 0.8f));
             bus.Publish(new TuningChanged(TuningKey.TyreSoundVolume, 0.5f));
-            bus.Publish(new TuningChanged(TuningKey.BaseTip, 3f));
+            bus.Publish(new TuningChanged(TuningKey.BaseBlessing, 3f));
             Assert.AreEqual(0.8f, tuning.Sharpness, 1e-5f);
             Assert.AreEqual(0.5f, tuning.Volume, 1e-5f);
             Assert.AreEqual(2, changes);

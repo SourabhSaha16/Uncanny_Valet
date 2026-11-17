@@ -27,13 +27,17 @@ namespace UncannyValet.Pedestrians
         [Header("Ambient flow")]
         [SerializeField, Tooltip("Seconds an ambient person stays in the diner (min, max).")]
         private Vector2 _insideSeconds = new Vector2(5f, 14f);
+        [SerializeField, Tooltip("Seconds an ambient person roams the sidewalks and crosswalks before deciding to walk to the diner door (min, max; each decision draws a new value, so people do not all head in together).")]
+        private Vector2 _roamSeconds = new Vector2(10f, 40f);
+        [SerializeField, Range(0.05f, 0.8f), Tooltip("Shortest roaming leg as a share of the route, so people do not shuffle on the spot.")]
+        private float _roamMinLegShare = 0.2f;
         [SerializeField, Tooltip("Seconds an ambient person stays out of sight before appearing at the road side again (min, max).")]
         private Vector2 _respawnSeconds = new Vector2(1f, 7f);
         [SerializeField, Range(0f, 0.9f), Tooltip("At the start of the night an ambient person may begin up to this share of the way along their walk, so the street is not empty.")]
         private float _openingProgressMax = 0.7f;
 
         [Header("Patrons")]
-        [SerializeField, Range(1, 12), Tooltip("Most patrons that can be on foot at once (pooled).")]
+        [SerializeField, Range(1, 12), Tooltip("Floor for the reserved patron pool. The pool is at least parking spots plus queue slots (one person per possible open ticket), so this only matters for a tiny lot.")]
         private int _patronPoolSize = 6;
         [SerializeField, Min(0.1f), Tooltip("Walking speed of patrons, world units per second.")]
         private float _patronSpeed = 1.7f;
@@ -64,10 +68,10 @@ namespace UncannyValet.Pedestrians
         [SerializeField, Min(0.1f), Tooltip("Impact speed that gives a full-strength bump (bigger distance, louder sound).")]
         private float _bounceFullSpeed = 5f;
 
-        [Header("Stumble (the boosted valet runs through a person)")]
-        [SerializeField, Min(0.1f), Tooltip("Seconds of the stumble when the F2 value is missing.")]
+        [Header("Stumble (a person knocked off their feet)")]
+        [SerializeField, Min(0.1f), Tooltip("Seconds of the stumble.")]
         private float _stumbleSeconds = 0.4f;
-        [SerializeField, Range(0f, 2f), Tooltip("Peak push away from the valet, world units.")]
+        [SerializeField, Range(0f, 2f), Tooltip("Peak push away from whatever knocked them, world units.")]
         private float _stumbleDistance = 0.7f;
         [SerializeField, Range(0f, 3f), Tooltip("Full turns the person spins during the stumble.")]
         private float _stumbleSpins = 1f;
@@ -96,6 +100,8 @@ namespace UncannyValet.Pedestrians
         public int SortingOrder => _sortingOrder;
         public Vector2 InsideSeconds => _insideSeconds;
         public Vector2 RespawnSeconds => _respawnSeconds;
+        public Vector2 RoamSeconds => new Vector2(Mathf.Max(0f, _roamSeconds.x), Mathf.Max(0f, _roamSeconds.y));
+        public float RoamMinLegShare => _roamMinLegShare;
         public float OpeningProgressMax => _openingProgressMax;
         public int PatronPoolSize => _patronPoolSize;
         public float PatronSpeed => _patronSpeed;

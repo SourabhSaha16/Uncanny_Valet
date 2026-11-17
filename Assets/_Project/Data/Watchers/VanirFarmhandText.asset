@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60fdf7af48f0c04bb5b0a365447b174, type: 3}
+  m_Name: VanirFarmhandText
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.WatcherTextAsset
+  _tips:
+  - _situation: 0
+    _text: KEYS IN. PARK HER STRAIGHT IN THE BAY.
+  - _situation: 1
+    _text: MUDDY ONE. SEND HER THROUGH THE WASH.
+  - _situation: 2
+    _text: BATTERY'S DRY. HOOK HER TO THE CHARGER.
+  - _situation: 3
+    _text: THEY'RE LOSING PATIENCE. HURRY IT UP.
+  - _situation: 4
+    _text: QUEUE'S FULL. TAKE 'EM ONE BY ONE.
+  - _situation: 5
+    _text: EASY NOW. DENTS COST YOU BLESSINGS.
+  _curse:
+  - WELL, THAT WENT SOUR.
+  - THAT'LL LEAVE A MARK.
+  - ANGRY FOLK. HAPPENS.
+  _perfectPark:
+  - NICE AND STRAIGHT. GOOD WORK.
+  - CAN'T FAULT THAT PARKING.
+  - RIGHT IN THE MIDDLE. SHARP.
+  _perfectDropOff:
+  - RIGHT AT THE CURB. GOOD.
+  - THAT PATRON'S HAPPY. GOOD WORK.
+  - SMOOTH HANDOVER.
+  _bigCrash:
+  - WHOA! MIND THE FENCE!
+  - THAT'LL BUFF OUT. MAYBE.
+  - WATCH THE WALLS!
+  _halfwayToGoal:
+  - HALFWAY. STEADY NOW.
+  - HALF THE BLESSINGS. KEEP AT IT.
+  - GOOD PACE. KEEP GOING.
+  _goalReached:
+  - THAT'S ENOUGH BLESSINGS. WELL DONE.
+  - DONE AND DUSTED.
+  - GOOD HARVEST TONIGHT.
+  _last30Seconds:
+  - THIRTY SECONDS. PUSH ON.
+  - NEARLY CLOSING. LAST PUSH!
+  - ALMOST DONE. STAY SHARP.
+  _verdictFailed: []
+  _verdictCleared: []
+  _verdictClearedWell: []

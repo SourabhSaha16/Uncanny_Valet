@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a46f53b321582341904108b6d0c8226, type: 3}
+  m_Name: MidgardCrazyGagLines
+  m_EditorClassIdentifier: UncannyValet.Core::UncannyValet.Core.Watchers.GagLineAsset
+  _speaker: FAIRGOER
+  _triggerDistance: 3
+  _globalLockoutSeconds: 6
+  _walkerLockoutSeconds: 20
+  _lines:
+  - GREAT COSTUME! IS THAT A HAMMER?
+  - LOVE THE THOR OUTFIT!
+  - IS HE PART OF THE FAIR?
+  - BEST THOR COSTUME HERE!
+  - WHERE DID YOU GET THE CAPE?
+  - WOW, THE BEARD LOOKS REAL!
+  - PHOTO? YOU'RE THE BEST THOR!
+  - THOR! WIN ME A PLUSH TOY!

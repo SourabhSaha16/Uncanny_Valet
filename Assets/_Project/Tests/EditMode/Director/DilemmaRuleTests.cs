@@ -56,7 +56,7 @@ namespace UncannyValet.Tests.Director
             var b = Lot(StationSlotState.Blocked, StationSlotState.Free, StationSlotState.Free);
             CollectionAssert.AreEqual(new[] { DilemmaKind.WashBlocked }, Fired(b));
             var boost = Boost(DilemmaKind.WashBlocked, b);
-            Assert.AreEqual(CarArchetype.Dirty, boost.Archetype);
+            Assert.AreEqual(CarArchetype.Muddy, boost.Archetype);
             Assert.AreEqual(3f, boost.Multiplier);
             Assert.IsTrue(boost.Solvable);
         }
@@ -67,14 +67,14 @@ namespace UncannyValet.Tests.Director
             var b = Lot(StationSlotState.Working, StationSlotState.Free, StationSlotState.Free);
             CollectionAssert.AreEqual(new[] { DilemmaKind.WashBusy }, Fired(b));
             Assert.AreEqual(1.5f, Boost(DilemmaKind.WashBusy, b).Multiplier);
-            Assert.AreEqual(CarArchetype.Dirty, Boost(DilemmaKind.WashBusy, b).Archetype);
+            Assert.AreEqual(CarArchetype.Muddy, Boost(DilemmaKind.WashBusy, b).Archetype);
         }
 
         [Test]
-        public void WashBusyStaysQuietWhenADirtyCarIsAlreadyQueued()
+        public void WashBusyStaysQuietWhenAMuddyCarIsAlreadyQueued()
         {
             var b = Lot(StationSlotState.Working, StationSlotState.Free, StationSlotState.Free);
-            b.Car(CarLotState.WaitingToPark, dirty: true, awaitingPark: true);
+            b.Car(CarLotState.WaitingToPark, muddy: true, awaitingPark: true);
             Assert.IsEmpty(Fired(b));
         }
 
@@ -146,7 +146,7 @@ namespace UncannyValet.Tests.Director
             var b = Lot(StationSlotState.Blocked, StationSlotState.Blocked, StationSlotState.Blocked);
             CollectionAssert.AreEquivalent(
                 new[] { DilemmaKind.WashBlocked, DilemmaKind.BaysBlocked, DilemmaKind.Chain }, Fired(b));
-            Assert.AreEqual(CarArchetype.DirtyEv, Boost(DilemmaKind.Chain, b).Archetype);
+            Assert.AreEqual(CarArchetype.MuddyEv, Boost(DilemmaKind.Chain, b).Archetype);
             Assert.AreEqual(2f, Boost(DilemmaKind.Chain, b).Multiplier);
             var half = Lot(StationSlotState.Blocked, StationSlotState.Blocked, StationSlotState.Working);
             CollectionAssert.AreEqual(new[] { DilemmaKind.WashBlocked }, Fired(half));

@@ -16,14 +16,6 @@ namespace UncannyValet.Patrons
         public float Value { get; private set; }
         public bool IsFull => Value >= 1f;
 
-        /// <summary>Fills the meter at once. Returns true if the value changed.</summary>
-        public bool Complete()
-        {
-            if (IsFull) return false;
-            Value = 1f;
-            return true;
-        }
-
         /// <summary>Adds one minute of service. Returns true if the value changed.</summary>
         public bool Step()
         {

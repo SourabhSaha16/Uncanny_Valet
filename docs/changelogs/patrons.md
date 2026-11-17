@@ -109,3 +109,51 @@ Date: 2026-11-11
 Files: Patrons/SmashSettler.cs, SmashTally.cs, TicketSettler.cs (PaySmash), ChargeRule.cs, WashRule.cs, ServiceProgress.cs (Complete), TicketRegistry.cs, test Patrons/ParkSmashTests.cs (edited by the powers agent for issue #43).
 Why: Park Smash (design.md A11, valet_powers.md Q5) pays every waiting patron a full tip with the combo not reset and closes the ticket so the car leaves.
 Tests: EditMode and PlayMode suites pass.
+
+## powers: shared power bar of three buckets, remove speed boost and Park Smash [Claude]
+Date: 2026-11-13
+Files: Patrons: removed SmashSettler, SmashTally; TicketSettler (PaySmash), TicketRegistry, ChargeRule, WashRule, ServiceProgress (Complete).
+Why: Park Smash deleted (issue #86 decision 9). issue #86 of epic #79 (Valet to Valhalla).
+Tests: ParkSmashTests removed; suites pass.
+
+## services: one model for what a car needs (service modifiers) [Claude]
+Date: 2026-11-13
+Files: Assets/_Project/Scripts/Patrons/ (ModifierInstance, ModifierFactory, ModifierRoller, TicketAnnouncer, LateChanceCurve, Ticket, TicketBook, TicketRegistry, StationService, TicketSettler, PatronPlan, PatronRequest, PatronRequestRoller, PatronTuning, PatronConfig, ServiceTuning, LiveTicketTuning, PatronSpawner; WashRule and ArchetypeTraits removed), Data/Patrons/PatronConfig.asset, Tests/EditMode/Patrons/*
+Why: Issue #121. Tickets carry a list of ModifierInstance (own progress each) instead of the EV and dirty traits; StationService advances them per station kind and publishes ModifierProgressChanged and ModifierCleared; the arrival roll is one draw over the lot's chances in list order (ModifierRoller), at most one modifier per car; clear times are read live from each definition's key when a ticket is created.
+Tests: see docs/changelogs/services.md (EditMode and PlayMode all green).
+
+## blessings: tips become blessings, favour, curses, lot threshold [Claude]
+Date: 2026-11-13
+Files: see docs/changelogs/blessings.md (this module's part of the same commit).
+Why: Issue #81 of epic #79: tips, combo and complaints are renamed to blessings, favour and curses; stars are replaced by the lot's blessing threshold.
+Tests: see docs/changelogs/blessings.md (EditMode and PlayMode all pass).
+
+## blessings: half a blessing when a needed service is missed [Claude]
+Date: 2026-11-13
+Files: Core/Events/BlessingBreakdown.cs, Core/Events/EconomyEvents.cs, Economy/BlessingCalculator.cs, Economy/ShiftBlessings.cs, Patrons/TicketSettler.cs, Tests/EditMode/Economy/ServiceMissedTests.cs, BlessingCalculatorTests.cs
+Why: Issue #82 (epic #79): any open service modifier at hand-back halves the final amount once (ties up); favour untouched; ServiceMissed on BlessingBreakdown and BlessingEarned.
+Tests: ServiceMissedTests added, BlessingCalculatorTests updated; EditMode 1364 passed, PlayMode 30 passed.
+
+## patrons: crazy lots keep the pickup queue always full [Claude]
+Date: 2026-11-14
+Files: Patrons/IArrivalPacing.cs, QueueTopUpPacing.cs, DirectorArrivalPacing.cs, ArrivalPacings.cs, PatronSpawner.cs, PatronConfig.cs (TopUpSpacingMinutes), Tests/EditMode/Patrons/ArrivalPacingTests.cs
+Why: Issue #132. On LotKind.Crazy the spawner ignores the director arrival gate and fills every free queue slot (one car per spacing); other lots keep the director pacing.
+Tests: ArrivalPacingTests (full queue at start, stagger, refill after advance, other lots unchanged, reset); EditMode 1837 passed.
+
+## patrons: stay clock starts after the car leaves the pickup spot [Claude]
+Date: 2026-11-14
+Files: Core/Events/PickupEvents.cs (CarLeftPickup, appended), Patrons/StayStartRule.cs, PickupLeaveWatcher.cs, StayStarter.cs, QueueAdvancer.cs, Tests/EditMode/Patrons/StayStartRuleTests.cs, PickupLeaveWatcherTests.cs, StayStartTests.cs (other tests that publish PatronEnteredDiner now also publish CarLeftPickup)
+Why: Issue #139. The stay clock starts at the later of PatronEnteredDiner and the valet driving the car out of the pickup spot (slot 0); neither alone starts it, and there is still no fallback timer.
+Tests: StayStartRuleTests, PickupLeaveWatcherTests, StayStartTests (both orders, leak on shift end, unknown car); EditMode 1858 passed, 0 failed.
+
+## patrons: queue advances a car that stopped short, retries drives [Claude]
+Date: 2026-11-14
+Files: Patrons/AdvanceTracker.cs (new), QueueAdvancer.cs, IArrivalScan.cs, ArrivalSlotScanner.cs, PickupQueueSettings.cs, Cars/CarAutoDrive.cs (advance heads straight at the slot), Tests/EditMode/Patrons/QueueAdvancerTests.cs, ArrivalPacingTests.cs, QueueSlotAllocatorTests.cs, Tests/PlayMode/PickupQueuePlayModeTests.cs
+Why: Issue #140. A queued car that stopped a little short had its nose in the pickup spot clear box, so the scan counted the car itself as the blocker and the queue froze. The scan now ignores the car asking to move up, slot tolerance is 2.2, a drive that never finishes is offered again after a deadline, and the advance drives straight at the slot centre (snapping onto it).
+Tests: new EditMode (stopped short, near-slot, interrupted retry) and PlayMode full-queue test; EditMode 1878 passed, PlayMode 78 passed.
+
+## patrons: jitter each patron stay so returns spread out [Claude]
+Date: 2026-11-16
+Files: Patrons/StayJitter.cs (new), PatronSpawner.cs, PatronConfig.cs, PatronTuning.cs; test Patrons/StayJitterTests.cs.
+Why: Issue #144 (playtest): return timers ran out one after another and pickup requests came in a clump. Each car stay (rolled 20-45) now moves by a seeded random offset of up to PatronConfig.StayJitterFraction (default 0.3, +/-30%) of itself, never below the late-stay floor. The draw is seeded from the car id, so it needs no extra roll from the shared random and tests stay deterministic. It runs before StayFit.Clamp, so the stay still ends inside the shift; tip maths is untouched (it uses time since the pickup request). No minimum gap added: the stay clock starts per car, so independent offsets already spread returns.
+Tests: StayJitterTests (7: varied, bounds, floor, determinism, off at 0, spread, fits shift). EditMode 1894/1894.

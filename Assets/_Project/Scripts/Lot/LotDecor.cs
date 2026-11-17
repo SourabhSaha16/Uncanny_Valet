@@ -1,3 +1,4 @@
+using UncannyValet.Core.Art;
 using UncannyValet.Core.Contracts;
 using UnityEngine;
 
@@ -15,12 +16,20 @@ namespace UncannyValet.Lot
 
         [SerializeField] private LotConfig _config;
         [SerializeField] private LotArtConfig _art;
+        [SerializeField, Tooltip("Optional world palette: the diner building is re-skinned with its Wall and Roof colours. Set by the scene builder.")]
+        private WorldPalette _palette;
+        [SerializeField, Min(0), Tooltip("Arrival queue slots of this lot; 0 uses the LotConfig's count. Must match the lot builder's.")]
+        private int _queueSlots;
+        [SerializeField, Tooltip("The lot's layout options; must match the lot builder's. Set by the scene builder.")]
+        private LotLayoutOptions _options;
+        [SerializeField, Tooltip("The word on the building's sign (DINER or BARN). Set by the scene builder.")]
+        private string _buildingSign = LotDinerArt.DinerText;
 
         private LotGeometry _geometry;
         private DecorLayout _layout;
         private PedestrianPathMap _paths;
 
-        private LotGeometry Geometry => _geometry ?? (_geometry = new LotGeometry(_config));
+        private LotGeometry Geometry => _geometry ?? (_geometry = new LotGeometry(_config, _queueSlots, _options));
 
         private DecorLayout Layout
         {
@@ -64,7 +73,7 @@ namespace UncannyValet.Lot
             LotRoadArt.Build(transform, rects, l, l.Lot, _art);
             BuildStrip(rects, l);
             LotWalkwayArt.Build(transform, rects, new WalkwayLayout(Geometry, _config.Site.WalkwayWidth), _art.Walkway, _art.CrosswalkColor);
-            LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config);
+            LotDinerArt.BuildDiner(transform, rects, Geometry, _art, _config, _palette, _buildingSign);
         }
 
 

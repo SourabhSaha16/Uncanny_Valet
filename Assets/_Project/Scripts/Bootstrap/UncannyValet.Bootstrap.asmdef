@@ -14,7 +14,9 @@
         "UncannyValet.Audio",
         "UncannyValet.Powers",
         "UncannyValet.Traffic",
-        "UncannyValet.UI"
+        "UncannyValet.Run",
+        "UncannyValet.UI",
+        "UncannyValet.Watchers"
     ],
     "autoReferenced": true
 }

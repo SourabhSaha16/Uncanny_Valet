@@ -1,3 +1,4 @@
+using UncannyValet.Core.Art;
 using UnityEngine;
 
 namespace UncannyValet.Lot
@@ -15,12 +16,15 @@ namespace UncannyValet.Lot
         private const int DoorOrder = 4;
         private const int SignOrder = 5;
         private const int SpriteOrder = 4;
-        private const string DinerText = "DINER";
+        /// <summary>The sign of a diner.</summary>
+        public const string DinerText = "DINER";
         private const string BusText = "BUS";
         private const float DinerLabelSize = 0.7f;
         private const float BusLabelSize = 0.5f;
 
-        public static void BuildDiner(Transform parent, RectFactory rects, LotGeometry g, LotArtConfig art, LotConfig config)
+        /// <param name="signText">The word on the sign above the building.</param>
+        /// <param name="palette">When set, the building is re-skinned with its Wall and Roof colours (see <see cref="DinerSkin"/>).</param>
+        public static void BuildDiner(Transform parent, RectFactory rects, LotGeometry g, LotArtConfig art, LotConfig config, WorldPalette palette = null, string signText = DinerText)
         {
             var d = g.Diner;
             if (art.DinerBuilding == null)
@@ -31,15 +35,15 @@ namespace UncannyValet.Lot
             var texture = art.DinerBuilding.texture;
             var ppu = DinerSlices.PixelsPerUnit(art.DinerFacadePixels.width, d.width);
             var facadeHeight = DinerSlices.FacadeHeight(art.DinerFacadeBands, art.DinerFacadePixels.height, ppu, d.height);
-            Tiled(parent, "Diner Roof", Slice(texture, art.DinerRoofPixels, ppu),
+            Tiled(parent, "Diner Roof", Slice(texture, art.DinerRoofPixels, ppu, palette),
                 Rect.MinMaxRect(d.xMin, d.yMin + facadeHeight, d.xMax, d.yMax), RoofOrder);
-            Tiled(parent, "Diner Facade", Slice(texture, art.DinerFacadePixels, ppu),
+            Tiled(parent, "Diner Facade", Slice(texture, art.DinerFacadePixels, ppu, palette),
                 Rect.MinMaxRect(d.xMin, d.yMin, d.xMax, d.yMin + facadeHeight), FacadeOrder);
             Door(parent, rects, "Side Door", g.SideDoor, d.xMax, art);
             Door(parent, rects, "Main Door", g.MainDoor, d.xMax, art);
             var sign = new Vector2(d.center.x, d.yMin + facadeHeight + art.SignSize.y);
             rects.Make(parent, "Diner Sign", sign, art.SignSize, art.SignColor, SignOrder);
-            SpotLabel.Create(parent, DinerText, sign, config, SignOrder + 1, DinerLabelSize);
+            SpotLabel.Create(parent, string.IsNullOrEmpty(signText) ? DinerText : signText, sign, config, SignOrder + 1, DinerLabelSize);
         }
 
         public static void BuildBusStop(Transform parent, RectFactory rects, DecorLayout layout, LotArtConfig art, LotConfig config)
@@ -50,8 +54,12 @@ namespace UncannyValet.Lot
         }
 
         // A sprite cut from the building texture; it keeps the texture's point filtering and tiles without a mesh outline.
-        private static Sprite Slice(Texture2D texture, RectInt pixels, float ppu)
-            => Sprite.Create(texture, DinerSlices.TextureRect(pixels, texture.height), new Vector2(0.5f, 0.5f), ppu, 0, SpriteMeshType.FullRect);
+        private static Sprite Slice(Texture2D texture, RectInt pixels, float ppu, WorldPalette palette)
+        {
+            var rect = DinerSlices.TextureRect(pixels, texture.height);
+            var skinned = palette != null ? DinerSkin.Slice(texture, rect, ppu, palette) : null;
+            return skinned != null ? skinned : Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), ppu, 0, SpriteMeshType.FullRect);
+        }
 
         private static void Tiled(Transform parent, string name, Sprite sprite, Rect area, int order)
         {

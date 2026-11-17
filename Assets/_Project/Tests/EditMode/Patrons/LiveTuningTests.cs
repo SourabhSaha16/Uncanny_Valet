@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UncannyValet.Core.Modifiers;
 using UncannyValet.Patrons;
 
 namespace UncannyValet.Tests.Patrons
@@ -17,10 +18,10 @@ namespace UncannyValet.Tests.Patrons
             public bool IsRunning => true;
         }
 
-        private sealed class FakeTips : ITipCalculator
+        private sealed class FakeBlessings : IBlessingCalculator
         {
-            public int Calculate(in TipInput input) => 1;
-            public TipBreakdown Explain(in TipInput input) => new TipBreakdown(1, 0, 0, 0, 1, TipZeroReason.None);
+            public int Calculate(in BlessingInput input) => 1;
+            public BlessingBreakdown Explain(in BlessingInput input) => new BlessingBreakdown(1, 0, 0, 1, BlessingZeroReason.None);
         }
 
         private sealed class FakeTuning : ITuning
@@ -56,12 +57,13 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void EvChanceCurve_FlatBeforeStart_RampsToLate()
+        public void LateChanceCurve_FlatBeforeStart_RampsToLate()
         {
-            Assert.AreEqual(0.1f, EvChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 0.3f), 1e-4f);
-            Assert.AreEqual(0.3f, EvChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 0.8f), 1e-4f);
-            Assert.AreEqual(0.5f, EvChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 1.2f), 1e-4f);
-            Assert.AreEqual(0.5f, EvChanceCurve.Evaluate(0.1f, 0.5f, 1f, 1f), 1e-4f);
+            Assert.AreEqual(0.1f, LateChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 0.3f), 1e-4f);
+            Assert.AreEqual(0.3f, LateChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 0.8f), 1e-4f);
+            Assert.AreEqual(0.5f, LateChanceCurve.Evaluate(0.1f, 0.5f, 0.6f, 1.2f), 1e-4f);
+            Assert.AreEqual(0.5f, LateChanceCurve.Evaluate(0.1f, 0.5f, 1f, 1f), 1e-4f);
+            Assert.AreEqual(0.1f, LateChanceCurve.Evaluate(0.1f, PatronPlan.NoLateChance, 0.6f, 1f), 1e-4f, "no plan yet: no ramp");
         }
 
         [Test]
@@ -69,26 +71,31 @@ namespace UncannyValet.Tests.Patrons
         {
             _tuning.Seed(TuningKey.ArrivalGapMaxMinutes, 12f);
             _tuning.Seed(TuningKey.StayMaxMinutes, 30f);
+            _tuning.Seed(TuningKey.ModifierChanceNeedsCharge, 0.1f);
+            _tuning.Seed(TuningKey.ModifierChanceMuddy, 0f);
             var plan = new PatronPlan(3);
-            var roller = new PatronRequestRoller(_config, _live, plan, new Scripted { Next = 0.4f });
-            plan.Apply(new ShiftPlan(3, 2f, 0.1f, 0f, true, true, 0, 0.5f, 0.5f));
+            var roller = new PatronRequestRoller(_config, _live, plan, new Scripted { Next = 0.4f }, ModifierTestKit.Catalog());
+            plan.Apply(new ShiftPlan(3, 2f, true, true, 0, 0.5f, 0.5f));
             Assert.AreEqual(24f, roller.NextGap(), 1e-4f);
-            Assert.IsFalse(roller.Roll(0.1f).IsEv);
-            Assert.IsTrue(roller.Roll(1f).IsEv);
+            Assert.IsFalse(roller.Roll(0.1f).Modifiers.Contains(ModifierId.NeedsCharge));
+            Assert.IsTrue(roller.Roll(1f).Modifiers.Contains(ModifierId.NeedsCharge));
             Assert.AreEqual(30f, roller.Roll(0.1f).StayMinutes);
-            plan.Apply(new ShiftPlan(3, 1f, 0.9f, 0f, true, true));
-            Assert.IsTrue(roller.Roll(0.1f).IsEv);
+            _tuning.Set(TuningKey.ModifierChanceNeedsCharge, 0.9f);
+            plan.Apply(new ShiftPlan(3, 1f, true, true, 0, 0.9f));
+            Assert.IsTrue(roller.Roll(0.1f).Modifiers.Contains(ModifierId.NeedsCharge));
             Assert.AreEqual(12f, roller.NextGap(), 1e-4f);
         }
 
         [Test]
         public void PickupWindowChange_ReachesRunningTimer()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live);
             var expired = 0;
             _bus.Subscribe<TicketTimerExpired>(e => expired++);
             var t = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f));
             _bus.Publish(new CarParked(t.CarId, 1));
+            _bus.Publish(new PatronEnteredDiner(t.CarId));
+            _bus.Publish(new CarLeftPickup(t.CarId));
             _clock.ElapsedMinutes = 20f; _bus.Publish(new ShiftTick(20f));
             _clock.ElapsedMinutes = 40f; _bus.Publish(new ShiftTick(40f));
             Assert.AreEqual(0, expired);
@@ -99,17 +106,18 @@ namespace UncannyValet.Tests.Patrons
         }
 
         [Test]
-        public void ChargeMinutesChange_AppliesToLaterTicketsOnly()
+        public void ClearMinutesChange_AppliesToLaterTicketsOnly()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live, null, ModifierTestKit.Catalog());
             _tuning.Seed(TuningKey.ChargeMinutes, 20f);
-            var first = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f, true));
+            var charge = ModifierSet.Of(ModifierId.NeedsCharge);
+            var first = registry.Create(new CarId(1), new PatronRequest(10f, 20, false, 60f, charge));
             _tuning.Set(TuningKey.ChargeMinutes, 10f);
             _bus.Publish(new TuningChanged(TuningKey.ChargeMinutes, 10f));
-            var second = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 60f, true));
-            first.Charge.Advance(true);
-            second.Charge.Advance(true);
-            Assert.AreEqual(first.Charge.Charge01 + 0.05f, second.Charge.Charge01, 1e-4f);
+            var second = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 60f, charge));
+            first.Modifiers[0].Advance(true);
+            second.Modifiers[0].Advance(true);
+            Assert.AreEqual(first.Modifiers[0].Progress01 + 0.05f, second.Modifiers[0].Progress01, 1e-4f);
         }
 
         [Test]
@@ -124,20 +132,20 @@ namespace UncannyValet.Tests.Patrons
         [Test]
         public void Roller_GivesImpatientPatronsTheShorterLiveWindow()
         {
-            var roller = new PatronRequestRoller(_config, _live, new PatronPlan(3), new Scripted { Next = 0.1f });
+            var roller = new PatronRequestRoller(_config, _live, new PatronPlan(3), new Scripted { Next = 0.1f }, ModifierTestKit.Catalog());
             Assert.IsTrue(roller.Roll(0.1f).Impatient);
             Assert.AreEqual(15f, roller.Roll(0.1f).PickupWindowMinutes, 1e-4f);
             _tuning.Set(TuningKey.ImpatientWindowScale, 0.5f);
             _tuning.Set(TuningKey.PickupWindowMinutes, 30f);
             Assert.AreEqual(15f, roller.Roll(0.1f).PickupWindowMinutes, 1e-4f);
-            var calm = new PatronRequestRoller(_config, _live, new PatronPlan(3), new Scripted { Next = 0.9f });
+            var calm = new PatronRequestRoller(_config, _live, new PatronPlan(3), new Scripted { Next = 0.9f }, ModifierTestKit.Catalog());
             Assert.AreEqual(30f, calm.Roll(0.1f).PickupWindowMinutes, 1e-4f);
         }
 
         [Test]
         public void ImpatientScaleChange_ReachesWaitingImpatientTicketsOnly()
         {
-            var registry = new TicketRegistry(_bus, _clock, new FakeTips(), _live);
+            var registry = new TicketRegistry(_bus, _clock, new FakeBlessings(), _live);
             var impatient = registry.Create(new CarId(1), new PatronRequest(10f, 20, true, 15f));
             var calm = registry.Create(new CarId(2), new PatronRequest(10f, 20, false, 25f));
             _tuning.Set(TuningKey.ImpatientWindowScale, 0.3f);

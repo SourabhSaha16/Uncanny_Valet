@@ -26,18 +26,20 @@ namespace UncannyValet.Tests.Director
                     || car.State == CarLotState.InStation;
                 var toPickup = counting && car.StayStarted ? car.StayLeft : float.PositiveInfinity;
                 if (toPickup < nextPickup) nextPickup = toPickup;
-                _cars.Add(new CarSnapshot(car.Id, car.State, car.Dirty, car.Ev, car.WashDone, car.ChargeDone,
-                    car.AwaitingPark, WashLeft01(car), Patience(car), toPickup, car.PlannedStay, car.Shifted));
+                _cars.Add(new CarSnapshot(car.Id, car.State, car.Held, car.Done, car.AwaitingPark, Patience(car), toPickup,
+                    car.PlannedStay, car.Shifted, LeftAtStation(car)));
             }
             _slots.Add(SlotOf(StationKind.Wash, _sim.WashSlot));
             foreach (var bay in _sim.BaySlots) _slots.Add(SlotOf(StationKind.Charging, bay));
             return new LotSnapshot(_cars, _slots, FreeSpots(), SoakSim.RegularSpots, nextPickup, _sim.Now, _sim.AngryTimes);
         }
 
-        private static float WashLeft01(SoakCar car)
+        private static float[] LeftAtStation(SoakCar car)
         {
-            if (!car.NeedsWash) return 0f;
-            return car.InWash ? car.WashLeft / SoakSim.WashSeconds : 1f;
+            var left = new float[CarSnapshot.StationKindCount];
+            if (car.NeedsWash) left[(int)StationKind.Wash] = car.InWash ? car.WashLeft / SoakSim.WashSeconds : 1f;
+            if (car.NeedsCharge) left[(int)StationKind.Charging] = 1f;
+            return left;
         }
 
         private static float Patience(SoakCar car)
@@ -46,7 +48,9 @@ namespace UncannyValet.Tests.Director
         private static StationSlot SlotOf(StationKind kind, SoakCar occupant)
         {
             if (occupant == null) return new StationSlot(kind, StationSlotState.Free, CarId.None);
-            var state = SlotStateRule.Occupied(kind, occupant.Dirty, occupant.WashDone, occupant.Ev, occupant.ChargeDone);
+            var holds = kind == StationKind.Wash ? occupant.Muddy : occupant.Ev;
+            var open = kind == StationKind.Wash ? occupant.NeedsWash : occupant.NeedsCharge;
+            var state = SlotStateRule.Occupied(holds, open);
             return new StationSlot(kind, state, occupant.Id);
         }
 

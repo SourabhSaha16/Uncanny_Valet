@@ -13,7 +13,7 @@ namespace UncannyValet.Cars
         private float _kickLeft;
         private float _kickSign;
 
-        /// <summary>0 = normal grip, 1 = full drift grip (see <see cref="DriftModel.Step(Vector2, Vector2, float, in DriftSettings, float)"/>).</summary>
+        /// <summary>0 = normal grip, 1 = full drift grip (see <see cref="DriftModel"/>).</summary>
         public float GripBlend { get; private set; }
         /// <summary>Multiplier on the turn rate: the boost while drifting, 1 otherwise.</summary>
         public float TurnScale { get; private set; } = 1f;

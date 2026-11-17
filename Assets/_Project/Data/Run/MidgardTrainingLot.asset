@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ced1a29603721d4888685f7efd08c27, type: 3}
+  m_Name: MidgardTrainingLot
+  m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.LotDefinition
+  _id:
+    _world: 1
+    _kind: 1
+  _displayName: Grandma's Diner
+  _sceneName: Bootstrap
+  _layout: 1
+  _queueSlots: 4
+  _pacing:
+    _shiftLengthSeconds: 150
+    _arrivalGapMinSeconds: 15
+    _arrivalGapMaxSeconds: 25
+    _maxWaitingCars: 2
+    _arrivalBudget: 0
+  _modifierChances:
+  - _modifier: {fileID: 11400000, guid: ba5303a9395f5a943bca97c240726119, type: 2}
+    _chance: 0
+  - _modifier: {fileID: 11400000, guid: 285aa080503f81344be328b9ffbb15e3, type: 2}
+    _chance: 0
+  _dials: []
+  _powerFill:
+    _perfectPark: 18
+    _perfectDropOff: 10
+    _driftPerSecond: 0.6
+    _driftCap: 4
+  _modifiers: []
+  _showPowerBar: 0
+  _blessingThreshold: 150
+  _pedestrianCurses: 0
+  _grant:
+    _power: 0
+    _level: 1
+  _palette: {fileID: 11400000, guid: 4d54ee916fde2774fb2f1ba28ab178f8, type: 2}
+  _props:
+  - _recipe: {fileID: 11400000, guid: 526dff6741db1a74aaad918215e28e1a, type: 2}
+    _position: {x: -12.7, y: 2.1}
+    _sortingOrder: 6
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: 7.2}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: 3.7999995}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: -9.05}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: f4b800795371b2847b861e7bfc65a77d, type: 2}
+    _position: {x: 15.95, y: -12.450001}
+    _sortingOrder: 3
+  _lighting: {fileID: 11400000, guid: 2e788effbb8a7ba499f9d900d0391cd3, type: 2}
+  _layoutOptions:
+    _servicesClosed: 1
+    _cornerClearance: 0
+    _washTroughs: 0
+    _extensionWidth: 0
+    _washBayGap: 0
+  _buildingSign: DINER
+  _groundColour: {r: 0, g: 0, b: 0, a: 0}
+  _ambientTraffic: 0
+  _ambientPedestrians: 3
+  _gagLines: {fileID: 11400000, guid: 42941c4f45ce366418a573ea6b33cb9f, type: 2}
+  _watcher: {fileID: 11400000, guid: f06006d6791b0414f86e73a959e322ef, type: 2}
+  _watcherSpot: {x: -11, y: 7.4}
+  _musicTheme: {fileID: 11400000, guid: fdf4262569a4e0445a90a4f1d4619579, type: 2}
+  _ambience: {fileID: 0}

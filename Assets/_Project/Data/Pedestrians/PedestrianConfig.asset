@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5d820798792c748b44a5cc7f85b141, type: 3}
   m_Name: PedestrianConfig
   m_EditorClassIdentifier: UncannyValet.Pedestrians::UncannyValet.Pedestrians.PedestrianConfig
-  _count: 8
+  _count: 10
   _startActive: 3
   _minSpeed: 0.9
   _maxSpeed: 1.5

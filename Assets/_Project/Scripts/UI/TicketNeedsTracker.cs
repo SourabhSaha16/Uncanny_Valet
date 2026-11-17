@@ -1,36 +1,36 @@
 using System;
 using System.Collections.Generic;
 using UncannyValet.Core.Events;
+using UncannyValet.Core.Modifiers;
+using UncannyValet.UI.Kit;
 
 namespace UncannyValet.UI
 {
-    /// <summary>Fills the service-need fields of the board's rows (EV, dirty, charge, wash progress) from events only.</summary>
+    /// <summary>Fills the service-modifier fields of the board's rows (the list, each modifier's progress and cleared state) from events only.</summary>
     public sealed class TicketNeedsTracker : IDisposable
     {
         private readonly IEventBus _bus;
         private readonly SortedDictionary<int, TicketRow> _rows;
+        private readonly IModifierCatalog _catalog;
 
-        public TicketNeedsTracker(IEventBus bus, SortedDictionary<int, TicketRow> rows)
+        public TicketNeedsTracker(IEventBus bus, SortedDictionary<int, TicketRow> rows, IModifierCatalog catalog)
         {
             _bus = bus;
             _rows = rows;
-            _bus.Subscribe<TicketTraitsAssigned>(OnTraits);
-            _bus.Subscribe<CarChargeChanged>(OnCharge);
-            _bus.Subscribe<CarCleaned>(OnCleaned);
-            _bus.Subscribe<CarFullyCharged>(OnFullyCharged);
+            _catalog = catalog;
+            _bus.Subscribe<TicketModifiersAssigned>(OnModifiers);
+            _bus.Subscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Subscribe<ModifierCleared>(OnCleared);
             _bus.Subscribe<CarParked>(OnParked);
-            _bus.Subscribe<CarCleanChanged>(OnCleanChanged);
             _bus.Subscribe<CarDamaged>(OnDamaged);
         }
 
         public void Dispose()
         {
-            _bus.Unsubscribe<TicketTraitsAssigned>(OnTraits);
-            _bus.Unsubscribe<CarChargeChanged>(OnCharge);
-            _bus.Unsubscribe<CarCleaned>(OnCleaned);
-            _bus.Unsubscribe<CarFullyCharged>(OnFullyCharged);
+            _bus.Unsubscribe<TicketModifiersAssigned>(OnModifiers);
+            _bus.Unsubscribe<ModifierProgressChanged>(OnProgress);
+            _bus.Unsubscribe<ModifierCleared>(OnCleared);
             _bus.Unsubscribe<CarParked>(OnParked);
-            _bus.Unsubscribe<CarCleanChanged>(OnCleanChanged);
             _bus.Unsubscribe<CarDamaged>(OnDamaged);
         }
 
@@ -43,28 +43,40 @@ namespace UncannyValet.UI
             return null;
         }
 
-        private void OnCleanChanged(CarCleanChanged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Clean01 = e.Clean01; }
-
-        private void OnTraits(TicketTraitsAssigned e)
+        private void OnModifiers(TicketModifiersAssigned e)
         {
             if (!_rows.TryGetValue(e.Ticket.Value, out var row)) return;
-            row.IsEv = e.IsEv;
-            row.IsDirty = e.IsDirty;
+            row.Modifiers.Clear();
+            for (var i = 0; i < e.Modifiers.Count; i++)
+                if (_catalog.TryGet(e.Modifiers.At(i), out var def)) row.Modifiers.Add(Describe(def));
         }
 
-        private void OnCharge(CarChargeChanged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.Charge01 = e.Charge01; }
+        private static RowModifier Describe(ServiceModifierDefinition def) => new RowModifier
+        {
+            Id = def.Id, ClearedAt = def.ClearedAt, Icon = ModifierIcons.ToPixel(def.Icon),
+            ActiveWord = def.ActiveWord, DoneWord = def.DoneWord, Progress01 = def.StartProgress01,
+        };
 
-        private void OnCleaned(CarCleaned e) { var row = FindByCar(_rows, e.Car.Value); if (row == null) return; row.Washed = true; row.ShowWashed = true; }
+        private void OnProgress(ModifierProgressChanged e)
+        {
+            var modifier = FindByCar(_rows, e.Car.Value)?.Find(e.Modifier);
+            if (modifier != null) modifier.Progress01 = e.Progress01;
+        }
 
-        private void OnFullyCharged(CarFullyCharged e) { var row = FindByCar(_rows, e.Car.Value); if (row != null) row.ShowCharged = true; }
+        private void OnCleared(ModifierCleared e)
+        {
+            var modifier = FindByCar(_rows, e.Car.Value)?.Find(e.Modifier);
+            if (modifier == null) return;
+            modifier.IsCleared = true;
+            modifier.ShowDone = true;
+        }
 
         /// <summary>Parking ends the short "Washed" / "Charged" moments: the car is simply Parked again.</summary>
         private void OnParked(CarParked e)
         {
             var row = FindByCar(_rows, e.Car.Value);
             if (row == null) return;
-            row.ShowWashed = false;
-            row.ShowCharged = false;
+            for (var i = 0; i < row.Modifiers.Count; i++) row.Modifiers[i].ShowDone = false;
         }
     }
 }
