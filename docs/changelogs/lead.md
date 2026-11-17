@@ -1246,3 +1246,9 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (valet, pacing)
 Why: playtest notes 1 to 4 (design.md log 2026-11-17).
 Tests: EditMode 2055/2055, PlayMode 89/89 on the combined tree.
+
+## lead: rebuild site/ with playtest batch 10 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #176 to #179 (design.md log 2026-11-17).
+Tests: EditMode 2055/2055, PlayMode 89/89, web build exit 0 (build-info commit 7d563fe); local smoke test: shift starts with no console errors, first car seen entering from the road about 7 s in (arrival timing itself is unit-tested at 0.5 s; not measured in the browser).
