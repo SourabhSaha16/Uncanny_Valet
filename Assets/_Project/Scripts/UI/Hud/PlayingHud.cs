@@ -23,6 +23,7 @@ namespace UncannyValet.UI.Hud
         private readonly HudPainter _hud;
         private readonly NoticePainter _notices;
         private readonly PickupPieLayer _pies;
+        private readonly WashPieLayer _washPies;
         private readonly BayBorderLayer _bayBorders;
         private readonly WorldTicketPainter _world;
         private readonly PatronMoodPainter _mood;
@@ -62,7 +63,9 @@ namespace UncannyValet.UI.Hud
             _hud = new HudPainter(canvas, clock, blessings, goal, clockSettings);
             _notices = new NoticePainter(canvas);
             _world = new WorldTicketPainter(canvas, cars);
-            _pies = new PickupPieLayer(cars, style, pickupPie ?? new PickupPieSettings());
+            var pieSettings = pickupPie ?? new PickupPieSettings();
+            _pies = new PickupPieLayer(cars, style, pieSettings);
+            _washPies = new WashPieLayer(cars, pieSettings);
             _mood = new PatronMoodPainter(canvas, style);
             var pops = new BlessingPops(blessingPop);
             _blessingPopTracker = new BlessingPopTracker(bus, cars, pops, blessingPop, UnscaledTime);
@@ -88,6 +91,7 @@ namespace UncannyValet.UI.Hud
             _board.CollectRows(_rows);
             _world.Draw(_rows, camera);
             _pies.Update(_rows);
+            _washPies.Update(_rows);
             _bayBorders?.Update(_rows);
             _mood.Draw(_rows, camera);
             _blessingPops.Draw(camera, Time.unscaledTime);
@@ -104,6 +108,7 @@ namespace UncannyValet.UI.Hud
         {
             _board.Dispose();
             _pies.Dispose();
+            _washPies.Dispose();
             _bayBorders?.Dispose();
             _blessingPopTracker.Dispose();
             _cursePopTracker.Dispose();

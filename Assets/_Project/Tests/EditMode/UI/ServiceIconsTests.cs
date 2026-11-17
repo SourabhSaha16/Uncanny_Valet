@@ -55,8 +55,21 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual(PixelIcon.Mud, first);
             Assert.AreEqual(PixelIcon.Plug, second);
             row.Clear(ModifierId.Muddy);
-            ServiceIcons.TryGet(row, 0, out var left);
+            ServiceIcons.TryGet(row, 0, out var washed);
+            ServiceIcons.TryGet(row, 1, out var left);
+            Assert.AreEqual(PixelIcon.Drop, washed);
             Assert.AreEqual(PixelIcon.Plug, left);
+        }
+
+        [Test]
+        public void WashedCar_ShowsTheBlueDrop_ChargedCarShowsNothing()
+        {
+            var row = ArrivedRow(true, true);
+            row.Clear(ModifierId.Muddy);
+            row.Clear(ModifierId.NeedsCharge);
+            Assert.AreEqual(1, ServiceIcons.Count(row));
+            Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
+            Assert.AreEqual(PixelIcon.Drop, icon);
         }
 
         [Test]
@@ -66,13 +79,22 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void StationPositionDoesNotMatter()
+        public void InTheWashStation_TheWashPieReplacesTheMudSplat()
         {
             var row = ArrivedRow(true, false);
             row.HasStation = true;
             row.Station = StationKind.Wash;
-            Assert.AreEqual(1, ServiceIcons.Count(row));
+            Assert.AreEqual(0, ServiceIcons.Count(row));
             row.HasStation = false;
+            Assert.AreEqual(1, ServiceIcons.Count(row));
+        }
+
+        [Test]
+        public void InTheChargingStation_ThePlugStays()
+        {
+            var row = ArrivedRow(false, true);
+            row.HasStation = true;
+            row.Station = StationKind.Charging;
             Assert.AreEqual(1, ServiceIcons.Count(row));
         }
 
@@ -102,9 +124,9 @@ namespace UncannyValet.Tests.UI
             _bus.Publish(new CarArrived(C));
             Assert.AreEqual(1, ServiceIcons.Count(Only()));
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));
-            Assert.AreEqual(1, ServiceIcons.Count(Only()));
+            Assert.AreEqual(0, ServiceIcons.Count(Only()), "the wash pie stands in for the splat");
             _bus.Publish(new ModifierCleared(C, ModifierId.Muddy));
-            Assert.AreEqual(0, ServiceIcons.Count(Only()));
+            Assert.AreEqual(1, ServiceIcons.Count(Only()), "the blue drop");
             _bus.Publish(new TicketClosed(T, C, 0f, 0));
             Assert.IsNull(Only());
         }

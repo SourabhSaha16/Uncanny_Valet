@@ -253,3 +253,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Hud/ (new: ClockLayout, ClockSettings; BlessingPopKind +Perfect, BlessingPops, BlessingPopPainter, PowerFillPopRule, PowerFillPopPainter, HudPainter, PlayingHud); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/ClockPlacementTests.cs (new)
 Why: #161 the PERFECT! pop and the PerfectPark +X pop now use the bay border green (EmotionStyle Happy colour, one value passed from PlayingHud, no literal); ParkedInside keeps its lighter gold-pulled green. #162 the shift clock is a tab flush under the score panel at the left edge (was top centre over the lot); gap and inset tunable in ClockSettings (HudEmotionConfig.Clock), clear of the power column and its +X pops. Not checked visually.
 Tests: EditMode passed (ClockPlacementTests, 9 new cases); RunBatch not needed (no Editor/Data/Scenes change).
+
+## wash: wash pie beside the pickup pie, blue drop when washed, Refs #169 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Pie/ (new: PieSet, PieSlots, WashPieRule, WashPieLayer; PickupPieLayer now uses PieSet; PickupPieSettings +SideGap +WashColor); UI/Hud/ServiceIcons.cs, PlayingHud.cs; UI/Kit/PixelIcon.cs, PixelIconData.cs (appended Drop icon and key 'u'); Tests/EditMode/UI/WashPieTests.cs (new), ServiceIconsTests.cs edited (+ .meta)
+Why: washing already takes WashMinutes game minutes in the wash slot (StationService, ModifierProgressChanged, F2 key WashMinutes), so no Core change or new key was needed; the UI reads TicketRow only. A blue pie (progress drains the wedge) shows over a muddy car while it sits in the wash and replaces the mud splat; when the wash completes a blue drop stays in its place until the ticket closes. With a pickup pie too, the two sit side by side (gap in PickupPieSettings.SideGap). Pools shared through PieSet, no per-frame allocation.
+Tests: EditMode WashPieTests (5) and ServiceIconsTests updated; full suite 2008 passed. Not checked visually.

@@ -10,6 +10,7 @@ namespace UncannyValet.UI.Kit
         Mud,
         Tyre,
         Plug,
-        PrayerHands
+        PrayerHands,
+        Drop
     }
 }

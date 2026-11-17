@@ -9,8 +9,8 @@ namespace UncannyValet.UI.Kit
     /// </summary>
     public static class PixelIconData
     {
-        /// <summary>Palette keys: ink, white, gold, dark gold, amber, cyan, red, grey, light grey, dark, green, mud, dark mud, light mud.</summary>
-        public const string Keys = "kwyoacrgldnmbh";
+        /// <summary>Palette keys: ink, white, gold, dark gold, amber, cyan, red, grey, light grey, dark, green, mud, dark mud, light mud, blue.</summary>
+        public const string Keys = "kwyoacrgldnmbhu";
 
         public static readonly Color32[] Colors =
         {
@@ -20,7 +20,7 @@ namespace UncannyValet.UI.Kit
             new Color32(0xE5, 0x48, 0x3C, 255), new Color32(0x8C, 0x8C, 0x9C, 255),
             new Color32(0xC8, 0xC8, 0xD4, 255), new Color32(0x4A, 0x42, 0x58, 255),
             new Color32(0x4C, 0xCB, 0x5E, 255), new Color32(0x7A, 0x4E, 0x2D, 255),
-            new Color32(0x4E, 0x31, 0x1B, 255), new Color32(0xA8, 0x74, 0x48, 255),
+            new Color32(0x4E, 0x31, 0x1B, 255), new Color32(0xA8, 0x74, 0x48, 255), new Color32(0x2F, 0x8C, 0xF0, 255),
         };
 
         private static readonly string[] Bolt =
@@ -60,6 +60,12 @@ namespace UncannyValet.UI.Kit
             "kggkkkggk", "kgggggggk", ".kgggggk.", "..kkkkk..",
         };
 
+        private static readonly string[] Drop =
+        {
+            "....k....", "...kuk...", "..kuuuk..", "..kuuuk..", ".kuwuuuk.",
+            ".kuwuuuk.", ".kuuuuuk.", "..kuuuk..", "...kkk...",
+        };
+
         private static readonly string[] Plug = UncannyValet.Core.Contracts.PlugIconArt.Rows;
 
         /// <summary>The bitmap rows of an icon, top row first.</summary>
@@ -75,6 +81,7 @@ namespace UncannyValet.UI.Kit
                 case PixelIcon.Tyre: return Tyre;
                 case PixelIcon.Plug: return Plug;
                 case PixelIcon.PrayerHands: return PrayerHands;
+                case PixelIcon.Drop: return Drop;
                 default: throw new ArgumentOutOfRangeException(nameof(icon), icon, "Icon has no bitmap.");
             }
         }
