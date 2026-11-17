@@ -18,7 +18,7 @@ namespace UncannyValet.Valet
         [SerializeField, Min(0.05f), Tooltip("How long one dash takes, in seconds.")]
         private float _seconds = 0.2f;
         [SerializeField, Min(0f), Tooltip("Seconds after a dash ends before the next one can start.")]
-        private float _cooldown = 1.5f;
+        private float _cooldown = 0.7f;
 
         private readonly DashRule _rule = new DashRule();
         private readonly DashCooldown _gate = new DashCooldown();

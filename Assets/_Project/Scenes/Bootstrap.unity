@@ -1076,7 +1076,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Valet::UncannyValet.Valet.ShiftDash
   _distance: 3
   _seconds: 0.2
-  _cooldown: 1.5
+  _cooldown: 0.7
 --- !u!114 &1286351463
 MonoBehaviour:
   m_ObjectHideFlags: 0

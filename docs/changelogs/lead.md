@@ -1102,3 +1102,9 @@ Date: 2026-11-16
 Files: tools/changelog-exempt.txt, docs/changelogs/lead.md
 Why: CI failed the deploy because the cars agent's wip commit had no entry; its final commit eb8bf43 has one. History is not rewritten (CLAUDE.md).
 Tests: bash tools/check-changelog.sh run locally below.
+
+## lead: Shift dash cooldown 1.5 s to 0.7 s [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Valet/ShiftDash.cs, Assets/_Project/Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining}.unity, docs/design.md, docs/changelogs/lead.md
+Why: Playtest note: reduce the dash cooldown. A tunable default (A11 Shift dash), changed in the script and in the four scenes that save it.
+Tests: EditMode passed; PlayMode 85 of 85 (the cooldown test still holds).
