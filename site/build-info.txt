@@ -1,4 +1,4 @@
 Valet to Valhalla web build
-Commit:  9b9c526
-Subject: lead: design log and changelog for playtest batch 8, Refs #171 #172 #173 [Claude]
-Date:    2026-11-17 13:27:12 -0800
+Commit:  d86f05d
+Subject: lead: design log and changelog for playtest batch 9, Refs #174 #175 [Claude]
+Date:    2026-11-17 14:01:47 -0800

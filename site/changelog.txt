@@ -1,4 +1,9 @@
 === Last 50 commits ===
+d86f05d  2026-11-17  lead: design log and changelog for playtest batch 9, Refs #174 #175 [Claude]
+3ad8565  2026-11-17  lead: merge agent/cars acceleration 1.7 and 30 s tyre marks, Refs #174 #175 [Claude]
+214686c  2026-11-17  cars: 1.7x acceleration with matching brake and drag, tyre marks last 30 s [Claude]
+21b4fe6  2026-11-17  lead: raise skid mark fade F2 range to 60 s, Refs #175 [Claude]
+78fac71  2026-11-17  lead: rebuild site/ with playtest batch 8 for beta [Claude]
 9b9c526  2026-11-17  lead: design log and changelog for playtest batch 8, Refs #171 #172 #173 [Claude]
 d8c85dd  2026-11-17  lead: merge agent late-pickup -N pop, Refs #173 [Claude]
 1178ea4  2026-11-17  lead: merge agent/integration plain title background and text fixes, Refs #171 #172 [Claude]
@@ -44,11 +49,6 @@ ce8c6cf  2026-11-16  lead: merge agent/bay-border-flash [Claude]
 8aa7de6  2026-11-16  integration: bay border flash, bigger pickup pie, Refs #158 [Claude]
 fee8963  2026-11-16  lot: CarParkedInside when a car settles fully inside a bay, SpotGeometry, Refs #157 [Claude]
 228b393  2026-11-16  economy-night: parked inside fills the power bar, Refs #159 [Claude]
-5b02fa3  2026-11-16  Merge branch 'pivot/chaos' into agent/lot-parked-inside
-fabdc77  2026-11-16  wip
-f43869b  2026-11-16  lead: add ISpotGeometry and SpotBounds contract, Refs #158 [Claude]
-e1f7823  2026-11-16  lead: add CarParkedInside event and PowerFillParkedInside key [Claude]
-696c7e7  2026-11-16  lead: rebuild site/ with HUD cleanup and pickup pie for beta [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -253,6 +253,12 @@ Date: 2026-11-16
 Files: Cars/{DriftState,DriftKickSettings,DriftKickConfig}.cs (new), Cars/{CarDriver,CarHandlingConfig,CarHandlingLive,DriftModel,SteeringModel}.cs, Data/Cars/CarHandlingConfig.asset, Core/Events/TuningKey.cs (7 keys appended at the end), Core/Contracts/HandlingRows.cs (7 F2 rows), tests (EditMode Cars/DriftStateTests new, CarHandlingTuningTests, TurningRadiusTests)
 Why: issue 151, cars turned too slowly. TurnFullSpeed 4 to 6 (max turn rate 2.73 rad/s, 156 deg/s; TightestRadius stays 2.2 so the aisle check is unchanged and clean). Above TurnFullSpeed the turn rate eases down by TurnFalloff (0.12 per unit of speed) to a floor TurnMinShare (0.55); radius still grows. DriftState (per car, no allocation): on the frame Shift starts above DriftMinSpeed with steer held, a yaw kick (3 rad/s fading over 0.12 s) in the steer direction; turn rate x1.3 while held; drift grip kept 0.25 s after release then blended back over 0.2 s (DriftModel takes a 0..1 drift blend; the bool overloads and the mud GripLossScale are kept). Grip nudge: GripAtSpeed 0.55 to 0.75 (steady slip angle at 6 u/s with the faster turn rate was about 35 deg, now about 26, near the old 24) and DriftGripScale 0.25 to 0.2 (a drift slides about as much as before). All numbers are in CarHandlingConfig/DriftKickConfig and the F2 panel. Merged pivot/chaos first (conflicts in CarDriver, DriftModel, TuningKey resolved; new keys come after the existing ones). Stale assertions updated for the intended new defaults. Refs #151.
 Tests: EditMode 1962/1962 passed (11 new); PlayMode BayEntryTests 8/8 passed. Not felt by hand in play.
+
+## cars: 1.7x acceleration with matching brake and drag, tyre marks last 30 s [Claude]
+Date: 2026-11-17
+Files: Cars/CarHandlingConfig.cs, Cars/Fx/{SkidConfig,DecalLedger,DecalPool,SkidEmitter}.cs, Data/Cars/CarHandlingConfig.asset, tests (EditMode Cars/CarHandlingTuningTests, DecalLedgerTests)
+Why: issue 174 (play-test: car should feel responsive from the get go) and issue 175 (tyre marks stay 30 s). Defaults changed (old to new): AccelerationScale 1 to 1.7; BrakingScale 1 to 1.3; CoastDragScale 1 to 1.7; SkidConfig MarkFadeSeconds 6 to 30; DecalCap 40 to 640; new SkidConfig MarkFadeOutSeconds 8 (marks hold full opacity, then fade linearly over their last 8 s; never longer than the life, so the F2 fade row still works down to 1 s). Drift, steering and Thunder boost numbers are unchanged: steady-state slip and turn radius do not depend on acceleration (measured identical, radius 2.23 at 3 u/s, 4.06 at 8 u/s, slip 17.9 deg at 8 u/s full lock), and the boost multiplies the input afterwards. The asset holds the same values; ProjectSetup only syncs the aisle width, so it does not reset them. Pool: both tyres at 8 u/s with 1 u spacing drop 16 marks/s, so 30 s of non-stop drifting needs 480; 640 covers that, creating the renderers once (no per-frame allocation) and Tick skips hidden decals without a native call. Measured with a throwaway simulation (not committed), 0.02 s steps, Sedan (top 8, acc 6, brake 12, coast 3), before to after: time to 95% top speed 1.28 s to 0.76 s; 1 to 4 u/s 0.52 s to 0.30 s; brake from top 2.59 u (0.68 s) to 1.97 u (0.52 s); coast from top 10.6 u (2.68 s) to 6.2 u (1.58 s); 0.15 s throttle tap rolls 0.23 u to 0.39 u. Refs #174 #175.
+Tests: EditMode 2036/2036 passed (new: hold-then-fade, tail clamp, pool holds 30 s of non-stop drifting; drive-scale and skid defaults updated); PlayMode 89/89 passed incl. BayEntryTests (regular bays and EV from the aisle at 2 u/s). Not felt by hand in play.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -1906,6 +1912,24 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (integration title/text, late-pickup pop)
 Why: playtest notes 1 to 3 (design.md log 2026-11-17). Root cause of #173: the late-pickup curse was applied but had no pop and the pickup pop read only the closed ticket's blessing (0).
 Tests: EditMode 2033/2033, PlayMode 89/89 on the combined tree.
+
+## lead: rebuild site/ with playtest batch 8 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #171 to #173 (design.md log 2026-11-17).
+Tests: EditMode 2033/2033, PlayMode 89/89, web build exit 0 (build-info commit 9b9c526); local smoke test: title, how-to-play and the Midgard intro show plain backgrounds and the edited text.
+
+## lead: raise the skid mark fade F2 range to 60 s, Refs #175 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Contracts/HandlingRows.cs, docs/changelogs/lead.md
+Why: tyre marks should stay 30 s; the F2 row topped out at 20 s.
+Tests: EditMode run at the merge.
+
+## lead: merge playtest batch 9, rebuild site/ for beta, Refs #174 #175 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent/cars branch
+Why: playtest notes 1 and 2 (design.md log 2026-11-17): acceleration 1.7 with retuned braking and coast drag, tyre marks last 30 s.
+Tests: EditMode 2036/2036, PlayMode 89/89 (BayEntryTests included) on the combined tree.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog

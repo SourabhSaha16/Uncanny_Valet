@@ -1234,3 +1234,9 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent/cars branch
 Why: playtest notes 1 and 2 (design.md log 2026-11-17): acceleration 1.7 with retuned braking and coast drag, tyre marks last 30 s.
 Tests: EditMode 2036/2036, PlayMode 89/89 (BayEntryTests included) on the combined tree.
+
+## lead: rebuild site/ with playtest batch 9 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #174 and #175 (design.md log 2026-11-17).
+Tests: EditMode 2036/2036, PlayMode 89/89, web build exit 0 (build-info commit d86f05d); local smoke test loads to the lot intro with no console errors (driving not tested by hand).
