@@ -13,6 +13,9 @@ namespace UncannyValet.Lot
         private static readonly Color ChargePad = new Color(0.14f, 0.24f, 0.46f);
         private const float LineWidth = 0.1f;
 
+        /// <summary>The painted inside of a bay (the spot size less the line on each side); what "parked inside" is judged against.</summary>
+        public static Vector2 InnerSize(LotConfig c) => c.SpotSize - Vector2.one * LineWidth * 2f;
+
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
         /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
         public static ParkingSpot Build(RectFactory rects, Transform parent, LotConfig c, int id, Rect area,
@@ -22,7 +25,7 @@ namespace UncannyValet.Lot
             root.transform.SetParent(parent, false);
             root.transform.localPosition = area.center;
             rects.Make(root.transform, "Line", Vector2.zero, c.SpotSize, charging ? ChargeLine : Line, -7);
-            var pad = rects.Make(root.transform, "Pad", Vector2.zero, c.SpotSize - Vector2.one * LineWidth * 2f,
+            var pad = rects.Make(root.transform, "Pad", Vector2.zero, InnerSize(c),
                 charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
             if (charging)

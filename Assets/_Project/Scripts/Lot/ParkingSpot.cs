@@ -25,7 +25,7 @@ namespace UncannyValet.Lot
             SpotId = spotId;
             _occupancy = occupancy;
             _charging = charging;
-            _fit = new BayFitRule(config.SpotSize * 0.5f, config.Perfect.ParkedInsideTolerance);
+            _fit = new BayFitRule(SpotBuilder.InnerSize(config) * 0.5f, config.Perfect.ParkedInsideTolerance);
             Setup(config, config.SpotSize);
         }
 
