@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  27d3d26
-Subject: lead: merge shift-dash, design log, Refs #145 #146 [Claude]
-Date:    2026-11-16 15:50:05 -0800
+Commit:  06dd88a
+Subject: lead: merge wash-near-symbol, design log, Refs #148 #149 [Claude]
+Date:    2026-11-16 16:40:54 -0800

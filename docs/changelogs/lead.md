@@ -1072,3 +1072,9 @@ Date: 2026-11-16
 Files: Scripts/Core/Contracts (LotLayoutOptions, WashIconArt), Scripts/Lot/WashBayLayout.cs, Scripts/Run/LotDefinitionRules.cs, Editor Vanaheim setup files, Vanaheim and Midgard lot assets, Vanaheim mud and lighting assets, scenes (field rename; Lot_VanaheimCrazy gap and extension), tests, docs/design.md, docs/changelogs/lot.md
 Why: Refs #148 #149. Wash bays now sit in one column directly beside the bay block (gap WashBayGap 0.5; the Vanaheim crazy lot is no longer widened by 13.5); the muddy car and the wash station share the mud splat symbol.
 Tests: EditMode passed (exit 0) and full PlayMode 85 of 85 on the merged tip. Not seen in a game view; not in beta yet. Midgard lots keep ShowPowerBar off.
+
+## lead: rebuild site/ with playtest batch 5 for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #147 #148 #149 #150. Beta now includes the level audio reset, wash bays beside the lot, the shared mud symbol and the longer, visible first power.
+Tests: tools/build-web.ps1 exit 0, build-info shows 06dd88a; EditMode and PlayMode (85 of 85) passed on the same code; browser smoke test: Midgard training loads, no console errors. Vanaheim lots (F4 did not open the picker in the pane), audio and the power effect were not checked in the browser.
