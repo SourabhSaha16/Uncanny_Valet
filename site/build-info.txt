@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  9ecdb0f
-Subject: lead: log cars handling merge, Refs #151 [Claude]
-Date:    2026-11-16 20:18:32 -0800
+Commit:  b11bf16
+Subject: lead: Shift dash cooldown 1.5 s to 0.7 s [Claude]
+Date:    2026-11-16 20:35:20 -0800

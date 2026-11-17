@@ -1108,3 +1108,9 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/Valet/ShiftDash.cs, Assets/_Project/Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining}.unity, docs/design.md, docs/changelogs/lead.md
 Why: Playtest note: reduce the dash cooldown. A tunable default (A11 Shift dash), changed in the script and in the four scenes that save it.
 Tests: EditMode passed; PlayMode 85 of 85 (the cooldown test still holds).
+
+## lead: rebuild site/ with the shorter dash cooldown for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #151 and the dash cooldown note. The previous push failed CI (a wip commit without a changelog entry, now exempted in 9177843); this build carries the handling pass, curse pop, perfect-arrows rule and the 0.7 s dash cooldown.
+Tests: tools/build-web.ps1 exit 0, build-info shows b11bf16; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: title screen loads, no console errors. Nothing play-tested.
