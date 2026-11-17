@@ -1,4 +1,4 @@
 Uncanny Valet web build
-Commit:  d191f26
-Subject: lead: design log and changelog for hud-cleanup, Refs #154 #155 #156 [Claude]
-Date:    2026-11-16 21:06:50 -0800
+Commit:  aa0258a
+Subject: lead: design log and changelog for park feedback, Refs #157 #158 #159 [Claude]
+Date:    2026-11-16 21:39:27 -0800

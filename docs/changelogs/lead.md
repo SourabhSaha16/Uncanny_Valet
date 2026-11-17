@@ -1144,3 +1144,9 @@ Date: 2026-11-16
 Files: docs/design.md, docs/changelogs/lead.md (merges of the Lot, Powers and UI branches; two duplicate .meta files for the new Core contract resolved)
 Why: Issues #157 to #159. CarParkedInside, the small power gain, the bay border flash and the bigger pie.
 Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
+
+## lead: rebuild site/ with park feedback (border flash, power gain, bigger pie) for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #157 #158 #159. Beta now flashes the bay border on a clean park and with the pickup timer, adds a little power for a clean park, and shows a bigger pie.
+Tests: tools/build-web.ps1 exit 0, build-info shows aa0258a; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: Midgard training starts, no console errors. The border flash, the power gain and the bigger pie were not seen in the browser (no car was parked).

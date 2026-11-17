@@ -1,4 +1,16 @@
 === Last 50 commits ===
+aa0258a  2026-11-16  lead: design log and changelog for park feedback, Refs #157 #158 #159 [Claude]
+ce8c6cf  2026-11-16  lead: merge agent/bay-border-flash [Claude]
+8d83230  2026-11-16  lead: merge agent/power-parked-inside [Claude]
+57147dd  2026-11-16  lead: merge agent/lot-parked-inside [Claude]
+8aa7de6  2026-11-16  integration: bay border flash, bigger pickup pie, Refs #158 [Claude]
+fee8963  2026-11-16  lot: CarParkedInside when a car settles fully inside a bay, SpotGeometry, Refs #157 [Claude]
+228b393  2026-11-16  economy-night: parked inside fills the power bar, Refs #159 [Claude]
+5b02fa3  2026-11-16  Merge branch 'pivot/chaos' into agent/lot-parked-inside
+fabdc77  2026-11-16  wip
+f43869b  2026-11-16  lead: add ISpotGeometry and SpotBounds contract, Refs #158 [Claude]
+e1f7823  2026-11-16  lead: add CarParkedInside event and PowerFillParkedInside key [Claude]
+696c7e7  2026-11-16  lead: rebuild site/ with HUD cleanup and pickup pie for beta [Claude]
 d191f26  2026-11-16  lead: design log and changelog for hud-cleanup, Refs #154 #155 #156 [Claude]
 d6a1683  2026-11-16  lead: merge agent/hud-cleanup [Claude]
 76156b1  2026-11-16  integration: remove CAR SLOTS board and plates, add pickup timer pie, Refs #154 #155 #156 [Claude]
@@ -37,18 +49,6 @@ aec0349  2026-11-14  lead: rebuild site/ with playtest batch 3 for beta [Claude]
 e3c084b  2026-11-14  lead: changelog for screenshot bug fixes merges, Refs #140 #141 #142 #143 [Claude]
 8a32936  2026-11-14  lead: merge agent/no-trough [Claude]
 151d667  2026-11-14  lot: remove water trough prop, wash bays are plain wash slots [Claude]
-2fe5eb2  2026-11-14  lead: merge agent/queue-advance-fix [Claude]
-8999269  2026-11-14  patrons: queue advances a car that stopped short, retries drives [Claude]
-5b987f3  2026-11-14  lead: merge agent/power-bolt-prayer [Claude]
-076e5b7  2026-11-14  integration: power bar markers at real thresholds, prayer hands for blessings [Claude]
-aecb086  2026-11-14  lead: merge timer-after-pickup, fix PlayMode curse tests, design log, Refs #139 [Claude]
-bcc8ad7  2026-11-14  lead: merge agent/timer-after-pickup [Claude]
-0b426c8  2026-11-14  lead: changelog for power bar flag merge, Refs #136 #137 [Claude]
-d5e1b71  2026-11-14  patrons: stay clock starts after the car leaves the pickup spot [Claude]
-5f6d91c  2026-11-14  lead: merge agent/perfect-w2-powerbar [Claude]
-ca8368d  2026-11-14  lot: per-lot ShowPowerBar hides the power bar in Midgard, Refs #136 #137 [Claude]
-4a00953  2026-11-14  lead: changelog for bubbles, label and curse merges, Refs #134 #135 #138 [Claude]
-2a5b321  2026-11-14  lead: merge agent/ped-curse [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -382,6 +382,12 @@ Files: Assets/_Project/Scripts/Economy/SlightCurseRule.cs, PedestrianCurseRule.c
 Why: Issue #138. The driven car hitting any walker costs a slight curse (2 blessings) on every lot, ignoring the lot curse switch; the full patron curse is unchanged and wins (one curse per hit, no stacking).
 Tests: SlightCurseTests added, PedestrianCurseTests updated; EditMode 1850 passed, 0 failed.
 
+## economy-night: parked inside fills the power bar, Refs #159 [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Powers/PowerBarConfig.cs, PowerSettings.cs, PowerBarController.cs; Scripts/Core/Contracts/PowerRows.cs (F2 row); Scripts/Run/LotPowerFill.cs (per-lot override, edited with lead permission); Data/Powers/PowerBarConfig.asset; Tests/EditMode/Powers/PowerBarControllerTests.cs, PowerFrameworkTests.cs; Tests/EditMode/Integration/DevPowerLinkTests.cs (bar group count 4 to 5, new key)
+Why: Issue #159. CarParkedInside adds PowerFillParkedInside (default 4 of 100) to the bar, same gating as Perfect Park; a perfect park fires both so adds 22.
+Tests: ParkedInside fill, sum with Perfect Park, tuning change added; EditMode run exit 0.
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
@@ -620,6 +626,12 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Pie/ (new: PickupPieRule, PiePixels, PickupPieSprites, PickupPieView, PickupPieLayer, PickupPieSettings, PieObjects); UI/Hud/PlayingHud.cs, WorldTicketPainter.cs, PickupMark.cs; UI/TicketBoard.cs, TicketRow.cs, TicketNeedsTracker.cs, GameUi.cs; UI/Mood/EmotionStyle.cs, HudEmotionConfig.cs; deleted UI/Status/ (9 classes), UI/Hud/KeyBoardPainter, KeyBoardRows, PlatePainter, PlateLayout, DamageTag; Tests/EditMode/UI/PickupPieTests.cs (new), PickupMarkTests, TicketBoardTests, HudRulesTests, EmotionTests edited; CarStatusTests, PlateUiTests, DamageTagTests deleted (+ .meta)
 Why: #154 the CAR SLOTS key board is gone, with the status table that only fed it and the damage tag that only showed there. #155 the licence plate under cars is no longer drawn (the CarPlateAssigned data stays in Core and Patrons); service icons now sit centred under the car. The plate flash is gone, so the flash-rate fields and EmotionStyle.IsLit/PeriodOf went too. #156 a world-sprite pie over each car with a running pickup timer: wedge cut clockwise from 12 o'clock (full at 0, empty at 1), green/yellow/red from the HudEmotionConfig patience levels, pre-built point-filtered sprites tinted by renderer colour, pooled, released when the timer stops, the ticket closes or the car is destroyed. Size, steps, offset and sorting order in PickupPieSettings (inside HudEmotionConfig). design.md sections on plates and CAR SLOTS are now out of date.
 Tests: EditMode 1933 passed (PickupPieTests, 8 new); PlayMode BootstrapSceneSmokeTests, StoryFlowPlayModeTests, ServiceModifierPlayModeTests 13 passed.
+
+## integration: bay border flash, bigger pickup pie, Refs #158 [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/UI/Pie/ (new: BayBorderLayer, BayBorderRule, BayBorderSettings, BayBorderSprites, BayBorderView; PickupPieSettings default 20 px, offset 1.45); UI/Mood/HudEmotionConfig.cs, UI/Hud/PlayingHud.cs, UI/GameUi.cs, Bootstrap/GameBootstrap.cs; Tests/EditMode/UI/BayBorderTests.cs (new)
+Why: #158 a bay's border flashes green when its car parks completely inside (CarParkedInside), then in the pickup-timer colour at 1.5/3/7 Hz (happy/impatient/angry) while its patron waits; released when the car leaves, the ticket closes, the shift ends or the car is gone. Bay rects come from the new ISpotGeometry, registered in Bootstrap when the lot implements it (no border until Lot implements it). Pie is 20 px (was 14).
+Tests: EditMode 1942 passed (BayBorderTests, 9 new). PlayMode not run (run-tests.ps1 is EditMode only).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1745,6 +1757,30 @@ Files: docs/design.md, docs/changelogs/lead.md (merge of the UI branch)
 Why: Issues #154 to #156. CAR SLOTS board and plates removed, pickup timer pie added.
 Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
 
+## lead: rebuild site/ with HUD cleanup and pickup pie for beta [Claude]
+Date: 2026-11-16
+Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
+Why: Refs #154 #155 #156. Beta now has no CAR SLOTS panel or plates, and the pickup timer pie.
+Tests: tools/build-web.ps1 exit 0, build-info shows d191f26; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: Midgard training starts, HUD has no key board, no console errors. The pie was not seen (no pickup was reached).
+
+## lead: add CarParkedInside event and PowerFillParkedInside key to Core [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Core/Events/ParkEvents.cs, Assets/_Project/Scripts/Core/Events/TuningKey.cs, docs/changelogs/lead.md
+Why: Contract for the bay border flash and the small power gain for parking completely inside a bay (new playtest notes). Append-only.
+Tests: none run yet; the Lot and Powers agents use them next.
+
+## lead: add ISpotGeometry and SpotBounds to Core [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/Core/Contracts/{ISpotGeometry,SpotBounds}.cs, docs/changelogs/lead.md
+Why: Contract so the HUD can draw bay borders (#158) without referencing Lot. Lot implements it, Bootstrap registers it.
+Tests: none (a contract); the Lot and integration agents add theirs.
+
+## lead: merge lot-parked-inside, power-parked-inside, bay-border-flash, Refs #157 #158 #159 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merges of the Lot, Powers and UI branches; two duplicate .meta files for the new Core contract resolved)
+Why: Issues #157 to #159. CarParkedInside, the small power gain, the bay border flash and the bigger pie.
+Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2043,6 +2079,12 @@ Date: 2026-11-16
 Files: Lot/CurbArrowSpan.cs (new), LotCurbArrows.cs (SpanOf, shared SideX), CurbZone.cs (Span, TryGetOffsetX), DropOffJudge.cs, PerfectRunner.cs, PerfectTuning.cs, PerfectSettings.cs (DropOffArrowTolerance), tests Lot/PerfectJudgeTests.cs.
 Why: Issue #153 (Refs #153), design.md A11 perfect drop-off. A perfect drop-off now also needs the settled car's centre between the two painted arrows: sideways offset from the zone centre within the arrow centre lines plus a tolerance (default 0.25, edge counts). A zone with no arrows has no span and never blocks perfect. The tolerance is an asset setting only (no TuningKey: Core is the lead's).
 Tests: DropOffNeedsTheCarCentreBetweenTheArrows (inside, outside left and right, on the edge), no-arrows case and the old angle/timer cases; EditMode suite passes via tools/run-tests.ps1.
+
+## lot: publish CarParkedInside when a car settles fully inside a bay, SpotGeometry, Refs #157 [Claude]
+Date: 2026-11-16
+Files: Scripts/Lot/{BayFitRule,CarOutline,SpotGeometry}.cs (new), ParkingSpot.cs, SpotBuilder.cs (InnerSize), LotLayoutBuilder.cs (implements ISpotGeometry), PerfectSettings.cs (ParkedInsideTolerance); Tests/EditMode/Lot/{BayFitRuleTests,SpotGeometryTests}.cs
+Why: Issue #157, design.md section 4. A bay publishes CarParkedInside right after CarParked when all four corners of the car box collider lie inside the painted inner rect (spot size less the lines) plus a tolerance (default 0.05, PerfectSettings). Once per CarParked since a re-settle in the same bay is ignored. Regular and EV bays only; wash bays do not publish CarParked. LotLayoutBuilder also implements ISpotGeometry (inner rect, world centre and rotation per bay) for Bootstrap to register.
+Tests: new BayFitRuleTests (inside, touching, each side out, tolerance edge) and SpotGeometryTests; EditMode suite via tools/run-tests.ps1.
 
 === docs/changelogs/orders.md ===
 # Orders changelog
