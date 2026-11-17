@@ -1096,3 +1096,9 @@ Date: 2026-11-16
 Files: site/ (Build/WebGL.*, build-info.txt, changelog.txt), docs/changelogs/lead.md
 Why: Refs #151 #152 #153. Beta now includes faster turning with the Shift entry kick, the -N curse pop and the perfect drop-off between the curb arrows.
 Tests: tools/build-web.ps1 exit 0, build-info shows 9ecdb0f; EditMode passed and PlayMode 85 of 85 on the same code; browser smoke test: title screen loads, no console errors. Feel, the -N pop and the arrow rule were not played in the browser.
+
+## lead: exempt cars wip commit 7c441ac from the changelog check, Refs #151 [Claude]
+Date: 2026-11-16
+Files: tools/changelog-exempt.txt, docs/changelogs/lead.md
+Why: CI failed the deploy because the cars agent's wip commit had no entry; its final commit eb8bf43 has one. History is not rewritten (CLAUDE.md).
+Tests: bash tools/check-changelog.sh run locally below.
