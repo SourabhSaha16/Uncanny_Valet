@@ -1204,3 +1204,9 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (patrons, economy-night, valet, integration, wash)
 Why: playtest notes 1 to 4 plus font, title, wash timer and instant despawn (design.md log 2026-11-17). Two PlayMode power tests were updated for the 15-power Perfect Park (3 parks open a bucket).
 Tests: EditMode 2028/2028, PlayMode 86/86 on the combined tree; RunBatch not run (no Editor/Data/Scenes change in these merges).
+
+## lead: rebuild site/ with playtest batch 7 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #164 to #170, #168, #50 (design.md log 2026-11-17).
+Tests: EditMode 2028/2028, PlayMode 86/86, web build exit 0 (build-info commit cfa8c43); local smoke test: title, how-to-play, lot intro and HUD render with the new font, no console errors.

@@ -1,4 +1,20 @@
 === Last 50 commits ===
+cfa8c43  2026-11-17  lead: design log and changelog for playtest batch 7, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
+73da7ad  2026-11-17  lead: merge agent wash pie and shift-end despawn, Refs #169 #170 [Claude]
+6e0c835  2026-11-17  cars: despawn every car at once on ShiftEnded [Claude]
+3a0e3c0  2026-11-17  wash: wash pie beside the pickup pie, blue drop when washed [Claude]
+f033147  2026-11-17  lead: merge agent/integration cleaner font and title rename, Refs #168 #50 [Claude]
+bedff1d  2026-11-17  ui: JetBrains Mono UI font, title is Valet to Valhalla, Refs #168 #50 [Claude]
+468d22e  2026-11-17  lead: merge agent/economy-night late-pickup curse, Refs #166 [Claude]
+c8857bd  2026-11-17  economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
+82faf68  2026-11-17  lead: merge agent/valet Thunder Stride handling, Refs #167 [Claude]
+125b8ab  2026-11-17  lead: merge agent/patrons EV filter and dirty spacing, Refs #164 #165 [Claude]
+5cdb924  2026-11-17  Merge branch 'pivot/chaos' into worktree-agent-a5b8016a754c68f00
+ae5e8af  2026-11-17  lead: add late-pickup curse tuning keys and rows, Refs #166 [Claude]
+3ef37e6  2026-11-17  patrons: no EV without charging bay, space dirty cars apart [Claude]
+de3ea72  2026-11-17  valet: Thunder stride eases grip loss and turn fall-off [Claude]
+19d1f97  2026-11-17  economy: overtime curse for an angry patron on delivery, Refs #166 [Claude]
+cce05b5  2026-11-17  lead: rebuild site/ with simpler Perfect Park reward for beta [Claude]
 2de311c  2026-11-17  lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
 250e826  2026-11-17  lead: rebuild site/ with Perfect Park and clock changes for beta [Claude]
 6f3e916  2026-11-17  lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
@@ -33,22 +49,6 @@ d6a1683  2026-11-16  lead: merge agent/hud-cleanup [Claude]
 c8eec6e  2026-11-16  lead: rebuild site/ with handling pass and shorter dash cooldown for beta [Claude]
 b11bf16  2026-11-16  lead: Shift dash cooldown 1.5 s to 0.7 s [Claude]
 9177843  2026-11-16  lead: exempt cars wip commit from changelog check, Refs #151 [Claude]
-66cdbb3  2026-11-16  lead: rebuild site/ with handling pass, curse pop, perfect arrows for beta [Claude]
-9ecdb0f  2026-11-16  lead: log cars handling merge, Refs #151 [Claude]
-7c6872a  2026-11-16  lead: merge agent/cars turn rate and drift kick [Claude]
-eb8bf43  2026-11-16  cars: faster turning, speed fall-off and drift entry kick, Refs #151 [Claude]
-3f0d8c5  2026-11-16  cars: merge pivot/chaos into agent/cars, Refs #151 [Claude]
-59a17c5  2026-11-16  lead: log merges of lot-perfect-arrows and curse-pop, Refs #152 #153 [Claude]
-7c441ac  2026-11-16  cars: wip turn fall-off and drift kick, Refs #151 [Claude]
-765cbd3  2026-11-16  lead: merge agent/curse-pop [Claude]
-0ce6c03  2026-11-16  lead: merge agent/lot-perfect-arrows [Claude]
-2003f64  2026-11-16  integration: red -N pop when a pedestrian hit costs blessings, Refs #152 [Claude]
-8e8e6d6  2026-11-16  lot: perfect drop-off needs the car between the curb arrows [Claude]
-0d1d004  2026-11-16  lead: rebuild site/ with playtest batch 5 for beta [Claude]
-06dd88a  2026-11-16  lead: merge wash-near-symbol, design log, Refs #148 #149 [Claude]
-2bcf6aa  2026-11-16  lead: merge agent/wash-near-symbol [Claude]
-2dd702b  2026-11-16  lot: wash bays right next to the bay block, one shared mud symbol, Refs #148 #149 [Claude]
-1ce021b  2026-11-16  lead: changelog for power visible merge, Refs #150 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -388,6 +388,18 @@ Files: Assets/_Project/Scripts/Powers/PowerBarConfig.cs, PowerSettings.cs, Power
 Why: Issue #159. CarParkedInside adds PowerFillParkedInside (default 4 of 100) to the bar, same gating as Perfect Park; a perfect park fires both so adds 22.
 Tests: ParkedInside fill, sum with Perfect Park, tuning change added; EditMode run exit 0.
 
+## economy: overtime curse for an angry patron on delivery [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Economy/OvertimeCurseRule.cs, OvertimeCurseConfig.cs, ShiftBlessings.cs; Tests/EditMode/Economy/OvertimeCurseTests.cs
+Why: Refs #166. Waiting past the pickup timer must cost something: on CarDelivered the player takes a curse of round(overtime s / 10), 1..3, measured from TicketTimerExpired. On-time costs nothing.
+Tests: OvertimeCurseTests (zero, scaling, rounding, cap, wiring); EditMode suite run.
+
+## economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Economy/ShiftBlessings.cs, OvertimeCurseRule.cs; removed OvertimeCurseConfig.cs; Tests/EditMode/Economy/ShiftBlessingsTests.cs, ShiftBlessingsLotTests.cs, OvertimeCurseTests.cs; Tests/EditMode/Integration/ShiftHarness.cs, FullShiftTests.cs
+Why: Issue #166 (lead decision). TicketTimerExpired no longer curses; only the late-pickup curse on CarDelivered applies, read from TuningKey.OvertimeCurseSecondsPerPoint/Cap (OvertimeCurseRows fallbacks). Config class dropped: the tuning store is the single source.
+Tests: ShiftBlessings tests now deliver late for a cap-3 curse (Lot test seeds 32 so 29 fails); OvertimeCurseTests updated; EditMode suite run.
+
 === docs/changelogs/integration.md ===
 # Integration changelog
 
@@ -644,6 +656,24 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Hud/ (new: ClockLayout, ClockSettings; BlessingPopKind +Perfect, BlessingPops, BlessingPopPainter, PowerFillPopRule, PowerFillPopPainter, HudPainter, PlayingHud); UI/Mood/HudEmotionConfig.cs, UI/GameUi.cs; Tests/EditMode/UI/ClockPlacementTests.cs (new)
 Why: #161 the PERFECT! pop and the PerfectPark +X pop now use the bay border green (EmotionStyle Happy colour, one value passed from PlayingHud, no literal); ParkedInside keeps its lighter gold-pulled green. #162 the shift clock is a tab flush under the score panel at the left edge (was top centre over the lot); gap and inset tunable in ClockSettings (HudEmotionConfig.Clock), clear of the power column and its +X pops. Not checked visually.
 Tests: EditMode passed (ClockPlacementTests, 9 new cases); RunBatch not needed (no Editor/Data/Scenes change).
+
+## ui: JetBrains Mono UI font, title is Valet to Valhalla, Refs #168 #50 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Kit/ (new: UiFontConfig, UiFontSizing, PixelFontRenderer; PixelCanvas, PixelKit, PixelGlyphs edited: bitmap atlas and glyph rows removed); UI/Screens/TitlePainter.cs; Assets/_Project/Art/Fonts/ (JetBrainsMono-Bold.ttf, OFL.txt); Assets/_Project/Resources/UiFontConfig.asset; Tests/EditMode/UI/UiFontTests.cs (new), PixelKitTests.cs; ProjectSettings/ProjectSettings.asset (productName); README.md; tools/write-build-info.sh (+ .meta files)
+Why: #168 all UI text now draws with a real TrueType font instead of the 5x7 bitmap. Font: JetBrainsMono-Bold.ttf from https://github.com/JetBrains/JetBrainsMono (fonts/ttf), licence SIL Open Font License 1.1 (OFL.txt kept beside it), 274 KB, embedded in the build. It is monospaced (advance 0.6 em, capitals 0.73 em), so each letter is centred in the same 6x7 virtual-pixel cell as before: every layout, box and wrap width is unchanged and no label can overflow where it fitted before. Font size is asked in screen pixels (capitals one row tall) per grid scale and text scale, so letters are crisp at any window size; sizes snap to steps while pops zoom, and cap at 96 px. Letters are cached one-char strings drawn through a reused GUIStyle/GUIContent: no per-frame allocation. Size and nudge tunables are in Resources/UiFontConfig (_emPerRow, _maxFontSize, _zoomSizeStep, _verticalNudge). Still upper case only; colours untouched. #50 the title screen reads VALET TO / VALHALLA (two lines, each fits at scale 7); productName, README title and the build-info text renamed. site/ not rebuilt.
+Tests: EditMode 2007 passed (UiFontTests: sizing maths, shipped font monospaced and every glyph within the text cell, title fits the canvas). Not checked visually in a Web build; PlayMode not run.
+
+## wash: wash pie beside the pickup pie, blue drop when washed, Refs #169 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Pie/ (new: PieSet, PieSlots, WashPieRule, WashPieLayer; PickupPieLayer now uses PieSet; PickupPieSettings +SideGap +WashColor); UI/Hud/ServiceIcons.cs, PlayingHud.cs; UI/Kit/PixelIcon.cs, PixelIconData.cs (appended Drop icon and key 'u'); Tests/EditMode/UI/WashPieTests.cs (new), ServiceIconsTests.cs edited (+ .meta)
+Why: washing already takes WashMinutes game minutes in the wash slot (StationService, ModifierProgressChanged, F2 key WashMinutes), so no Core change or new key was needed; the UI reads TicketRow only. A blue pie (progress drains the wedge) shows over a muddy car while it sits in the wash and replaces the mud splat; when the wash completes a blue drop stays in its place until the ticket closes. With a pickup pie too, the two sit side by side (gap in PickupPieSettings.SideGap). Pools shared through PieSet, no per-frame allocation.
+Tests: EditMode WashPieTests (5) and ServiceIconsTests updated; full suite 2008 passed. Not checked visually.
+
+## cars: despawn every car at once on ShiftEnded, Refs #170 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/ShiftEndCleanup.cs (new), CarFactory.cs (DespawnAll, subscription created in Start, disposed in OnDestroy); Tests/EditMode/Cars/ShiftEndCleanupTests.cs, Tests/PlayMode/ShiftEndDespawnTests.cs (new, + .meta)
+Why: cars leaving at the end of a shift drove off screen behind the results screen. Despawn goes through the existing CarFactory.Despawn, so seats, stations and trips are released by the destroyed car as before; PatronDeparture's later drive-away call finds no car and does nothing. Ambient traffic is untouched.
+Tests: EditMode 2008 passed; PlayMode ShiftEndDespawnTests passed (full PlayMode 84 of 86; PowerBarPlayModeTests.FreezeTime_Owned... and VanaheimStormWindPlayModeTests.WithStormWindOwned... fail in power-bucket asserts, areas this change does not touch).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1835,6 +1865,24 @@ Files: Assets/_Project/Scripts/Lot/PerfectSettings.cs, Assets/_Project/Scripts/C
 Why: playtest note: drop the inside-and-straight split, +15 for getting inside the box (design.md log 2026-11-17). Default park angle 90 accepts any angle; the clean-park gain default is 0.
 Tests: EditMode exit 0 (updated defaults, new test for any-angle default); RunBatch exit 0.
 
+## lead: rebuild site/ with the simpler Perfect Park reward for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible change for #163 (design.md log 2026-11-17).
+Tests: EditMode exit 0, RunBatch exit 0, web build exit 0 (build-info commit 2de311c). PlayMode not run (no physics code changed).
+
+## lead: add late-pickup curse tuning keys and rows to Core, Refs #166 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Core/Contracts/OvertimeCurseRows.cs, Assets/_Project/Scripts/Core/Contracts/TuningCatalog.cs, Assets/_Project/Scripts/Bootstrap/TuningSeeder.cs, docs/changelogs/lead.md
+Why: the late-pickup curse (patron picked up after the timer) needs F2 rows; keys appended at the end of TuningKey (append-only).
+Tests: EditMode exit 0.
+
+## lead: merge playtest batch 7, rebuild site/ for beta, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (patrons, economy-night, valet, integration, wash)
+Why: playtest notes 1 to 4 plus font, title, wash timer and instant despawn (design.md log 2026-11-17). Two PlayMode power tests were updated for the 15-power Perfect Park (3 parks open a bucket).
+Tests: EditMode 2028/2028, PlayMode 86/86 on the combined tree; RunBatch not run (no Editor/Data/Scenes change in these merges).
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2167,6 +2215,12 @@ Tests: No test logic changed; the fixture's fake lot was updated. Not run: the s
 # Patrons changelog
 
 Entries are added by the patrons agent, one per commit. Format in docs/changelogs/README.md.
+
+## patrons: no EV without charging bay, dirty cars spaced apart [Claude]
+Date: 2026-11-17
+Files: Patrons/ModifierStationFilter.cs (new), Patrons/DirtySpacing.cs (new), PatronRequestRoller.cs, PatronSpawner.cs, PatronConfig.cs; test Tests/EditMode/Patrons/DirtySpacingAndStationTests.cs.
+Why: Refs #164 #165. Root cause of #164: the director path (PatronRequestRoller.Roll with an archetype) mapped Ev/MuddyEv straight to NeedsCharge through ArchetypeModifiers, ignoring the lot (lot catalogs list NeedsCharge even at chance 0, so the EV look and charge symbol applied on lots with no charging bay). Now every rolled set is filtered by the lot snapshot: a modifier stays only if the lot has a station of the kind that clears it. #165: DirtySpacing turns a muddy arrival clean when fewer than PatronConfig.CleanCarsBetweenDirty (default 1) clean cars passed since the last muddy one; reset on ShiftStarted.
+Tests: DirtySpacingAndStationTests (10). EditMode suite run before commit.
 
 ## patrons: apply night plan, EV charging, washing and tip breakdown
 Date: 2026-11-06
@@ -2859,6 +2913,12 @@ Date: 2026-11-16
 Files: Valet: ThunderAura, ThunderAuraClock, ThunderAuraTiming, ThunderAuraLook, AuraTint, AuraGlow (new), ThunderDash (owns the glow, ShiftEnded clears it); Powers: PowerDefaults (boost 5 s level 1, 7 s level 2); Data/Powers/ThunderStrideDefinition.asset (same durations); Tests: ThunderAuraClockTests, ThunderAuraPlayModeTests (new), ThunderStrideTests (timings, no-stack test).
 Why: issue #150. The boost ended too fast and was hard to see. It now lasts 5 s (7 s at level 2, still tunable in F2 Advanced) and the valet, or the car he drives, gets a pulsing golden tint (MaterialPropertyBlock), a soft glow under it and a steady spray of lightning sparks for the whole boost, blinking in the last second. The cooldown still starts when the boost ends and a fire during the boost is refused, so nothing stacks. The glow clears on PowerEnded, ShiftEnded, disable and destroy, and follows car enter and exit.
 Tests: EditMode 1916 passed (clock range, warning window, clear, restart); PlayMode 83 passed (tint and glow on, off at PowerEnded and ShiftEnded, no leaked glow object); RunBatch ok (scene and asset churn reverted).
+
+## valet: Thunder stride eases grip loss and turn fall-off [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/DriveInput.cs, SteeringModel.cs, CarDriver.cs, ThunderBoostModifier.cs, ThunderBoostLink.cs, CarHandlingConfig.cs, CarHandlingLive.cs (Cars, authorised by the lead for issue #167); Assets/_Project/Tests/EditMode/Cars/ThunderBoostTests.cs
+Why: Refs #167. While the in-car Thunder stride boost runs, the turn-rate fall-off is switched off (TurnFalloffScale 0) and speed grip loss is scaled by a configurable share (docs/redesign/car_handling_spec.md sections 2 and 3).
+Tests: EditMode ThunderBoostTests extended (falloff off, grip scale applied, normal values return after the boost ends).
 
 === docs/changelogs/watchers.md ===
 # Watchers module changelog

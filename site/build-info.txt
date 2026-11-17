@@ -1,4 +1,4 @@
-Uncanny Valet web build
-Commit:  2de311c
-Subject: lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
-Date:    2026-11-17 10:20:02 -0800
+Valet to Valhalla web build
+Commit:  cfa8c43
+Subject: lead: design log and changelog for playtest batch 7, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
+Date:    2026-11-17 12:47:09 -0800
