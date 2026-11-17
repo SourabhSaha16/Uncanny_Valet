@@ -1216,3 +1216,9 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (integration title/text, late-pickup pop)
 Why: playtest notes 1 to 3 (design.md log 2026-11-17). Root cause of #173: the late-pickup curse was applied but had no pop and the pickup pop read only the closed ticket's blessing (0).
 Tests: EditMode 2033/2033, PlayMode 89/89 on the combined tree.
+
+## lead: rebuild site/ with playtest batch 8 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #171 to #173 (design.md log 2026-11-17).
+Tests: EditMode 2033/2033, PlayMode 89/89, web build exit 0 (build-info commit 9b9c526); local smoke test: title, how-to-play and the Midgard intro show plain backgrounds and the edited text.

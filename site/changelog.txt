@@ -1,4 +1,10 @@
 === Last 50 commits ===
+9b9c526  2026-11-17  lead: design log and changelog for playtest batch 8, Refs #171 #172 #173 [Claude]
+d8c85dd  2026-11-17  lead: merge agent late-pickup -N pop, Refs #173 [Claude]
+1178ea4  2026-11-17  lead: merge agent/integration plain title background and text fixes, Refs #171 #172 [Claude]
+c232999  2026-11-17  ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
+d77caa8  2026-11-17  ui: plain background for title and how-to, text fixes (Refs #171 #172) [Claude]
+8d26adb  2026-11-17  lead: rebuild site/ with playtest batch 7 for beta [Claude]
 cfa8c43  2026-11-17  lead: design log and changelog for playtest batch 7, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
 73da7ad  2026-11-17  lead: merge agent wash pie and shift-end despawn, Refs #169 #170 [Claude]
 6e0c835  2026-11-17  cars: despawn every car at once on ShiftEnded [Claude]
@@ -43,12 +49,6 @@ fabdc77  2026-11-16  wip
 f43869b  2026-11-16  lead: add ISpotGeometry and SpotBounds contract, Refs #158 [Claude]
 e1f7823  2026-11-16  lead: add CarParkedInside event and PowerFillParkedInside key [Claude]
 696c7e7  2026-11-16  lead: rebuild site/ with HUD cleanup and pickup pie for beta [Claude]
-d191f26  2026-11-16  lead: design log and changelog for hud-cleanup, Refs #154 #155 #156 [Claude]
-d6a1683  2026-11-16  lead: merge agent/hud-cleanup [Claude]
-76156b1  2026-11-16  integration: remove CAR SLOTS board and plates, add pickup timer pie, Refs #154 #155 #156 [Claude]
-c8eec6e  2026-11-16  lead: rebuild site/ with handling pass and shorter dash cooldown for beta [Claude]
-b11bf16  2026-11-16  lead: Shift dash cooldown 1.5 s to 0.7 s [Claude]
-9177843  2026-11-16  lead: exempt cars wip commit from changelog check, Refs #151 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -674,6 +674,18 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/ShiftEndCleanup.cs (new), CarFactory.cs (DespawnAll, subscription created in Start, disposed in OnDestroy); Tests/EditMode/Cars/ShiftEndCleanupTests.cs, Tests/PlayMode/ShiftEndDespawnTests.cs (new, + .meta)
 Why: cars leaving at the end of a shift drove off screen behind the results screen. Despawn goes through the existing CarFactory.Despawn, so seats, stations and trips are released by the destroyed car as before; PatronDeparture's later drive-away call finds no car and does nothing. Ambient traffic is untouched.
 Tests: EditMode 2008 passed; PlayMode ShiftEndDespawnTests passed (full PlayMode 84 of 86; PowerBarPlayModeTests.FreezeTime_Owned... and VanaheimStormWindPlayModeTests.WithStormWindOwned... fail in power-bucket asserts, areas this change does not touch).
+
+## ui: plain background for title and how-to, lot intro and EV text fixes [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Screens/TitlePainter.cs, HowToPlayPainter.cs, HowToPlayText.cs, Editor/StoryTextDrafts.cs, Data/UI/StoryText.asset, Tests/EditMode/UI/HowToPlayTests.cs
+Why: Refs #171 #172. Title and how-to-play now fill the screen with PixelPalette.PanelDark instead of veiling the lot; removed the Thor line from the Midgard training intro and the EV charging words from the how-to-play special-requests line.
+Tests: EditMode suite passed; RunBatch ran (its unrelated scene/config rewrites were reverted).
+
+## ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/BlessingPopTracker.cs, PendingBlessingPops.cs, Scripts/Economy/OvertimeCurseRule.cs; Tests/EditMode/Integration/LateCursePopFlowTests.cs (new), Tests/EditMode/Economy/OvertimeCurseTests.cs, Tests/PlayMode/LatePickupCursePlayModeTests.cs (new, + .meta)
+Why: the late-pickup curse was applied on delivery, but nothing showed it (CursePopTracker skips ticket curses; the pickup pop only read the closed blessing, 0) and the total cannot drop below 0. BlessingPopTracker now keeps the ticket's CurseApplied amount until TicketClosed and pops a red "-N" (existing Curse look) where the blessing pop would be. OvertimeCurseRule.Take now costs at least 1 even when delivery shares the expiry's instant. A voided ticket (no delivery) still costs 0 and pops nothing.
+Tests: EditMode full suite 2033 passed; PlayMode LatePickupCursePlayModeTests 3 passed (real ShiftClock, TicketRegistry, ShiftBlessings on Time.time, seeded tuning). Not checked visually.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1882,6 +1894,18 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (patrons, economy-night, valet, integration, wash)
 Why: playtest notes 1 to 4 plus font, title, wash timer and instant despawn (design.md log 2026-11-17). Two PlayMode power tests were updated for the 15-power Perfect Park (3 parks open a bucket).
 Tests: EditMode 2028/2028, PlayMode 86/86 on the combined tree; RunBatch not run (no Editor/Data/Scenes change in these merges).
+
+## lead: rebuild site/ with playtest batch 7 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #164 to #170, #168, #50 (design.md log 2026-11-17).
+Tests: EditMode 2028/2028, PlayMode 86/86, web build exit 0 (build-info commit cfa8c43); local smoke test: title, how-to-play, lot intro and HUD render with the new font, no console errors.
+
+## lead: merge playtest batch 8, rebuild site/ for beta, Refs #171 #172 #173 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (integration title/text, late-pickup pop)
+Why: playtest notes 1 to 3 (design.md log 2026-11-17). Root cause of #173: the late-pickup curse was applied but had no pop and the pickup pop read only the closed ticket's blessing (0).
+Tests: EditMode 2033/2033, PlayMode 89/89 on the combined tree.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
