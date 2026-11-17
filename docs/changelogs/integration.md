@@ -259,3 +259,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Pie/ (new: PieSet, PieSlots, WashPieRule, WashPieLayer; PickupPieLayer now uses PieSet; PickupPieSettings +SideGap +WashColor); UI/Hud/ServiceIcons.cs, PlayingHud.cs; UI/Kit/PixelIcon.cs, PixelIconData.cs (appended Drop icon and key 'u'); Tests/EditMode/UI/WashPieTests.cs (new), ServiceIconsTests.cs edited (+ .meta)
 Why: washing already takes WashMinutes game minutes in the wash slot (StationService, ModifierProgressChanged, F2 key WashMinutes), so no Core change or new key was needed; the UI reads TicketRow only. A blue pie (progress drains the wedge) shows over a muddy car while it sits in the wash and replaces the mud splat; when the wash completes a blue drop stays in its place until the ticket closes. With a pickup pie too, the two sit side by side (gap in PickupPieSettings.SideGap). Pools shared through PieSet, no per-frame allocation.
 Tests: EditMode WashPieTests (5) and ServiceIconsTests updated; full suite 2008 passed. Not checked visually.
+
+## cars: despawn every car at once on ShiftEnded, Refs #170 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/ShiftEndCleanup.cs (new), CarFactory.cs (DespawnAll, subscription created in Start, disposed in OnDestroy); Tests/EditMode/Cars/ShiftEndCleanupTests.cs, Tests/PlayMode/ShiftEndDespawnTests.cs (new, + .meta)
+Why: cars leaving at the end of a shift drove off screen behind the results screen. Despawn goes through the existing CarFactory.Despawn, so seats, stations and trips are released by the destroyed car as before; PatronDeparture's later drive-away call finds no car and does nothing. Ambient traffic is untouched.
+Tests: EditMode 2008 passed; PlayMode ShiftEndDespawnTests passed (full PlayMode 84 of 86; PowerBarPlayModeTests.FreezeTime_Owned... and VanaheimStormWindPlayModeTests.WithStormWindOwned... fail in power-bucket asserts, areas this change does not touch).
