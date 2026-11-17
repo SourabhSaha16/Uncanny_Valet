@@ -452,5 +452,9 @@ namespace UncannyValet.Core.Events
         HandlingDriftBlendSeconds,
         /// <summary>Power bar gained when a car is parked completely inside a bay (a Perfect Park adds its own, larger amount on top).</summary>
         PowerFillParkedInside,
+        /// <summary>Seconds a patron waits past the pickup timer for each blessing the late-pickup curse costs.</summary>
+        OvertimeCurseSecondsPerPoint,
+        /// <summary>Most blessings one late pickup can cost.</summary>
+        OvertimeCurseCap,
     }
 }
