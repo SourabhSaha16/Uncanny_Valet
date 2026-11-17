@@ -1198,3 +1198,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Core/Contracts/OvertimeCurseRows.cs, Assets/_Project/Scripts/Core/Contracts/TuningCatalog.cs, Assets/_Project/Scripts/Bootstrap/TuningSeeder.cs, docs/changelogs/lead.md
 Why: the late-pickup curse (patron picked up after the timer) needs F2 rows; keys appended at the end of TuningKey (append-only).
 Tests: EditMode exit 0.
+
+## lead: merge playtest batch 7, rebuild site/ for beta, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (patrons, economy-night, valet, integration, wash)
+Why: playtest notes 1 to 4 plus font, title, wash timer and instant despawn (design.md log 2026-11-17). Two PlayMode power tests were updated for the 15-power Perfect Park (3 parks open a bucket).
+Tests: EditMode 2028/2028, PlayMode 86/86 on the combined tree; RunBatch not run (no Editor/Data/Scenes change in these merges).
