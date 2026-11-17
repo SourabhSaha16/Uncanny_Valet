@@ -19,7 +19,7 @@ namespace UncannyValet.EditorTools
 
         public static List<LotStory> Lots() => new List<LotStory>
         {
-            Lot(World.Midgard, LotKind.Training, "A SUNNY DAY AT THE LOCAL DINER.", "PARK THE CARS, THEN BRING THEM BACK.", "EVERYONE LAUGHS AT THE NAME THOR."),
+            Lot(World.Midgard, LotKind.Training, "A SUNNY DAY AT THE LOCAL DINER.", "PARK THE CARS, THEN BRING THEM BACK."),
             Lot(World.Midgard, LotKind.Crazy, "THE TOWN FAIR LIGHTS UP THE NIGHT.", "THE WHOLE TOWN WANTS A PARKING SPOT.", "SHE KNOWS MORE THAN SHE SAYS."),
             Lot(World.Vanaheim, LotKind.Training, "A RED BARN AMONG GOLDEN WHEAT.", "MUDDY CARS NEED A WASH AT THE TROUGH.", "THE WATERWHEEL TURNS SLOWLY."),
             Lot(World.Vanaheim, LotKind.Crazy, "THE STORM IS OVER. THE FEAST IS ON.", "MUD EVERYWHERE, TROUGHS FAR AWAY.", "SOMETHING SMELLS LIKE THUNDER."),

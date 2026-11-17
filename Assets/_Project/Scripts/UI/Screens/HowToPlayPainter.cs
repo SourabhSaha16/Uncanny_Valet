@@ -5,12 +5,11 @@ using UnityEngine;
 namespace UncannyValet.UI.Screens
 {
     /// <summary>
-    /// The how-to-play screen: a heading, bullet rules and controls on a panel, key words in gold, and a blinking
+    /// The how-to-play screen: a heading, bullet rules and controls on a plain full-screen panel colour (the lot is hidden), key words in gold, and a blinking
     /// PRESS ANY KEY. The wrapped lines are laid out once at construction, so drawing allocates nothing.
     /// </summary>
     public sealed class HowToPlayPainter
     {
-        private const int PanelMargin = 10;
         private const int TextLeft = 26;
         private const int TextRight = 26;
         private const int BulletIndent = 10;
@@ -23,7 +22,6 @@ namespace UncannyValet.UI.Screens
         private const int PromptScale = 2;
         private const float BlinkPeriod = 1f;
         private const string Bullet = "-";
-        private static readonly Color Veil = new Color(0f, 0f, 0f, 0.6f);
 
         private readonly struct Row
         {
@@ -54,9 +52,7 @@ namespace UncannyValet.UI.Screens
 
         public void Draw(float time)
         {
-            _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, Veil);
-            _canvas.Panel(PanelMargin, PanelMargin, PixelGrid.Width - 2 * PanelMargin, PixelGrid.Height - 2 * PanelMargin,
-                PixelPalette.PanelDark);
+            _canvas.Fill(0, 0, PixelGrid.Width, PixelGrid.Height, PixelPalette.PanelDark);
             _canvas.Text(HowToPlayText.Heading, TextLeft, HeadingTop, PixelPalette.Gold, HeadingScale);
             _canvas.Text(HowToPlayText.ControlsHeading, TextLeft, _controlsHeadingY, PixelPalette.Gold, HeadingScale);
             for (var i = 0; i < _rows.Count; i++) DrawRow(_rows[i]);

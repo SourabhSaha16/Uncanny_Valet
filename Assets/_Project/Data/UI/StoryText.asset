@@ -28,7 +28,6 @@ MonoBehaviour:
     _introLines:
     - A SUNNY DAY AT THE LOCAL DINER.
     - PARK THE CARS, THEN BRING THEM BACK.
-    - EVERYONE LAUGHS AT THE NAME THOR.
   - _lot:
       _world: 1
       _kind: 2
