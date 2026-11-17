@@ -62,13 +62,13 @@ Car presentation (all per ticket):
 - A MetroCity top-down car sprite (14 regular and 2 EV cells), picked by a stable hash of the car id, half of
   them mirrored. The body is tinted to the ticket's colour (softened; EVs lightly). Dirty cars keep the
   dark-brown mud tint with a left-to-right wipe as they are washed.
-- Licence plate under the car, the car's identity: 2 letters + 1 digit (for example ZR 9), sized to the car's
+- (Removed 2026-11-16, #155: no plate is drawn; the plate id data stays in Core.) Licence plate under the car, the car's identity: 2 letters + 1 digit (for example ZR 9), sized to the car's
   width but never smaller than the smallest readable box (about 8 px wider than the car at the current zoom).
   Alphabet BCDFGHJKLMNPRSTVWXZ, unique among open tickets (a duplicate is issued if the 3610 combinations run out).
 - An info box above the car, only when something applies: dirty icon with a dirt meter, plug icon with a
   charge meter (amber at full). It appears only after the car has arrived.
 - Pickup emotion: from the pickup patience fraction, Happy (green, under 60%), Impatient (yellow, from 60%) or Angry
-  (red, from 85% or expired). The plate border flashes in that colour at 1.5, 3 and 7 Hz (`HudEmotionConfig`), a
+  (red, from 85% or expired). (The plate flash and the CAR SLOTS row were removed 2026-11-16; the pickup timer pie, #156, shows the colour instead.) A
   small chat bubble with a face floats over the waiting patron in the same colour, and the CAR SLOTS row and bell
   use it too. The car body tint pulse still uses the old cyan/amber/orange-red colours (known mismatch).
 - The plate shows under a car only once it is parked in a spot or station.
@@ -79,7 +79,7 @@ Car presentation (all per ticket):
 HUD (480x270 virtual canvas, integer-scaled, pixel font): shift clock top centre (amber at 30 s, blinking
 orange-red at 10 s); a small coin score with three stars top left; a small combo badge top right; key board bottom left
 listing open tickets with colour tag, plate, spot number and patience bar. F2 opens the tuning panel. The panel's "Pedestrians" slider (0 to 10, starts at 3) sets how many ambient people walk; people above the count finish their walk, then stay out of sight.
-Pickup is shown on the key board row with a bell and cyan highlight, flashing with the urgency maths; the
+(Removed 2026-11-16, #154: the key board, bell and highlight are gone.) Pickup was shown on the key board row with a bell and cyan highlight, flashing with the urgency maths; the
 separate pickup banner is gone.
 
 ## A5. The lot and people
@@ -94,7 +94,7 @@ separate pickup banner is gone.
   two-lane road: eastbound lane (next to the lot, patron cars) and westbound lane (ambient cars). `IRoadLayout` (Core)
   exposes the lanes, the queue turn, the curb merge and the entry and exit routes. The diner is placeholder
   a red-roof MetroCity building (roof tiles, window band, striped awnings over both doors, small DINER sign) and a BUS shelter.
-- CAR SLOTS status word (2026-11-10): each row shows Parked, Washing, Washed, Charging, Charged, Pick Up or Cust.
+- (Removed 2026-11-16, #154.) CAR SLOTS status word (2026-11-10): each row shows Parked, Washing, Washed, Charging, Charged, Pick Up or Cust.
   Angry (shortened to Angry when it does not fit) instead of the timer bar. A new status is one enum id, one rule
   class and one row in the label/colour table (`Scripts/UI/Status/`), in priority order Cust. Angry > Pick Up >
   Washing > Charging > Washed > Charged > Parked.
@@ -255,6 +255,7 @@ Draft: `docs/redesign/valet_powers.md` (binding; the human answered Q1 to Q7 on 
 | 2026-11-16 | Playtest batch 6 (part): a perfect drop-off now also needs the car centre between the two curb arrows (tolerance 0.25, a lot without arrows skips it) (#153); a pedestrian hit that costs blessings shows a red -N pop where it happened, N = blessings actually lost (#152). |
 | 2026-11-16 | Car handling pass (#151): TurnFullSpeed 4 to 6 (max turn rate 2.73 rad/s, 156 deg/s, tightest radius still 2.2); above it the turn rate loses 0.12 per unit of speed down to 0.55 of full; Shift gives a 3 rad/s yaw kick fading over 0.12 s, turn rate x1.3 while drifting, drift grip held 0.25 s after release then blended back over 0.2 s; GripAtSpeed 0.55 to 0.75 and DriftGripScale 0.25 to 0.2 so slides stay about as long as before. Seven TuningKeys appended, all in F2. Skid marks and tyre sound still follow the Shift switch, not the hold. |
 | 2026-11-16 | Shift dash cooldown 1.5 s to 0.7 s (script default and the four scenes that save it). |
+| 2026-11-16 | HUD cleanup (#154 to #156): the CAR SLOTS key board (with its status words, pickup bell and damage percent) and the licence plates under cars are gone; service icons sit centred under the car; a pickup-timer pie (circle with a wedge cut clockwise from 12, green under 60%, yellow from 60%, red from 85%, from HudEmotionConfig, 14 px, offset 1.25 above the car) shows while the pickup timer runs, stepping once per game minute; the dark fill over the car is kept for now. Plate ids stay in Core and Patrons unused. A walk-away-instead-of-angry patron idea and a feature-flag setup were scrapped by the human. |
 
 ## 1. Overview
 
