@@ -1084,3 +1084,9 @@ Date: 2026-11-16
 Files: docs/design.md, docs/changelogs/lead.md (merges of the lot and UI branches)
 Why: Issues #152 and #153. Perfect drop-off needs the car between the curb arrows; curses show a -N pop.
 Tests: EditMode passed on the merged tree (exit 0). PlayMode and site rebuild wait for the cars work (#151).
+
+## lead: merge agent/cars turn rate and drift kick, Refs #151 [Claude]
+Date: 2026-11-16
+Files: docs/design.md, docs/changelogs/lead.md (merge of the cars branch)
+Why: Issue #151. Faster turning, speed fall-off, Shift entry kick, grip recheck.
+Tests: EditMode passed (exit 0); PlayMode 85 of 85 on the merged tree.
