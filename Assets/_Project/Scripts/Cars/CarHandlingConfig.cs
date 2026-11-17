@@ -20,15 +20,21 @@ namespace UncannyValet.Cars
         [SerializeField, Min(0f), Tooltip("Speed (units/s) from which grip is GripAtSpeed.")]
         private float _gripHighSpeed = 6f;
         [SerializeField, Range(0.01f, 1f), Tooltip("Grip fraction at and above the high speed.")]
-        private float _gripAtSpeed = 0.55f;
+        private float _gripAtSpeed = 0.75f;
         [SerializeField, Range(0.01f, 1f), Tooltip("Grip multiplier while the drift button (Shift) is held.")]
-        private float _driftGripScale = 0.25f;
+        private float _driftGripScale = 0.2f;
         [SerializeField, Min(0f), Tooltip("The drift button only has an effect above this speed (units/s).")]
         private float _driftMinSpeed = 1f;
+        [SerializeField, Tooltip("Entry kick, turn boost and grip hold of the drift button (issue 151).")]
+        private DriftKickConfig _driftKick = new DriftKickConfig();
 
         [Header("Turning radius (section 3)")]
         [SerializeField, Min(0.1f), Tooltip("Speed (units/s) at and above which steering has full effect; below it the turn rate scales down.")]
-        private float _turnFullSpeed = 4f;
+        private float _turnFullSpeed = 6f;
+        [SerializeField, Range(0f, 0.5f), Tooltip("Share of the turn rate lost per unit of speed above TurnFullSpeed (0 = no fall-off).")]
+        private float _turnFalloff = 0.12f;
+        [SerializeField, Range(0.1f, 1f), Tooltip("Lowest share of the full turn rate a fast car keeps.")]
+        private float _turnMinShare = 0.55f;
         [SerializeField, Min(0.5f), Tooltip("Radius (units) of the tightest slow turn. MaxTurnRate = TurnFullSpeed / this; above TurnFullSpeed the radius grows with speed.")]
         private float _tightestRadius = 2.2f;
         [SerializeField, Min(0.1f), Tooltip("Clear gap (units) between the two bay rows. Copied from LotConfig's aisle width by the editor setup; a mismatch is only warned about at start.")]
@@ -102,6 +108,12 @@ namespace UncannyValet.Cars
         public float DriftGripScale => _driftGripScale;
         /// <summary>Speed above which the drift button has an effect.</summary>
         public float DriftMinSpeed => _driftMinSpeed;
+        /// <summary>Drift entry kick, turn boost and grip hold numbers.</summary>
+        public DriftKickConfig DriftKick => _driftKick;
+        /// <summary>Share of the turn rate lost per unit of speed above <see cref="TurnFullSpeed"/>.</summary>
+        public float TurnFalloff => _turnFalloff;
+        /// <summary>Lowest share of the turn rate a fast car keeps.</summary>
+        public float TurnMinShare => _turnMinShare;
         /// <summary>Speed at which steering reaches full effect, units per second.</summary>
         public float TurnFullSpeed => _turnFullSpeed;
         /// <summary>Measured gap between the bay rows, units.</summary>

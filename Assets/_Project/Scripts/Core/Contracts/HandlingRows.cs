@@ -43,6 +43,20 @@ namespace UncannyValet.Core.Contracts
                 "Multiplies how fast a car slows when you let go of the throttle."),
             new TuningInfo(TuningKey.HandlingReverseScale, Group, "Reverse speed (x car's own)", 0.5f, 2f, 0.05f,
                 "Multiplies the top speed when reversing."),
+            new TuningInfo(TuningKey.HandlingTurnFalloff, Group, "Steering loss when fast (per speed)", 0f, 0.5f, 0.01f,
+                "Share of the turn rate lost for each unit of speed above the full-steering speed. 0 = fast cars turn as hard as slow ones."),
+            new TuningInfo(TuningKey.HandlingTurnMinShare, Group, "Steering kept at top speed", 0.1f, 1f, 0.05f,
+                "Lowest share of the full turn rate a fast car keeps, however fast it goes."),
+            new TuningInfo(TuningKey.HandlingDriftKick, Group, "Drift entry kick (turn rate)", 0f, 6f, 0.1f,
+                "Extra spin when Shift is pressed while steering, in radians per second. 0 = no kick."),
+            new TuningInfo(TuningKey.HandlingDriftKickSeconds, Group, "Drift kick length (s)", 0.02f, 0.5f, 0.01f,
+                "How long the entry kick takes to fade out."),
+            new TuningInfo(TuningKey.HandlingDriftTurnScale, Group, "Turning while drifting (x)", 1f, 2f, 0.05f,
+                "Multiplies the turn rate while Shift is held."),
+            new TuningInfo(TuningKey.HandlingDriftHoldSeconds, Group, "Slide kept after Shift (s)", 0f, 1f, 0.05f,
+                "How long the car keeps its loose drift grip after Shift is released."),
+            new TuningInfo(TuningKey.HandlingDriftBlendSeconds, Group, "Grip returns over (s)", 0.01f, 1f, 0.05f,
+                "How long grip takes to come back to normal once the slide is over."),
         };
 
         /// <summary>Advanced rows of the tyre sounds (Audio owns the values).</summary>

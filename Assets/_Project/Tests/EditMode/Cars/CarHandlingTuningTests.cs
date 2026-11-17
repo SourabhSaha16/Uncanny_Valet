@@ -23,11 +23,11 @@ namespace UncannyValet.Tests.Cars
             Assert.AreEqual(0.6f, d.ForwardGrip);
             Assert.AreEqual(3f, d.GripLowSpeed);
             Assert.AreEqual(6f, d.GripHighSpeed);
-            Assert.AreEqual(0.55f, d.GripAtSpeed);
-            Assert.AreEqual(0.25f, d.DriftGripScale);
-            Assert.AreEqual(4f, live.TurnFullSpeed);
+            Assert.AreEqual(0.75f, d.GripAtSpeed);
+            Assert.AreEqual(0.2f, d.DriftGripScale);
+            Assert.AreEqual(6f, live.TurnFullSpeed);
             Assert.AreEqual(2.2f, live.RMin, 1e-4f);
-            Assert.AreEqual(1.818f, live.MaxTurnRate, 1e-3f);
+            Assert.AreEqual(2.727f, live.MaxTurnRate, 1e-3f);
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace UncannyValet.Tests.Cars
                 tuning.Set(TuningKey.HandlingForwardGrip, 0.9f);
                 tuning.Set(TuningKey.HandlingMinTurnRadius, 5f);
                 Assert.AreEqual(0.9f, live.Drift.ForwardGrip, 1e-5f);
-                Assert.AreEqual(4f / 5f, live.MaxTurnRate, 1e-5f);
+                Assert.AreEqual(6f / 5f, live.MaxTurnRate, 1e-5f);
             }
         }
 
