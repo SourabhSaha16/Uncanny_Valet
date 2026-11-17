@@ -68,3 +68,15 @@ Date: 2026-11-16
 Files: Assets/_Project/Scripts/Powers/PowerBarConfig.cs, PowerSettings.cs, PowerBarController.cs; Scripts/Core/Contracts/PowerRows.cs (F2 row); Scripts/Run/LotPowerFill.cs (per-lot override, edited with lead permission); Data/Powers/PowerBarConfig.asset; Tests/EditMode/Powers/PowerBarControllerTests.cs, PowerFrameworkTests.cs; Tests/EditMode/Integration/DevPowerLinkTests.cs (bar group count 4 to 5, new key)
 Why: Issue #159. CarParkedInside adds PowerFillParkedInside (default 4 of 100) to the bar, same gating as Perfect Park; a perfect park fires both so adds 22.
 Tests: ParkedInside fill, sum with Perfect Park, tuning change added; EditMode run exit 0.
+
+## economy: overtime curse for an angry patron on delivery [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Economy/OvertimeCurseRule.cs, OvertimeCurseConfig.cs, ShiftBlessings.cs; Tests/EditMode/Economy/OvertimeCurseTests.cs
+Why: Refs #166. Waiting past the pickup timer must cost something: on CarDelivered the player takes a curse of round(overtime s / 10), 1..3, measured from TicketTimerExpired. On-time costs nothing.
+Tests: OvertimeCurseTests (zero, scaling, rounding, cap, wiring); EditMode suite run.
+
+## economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Economy/ShiftBlessings.cs, OvertimeCurseRule.cs; removed OvertimeCurseConfig.cs; Tests/EditMode/Economy/ShiftBlessingsTests.cs, ShiftBlessingsLotTests.cs, OvertimeCurseTests.cs; Tests/EditMode/Integration/ShiftHarness.cs, FullShiftTests.cs
+Why: Issue #166 (lead decision). TicketTimerExpired no longer curses; only the late-pickup curse on CarDelivered applies, read from TuningKey.OvertimeCurseSecondsPerPoint/Cap (OvertimeCurseRows fallbacks). Config class dropped: the tuning store is the single source.
+Tests: ShiftBlessings tests now deliver late for a cap-3 curse (Lot test seeds 32 so 29 fails); OvertimeCurseTests updated; EditMode suite run.

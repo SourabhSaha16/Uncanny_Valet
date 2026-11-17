@@ -49,7 +49,7 @@ namespace UncannyValet.Tests.Integration
             var so = new SerializedObject(_blessingConfig);
             so.FindProperty("_maxPatienceBonus").intValue = 0;
             so.ApplyModifiedPropertiesWithoutUndo();
-            Blessings = new ShiftBlessings(Bus, _config, () => Goal);
+            Blessings = new ShiftBlessings(Bus, _config, () => Goal) { Clock = () => Clock.ElapsedMinutes }; // 1 game minute = 1 second here
             Registry = new TicketRegistry(Bus, Clock, new BlessingCalculator(_blessingConfig, null, ModifierTestKit.Catalog()), Blessings);
             _departure = new PatronDeparture(Bus, Cars);
         }

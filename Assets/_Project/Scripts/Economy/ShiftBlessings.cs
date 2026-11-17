@@ -10,7 +10,7 @@ namespace UncannyValet.Economy
 {
     /// <summary>
     /// Owns the shift's blessings, favour and curses (the run state owner that replaces the debt ledger). A blessing
-    /// adds its amount and raises the favour; a blessing halved for a missed service leaves the favour where it is; a zero blessing resets it; a curse (an angry patron: the pickup
+    /// adds its amount and raises the favour; a blessing halved for a missed service leaves the favour where it is; a zero blessing resets it; a curse (a late pickup after the pickup
     /// timer ran out) takes blessings off, never below 0, and resets the favour. Everything starts clean on
     /// ShiftStarted. At ShiftEnded the lot is judged against its threshold: ShiftResultReady goes out, then
     /// LotCleared or LotFailed.
@@ -23,6 +23,7 @@ namespace UncannyValet.Economy
         private readonly Func<ILotGoal> _goal;
         private readonly PedestrianCurseRule _pedestrianCurses = new PedestrianCurseRule();
         private readonly SlightCurseRule _slightCurses = new SlightCurseRule();
+        private readonly OvertimeCurseRule _overtime = new OvertimeCurseRule();
         private bool _open;
 
         /// <summary>Seconds clock the pedestrian curse lockout reads (the game time by default; tests replace it).</summary>
@@ -45,6 +46,8 @@ namespace UncannyValet.Economy
             _bus.Subscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Subscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Subscribe<PedestrianHit>(OnPedestrianHit);
+            _bus.Subscribe<CarDelivered>(OnCarDelivered);
+            _bus.Subscribe<TicketClosed>(OnTicketClosed);
         }
 
         public void Dispose()
@@ -54,6 +57,8 @@ namespace UncannyValet.Economy
             _bus.Unsubscribe<BlessingEarned>(OnBlessingEarned);
             _bus.Unsubscribe<TicketTimerExpired>(OnTimerExpired);
             _bus.Unsubscribe<PedestrianHit>(OnPedestrianHit);
+            _bus.Unsubscribe<CarDelivered>(OnCarDelivered);
+            _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
         }
 
         /// <summary>
@@ -79,6 +84,7 @@ namespace UncannyValet.Economy
             _open = true;
             _pedestrianCurses.Reset();
             _slightCurses.Reset();
+            _overtime.Reset();
             Publish();
         }
 
@@ -116,8 +122,24 @@ namespace UncannyValet.Economy
             PeakFavour = Math.Max(PeakFavour, _favour.Multiplier);
         }
 
-        // The pickup timer running out means an angry patron: the blessing is 0 and the default curse lands.
-        private void OnTimerExpired(TicketTimerExpired e) => ApplyCurse(e.Ticket, _config.DefaultCurse);
+        // The pickup timer running out means an angry patron: the blessing is 0; the curse waits for the delivery.
+        private void OnTimerExpired(TicketTimerExpired e) => _overtime.MarkExpired(e.Ticket, Clock());
+
+        // The late car finally reaches its angry patron: the only curse an angry patron costs, growing with the wait beyond the timer.
+        private void OnCarDelivered(CarDelivered e)
+        {
+            var seconds = OvertimeCurseRows.SecondsPerPoint;
+            var cap = Mathf.RoundToInt(OvertimeCurseRows.Cap);
+            if (Services.TryGet<ITuning>(out var tuning))
+            {
+                if (tuning.TryGet(TuningKey.OvertimeCurseSecondsPerPoint, out var s)) seconds = s;
+                if (tuning.TryGet(TuningKey.OvertimeCurseCap, out var c)) cap = Mathf.RoundToInt(c);
+            }
+            var amount = _overtime.Take(e.Ticket, Clock(), seconds, cap);
+            if (amount > 0) ApplyCurse(e.Ticket, amount);
+        }
+
+        private void OnTicketClosed(TicketClosed e) => _overtime.Forget(e.Ticket);
 
         // The driven car hit a walker (no ticket belongs to the curse). A patron where the lot allows it gets the full curse;
         // anyone else, on every lot, the slight one. One curse per hit: the bigger wins, so a patron the full curse covers

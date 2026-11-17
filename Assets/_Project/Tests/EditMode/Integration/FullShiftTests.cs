@@ -76,7 +76,7 @@ namespace UncannyValet.Tests.Integration
             _h.AtCurb(t);
             Assert.AreEqual(0, _h.Log.Last<BlessingEarned>().Amount);
             Assert.AreEqual(1, _h.Log.Count<CurseApplied>());
-            Assert.AreEqual(15, _h.Log.Last<CurseApplied>().Amount);
+            Assert.AreEqual(3, _h.Log.Last<CurseApplied>().Amount, "a very late pickup hits the cap");
             Assert.AreEqual(1, _h.Blessings.Curses);
             Assert.AreEqual(0, _h.Blessings.Blessings, "the score never drops below 0");
             Assert.AreEqual(1, _h.Blessings.FavourMultiplier);
@@ -110,8 +110,8 @@ namespace UncannyValet.Tests.Integration
 
             _h.Minutes(400);
             Assert.AreEqual(2, _h.Log.Count<BlessingEarned>());
-            Assert.AreEqual(1, _h.Blessings.Curses, "the third patron ran out of patience");
-            Assert.AreEqual(22 + 32 * 2 - 15, _h.Log.Last<ShiftResultReady>().Result.Blessings);
+            Assert.AreEqual(0, _h.Blessings.Curses, "the third patron ran out of patience, but was never delivered to: no late-pickup curse");
+            Assert.AreEqual(22 + 32 * 2, _h.Log.Last<ShiftResultReady>().Result.Blessings);
         }
 
         [Test]

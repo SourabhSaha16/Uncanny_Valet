@@ -29,7 +29,7 @@ namespace UncannyValet.Tests.Economy
             _bus = new EventBus();
             _config = ScriptableObject.CreateInstance<ShiftConfig>();
             _goal = new FakeGoal();
-            _blessings = new ShiftBlessings(_bus, _config, () => _goal);
+            _blessings = new ShiftBlessings(_bus, _config, () => _goal) { Clock = () => _now };
             _bus.Publish(new ShiftStarted());
         }
 
@@ -41,7 +41,14 @@ namespace UncannyValet.Tests.Economy
         }
 
         private void Blessing(int amount) => _bus.Publish(new BlessingEarned(new TicketId(1), amount));
-        private void Angry() => _bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Pickup));
+        private const int AngryCurse = 3;
+        private float _now;
+        private void Angry()
+        {
+            _bus.Publish(new TicketTimerExpired(new TicketId(1), new CarId(1), TimerKind.Pickup));
+            _now += 100f;
+            _bus.Publish(new CarDelivered(new TicketId(1), new CarId(1)));
+        }
 
         [TestCase(29, false)]
         [TestCase(30, true)]
@@ -66,7 +73,7 @@ namespace UncannyValet.Tests.Economy
         {
             var failed = 0;
             _bus.Subscribe<LotFailed>(e => failed++);
-            Blessing(40);
+            Blessing(32);
             Angry();
             _bus.Publish(new ShiftEnded());
             Assert.AreEqual(1, failed);
