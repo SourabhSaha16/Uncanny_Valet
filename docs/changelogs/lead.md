@@ -1228,3 +1228,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Core/Contracts/HandlingRows.cs, docs/changelogs/lead.md
 Why: tyre marks should stay 30 s; the F2 row topped out at 20 s.
 Tests: EditMode run at the merge.
+
+## lead: merge playtest batch 9, rebuild site/ for beta, Refs #174 #175 [Claude]
+Date: 2026-11-17
+Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent/cars branch
+Why: playtest notes 1 and 2 (design.md log 2026-11-17): acceleration 1.7 with retuned braking and coast drag, tyre marks last 30 s.
+Tests: EditMode 2036/2036, PlayMode 89/89 (BayEntryTests included) on the combined tree.
