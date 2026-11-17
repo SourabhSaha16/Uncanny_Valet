@@ -26,6 +26,7 @@ namespace UncannyValet.UI.Hud
         private readonly WorldTicketPainter _world;
         private readonly PatronMoodPainter _mood;
         private readonly BlessingPopTracker _blessingPopTracker;
+        private readonly CursePopTracker _cursePopTracker;
         private readonly BlessingPopPainter _blessingPops;
         private readonly CurbHintTracker _curbHints;
         private readonly CurbHintPainter _hintPainter;
@@ -53,6 +54,7 @@ namespace UncannyValet.UI.Hud
             _mood = new PatronMoodPainter(canvas, style);
             var pops = new BlessingPops(blessingPop);
             _blessingPopTracker = new BlessingPopTracker(bus, cars, pops, blessingPop, UnscaledTime);
+            _cursePopTracker = new CursePopTracker(bus, pops, blessingPop, UnscaledTime, FrameCount);
             _blessingPops = new BlessingPopPainter(canvas, pops, blessingPop);
             _curbHints = new CurbHintTracker(bus);
             _hintPainter = new CurbHintPainter(canvas, cars, _curbHints);
@@ -64,6 +66,8 @@ namespace UncannyValet.UI.Hud
         }
 
         private static float UnscaledTime() => Time.unscaledTime;
+
+        private static int FrameCount() => Time.frameCount;
 
         public void Draw(Camera camera, float time, string prompt)
         {
@@ -87,6 +91,7 @@ namespace UncannyValet.UI.Hud
         {
             _board.Dispose();
             _blessingPopTracker.Dispose();
+            _cursePopTracker.Dispose();
             _powerTracker.Dispose();
             _freezeTracker.Dispose();
             _curbHints.Dispose();

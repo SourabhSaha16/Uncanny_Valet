@@ -28,6 +28,13 @@ namespace UncannyValet.UI.Hud
         [SerializeField, Range(0f, 3f), Tooltip("Extra world units a PERFECT! pop sits above a blessing pop, so the two do not overlap.")]
         private float _perfectExtraLiftWorldUnits = 0.7f;
 
+        [SerializeField, Range(1, 4), Tooltip("Font scale of the red -N pop when a pedestrian hit costs blessings.")]
+        private int _curseFontScale = 2;
+        [SerializeField, Range(0f, 3f), Tooltip("World units above the hit spot the red -N pop starts.")]
+        private float _curseLiftWorldUnits = 0.5f;
+
+        public int CurseFontScale => _curseFontScale;
+        public float CurseLiftWorldUnits => _curseLiftWorldUnits;
         public float PerfectExtraLiftWorldUnits => _perfectExtraLiftWorldUnits;
         public float DurationSeconds => _durationSeconds;
         public int RisePixels => _risePixels;

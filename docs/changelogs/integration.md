@@ -223,3 +223,9 @@ Date: 2026-11-14
 Files: Assets/_Project/Scripts/Core/Contracts/PowerBarThresholds.cs (new, one threshold list), Powers/PowerBar.cs, UI/Hud/PowerBarPainter.cs, BlessingPopPainter.cs, BlessingPops.cs, HudPainter.cs, UI/Screens/ResultsPainter.cs, UI/Kit/PixelIcon.cs, PixelIconData.cs; Tests/EditMode/UI/PowerBarMarkerTests.cs, HudLayoutTests.cs (+ .meta)
 Why: #142 the bolt markers were drawn at the centre of each third of the bar (first bolt at about 17 percent) while the first power opens at 33.3, so the fill passed the bolt long before the power worked. Markers now sit at the threshold fraction from the same list the bar uses (new Core file, flagged to the lead), with one pixel rounding shared by fill and markers. #143 blessings show a new PrayerHands pixel icon (HUD counter, blessing pops, results score); the bolt stays on the power bar.
 Tests: EditMode 1883 passed (4 new marker tests).
+
+## integration: red -N pop when a pedestrian hit costs blessings (Refs #152) [Claude]
+Date: 2026-11-16
+Files: Assets/_Project/Scripts/UI/Hud/CursePopRule.cs, CursePopTracker.cs, BlessingPopKind.cs, BlessingPops.cs, BlessingPopPainter.cs, BlessingPopSettings.cs, PlayingHud.cs, UI/Kit/PixelPalette.cs (+ .meta); Assets/_Project/Tests/EditMode/UI/CursePopTests.cs (+ .meta)
+Why: the slight and full pedestrian curses took blessings with no feedback. A red "-N" (prayer hands after it) now rises at the hit spot, N = blessings really lost (clamped at 0, no pop when none). Uses existing events only: PedestrianHit (spot), CurseApplied with no ticket (amount), BlessingsChanged (running total); the two arrive in either order and pair within one frame, so one pop per hit and a locked-out hit never pops. Font scale and lift are tunable in BlessingPopSettings.
+Tests: EditMode CursePopTests (11); full suite 1937 passed.
