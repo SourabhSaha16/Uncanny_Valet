@@ -25,8 +25,8 @@ namespace UncannyValet.Tests.Powers
 
         private static PowerLevelValues Values(int level) => PowerDefaults.Values(StoryPower.ThunderStride, level);
 
-        [TestCase(1, 1.6f, 5f)]
-        [TestCase(2, 2f, 7f)]
+        [TestCase(1, 5f, 5f)]
+        [TestCase(2, 6f, 7f)]
         public void TheShippedNumbersFollowTheSpec(int level, float walkSpeed, float boost)
         {
             var v = Values(level);

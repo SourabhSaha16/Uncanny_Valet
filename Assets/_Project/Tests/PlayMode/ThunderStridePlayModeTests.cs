@@ -178,7 +178,7 @@ namespace UncannyValet.Tests.PlayMode
             yield return new WaitForFixedUpdate();
             var from = body.position.x;
             yield return Wait(0.5f);
-            Assert.AreEqual(3.2f, body.position.x - from, 0.5f, "x1.6 while the power runs");
+            Assert.AreEqual(10f, body.position.x - from, 1f, "x5 while the power runs (issue 176)");
             _bus.Publish(new PowerEnded(StoryPower.ThunderStride));
             yield return new WaitForFixedUpdate();
             from = body.position.x;

@@ -73,3 +73,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/DriveInput.cs, SteeringModel.cs, CarDriver.cs, ThunderBoostModifier.cs, ThunderBoostLink.cs, CarHandlingConfig.cs, CarHandlingLive.cs (Cars, authorised by the lead for issue #167); Assets/_Project/Tests/EditMode/Cars/ThunderBoostTests.cs
 Why: Refs #167. While the in-car Thunder stride boost runs, the turn-rate fall-off is switched off (TurnFalloffScale 0) and speed grip loss is scaled by a configurable share (docs/redesign/car_handling_spec.md sections 2 and 3).
 Tests: EditMode ThunderBoostTests extended (falloff off, grip scale applied, normal values return after the boost ends).
+
+## valet: Thunder stride clearly faster than dash and driving [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Powers/PowerDefaults.cs, Assets/_Project/Data/Powers/ThunderStrideDefinition.asset, Assets/_Project/Scripts/Valet/OnFootMover.cs, ShiftDash.cs, Assets/_Project/Tests/EditMode/Valet/ThunderSpeedOrderTests.cs, Assets/_Project/Tests/EditMode/Powers/ThunderStrideTests.cs, Assets/_Project/Tests/PlayMode/ThunderStridePlayModeTests.cs
+Why: Refs #176. On-foot Thunder stride was 6.4 per second (level 1), slower than the 15 per second Shift dash; the walking multiplier is now 5x (level 1) and 6x (level 2) so it runs at 20 and 24 per second. The walker uses continuous collision so the run cannot tunnel. Car boost (x1.5 top speed, 12 against 8) already cleared the 1.3x bar and the clamp passes it through.
+Tests: new ThunderSpeedOrderTests read the shipped assets (walk < dash < thunder, normal top < boosted top); ThunderStrideTests numbers updated.
