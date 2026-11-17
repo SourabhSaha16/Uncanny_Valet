@@ -127,3 +127,9 @@ Date: 2026-11-11
 Files: Lot/SmashRunner.cs, SmashPlan.cs, SmashRoster.cs, ParkingSpot.cs (Place, Release, settle guard), LotLayoutBuilder.cs, tests Lot/SmashPlanTests.cs and PlayMode/ParkSmashPlayModeTests.cs (edited by the powers agent for issue #43).
 Why: Park Smash (design.md A11) stands every waiting arrived car in a free bay on PowerActivated(ParkSmash) without a Perfect Park judgement.
 Tests: EditMode and PlayMode suites pass.
+
+## lot: perfect drop-off needs the car between the curb arrows [Claude]
+Date: 2026-11-16
+Files: Lot/CurbArrowSpan.cs (new), LotCurbArrows.cs (SpanOf, shared SideX), CurbZone.cs (Span, TryGetOffsetX), DropOffJudge.cs, PerfectRunner.cs, PerfectTuning.cs, PerfectSettings.cs (DropOffArrowTolerance), tests Lot/PerfectJudgeTests.cs.
+Why: Issue #153 (Refs #153), design.md A11 perfect drop-off. A perfect drop-off now also needs the settled car's centre between the two painted arrows: sideways offset from the zone centre within the arrow centre lines plus a tolerance (default 0.25, edge counts). A zone with no arrows has no span and never blocks perfect. The tolerance is an asset setting only (no TuningKey: Core is the lead's).
+Tests: DropOffNeedsTheCarCentreBetweenTheArrows (inside, outside left and right, on the edge), no-arrows case and the old angle/timer cases; EditMode suite passes via tools/run-tests.ps1.

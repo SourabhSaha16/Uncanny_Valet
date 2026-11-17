@@ -45,6 +45,19 @@ namespace UncannyValet.Lot
             Setup(config, config.CurbSize);
             _facing = new CurbFacingRule(config.CurbFacingToleranceDegrees);
             _arrow = arrow;
+            Span = arrow == null ? CurbArrowSpan.None : LotCurbArrows.SpanOf(config);
+        }
+
+        /// <summary>The strip between the painted arrows; none when the zone has no arrows (then perfect never waits on them).</summary>
+        public CurbArrowSpan Span { get; private set; }
+
+        /// <summary>Sideways distance of a tracked car's centre from the zone centre; false when the zone no longer tracks it.</summary>
+        public bool TryGetOffsetX(CarId car, out float offsetX)
+        {
+            offsetX = 0f;
+            if (!TryGetCar(car, out var drivable)) return false;
+            offsetX = transform.InverseTransformPoint(drivable.Transform.position).x;
+            return true;
         }
 
         /// <summary>Rotation in degrees (0 = nose up) of a car the zone still tracks; false when it is not here.</summary>

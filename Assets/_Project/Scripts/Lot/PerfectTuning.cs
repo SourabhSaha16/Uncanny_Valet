@@ -8,6 +8,8 @@ namespace UncannyValet.Lot
     {
         public float DropOffAngle { get; private set; }
         public float DropOffTimerShare { get; private set; }
+        /// <summary>Sideways slack past each curb arrow's centre line for the car centre (not an F2 key; set from the asset).</summary>
+        public float DropOffArrowTolerance { get; private set; }
         public float ParkAngle { get; private set; }
         public float ParkSideOffset { get; private set; }
         public float ParkLengthOffset { get; private set; }
@@ -19,6 +21,7 @@ namespace UncannyValet.Lot
         {
             DropOffAngle = s.DropOffAngleDegrees;
             DropOffTimerShare = s.DropOffTimerShare;
+            DropOffArrowTolerance = s.DropOffArrowTolerance;
             ParkAngle = s.ParkAngleDegrees;
             ParkSideOffset = s.ParkSideOffset;
             ParkLengthOffset = s.ParkLengthOffset;

@@ -13,6 +13,9 @@ namespace UncannyValet.Lot
         [SerializeField, Range(0.05f, 1f), Tooltip("The car must arrive before this share of the patron's pickup timer is gone.")]
         private float _dropOffTimerShare = 0.5f;
 
+        [SerializeField, Min(0f), Tooltip("How far the car centre may sit past either curb arrow's centre line sideways and still count as between the arrows.")]
+        private float _dropOffArrowTolerance = 0.25f;
+
         [Header("Perfect park")]
         [SerializeField, Range(1f, 20f), Tooltip("Largest angle off the bay's long axis, nose in or tail in.")]
         private float _parkAngleDegrees = 12f;
@@ -29,6 +32,7 @@ namespace UncannyValet.Lot
 
         public float DropOffAngleDegrees => _dropOffAngleDegrees;
         public float DropOffTimerShare => _dropOffTimerShare;
+        public float DropOffArrowTolerance => _dropOffArrowTolerance;
         public float ParkAngleDegrees => _parkAngleDegrees;
         public float ParkSideOffset => _parkSideOffset;
         public float ParkLengthOffset => _parkLengthOffset;
