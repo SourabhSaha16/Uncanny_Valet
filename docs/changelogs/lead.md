@@ -1192,3 +1192,9 @@ Date: 2026-11-17
 Files: site/, docs/changelogs/lead.md
 Why: player-visible change for #163 (design.md log 2026-11-17).
 Tests: EditMode exit 0, RunBatch exit 0, web build exit 0 (build-info commit 2de311c). PlayMode not run (no physics code changed).
+
+## lead: add late-pickup curse tuning keys and rows to Core, Refs #166 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Events/TuningKey.cs, Assets/_Project/Scripts/Core/Contracts/OvertimeCurseRows.cs, Assets/_Project/Scripts/Core/Contracts/TuningCatalog.cs, Assets/_Project/Scripts/Bootstrap/TuningSeeder.cs, docs/changelogs/lead.md
+Why: the late-pickup curse (patron picked up after the timer) needs F2 rows; keys appended at the end of TuningKey (append-only).
+Tests: EditMode exit 0.
