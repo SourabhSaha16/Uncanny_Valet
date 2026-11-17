@@ -68,7 +68,8 @@ namespace UncannyValet.Powers
         private void Update()
         {
             if (_drift == null || _drift.Active == 0 || !IsActive) return;
-            Fill(_drift.Tick(Time.deltaTime));
+            var offered = _drift.Tick(Time.deltaTime);
+            _drift.Credit(Fill(offered), offered);
         }
 
         /// <summary>True when a power is owned and a bucket is open.</summary>
@@ -82,18 +83,30 @@ namespace UncannyValet.Powers
             return true;
         }
 
-        private void Fill(float amount)
+        /// <summary>Adds to the bar and returns what it really took (0 when inactive or full).</summary>
+        private float Fill(float amount)
         {
-            if (IsActive && Bar.Add(amount)) Publish(0);
+            if (!IsActive) return 0f;
+            var before = Bar.Value;
+            if (!Bar.Add(amount)) return 0f;
+            Publish(0);
+            return Bar.Value - before;
+        }
+
+        private void FillFrom(float amount, PowerFillSource source) => ReportFilled(Fill(amount), source);
+
+        private void ReportFilled(float taken, PowerFillSource source)
+        {
+            if (IsActive && PowerFillRule.IsWorthShowing(taken)) _bus.Publish(new PowerFilled(taken, source));
         }
 
         private void Publish(int spentBucket) => _bus.Publish(new PowerBarChanged(Bar.Value, Bar.OpenBuckets, spentBucket));
 
-        private void OnPerfectPark(PerfectPark e) => Fill(Settings.FillPerfectPark);
-        private void OnParkedInside(CarParkedInside e) => Fill(Settings.FillParkedInside);
-        private void OnPerfectDropOff(PerfectDropOff e) => Fill(Settings.FillPerfectDropOff);
+        private void OnPerfectPark(PerfectPark e) => FillFrom(Settings.FillPerfectPark, PowerFillSource.PerfectPark);
+        private void OnParkedInside(CarParkedInside e) => FillFrom(Settings.FillParkedInside, PowerFillSource.ParkedInside);
+        private void OnPerfectDropOff(PerfectDropOff e) => FillFrom(Settings.FillPerfectDropOff, PowerFillSource.PerfectDropOff);
         private void OnSlideStarted(CarSlideStarted e) => _drift.Begin(e.Car);
-        private void OnSlideEnded(CarSlideEnded e) => _drift.End(e.Car);
+        private void OnSlideEnded(CarSlideEnded e) => ReportFilled(_drift.End(e.Car), PowerFillSource.Drift);
 
         private void OnShiftStarted(ShiftStarted e)
         {

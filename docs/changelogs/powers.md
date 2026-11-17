@@ -53,3 +53,9 @@ Date: 2026-11-13
 Files: Powers: ThunderStridePower, DrivingTracker (new); PowerActivationController (registers Thunder stride), PowerDefaults (spec numbers: cooldown 4, dash 5/8 over 0.2 s, boost 1.5/2.2 s, top speed x1.5 in PushStrength, acceleration x2 in Width), PowerLevelData (Secondary). Part of the valet commit for issue #88.
 Why: issue #88 of epic #79 (Valet to Valhalla): one power, one bucket and one 4 s cooldown. On foot a 0.2 s straight dash of 5 units (8 at level 2) in the move direction else the facing, passing pedestrians (layer ignore pair for the dash) and stopping at solids; in a car a 1.5 s (2.2 s) boost of top speed x1.5 and acceleration x2 through the Cars drive modifier seam; pixel lightning streak, thunder crack and a camera kick.
 Tests: EditMode 1409 passed (ThunderDashTests, ThunderStrideTests, ThunderBoostTests, ThunderSfxTests, ThunderKickLinkTests, DevPowerLinkTests key checks); PlayMode 37 passed (ThunderStridePlayModeTests: dash distance per level and pedestrian pass-through, wall stop, boosted top speed, boosted wall damage, cooldown) incl. BootstrapSceneSmokeTests; RunBatch run.
+
+## powers: publish PowerFilled when the bar gains [Claude]
+Date: 2026-11-17
+Files: Powers: PowerBarController, DriftFillTracker (per-slide total of what the bar took; Credit; End returns it), PowerFillRule (new). Tests: PowerFillReportTests.
+Why: issue #160: the HUD shows +X per gain. Park, parked-inside and drop-off publish PowerFilled (amount the bar really took, clamped at 100, skipped under 0.5) after PowerBarChanged; a drift slide publishes one PowerFilled(total, Drift) at CarSlideEnded. Only while a power is owned; shift start clears silently. Refs #160.
+Tests: EditMode 1963 passed, 0 failed.
