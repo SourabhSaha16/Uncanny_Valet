@@ -6,11 +6,6 @@ namespace UncannyValet.Lot
     /// <summary>The live Perfect Park and Perfect drop-off thresholds: seeded into the tuning store and kept in step with the F2 panel.</summary>
     public sealed class PerfectTuning
     {
-        // Retired keys: the Perfect Park rule no longer reads them, but Core's F2 rows still list them and the catalog
-        // requires every row to be seeded. Remove with the rows (a Core change) and keep the enum values (append-only).
-        private const float RetiredSideOffsetSeed = 0.35f;
-        private const float RetiredLengthOffsetSeed = 0.7f;
-
         public float DropOffAngle { get; private set; }
         public float DropOffTimerShare { get; private set; }
         /// <summary>Sideways slack past each curb arrow's centre line for the car centre (not an F2 key; set from the asset).</summary>
@@ -35,8 +30,6 @@ namespace UncannyValet.Lot
             t.Seed(TuningKey.PerfectDropOffAngle, DropOffAngle);
             t.Seed(TuningKey.PerfectDropOffTimerShare, DropOffTimerShare);
             t.Seed(TuningKey.PerfectParkAngle, ParkAngle);
-            t.Seed(TuningKey.PerfectParkSideOffset, RetiredSideOffsetSeed);
-            t.Seed(TuningKey.PerfectParkLengthOffset, RetiredLengthOffsetSeed);
             t.Seed(TuningKey.PerfectParkCooldown, ParkCooldown);
             t.Seed(TuningKey.PerfectParkMinTravel, ParkMinTravel);
         }

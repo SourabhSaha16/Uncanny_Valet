@@ -1168,3 +1168,9 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild)
 Why: merged agent work for the PowerFilled event and the +X bolt pops (design.md log 2026-11-17).
 Tests: EditMode exit 0 on the combined tree; PlayMode not run (no physics code changed); RunBatch not needed (no Editor/Data/Scenes change).
+
+## lead: retire dead Perfect Park offset rows and merge #161 #162 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Contracts/PerfectRows.cs, Assets/_Project/Scripts/Lot/PerfectTuning.cs, Assets/_Project/Tests/EditMode/Integration/DifficultyDialsTests.cs, docs/design.md, docs/changelogs/lead.md
+Why: Perfect Park no longer reads the side and length offsets (design.md log 2026-11-17), so their F2 rows and seeds go; the TuningKey values stay (append-only). Visible row count 15 to 13 in the test.
+Tests: EditMode exit 0 on the combined tree; PlayMode run before the build.
