@@ -1156,3 +1156,9 @@ Date: 2026-11-16
 Files: tools/changelog-exempt.txt, docs/changelogs/lead.md
 Why: CI failed the deploy because the lot agent's wip commit had no entry; its final commit fee8963 has one. History is not rewritten (CLAUDE.md).
 Tests: bash tools/check-changelog.sh passes locally for the pushed range.
+
+## lead: add PowerFilled event and PowerFillSource to Core, Refs #160 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Core/Events/PowerEvents.cs, docs/changelogs/lead.md
+Why: the HUD shows +X bolts when the power bar gains from a perfect park, clean park, perfect drop-off or a slide (design.md power bar section). Contract only; Powers publishes it, UI shows it.
+Tests: none (data types only); EditMode run at the merge.

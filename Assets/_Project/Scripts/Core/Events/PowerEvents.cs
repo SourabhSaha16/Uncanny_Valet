@@ -27,6 +27,26 @@ namespace UncannyValet.Core.Events
         }
     }
 
+    /// <summary>What filled the power bar. Stored as an integer in assets and tests: append only.</summary>
+    public enum PowerFillSource
+    {
+        PerfectPark = 0,
+        ParkedInside = 1,
+        PerfectDropOff = 2,
+        Drift = 3
+    }
+
+    /// <summary>
+    /// The power bar gained Amount (0 to 100 scale, what the bar really took after its cap) from Source. A slide reports
+    /// once, when it ends, with everything it added. Published only while a power is owned. The HUD shows it as +X.
+    /// </summary>
+    public readonly struct PowerFilled : IGameEvent
+    {
+        public readonly float Amount;
+        public readonly PowerFillSource Source;
+        public PowerFilled(float amount, PowerFillSource source) { Amount = amount; Source = source; }
+    }
+
     /// <summary>
     /// The player spent a bucket of the power bar and a power started at the given level (1 earned, 2 upgraded). Modules
     /// react by doing their part of it and read the level's numbers through IPowerView.
