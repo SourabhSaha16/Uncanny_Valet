@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
@@ -22,6 +23,7 @@ namespace UncannyValet.UI.Hud
         private readonly BlessingPopSettings _settings;
         private readonly Func<float> _clock;
         private readonly PendingBlessingPops _pending = new PendingBlessingPops();
+        private readonly Dictionary<TicketId, int> _curses = new Dictionary<TicketId, int>(8);
 
         public BlessingPopTracker(IEventBus bus, ICarFactory cars, BlessingPops pops, BlessingPopSettings settings, Func<float> clock)
         {
@@ -31,6 +33,7 @@ namespace UncannyValet.UI.Hud
             _settings = settings;
             _clock = clock;
             _bus.Subscribe<CarDelivered>(OnDelivered);
+            _bus.Subscribe<CurseApplied>(OnCurse);
             _bus.Subscribe<TicketClosed>(OnClosed);
             _bus.Subscribe<PatronBoarded>(OnBoarded);
             _bus.Subscribe<ShiftEnded>(OnShiftEnded);
@@ -41,6 +44,7 @@ namespace UncannyValet.UI.Hud
         public void Dispose()
         {
             _bus.Unsubscribe<CarDelivered>(OnDelivered);
+            _bus.Unsubscribe<CurseApplied>(OnCurse);
             _bus.Unsubscribe<TicketClosed>(OnClosed);
             _bus.Unsubscribe<PatronBoarded>(OnBoarded);
             _bus.Unsubscribe<ShiftEnded>(OnShiftEnded);
@@ -50,15 +54,24 @@ namespace UncannyValet.UI.Hud
 
         private void OnDelivered(CarDelivered e) => _pending.Delivered(e.Car);
 
+        // An angry patron's late delivery costs a ticket curse (CurseApplied before TicketClosed); it pops at the pickup instead of the 0.
+        private void OnCurse(CurseApplied e)
+        {
+            if (e.Ticket != TicketId.None && e.Amount > 0) _curses[e.Ticket] = e.Amount;
+        }
+
         private void OnClosed(TicketClosed e)
         {
+            _curses.TryGetValue(e.Ticket, out var curse);
+            _curses.Remove(e.Ticket);
             if (!_cars.TryGet(e.Car, out var car) || car.Transform == null) return;
-            _pending.Closed(e.Car, e.Blessing, car.Transform.position);
+            _pending.Closed(e.Car, e.Blessing, curse, car.Transform.position);
         }
 
         private void OnShiftEnded(ShiftEnded e)
         {
             _pending.Clear();
+            _curses.Clear();
             _pops.Clear();
         }
 
@@ -76,8 +89,10 @@ namespace UncannyValet.UI.Hud
 
         private void OnBoarded(PatronBoarded e)
         {
-            if (!_pending.TryBoard(e.Car, out var blessing, out var at)) return;
-            _pops.Start(new Vector2(at.x, at.y + _settings.LiftWorldUnits), blessing, _clock());
+            if (!_pending.TryBoard(e.Car, out var blessing, out var curse, out var at)) return;
+            var spot = new Vector2(at.x, at.y + _settings.LiftWorldUnits);
+            if (curse > 0) _pops.StartCurse(spot, CursePopRule.Format(curse), _clock());
+            else _pops.Start(spot, blessing, _clock());
         }
     }
 }

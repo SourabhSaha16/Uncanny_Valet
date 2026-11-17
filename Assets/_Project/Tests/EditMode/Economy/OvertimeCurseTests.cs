@@ -44,6 +44,14 @@ namespace UncannyValet.Tests.Economy
         }
 
         [Test]
+        public void Take_InTheFrameTheTimerRanOut_StillCostsTheMinimum()
+        {
+            var rule = new OvertimeCurseRule();
+            rule.MarkExpired(T, 10f);
+            Assert.AreEqual(1, rule.Take(T, 10f, 10f, 3));
+        }
+
+        [Test]
         public void ForgetAndReset_DropPendingTickets()
         {
             var rule = new OvertimeCurseRule();

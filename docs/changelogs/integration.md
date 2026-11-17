@@ -277,3 +277,9 @@ Date: 2026-11-17
 Files: Scripts/UI/Screens/TitlePainter.cs, HowToPlayPainter.cs, HowToPlayText.cs, Editor/StoryTextDrafts.cs, Data/UI/StoryText.asset, Tests/EditMode/UI/HowToPlayTests.cs
 Why: Refs #171 #172. Title and how-to-play now fill the screen with PixelPalette.PanelDark instead of veiling the lot; removed the Thor line from the Midgard training intro and the EV charging words from the how-to-play special-requests line.
 Tests: EditMode suite passed; RunBatch ran (its unrelated scene/config rewrites were reverted).
+
+## ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/Hud/BlessingPopTracker.cs, PendingBlessingPops.cs, Scripts/Economy/OvertimeCurseRule.cs; Tests/EditMode/Integration/LateCursePopFlowTests.cs (new), Tests/EditMode/Economy/OvertimeCurseTests.cs, Tests/PlayMode/LatePickupCursePlayModeTests.cs (new, + .meta)
+Why: the late-pickup curse was applied on delivery, but nothing showed it (CursePopTracker skips ticket curses; the pickup pop only read the closed blessing, 0) and the total cannot drop below 0. BlessingPopTracker now keeps the ticket's CurseApplied amount until TicketClosed and pops a red "-N" (existing Curse look) where the blessing pop would be. OvertimeCurseRule.Take now costs at least 1 even when delivery shares the expiry's instant. A voided ticket (no delivery) still costs 0 and pops nothing.
+Tests: EditMode full suite 2033 passed; PlayMode LatePickupCursePlayModeTests 3 passed (real ShiftClock, TicketRegistry, ShiftBlessings on Time.time, seeded tuning). Not checked visually.

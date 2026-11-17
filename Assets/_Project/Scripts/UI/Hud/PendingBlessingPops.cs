@@ -16,6 +16,7 @@ namespace UncannyValet.UI.Hud
         {
             public bool HasAmount;
             public int Blessing;
+            public int Curse;
             public Vector2 At;
         }
 
@@ -28,17 +29,27 @@ namespace UncannyValet.UI.Hud
         public void Delivered(CarId car) => _byCar[car] = default;
 
         /// <summary>The ticket closed with its final blessing; ignored unless the car was delivered.</summary>
-        public void Closed(CarId car, int blessing, Vector2 at)
+        public void Closed(CarId car, int blessing, Vector2 at) => Closed(car, blessing, 0, at);
+
+        /// <summary>
+        /// The ticket closed with its final blessing and the curse its late delivery cost (0 when on time); ignored unless the
+        /// car was delivered. A curse replaces the blessing pop, so the angry patron's "0" becomes a red "-N".
+        /// </summary>
+        public void Closed(CarId car, int blessing, int curse, Vector2 at)
         {
-            if (_byCar.ContainsKey(car)) _byCar[car] = new Held { HasAmount = true, Blessing = blessing, At = at };
+            if (_byCar.ContainsKey(car)) _byCar[car] = new Held { HasAmount = true, Blessing = blessing, Curse = curse, At = at };
         }
 
         /// <summary>The patron boarded: true with the blessing and the car's spot when one was waiting. Always forgets the car.</summary>
-        public bool TryBoard(CarId car, out int blessing, out Vector2 at)
+        public bool TryBoard(CarId car, out int blessing, out Vector2 at) => TryBoard(car, out blessing, out _, out at);
+
+        /// <summary>Like the other overload, and also the curse the late delivery cost (0 when on time).</summary>
+        public bool TryBoard(CarId car, out int blessing, out int curse, out Vector2 at)
         {
             var found = _byCar.TryGetValue(car, out var held) && held.HasAmount;
             _byCar.Remove(car);
             blessing = found ? held.Blessing : 0;
+            curse = found ? held.Curse : 0;
             at = found ? held.At : Vector2.zero;
             return found;
         }
