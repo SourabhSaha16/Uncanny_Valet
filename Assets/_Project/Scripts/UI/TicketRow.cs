@@ -13,10 +13,6 @@ namespace UncannyValet.UI
         public int Car;
         /// <summary>The key-tag colour index (see TagPalette) of this ticket.</summary>
         public int Tag = NoTag;
-        /// <summary>The car's licence plate text (for example "KT 4"); empty until it is known.</summary>
-        public string Plate = string.Empty;
-        /// <summary>The car's damage 0..1 (set by CarDamaged); the key board shows it only when above 0.</summary>
-        public float Damage01;
         public TicketRowState State = TicketRowState.AwaitingPark;
         public int Spot;
         public bool HasTimer;
@@ -24,9 +20,6 @@ namespace UncannyValet.UI
         /// <summary>0 = just started, 1 = out of time.</summary>
         public float Elapsed01;
         public bool Expired;
-
-        /// <summary>True once the car was parked in a spot or a station; the key board lists a car from then on until it is delivered.</summary>
-        public bool Placed;
 
         /// <summary>True while the car sits in a station (the wash slot or a charger); <see cref="Station"/> says which.</summary>
         public bool HasStation;
@@ -38,14 +31,8 @@ namespace UncannyValet.UI
         /// <summary>The car's service modifiers (a list: a car may hold several), each with its own progress.</summary>
         public readonly List<RowModifier> Modifiers = new List<RowModifier>();
 
-        /// <summary>The licence plate under the car is drawn only once the plate is known and the car is parked in a spot or station (the CAR SLOTS rule).</summary>
-        public bool ShowsPlate => HasPlate && Placed;
-
         /// <summary>True while the car is in the given kind of station.</summary>
         public bool InStation(StationKind kind) => HasStation && Station == kind;
-
-        /// <summary>True once the plate text is known.</summary>
-        public bool HasPlate => Plate.Length > 0;
 
         /// <summary>The modifier row of <paramref name="id"/>, or null.</summary>
         public RowModifier Find(ModifierId id)

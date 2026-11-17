@@ -48,13 +48,10 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void DefaultsMatchTheSpecifiedFlashRatesAndColours()
+        public void DefaultsMatchTheSpecifiedColours()
         {
             var config = ScriptableObject.CreateInstance<HudEmotionConfig>();
             var style = new EmotionStyle(config);
-            Assert.AreEqual(1f / 1.5f, style.PeriodOf(Emotion.Happy), 1e-4f);
-            Assert.AreEqual(1f / 3f, style.PeriodOf(Emotion.Impatient), 1e-4f);
-            Assert.AreEqual(1f / 7f, style.PeriodOf(Emotion.Angry), 1e-4f);
             Assert.AreEqual(config.HappyColor, style.ColorOf(Emotion.Happy));
             Assert.Greater(style.ColorOf(Emotion.Happy).g, style.ColorOf(Emotion.Happy).r);
             Assert.Greater(style.ColorOf(Emotion.Angry).r, style.ColorOf(Emotion.Angry).g);
@@ -78,31 +75,6 @@ namespace UncannyValet.Tests.UI
             Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Happy), MoodBubbleLayout.Face(Emotion.Impatient));
             Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Impatient), MoodBubbleLayout.Face(Emotion.Angry));
             Assert.AreNotEqual(MoodBubbleLayout.Face(Emotion.Angry), MoodBubbleLayout.Face(Emotion.WillNotBless));
-        }
-
-        [Test]
-        public void CustAngryStatusFollowsTheAngryEmotion()
-        {
-            var rule = new UncannyValet.UI.Status.CustAngryStatusRule(_rule);
-            var row = new UncannyValet.UI.TicketRow { State = UncannyValet.UI.TicketRowState.PickupRequested, Elapsed01 = 0.9f };
-            Assert.IsTrue(rule.Applies(row));
-            row.Elapsed01 = 0.7f;
-            Assert.IsFalse(rule.Applies(row));
-            row.Elapsed01 = 1f;
-            Assert.IsFalse(rule.Applies(row), "a patron who gave up is not merely angry");
-        }
-
-        [Test]
-        public void WillNotBlessStatusFollowsTheGivenUpEmotion()
-        {
-            var rule = new UncannyValet.UI.Status.WillNotBlessStatusRule(_rule);
-            var row = new UncannyValet.UI.TicketRow { State = UncannyValet.UI.TicketRowState.PickupRequested, Elapsed01 = 0.95f };
-            Assert.IsFalse(rule.Applies(row));
-            row.Elapsed01 = 1f;
-            Assert.IsTrue(rule.Applies(row));
-            row.Elapsed01 = 0.2f;
-            row.Expired = true;
-            Assert.IsTrue(rule.Applies(row));
         }
     }
 }

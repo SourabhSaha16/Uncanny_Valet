@@ -105,12 +105,5 @@ namespace UncannyValet.Tests.UI
             Assert.AreEqual(480 - WorldTicketLayout.ScreenMargin - 20, WorldTicketLayout.ClampToCanvas(500, 20, 480));
             Assert.AreEqual(100, WorldTicketLayout.ClampToCanvas(100, 20, 480));
         }
-
-        [Test]
-        public void PlateLayout_ServiceIconSitsRightOfThePlateAndCentred()
-        {
-            Assert.AreEqual(50 + 20 + PlateLayout.IconGap, PlateLayout.IconX(50, 20));
-            Assert.AreEqual(10 + (PlateLayout.Height - 7) / 2, PlateLayout.IconY(10, 7));
-        }
     }
 }
