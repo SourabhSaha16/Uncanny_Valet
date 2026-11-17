@@ -11,6 +11,7 @@ namespace UncannyValet.Cars.Fx
         private readonly float[] _age;
         private readonly float[] _life;
         private readonly float[] _peak;
+        private readonly float[] _tail;
         private readonly bool[] _active;
 
         public DecalLedger(int capacity)
@@ -18,6 +19,7 @@ namespace UncannyValet.Cars.Fx
             _age = new float[capacity];
             _life = new float[capacity];
             _peak = new float[capacity];
+            _tail = new float[capacity];
             _active = new bool[capacity];
         }
 
@@ -27,8 +29,8 @@ namespace UncannyValet.Cars.Fx
         /// <summary>Decals alive now.</summary>
         public int ActiveCount { get; private set; }
 
-        /// <summary>Takes a free slot, or the oldest one when all are in use. The decal starts at <paramref name="peakAlpha"/> and fades to 0 over <paramref name="lifeSeconds"/>.</summary>
-        public int Acquire(float lifeSeconds, float peakAlpha)
+        /// <summary>Takes a free slot, or the oldest one when all are in use. The decal holds <paramref name="peakAlpha"/> and fades to 0 over the last <paramref name="fadeTailSeconds"/> of its <paramref name="lifeSeconds"/> (the whole life by default).</summary>
+        public int Acquire(float lifeSeconds, float peakAlpha, float fadeTailSeconds = float.MaxValue)
         {
             var slot = -1;
             var oldest = -1f;
@@ -41,6 +43,7 @@ namespace UncannyValet.Cars.Fx
             _age[slot] = 0f;
             _life[slot] = Mathf.Max(lifeSeconds, 0.001f);
             _peak[slot] = peakAlpha;
+            _tail[slot] = Mathf.Clamp(fadeTailSeconds, 0.001f, _life[slot]);
             return slot;
         }
 
@@ -60,7 +63,7 @@ namespace UncannyValet.Cars.Fx
         /// <summary>True while the slot holds a live decal.</summary>
         public bool IsActive(int slot) => _active[slot];
 
-        /// <summary>Current opacity of a live decal: the peak, falling linearly to 0.</summary>
-        public float Alpha(int slot) => _peak[slot] * (1f - _age[slot] / _life[slot]);
+        /// <summary>Current opacity of a live decal: the peak until the fade tail starts, then falling linearly to 0.</summary>
+        public float Alpha(int slot) => _peak[slot] * Mathf.Clamp01((_life[slot] - _age[slot]) / _tail[slot]);
     }
 }

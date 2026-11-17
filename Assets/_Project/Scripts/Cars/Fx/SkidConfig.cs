@@ -16,9 +16,11 @@ namespace UncannyValet.Cars.Fx
         private float _shiftSlideSpeed = 2f;
         [SerializeField, Range(0.05f, 1f), Tooltip("Opacity of the darkest marks (a full drift).")]
         private float _markOpacity = 0.8f;
-        [SerializeField, Min(0.5f), Tooltip("Seconds a mark takes to fade out.")]
-        private float _markFadeSeconds = 6f;
+        [SerializeField, Min(0.5f), Tooltip("Seconds a mark stays on the ground before it is gone (issue 175).")]
+        private float _markFadeSeconds = 30f;
 
+        [SerializeField, Min(0.1f), Tooltip("A mark keeps full opacity, then fades out over its last this many seconds (never longer than its life). Not live.")]
+        private float _markFadeOutSeconds = 8f;
         [SerializeField, Range(0.1f, 0.95f), Tooltip("A slide ends below this share of its start threshold (stops the sound chattering at the edge).")]
         private float _exitShare = 0.75f;
         [SerializeField, Range(5f, 80f), Tooltip("Slip angle (degrees) that counts as a full drift: darkest marks, loudest squeal.")]
@@ -38,8 +40,8 @@ namespace UncannyValet.Cars.Fx
         private float _tyreRearShare = 0.32f;
         [SerializeField, Tooltip("Colour of the marks; their opacity comes from the slide.")]
         private Color _markColor = new Color(0.06f, 0.06f, 0.07f, 1f);
-        [SerializeField, Min(1), Tooltip("Most decals alive at once; the oldest is reused. Not live.")]
-        private int _decalCap = 40;
+        [SerializeField, Min(1), Tooltip("Most decals alive at once; the oldest is reused. Both tyres of a car sliding at top speed drop about 16 marks a second, so 640 holds a full 30 s of non-stop drifting. Not live.")]
+        private int _decalCap = 640;
         [SerializeField, Tooltip("Sorting order of ground decals: above the asphalt, paint and route arrows, below cars (10).")]
         private int _decalSortingOrder = -3;
 
@@ -47,6 +49,7 @@ namespace UncannyValet.Cars.Fx
         public float ShiftSlideSpeed => _shiftSlideSpeed;
         public float MarkOpacity => _markOpacity;
         public float MarkFadeSeconds => _markFadeSeconds;
+        public float MarkFadeOutSeconds => _markFadeOutSeconds;
         public float ExitShare => _exitShare;
         public float FullDriftDegrees => _fullDriftDegrees;
         public float FaintShare => _faintShare;
