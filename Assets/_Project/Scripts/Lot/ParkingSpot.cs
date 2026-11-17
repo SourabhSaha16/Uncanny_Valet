@@ -34,8 +34,9 @@ namespace UncannyValet.Lot
             if (_occupancy.TryGetCar(SpotId, out var held) && held == car) return;
             if (!_occupancy.Park(SpotId, car)) return;
             Announce(car);
-            if (TryGetCar(car, out var parked)) AnnounceInside(parked);
-            if (_judge != null && TryGetCar(car, out var drivable)) _judge.Parked(transform, drivable);
+            if (!TryGetCar(car, out var drivable)) return;
+            var inside = AnnounceInside(drivable);
+            if (_judge != null) _judge.Parked(transform, drivable, inside);
         }
 
         private void Announce(CarId car)
@@ -44,10 +45,12 @@ namespace UncannyValet.Lot
             if (_charging) Bus.Publish(new CarEnteredStation(car, StationKind.Charging));
         }
 
-        private void AnnounceInside(IDrivable car)
+        private bool AnnounceInside(IDrivable car)
         {
             var count = _outline.Read(transform, car.Transform);
-            if (_fit.IsInside(_outline.Points, count)) Bus.Publish(new CarParkedInside(car.Id, SpotId));
+            if (!_fit.IsInside(_outline.Points, count)) return false;
+            Bus.Publish(new CarParkedInside(car.Id, SpotId));
+            return true;
         }
 
         protected override void OnLeft(CarId car)

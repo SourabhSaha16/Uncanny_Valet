@@ -3,8 +3,9 @@ using UnityEngine;
 namespace UncannyValet.Lot
 {
     /// <summary>
-    /// Pure rule for Perfect Park (car_handling_spec.md section 4): the car rests aligned with the bay's long axis (nose in or
-    /// tail in), close to the centre line and centre point, touching nothing. Limits come from <see cref="PerfectTuning"/>.
+    /// Pure rule for Perfect Park (car_handling_spec.md section 4): the car rests completely inside the bay box (the
+    /// <see cref="BayFitRule"/> result, same tolerance as Parked Inside), aligned with the bay's long axis (nose in or tail in)
+    /// and touching nothing. Where it sits inside the box does not matter. The angle limit comes from <see cref="PerfectTuning"/>.
     /// </summary>
     public sealed class ParkJudge
     {
@@ -23,14 +24,12 @@ namespace UncannyValet.Lot
         }
 
         /// <param name="angleDegrees">Car rotation relative to the bay (0 = nose along the bay's up axis).</param>
-        /// <param name="sideOffset">Distance of the car centre from the bay centre line.</param>
-        /// <param name="lengthOffset">Distance of the car centre from the bay centre along the bay.</param>
+        /// <param name="inside">The car is completely inside the bay box (CarParkedInside rule).</param>
         /// <param name="touching">The car touches a wall or another car.</param>
-        public ParkVerdict Judge(float angleDegrees, float sideOffset, float lengthOffset, bool touching)
+        public ParkVerdict Judge(float angleDegrees, bool inside, bool touching)
         {
             if (AxisDeviation(angleDegrees) > _tuning.ParkAngle) return ParkVerdict.Crooked;
-            if (Mathf.Abs(sideOffset) > _tuning.ParkSideOffset) return ParkVerdict.OffCentreSide;
-            if (Mathf.Abs(lengthOffset) > _tuning.ParkLengthOffset) return ParkVerdict.OffCentreLength;
+            if (!inside) return ParkVerdict.OutsideBay;
             return touching ? ParkVerdict.Touching : ParkVerdict.Perfect;
         }
     }
