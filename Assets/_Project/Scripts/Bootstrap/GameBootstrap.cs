@@ -108,6 +108,7 @@ namespace UncannyValet.Bootstrap
             SeedTuning(tuning, 0);
             Services.Register<ICarFactory>(_carFactory);
             Services.Register<ILotLayout>(_lot);
+            if (_lot is ISpotGeometry geometry) Services.Register<ISpotGeometry>(geometry);
             Services.Register<IInputSource>(input);
             Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
