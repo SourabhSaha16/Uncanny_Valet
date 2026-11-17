@@ -1060,3 +1060,9 @@ Date: 2026-11-16
 Files: Scripts/Audio (IAudioLayer, LayerSet, SourceLayer, AudioDirector, ThemeSession), Tests/EditMode/Audio/LayerSetTests.cs, Tests/PlayMode/LevelAudioResetPlayModeTests.cs, docs/changelogs/audio.md
 Why: Refs #147. Every level music, ambience and escalation loop is now a layer in one LayerSet that is silenced (stopped, volume 0, clip released) when the level changes, a lot is chosen, the run completes or the director is destroyed, so the previous level's tracks cannot overlap the next.
 Tests: EditMode passed after merge (exit 0); agent ran the audio PlayMode tests (6 of 6). Root cause inferred from code, not heard; not in beta yet.
+
+## lead: merge agent/power-visible [Claude]
+Date: 2026-11-16
+Files: Scripts/Valet (ThunderAuraClock, ThunderAuraTiming, ThunderAuraLook, ThunderAura, AuraTint, AuraGlow, ThunderDash), Scripts/Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, tests, docs/changelogs/valet.md
+Why: Refs #150. The first power lasts 5 s at level 1 and 7 s at level 2 (was 1.5 and 2.2) and shows a pulsing golden tint, a glow disc and lightning sparks on Thor or his car, with a blink in the last second.
+Tests: EditMode passed after merge (exit 0); agent ran full PlayMode (83 of 83) and RunBatch. Not seen in a running game (car tint relies on the sprite shader honouring _Color); not in beta yet.
