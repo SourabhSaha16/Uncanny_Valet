@@ -75,12 +75,12 @@ namespace UncannyValet.Tests.Integration
         public void TheCatalogHasTheNewRowsAndNoneOfTheRetiredOnes()
         {
             var keys = TuningCatalog.All.Select(i => i.Key).ToList();
-            foreach (var key in new[] { TuningKey.PowerFillPerfectPark, TuningKey.PowerFillPerfectDropOff,
+            foreach (var key in new[] { TuningKey.PowerFillPerfectPark, TuningKey.PowerFillParkedInside, TuningKey.PowerFillPerfectDropOff,
                 TuningKey.PowerFillDriftPerSecond, TuningKey.PowerFillDriftCap, TuningKey.DevOwnFreezeTime })
                 Assert.Contains(key, keys);
             foreach (var info in TuningCatalog.All.Where(i => i.Group == PowerRows.BarGroup))
                 StringAssert.StartsWith("Power bar: ", info.Label);
-            Assert.AreEqual(4, TuningCatalog.All.Count(i => i.Group == PowerRows.BarGroup));
+            Assert.AreEqual(5, TuningCatalog.All.Count(i => i.Group == PowerRows.BarGroup));
             Assert.AreEqual(4, TuningCatalog.All.Count(i => i.Group == PowerRows.DeveloperGroup));
             Assert.IsTrue(TuningCatalog.All.Single(i => i.Key == TuningKey.DevOwnFreezeTime).Advanced);
             foreach (var name in Enum.GetNames(typeof(TuningKey)).Where(n => n.StartsWith("RetiredPower", StringComparison.Ordinal)))

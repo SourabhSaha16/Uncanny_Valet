@@ -83,6 +83,35 @@ namespace UncannyValet.Tests.Powers
         }
 
         [Test]
+        public void ParkedInside_FillsFour_AndNothingWithoutAPower()
+        {
+            _bus.Publish(new CarParkedInside(new CarId(1), 3));
+            Assert.AreEqual(0f, _controller.Bar.Value);
+            Own();
+            _bus.Publish(new CarParkedInside(new CarId(1), 3));
+            Assert.AreEqual(4f, _controller.Bar.Value, 0.0001f);
+        }
+
+        [Test]
+        public void PerfectParkAfterParkedInside_AddsBoth_AndPerfectStaysLarger()
+        {
+            Own();
+            _bus.Publish(new CarParkedInside(new CarId(1), 3));
+            _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
+            Assert.AreEqual(22f, _controller.Bar.Value, 0.0001f);
+            Assert.Greater(_controller.Settings.FillPerfectPark, _controller.Settings.FillParkedInside);
+        }
+
+        [Test]
+        public void TuningChange_ChangesTheParkedInsideAmount()
+        {
+            Own();
+            _bus.Publish(new TuningChanged(TuningKey.PowerFillParkedInside, 9f));
+            _bus.Publish(new CarParkedInside(new CarId(1), 3));
+            Assert.AreEqual(9f, _controller.Bar.Value, 0.0001f);
+        }
+
+        [Test]
         public void PerfectDropOff_FillsTheBar()
         {
             Own();

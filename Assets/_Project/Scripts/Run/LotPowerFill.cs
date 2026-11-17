@@ -11,6 +11,8 @@ namespace UncannyValet.Run
     {
         [SerializeField, Range(0f, 100f), Tooltip("Power bar gained for one Perfect Park.")]
         private float _perfectPark = 18f;
+        [SerializeField, Range(0f, 100f), Tooltip("Power bar gained when a car is parked inside a bay (a Perfect Park adds this too).")]
+        private float _parkedInside = 4f;
         [SerializeField, Range(0f, 100f), Tooltip("Power bar gained for one perfect drop-off.")]
         private float _perfectDropOff = 10f;
         [SerializeField, Range(0f, 5f), Tooltip("Power bar gained per second of sliding.")]
@@ -19,17 +21,19 @@ namespace UncannyValet.Run
         private float _driftCap = 4f;
 
         public float PerfectPark => _perfectPark;
+        public float ParkedInside => _parkedInside;
         public float PerfectDropOff => _perfectDropOff;
         public float DriftPerSecond => _driftPerSecond;
         public float DriftCap => _driftCap;
 
         /// <summary>True when no number is negative.</summary>
-        public bool IsSane => _perfectPark >= 0f && _perfectDropOff >= 0f && _driftPerSecond >= 0f && _driftCap >= 0f;
+        public bool IsSane => _perfectPark >= 0f && _parkedInside >= 0f && _perfectDropOff >= 0f && _driftPerSecond >= 0f && _driftCap >= 0f;
 
         /// <summary>Writes the lot's fill amounts into the tuning store.</summary>
         public void SeedInto(ITuning tuning)
         {
             tuning.Seed(TuningKey.PowerFillPerfectPark, _perfectPark);
+            tuning.Seed(TuningKey.PowerFillParkedInside, _parkedInside);
             tuning.Seed(TuningKey.PowerFillPerfectDropOff, _perfectDropOff);
             tuning.Seed(TuningKey.PowerFillDriftPerSecond, _driftPerSecond);
             tuning.Seed(TuningKey.PowerFillDriftCap, _driftCap);
