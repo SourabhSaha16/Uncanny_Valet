@@ -41,5 +41,24 @@ namespace UncannyValet.UI.Hud
             }
             for (var row = 0; row < Height; row++) canvas.Fill(x + Starts[row], y + row, Lengths[row], 1, color);
         }
+
+        /// <summary>
+        /// Draws the bolt magnified by <paramref name="scale"/> with its top left corner (outline included) at (x, y): the bottom
+        /// <paramref name="litRows"/> rows in <paramref name="lit"/>, the rest in <paramref name="empty"/>, on a dark outline.
+        /// </summary>
+        public static void DrawFilled(PixelCanvas canvas, int x, int y, int scale, int litRows, Color lit, Color empty)
+        {
+            var ink = PixelPalette.Ink;
+            for (var row = 0; row < Height; row++)
+            {
+                var top = y + (row + 1) * scale;
+                var left = x + (Starts[row] + 1) * scale;
+                canvas.Fill(left - scale, top, (Lengths[row] + 2) * scale, scale, ink);
+                canvas.Fill(left, top - scale, Lengths[row] * scale, scale, ink);
+                canvas.Fill(left, top + scale, Lengths[row] * scale, scale, ink);
+            }
+            for (var row = 0; row < Height; row++)
+                canvas.Fill(x + (Starts[row] + 1) * scale, y + (row + 1) * scale, Lengths[row] * scale, scale, row >= Height - litRows ? lit : empty);
+        }
     }
 }

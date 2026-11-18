@@ -43,12 +43,12 @@ namespace UncannyValet.Tests.UI
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
-        public void MarkerPixel_EqualsFillPixelAtItsThreshold(int level)
+        public void BoltIsFullExactlyAtItsThreshold(int level)
         {
             var view = new PowerBarView(1f, 1f, 1f);
             view.Set(PowerBarThresholds.ValueOf(level), level, 0);
             view.Tick(100f);
-            Assert.AreEqual(PowerBarPainter.FillPixels(view.Fill), PowerBarPainter.FillPixels(PowerBarThresholds.FractionOf(level)));
+            Assert.AreEqual(1f, BoltFillMaths.Share(view.Fill, level), 1e-4f);
         }
     }
 }

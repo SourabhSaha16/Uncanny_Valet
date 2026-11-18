@@ -22,6 +22,7 @@ namespace UncannyValet.UI.Hud
         public PowerBarTracker(IEventBus bus, PowerBarSettings settings, IRunProgress progress = null, IPowerView powers = null, ILotGoal goal = null)
         {
             _goal = goal;
+            FullPulseHz = settings.FullPulseHz;
             _bus = bus;
             _progress = progress;
             _powers = powers;
@@ -33,6 +34,9 @@ namespace UncannyValet.UI.Hud
 
         public PowerBarView View { get; }
         public PowerIconFlashes Flashes { get; }
+
+        /// <summary>Pulses per second of a full bolt.</summary>
+        public float FullPulseHz { get; }
 
         /// <summary>True while at least one power is owned and the lot shows the bar (not in Midgard); nothing of the bar is drawn otherwise.</summary>
         public bool IsVisible => (_goal == null || _goal.ShowPowerBar) && Progress != null && Progress.EarnedPowers.Count > 0;

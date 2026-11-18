@@ -16,6 +16,10 @@ namespace UncannyValet.UI.Hud
         [SerializeField, Range(0.2f, 5f), Tooltip("Seconds a power icon flashes at the start of the first lot after the power (or its upgrade) was earned.")]
         private float _iconFlashSeconds = 1.5f;
 
+        [SerializeField, Range(0.5f, 6f), Tooltip("Pulses per second of a full bolt.")]
+        private float _fullPulseHz = 2f;
+
+        public float FullPulseHz => _fullPulseHz;
         public float FillSmoothing => _fillSmoothing;
         public float PulseSeconds => _pulseSeconds;
         public float SpentFlashSeconds => _spentFlashSeconds;
