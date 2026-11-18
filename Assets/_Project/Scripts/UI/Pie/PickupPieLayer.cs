@@ -9,8 +9,7 @@ namespace UncannyValet.UI.Pie
 {
     /// <summary>
     /// Keeps one pie over every car whose pickup timer runs (green to yellow to red). The pie is released the frame the timer stops,
-    /// the ticket closes or the car is gone. When the car also shows a wash pie the two sit side by side (see <see cref="PieSlots"/>).
-    /// </summary>
+    /// the ticket closes or the car is gone.    /// </summary>
     public sealed class PickupPieLayer : IDisposable
     {
         private readonly ICarFactory _cars;
@@ -51,8 +50,7 @@ namespace UncannyValet.UI.Pie
             if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return;
             var step = PickupPieRule.Step(row.Elapsed01, _settings.Steps);
             var color = _style.ColorOf(PickupPieRule.ColorState(row, _style.Rule));
-            var shift = PieSlots.PickupShift(row, _settings.Steps, _settings.SideGap);
-            _pies.Show(row.Car, car.Transform.position + (Vector3)_settings.Offset + Vector3.right * shift, step, _sprites.Wedge(step), color);
+            _pies.Show(row.Car, car.Transform.position + (Vector3)_settings.Offset, step, _sprites.Wedge(step), color);
         }
     }
 }

@@ -52,8 +52,6 @@ namespace UncannyValet.UI.Kit
             "kwwwwwwwwwk", ".kkgkkkgkk.", "..kgk.kgk..",
         };
 
-        private static readonly string[] Mud = UncannyValet.Core.Modifiers.MudIconArt.Rows;
-
         private static readonly string[] Tyre =
         {
             "..kkkkk..", ".kgggggk.", "kgggggggk", "kggkkkggk", "kggklkggk",
@@ -64,6 +62,12 @@ namespace UncannyValet.UI.Kit
         {
             "....k....", "...kuk...", "..kuuuk..", "..kuuuk..", ".kuwuuuk.",
             ".kuwuuuk.", ".kuuuuuk.", "..kuuuk..", "...kkk...",
+        };
+
+        private static readonly string[] ThumbsUp =
+        {
+            "...kk....", "..knnk...", "..knnk...", "..knnkkk.", "kkknnnnnk",
+            "knnnnnnnk", "knnnnnnnk", "knnnnnnk.", ".kkkkkkk.",
         };
 
         private static readonly string[] Plug = UncannyValet.Core.Contracts.PlugIconArt.Rows;
@@ -77,11 +81,11 @@ namespace UncannyValet.UI.Kit
                 case PixelIcon.Bell: return Bell;
                 case PixelIcon.KeyTag: return KeyTag;
                 case PixelIcon.Car: return Car;
-                case PixelIcon.Mud: return Mud;
                 case PixelIcon.Tyre: return Tyre;
                 case PixelIcon.Plug: return Plug;
                 case PixelIcon.PrayerHands: return PrayerHands;
                 case PixelIcon.Drop: return Drop;
+                case PixelIcon.ThumbsUp: return ThumbsUp;
                 default: throw new ArgumentOutOfRangeException(nameof(icon), icon, "Icon has no bitmap.");
             }
         }

@@ -15,8 +15,6 @@ namespace UncannyValet.UI.Pie
         private Vector2 _offset = new Vector2(0f, 1.45f);
         [SerializeField, Min(0), Tooltip("Sorting order of the pie; above the car body and its glow.")]
         private int _sortingOrder = 20;
-        [SerializeField, Min(0f), Tooltip("Distance between the centres of the pickup pie and the wash pie when a car shows both, in world units. Keep it above the pie diameter (20 px = 0.63).")]
-        private float _sideGap = 0.8f;
         [SerializeField, Tooltip("Colour of the wash pie.")]
         private Color _washColor = new Color32(0x2F, 0x8C, 0xF0, 255);
 
@@ -24,7 +22,6 @@ namespace UncannyValet.UI.Pie
         public int Steps => Mathf.Max(4, _steps);
         public Vector2 Offset => _offset;
         public int SortingOrder => _sortingOrder;
-        public float SideGap => Mathf.Max(0f, _sideGap);
         public Color WashColor => _washColor;
     }
 }

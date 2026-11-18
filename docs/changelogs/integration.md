@@ -295,3 +295,15 @@ Date: 2026-11-17
 Files: Core/Contracts/MudPatch.cs (optional _height: rectangle), Lot/MudPatchBuilder.cs, Editor/PropSolidity.cs, VanaheimWorldSetup.cs, VanaheimMud.cs, VanaheimProps.cs, MidgardWorldSetup.cs, LotWorldSceneSetup.cs, Art/MidgardArt.cs, Data/Art stall, banner, fence, hay recipes, Data/Run/VanaheimWheatMud.asset (new), VanaheimTrainingLot.asset, VanaheimMudPatches.asset, Scenes/Lot_VanaheimTraining.unity, Scenes/Sandbox.unity, tests
 Why: Playtest #182: decor must be solid like other props, and the wheat field must slow a car like mud. A patch with _height 0 stays a round puddle, so existing assets behave as before.
 Tests: EditMode 2069 passed (rectangle containment, wheat field covers every wheat tile, solid decor); RunBatch ran; PlayMode Vanaheim, Midgard, Mud, Sandbox, BayEntry, PropArt 29 passed (fence bump damages a car).
+
+## integration: power bar becomes three lightning bolts, Refs #184 [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Hud/BoltFillMaths.cs, BoltRowLayout.cs (new), BoltGlyph.cs (DrawFilled), PowerBarPainter.cs, PowerBarSettings.cs (full bolt pulse rate), PowerBarTracker.cs, PowerFillPopPainter.cs (pops anchor left of the bolt row), Tests/EditMode/UI/BoltFillMathsTests.cs, PowerBarMarkerTests.cs
+Why: playtest #184 (design.md A11). Three bolts in a row at the right edge fill one after another from the bar value using PowerBarThresholds; a full bolt pulses on unscaled time, the spent bolt (SpentBucket) empties and flashes white. Power icons stack under the bolts. PowerBar logic and events are untouched; the vertical bar is gone.
+Tests: EditMode full suite 2080 passed; PlayMode PowerBarPlayModeTests and BootstrapSceneSmokeTests 12 passed. Not checked by eye.
+
+## integration: wash icons on cars (droplet, timer, thumbs up), Refs #185 [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp added), ModifierIcons.cs (Muddy maps to the Drop), Hud/ServiceIcons.cs, WorldTicketLayout.cs, WorldTicketPainter.cs, Pie/WashPieLayer.cs, PickupPieLayer.cs, PickupPieSettings.cs (side gap removed), Pie/PieSlots.cs (deleted, removed in the #184 commit), Tests/EditMode/UI ServiceIconsTests, WashPieTests, SharedMudSymbolTests, Core/ModifierTests.cs, ModifierTestKit.cs
+Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
+Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.

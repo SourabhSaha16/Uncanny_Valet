@@ -7,12 +7,11 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Once a car has arrived, small modifier icons (mud splat, plug) just under it say what it still needs. Projected from the
+    /// Once a car has arrived, small modifier icons (droplet, plug, thumbs up) just under it say what it still needs. Projected from the
     /// car's world position so they share the pixel scale.
     /// </summary>
     public sealed class WorldTicketPainter
     {
-        private const float IconDropWorldUnits = 1.3f;
         private const int IconGap = 2;
 
         private readonly PixelCanvas _canvas;
@@ -38,7 +37,7 @@ namespace UncannyValet.UI.Hud
             x = 0;
             y = 0;
             if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return false;
-            var screen = camera.WorldToScreenPoint(car.Transform.position + Vector3.down * IconDropWorldUnits);
+            var screen = camera.WorldToScreenPoint(car.Transform.position + Vector3.down * WorldTicketLayout.IconDropWorldUnits);
             if (screen.z < 0f) return false;
             x = _canvas.Grid.VirtualX(screen.x);
             y = _canvas.Grid.VirtualY(_canvas.ScreenHeight - screen.y);

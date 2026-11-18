@@ -4,9 +4,9 @@ using UncannyValet.UI.Kit;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Which small icons sit by a car, in modifier list order, once it has arrived: a mud splat while Muddy and a plug while it needs a
-    /// charge, each drawn from its own definition. While the wash station works on the car its wash pie replaces the mud splat (no icon),
-    /// and once washed a blue drop stays until the ticket closes. A charged car shows nothing.
+    /// Which small icons sit by a car, in modifier list order, once it has arrived: a water droplet while Muddy and a plug while it needs a
+    /// charge, each drawn from its own definition. While the wash station works on the car its wash pie replaces the droplet (no icon;
+    /// the pie sits at the droplet's spot, see <see cref="WorldTicketLayout"/>), and once washed a thumbs up stays until the ticket closes. A charged car shows nothing.
     /// </summary>
     public static class ServiceIcons
     {
@@ -34,12 +34,12 @@ namespace UncannyValet.UI.Hud
             return false;
         }
 
-        // Open: its own icon, except while the wash pie stands in for it. Cleared at the wash: the washed drop.
+        // Open: its own icon (the dirty droplet), except while the wash pie stands in for it. Cleared at the wash: the thumbs up.
         private static bool TryIcon(TicketRow row, RowModifier modifier, out PixelIcon icon)
         {
             icon = modifier.Icon;
             if (modifier.IsOpen) return !(modifier.ClearedAt == StationKind.Wash && row.InStation(StationKind.Wash));
-            icon = PixelIcon.Drop;
+            icon = PixelIcon.ThumbsUp;
             return modifier.ClearedAt == StationKind.Wash;
         }
     }

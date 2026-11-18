@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Draws the "+X" bolt pops left of the power icons, half way up the bar: the text, then the lightning bolt, rising and fading.
+    /// Draws the "+X" bolt pops left of the bolt row, level with it: the text, then the lightning bolt, rising and fading.
     /// Pops arriving together are stacked by slot (see <see cref="PowerFillPops"/>). Draws only while the bar itself is shown.
     /// </summary>
     public sealed class PowerFillPopPainter
@@ -42,10 +42,9 @@ namespace UncannyValet.UI.Hud
             var scale = _settings.FontScale;
             var textWidth = PixelTextLayout.Width(pop.Text.Length, scale);
             var rise = Mathf.RoundToInt(_settings.RisePixels * BlessingPopText.Rise(age, _settings.DurationSeconds));
-            var right = PixelGrid.Width - HudLayout.Margin - PowerBarPainter.ColumnWidth - PowerBarPainter.IconGap
-                - PowerBarPainter.IconSide - _settings.GapPixels;
+            var right = PixelGrid.Width - HudLayout.Margin - PowerBarPainter.ColumnWidth - _settings.GapPixels;
             var x = right - (textWidth + BoltGap + BoltGlyph.Width);
-            var y = PowerBarPainter.BarTop + PowerBarPainter.BarHeight / 2 + pop.Slot * _settings.SlotSpacingPixels - rise;
+            var y = BoltRowLayout.Top + (BoltRowLayout.BoltHeight - BoltGlyph.Height) / 2 + pop.Slot * _settings.SlotSpacingPixels - rise;
             var alpha = BlessingPopText.Alpha(age, _settings.DurationSeconds, _settings.HoldFraction);
             var color = PowerFillPopRule.ColorOf(pop.Source, _settings.GoldPull, _perfectColor);
             var shadow = PixelCanvas.ShadowOffset(scale);
