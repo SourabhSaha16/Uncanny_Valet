@@ -76,7 +76,7 @@ namespace UncannyValet.Tests.Integration
             _h.AtCurb(t);
             Assert.AreEqual(0, _h.Log.Last<BlessingEarned>().Amount);
             Assert.AreEqual(1, _h.Log.Count<CurseApplied>());
-            Assert.AreEqual(3, _h.Log.Last<CurseApplied>().Amount, "a very late pickup hits the cap");
+            Assert.AreEqual(6, _h.Log.Last<CurseApplied>().Amount, "a very late pickup hits the cap");
             Assert.AreEqual(1, _h.Blessings.Curses);
             Assert.AreEqual(0, _h.Blessings.Blessings, "the score never drops below 0");
             Assert.AreEqual(1, _h.Blessings.FavourMultiplier);

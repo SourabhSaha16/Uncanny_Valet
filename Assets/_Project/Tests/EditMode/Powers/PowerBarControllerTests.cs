@@ -77,7 +77,7 @@ namespace UncannyValet.Tests.Powers
         {
             Own();
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
-            Assert.AreEqual(15f, _controller.Bar.Value, 0.0001f);
+            Assert.AreEqual(16.7f, _controller.Bar.Value, 0.0001f);
             Assert.AreEqual(1, _changes.Count);
             Assert.AreEqual(0, _changes[0].OpenBuckets);
         }
@@ -100,7 +100,7 @@ namespace UncannyValet.Tests.Powers
             _controller.Settings.Apply(TuningKey.PowerFillParkedInside, 4f);
             _bus.Publish(new CarParkedInside(new CarId(1), 3));
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
-            Assert.AreEqual(19f, _controller.Bar.Value, 0.0001f);
+            Assert.AreEqual(20.7f, _controller.Bar.Value, 0.0001f);
             Assert.Greater(_controller.Settings.FillPerfectPark, _controller.Settings.FillParkedInside);
         }
 
@@ -128,11 +128,10 @@ namespace UncannyValet.Tests.Powers
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
             Assert.IsFalse(_controller.TrySpend());
             _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
-            _bus.Publish(new PerfectPark(new CarId(1), TicketId.None));
             _changes.Clear();
             Assert.IsTrue(_controller.TrySpend());
             Assert.AreEqual(1, _changes[0].SpentBucket);
-            Assert.AreEqual(45f - 33.3f, _controller.Bar.Value, 0.001f);
+            Assert.AreEqual(33.4f - 33.3f, _controller.Bar.Value, 0.001f);
         }
 
         [Test]

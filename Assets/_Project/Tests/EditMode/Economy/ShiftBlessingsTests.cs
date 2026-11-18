@@ -40,7 +40,7 @@ namespace UncannyValet.Tests.Economy
         }
 
         private void Blessing(int amount) => _bus.Publish(new BlessingEarned(new TicketId(1), amount));
-        private const int AngryCurse = 3;
+        private const int AngryCurse = 6;
         private float _now;
         private void Angry()
         {

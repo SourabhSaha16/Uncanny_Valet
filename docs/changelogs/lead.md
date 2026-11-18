@@ -1318,3 +1318,9 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: player-visible: #186, #187.
 Tests: sandbox build loaded in the browser: canvas equals the window at 1888x1213 and at 700x900, lot fully visible, no console errors; EditMode 2094/2094.
+
+## lead: car boost accel x10, 2 perfect parks per bolt, harsher late curse [Claude]
+Date: 2026-11-18
+Files: Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, Powers/PowerBarConfig.cs + asset, Run/LotPowerFill.cs + 4 lot assets, Core/Contracts/OvertimeCurseRows.cs, EditMode tests (ThunderStride, PowerFramework, PowerBarController, OvertimeCurse, ShiftBlessings, FullShift)
+Why: play-test notes: Thunder in a car should reach top speed almost instantly (#188), a Perfect Park adds 16.7 so two fill a bolt (#191), late-pickup curse 1 per 4 s, cap 6 (#166).
+Tests: EditMode 2094/2094 passed.

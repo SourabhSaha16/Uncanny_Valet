@@ -6,8 +6,8 @@ namespace UncannyValet.Core.Contracts
     public static class OvertimeCurseRows
     {
         public const string Group = "Late pickup";
-        public const float SecondsPerPoint = 10f;
-        public const float Cap = 3f;
+        public const float SecondsPerPoint = 4f;
+        public const float Cap = 6f;
 
         public static readonly TuningInfo[] Rows =
         {

@@ -77,7 +77,7 @@ namespace UncannyValet.Tests.Economy
             Assert.AreEqual(0, curses.Count);
             now = 21f;
             bus.Publish(new CarDelivered(T, new CarId(1)));
-            CollectionAssert.AreEqual(new[] { 2 }, curses);
+            CollectionAssert.AreEqual(new[] { 5 }, curses);
             bus.Publish(new CarDelivered(T, new CarId(1)));
             Assert.AreEqual(1, curses.Count);
             blessings.Dispose();
