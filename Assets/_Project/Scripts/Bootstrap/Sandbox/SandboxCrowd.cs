@@ -20,7 +20,7 @@ namespace UncannyValet.Bootstrap.Sandbox
                 Debug.LogError("SandboxCrowd on " + name + " has no crowd; rebuild with Setup/Build Everything.", this);
                 return;
             }
-            PedestrianBootstrap.Start(_crowd, GetComponent<SandboxWorldSlot>().Decor);
+            PedestrianBootstrap.Start(_crowd, GetComponent<SandboxWorldSlot>().Source.Paths);
         }
     }
 }

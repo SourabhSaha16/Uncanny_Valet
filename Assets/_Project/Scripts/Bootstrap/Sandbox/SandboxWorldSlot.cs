@@ -15,8 +15,13 @@ namespace UncannyValet.Bootstrap.Sandbox
         [SerializeField] private LotLayoutBuilder _lot;
         [SerializeField] private LotDecor _decor;
 
+        private ILotSource _source;
+
         public LotDefinition Definition => _definition;
         public LotLayoutBuilder Lot => _lot;
         public LotDecor Decor => _decor;
+
+        /// <summary>The lot of this world as the bootstrap sees it; null when the slot has no lot. Built on first use.</summary>
+        public ILotSource Source => _source ?? (_source = LotSources.Parametric(_lot, _decor));
     }
 }
