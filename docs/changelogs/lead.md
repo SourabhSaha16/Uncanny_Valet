@@ -1276,3 +1276,21 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: new handling defaults (Shift grip 0.7, radius 1, top speed 1.35, drift turn 1.5) and smoother marks, Refs #181.
 Tests: sandbox build loads with no console errors.
+
+## lead: merge agent solid props and wheat mud, Refs #182 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-a0fe580cc855650bb (PropSolidity, wheat mud rectangle, solid stalls/banners/fences/hay)
+Why: #182.
+Tests: EditMode 2069/2069, PlayMode filtered 29/29 (agent).
+
+## lead: merge agent wider bay gap, Refs #183 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-aa84b46aae13da8d5 (LotConfig _spotGap 1.2, rebaked lot scenes, BayEntryTests)
+Why: #183.
+Tests: EditMode 2069/2069 (rerun by the lead), PlayMode filtered 45/45 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with handling, solid props, wheat mud, wider bays [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible batch: handling defaults, #182, #183.
+Tests: beta build loads to the title with no console errors; EditMode 2069/2069.

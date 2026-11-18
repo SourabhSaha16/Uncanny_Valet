@@ -1,4 +1,11 @@
 === Last 50 commits ===
+f503cda  2026-11-17  lead: merge agent wider bay gap, Refs #183 [Claude]
+19294fc  2026-11-17  lot: widen bay gap 0.6 to 1.2, rebake lots, Refs #183 [Claude]
+ecff5d6  2026-11-17  lead: merge agent solid props and wheat mud, Refs #182 [Claude]
+ff03b3c  2026-11-17  integration: solid stalls, banners, fences, hay; wheat slows cars, Refs #182 [Claude]
+083c6e9  2026-11-17  lead: handling defaults from latest sandbox tuning [Claude]
+4d6abe2  2026-11-17  lead: braking 1.65 and coasting 2.4 from sandbox tuning [Claude]
+98025ab  2026-11-17  lead: rebuild site/ and site-sandbox/ with handling defaults and smooth skids [Claude]
 747970f  2026-11-17  lead: merge agent skid strokes on bends, Refs #181 [Claude]
 60883d4  2026-11-17  cars: cut skid strokes sooner on bends, Refs #181 [Claude]
 026c7e8  2026-11-17  lead: handling defaults from sandbox play-testing [Claude]
@@ -42,13 +49,6 @@ cce05b5  2026-11-17  lead: rebuild site/ with simpler Perfect Park reward for be
 2de311c  2026-11-17  lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
 250e826  2026-11-17  lead: rebuild site/ with Perfect Park and clock changes for beta [Claude]
 6f3e916  2026-11-17  lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
-51e919d  2026-11-17  lead: merge agent/integration green Perfect and clock tab, Refs #161 #162 [Claude]
-179793d  2026-11-17  lead: merge agent/lot relaxed Perfect Park, Refs #161 [Claude]
-2a344b7  2026-11-17  lot: Perfect Park counts anywhere inside the bay box [Claude]
-f119c00  2026-11-17  ui: green PERFECT cues, clock tab under score panel, Refs #161 #162 [Claude]
-95a0971  2026-11-17  lead: rebuild site/ with power pops for beta [Claude]
-2497d5b  2026-11-17  lead: design log and changelog for power pops, Refs #160 [Claude]
-16321bd  2026-11-17  lead: merge agent/integration +X bolt pops, Refs #160 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -271,6 +271,18 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/Fx/TyreTrail.cs, SkidConfig.cs, SkidEmitter.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, Assets/_Project/Tests/EditMode/Cars/TyreMarkTests.cs, TyreBendTests.cs
 Why: issue #181, tight turns showed polygon corners because strokes were only cut every 1 unit. TyreTrail now also cuts when the path bends by _maxBendDegrees (10) after at least _minStrokeLength (0.2); config fields only, no F2 row.
 Tests: new TyreBendTests (straight, circle, min length, Break); full EditMode suite run before commit.
+
+## lead: braking 1.65 and coasting slow-down 2.4 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on in the sandbox F2 panel (braking was 1.3, coasting 1.7).
+Tests: EditMode suite run, result above in the report.
+
+## lead: handling defaults from the latest sandbox tuning [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on in the F2 panel: tyre bite 11 (was 8), full steering from 5.1 (was 6), braking 1.6 (was 1.65), coasting 2.45 (was 2.4).
+Tests: EditMode 2067/2067.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -710,6 +722,12 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Bootstrap/Sandbox/* (SandboxBootstrap, SandboxWorldHost, SandboxWorldSlot, SandboxWorldsConfig, SandboxWorldSelection, SandboxWorldTuning, SetThroughTuning, NoMudPatches, SandboxBoundary, SandboxSeedAssets), Scripts/UI/Sandbox/* (SandboxPicker, ISandboxControl), Editor/SandboxSceneBuilder.cs (new), Editor/WebBuild.cs (-sandboxBuild flag), Editor/ProjectSetup.cs (RunBatch also builds the sandbox scene), Editor/BootstrapSceneBuilder.cs (helpers made internal), Scenes/Sandbox.unity, Data/Sandbox/SandboxWorldsConfig.asset, Tests/EditMode/Integration/SandboxWorldTests.cs, Tests/PlayMode/SandboxSceneTests.cs, Tests/PlayMode asmdef (+Unity.InputSystem), tools/build-web.ps1 (-Sandbox), tools/README-unity.md, .github/workflows/ci-cd.yml (publish site-sandbox/ at /sandbox/)
 Why: a third site that boots into an empty lot to test driving per world (issue #180). The sandbox reuses the game services, car factory, valet, camera, F2 panel and the lots own builders; a world switch clones the lot template so its mud, props and lighting build as in a real lot, and applies the lot mud numbers live. No shift, patrons, director, pedestrians, traffic, clock, scoring, story or title. Default build-web.ps1 behaviour is unchanged; the workflow fails with a clear error until site-sandbox/index.html is committed on pivot/chaos.
 Tests: EditMode full suite 2063 passed; PlayMode SandboxSceneTests 3 passed (start without errors, car drives under input, world switch with Vanaheim mud and reset). RunBatch ran; its unrelated scene and CarHandlingConfig rewrites were reverted. Web build not run (lead builds site-sandbox/).
+
+## integration: solid stalls, banners, fences, hay; wheat field slows cars [Claude]
+Date: 2026-11-17
+Files: Core/Contracts/MudPatch.cs (optional _height: rectangle), Lot/MudPatchBuilder.cs, Editor/PropSolidity.cs, VanaheimWorldSetup.cs, VanaheimMud.cs, VanaheimProps.cs, MidgardWorldSetup.cs, LotWorldSceneSetup.cs, Art/MidgardArt.cs, Data/Art stall, banner, fence, hay recipes, Data/Run/VanaheimWheatMud.asset (new), VanaheimTrainingLot.asset, VanaheimMudPatches.asset, Scenes/Lot_VanaheimTraining.unity, Scenes/Sandbox.unity, tests
+Why: Playtest #182: decor must be solid like other props, and the wheat field must slow a car like mud. A patch with _height 0 stays a round puddle, so existing assets behave as before.
+Tests: EditMode 2069 passed (rectangle containment, wheat field covers every wheat tile, solid decor); RunBatch ran; PlayMode Vanaheim, Midgard, Mud, Sandbox, BayEntry, PropArt 29 passed (fence bump damages a car).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1979,6 +1997,18 @@ Files: site-sandbox/ (built with tools/build-web.ps1 -Sandbox, commit f67a5b3), 
 Why: the workflow publishes site-sandbox/ at /sandbox/.
 Tests: loaded in the browser, world picker shown, no console errors.
 
+## lead: merge agent skid strokes on bends, Refs #181 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-a8871acba03b95dc2 (TyreTrail, SkidConfig, SkidEmitter, TyreBendTests)
+Why: skid marks looked like polygons on tight turns (#181).
+Tests: EditMode 2067/2067, PlayMode SkidMarkTests 3/3 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with new handling defaults and smooth skid marks [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: new handling defaults (Shift grip 0.7, radius 1, top speed 1.35, drift turn 1.5) and smoother marks, Refs #181.
+Tests: sandbox build loads with no console errors.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2289,6 +2319,12 @@ Date: 2026-11-17
 Files: Scripts/Lot/{ParkJudge,ParkVerdict,ParkingSpot,PerfectRunner,PerfectSettings,PerfectTuning}.cs; Tests/EditMode/Lot/PerfectJudgeTests.cs
 Why: Issue #161, design.md section 4 (play-test note). Perfect Park now needs the car completely inside the bay box (the BayFitRule result that also drives CarParkedInside, same tolerance) and a heading within the park angle; side and length offsets are gone from PerfectSettings, PerfectTuning and ParkJudge. ParkVerdict: OffCentreSide and OffCentreLength replaced by OutsideBay. Cooldown, min-travel and touching gates unchanged; both CarParkedInside and PerfectPark still fire. TuningKeys PerfectParkSideOffset/LengthOffset and their Core F2 rows are kept but unread; PerfectTuning still seeds fixed values for them because the catalog requires every row seeded (lead can retire the rows).
 Tests: ParkJudgeChecksAngleBoxAndContact (off-centre at 5 degrees inside the box is Perfect; outside the box or off-angle is not); EditMode 1974/1974 and PlayMode 85/85 pass.
+
+## lot: widen the gap between bays in a row from 0.6 to 1.2, Refs #183 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/LotConfig.cs (default), Data/Lot/LotConfig.asset, Tests/PlayMode/BayEntryTests.cs (pitch read from config); rebaked by RunBatch: Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining,Sandbox}.unity, Data/Run/{VanaheimCrazyLot,VanaheimMudPatches,VanaheimTrainingLot,VanaheimWheatMud}.asset
+Why: Issue #183, design.md section 4. Bay pitch goes 3.2 to 3.8, so the frame is 1.8 wider (three gaps); walls, strip, roads, props and mud patches follow LotGeometry. CameraFit floors at the lot width, so the lot still fits at 16:9 and 4:3 (zoom-out, no art shrunk).
+Tests: EditMode 2069/2069 pass; PlayMode filtered (BayEntry, Bootstrap smoke, CameraFraming, Midgard, Sandbox, Vanaheim, PropArt, MudPatch, PedestrianHit) 45/45 pass.
 
 === docs/changelogs/orders.md ===
 # Orders changelog

@@ -1,4 +1,4 @@
 Valet to Valhalla web build
-Commit:  747970f
-Subject: lead: merge agent skid strokes on bends, Refs #181 [Claude]
-Date:    2026-11-17 19:38:40 -0800
+Commit:  f503cda
+Subject: lead: merge agent wider bay gap, Refs #183 [Claude]
+Date:    2026-11-17 20:26:00 -0800
