@@ -115,10 +115,24 @@ namespace UncannyValet.Tests.PlayMode
             Assert.AreEqual(38, _blessings.Blessings);
         }
 
-        private IEnumerator Drive(CarDriver car, PedestrianWalker walker)
+        [UnityTest]
+        public IEnumerator UndrivenCar_NeverKnocksOrBouncesAWalker()
+        {
+            Setup(true);
+            var walker = Walker(Vector2.zero, patron: false);
+            var bumps = 0;
+            walker.Bumped += (w, s) => bumps++;
+            var car = Spawn(new Vector2(0f, -6f));
+            yield return Drive(car, walker, driven: false);
+            Assert.AreEqual(0, _hits.Count, "regression #192: only the car the valet drives may knock a person");
+            Assert.AreEqual(0, bumps);
+            Assert.AreEqual(0, _blessings.Curses);
+        }
+
+        private IEnumerator Drive(CarDriver car, PedestrianWalker walker, bool driven = true)
         {
             walker.CarHit += (w, c, p, s) => _bus.Publish(WalkerKnockback.ToEvent(w, c, s));
-            car.SetDriver(true);
+            car.SetDriver(driven);
             for (var t = 0f; t < ApproachSeconds && _hits.Count == 0; t += Time.fixedDeltaTime)
             {
                 yield return new WaitForFixedUpdate();

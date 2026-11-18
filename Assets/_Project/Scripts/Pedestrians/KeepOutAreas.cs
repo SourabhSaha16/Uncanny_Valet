@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UncannyValet.Pedestrians
 {
     /// <summary>Rectangles roaming people keep out of (the parking spots). Pure: no scene access, nothing allocated once the rectangles are added.</summary>
-    public sealed class KeepOutAreas
+    public sealed class KeepOutAreas : ILegBlocker
     {
         private readonly List<Rect> _areas = new List<Rect>(32);
 

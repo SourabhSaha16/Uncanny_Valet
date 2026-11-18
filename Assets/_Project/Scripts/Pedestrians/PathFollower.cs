@@ -68,6 +68,24 @@ namespace UncannyValet.Pedestrians
             _next = 1;
         }
 
+        /// <summary>
+        /// The point <paramref name="distance"/> further along the route from the walker, following its corners (the last point when the
+        /// route is shorter). The walker's own position when not walking. Lets a look-ahead see round a corner.
+        /// </summary>
+        public Vector2 PointAhead(float distance)
+        {
+            if (!Walking) return _position;
+            var from = _position;
+            for (var i = _next; i < _points.Count; i++)
+            {
+                var seg = Vector2.Distance(from, _points[i]);
+                if (distance <= seg && seg > Mathf.Epsilon) return Vector2.Lerp(from, _points[i], distance / seg);
+                distance -= seg;
+                from = _points[i];
+            }
+            return from;
+        }
+
         /// <summary>Stops walking and keeps the current position.</summary>
         public void Stop() => Walking = false;
 

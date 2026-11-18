@@ -2,6 +2,12 @@
 
 Entries are added by the pedestrians agent, one per commit. Format in docs/changelogs/README.md.
 
+## pedestrians: only the driven car knocks people, walkers keep clear of cars, Refs #192 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Pedestrians/{PedestrianWalker,WalkerBody,PathFollower,PedestrianCrowd,PedestrianConfig,WanderPicker,KeepOutAreas}.cs, new {PedestrianHitRule,WalkerSolidRule,ILegBlocker,LegBlockers,CarLegProbe}.cs, Data/Pedestrians/PedestrianConfig.asset (_lookAhead 0.35 to 0.55), Tests/EditMode/Pedestrians/PedestrianCarContactTests.cs, Tests/PlayMode/PedestrianHitTests.cs
+Why: issue #192. Causes: (1) OnCollisionEnter2D knocked a person for any dynamic car, and the walker's own walking speed counted in the hit speed; now only a car with HasDriver knocks or bounces (PedestrianHitRule), speed minus own walking speed. (2) KeepOutAreas was never filled, so roam legs crossed bays; roam legs are now also rejected by a body-wide CarLegProbe sweep (ILegBlocker, LegBlockers). (3) The look-ahead cast only along the current heading; it now aims at PathFollower.PointAhead so it sees round route corners, and LookAhead is 0.55. (4) After passing through a blocker the collider turned solid inside the car; WalkerBody.SetSolid now stays off until clear of cars (WalkerSolidRule).
+Tests: PedestrianCarContactTests (7 EditMode), PlayMode UndrivenCar_NeverKnocksOrBouncesAWalker; EditMode 2106 passed, PedestrianHitTests PlayMode 4 passed.
+
 ## pedestrians: collision, wait-and-resume, rubber bounce and bump sound
 Date: 2026-11-10
 Files: Assets/_Project/Scripts/Pedestrians/{PedestrianWalker,PedestrianCrowd,PedestrianConfig,PathFollower,PedestrianBlockRule,PedestrianBlockState,PedestrianBounceRule,WalkerBody,WalkerSensor}.cs, Assets/_Project/Scripts/Core/PhysicsLayers.cs, Assets/_Project/Scripts/Core/Events/PedestrianEvents.cs, Assets/_Project/Scripts/Patrons/ArrivalSlotScanner.cs, Assets/_Project/Scripts/Audio/{AudioDirector,SfxAlerts,SfxEventRouter,SfxId,SfxRecipeBook,SfxRateLimiter}.cs, ProjectSettings/TagManager.asset, Assets/_Project/Tests/EditMode/Pedestrians/PedestrianBlockRuleTests.cs, Assets/_Project/Tests/EditMode/Audio/SfxTests.cs

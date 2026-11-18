@@ -46,7 +46,7 @@ namespace UncannyValet.Pedestrians
         [SerializeField, Range(0.05f, 0.6f), Tooltip("Radius of a pedestrian's circle collider, world units.")]
         private float _colliderRadius = 0.22f;
         [SerializeField, Min(0.05f), Tooltip("How far ahead (beyond one step) a walker looks for a car, the valet, a wall or another person.")]
-        private float _lookAhead = 0.35f;
+        private float _lookAhead = 0.55f;
         [SerializeField, Tooltip("Seconds a blocked walker waits before walking on through the blocker (min, max; each person gets a fixed value in between so two people facing each other do not give up together).")]
         private Vector2 _waitSeconds = new Vector2(1.5f, 3f);
         [SerializeField, Min(0f), Tooltip("Seconds a walker that gave up waiting walks through (not solid), then looks ahead again.")]
