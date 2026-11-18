@@ -51,6 +51,7 @@ namespace UncannyValet.EditorTools
         public static void Build()
         {
             CreateWorldsIfMissing();
+            SandboxHandmadeWorld.EnsureListed();
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             // Loaded after NewScene: creating a scene unloads unused assets, which would null earlier references.
             var worlds = BootstrapSceneBuilder.RequireAsset<SandboxWorldsConfig>(WorldsPath);
@@ -87,6 +88,7 @@ namespace UncannyValet.EditorTools
         // An inactive root holding the lot builder and the decor for one lot definition; the sandbox clones it to show the world.
         private static SandboxWorldSlot BuildSlot(GameObject root, LotDefinition definition, LotArtConfig lotArt, LotConfig lotConfig)
         {
+            if (definition.Layout == LotLayoutKind.Handmade) return SandboxHandmadeWorld.BuildSlot(root, definition);
             var go = new GameObject("World " + definition.DisplayName);
             go.transform.SetParent(root.transform, false);
             go.SetActive(false);
