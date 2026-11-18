@@ -307,3 +307,9 @@ Date: 2026-11-17
 Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp added), ModifierIcons.cs (Muddy maps to the Drop), Hud/ServiceIcons.cs, WorldTicketLayout.cs, WorldTicketPainter.cs, Pie/WashPieLayer.cs, PickupPieLayer.cs, PickupPieSettings.cs (side gap removed), Pie/PieSlots.cs (deleted, removed in the #184 commit), Tests/EditMode/UI ServiceIconsTests, WashPieTests, SharedMudSymbolTests, Core/ModifierTests.cs, ModifierTestKit.cs
 Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
 Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.
+
+## integration: service icons show from spawn, hide after departure, Refs #187 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketBoard.cs, Hud/ServiceIcons.cs, Hud/WorldTicketPainter.cs, Assets/_Project/Tests/EditMode/UI/ServiceIconsTests.cs
+Why: #187. The droplet and plug icons were gated on TicketRow.Arrived; the ticket and its modifiers are announced at spawn, so the gate is now "not Departed" (set on CarDeparted). The info box still waits for arrival.
+Tests: ServiceIconsTests updated (spawned-not-arrived shows icons, departed shows none, board row from spawn).

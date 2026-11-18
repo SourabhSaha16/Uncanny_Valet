@@ -28,6 +28,12 @@ namespace UncannyValet.UI
         /// <summary>True from the moment the car has finished driving in until it leaves.</summary>
         public bool Arrived;
 
+        /// <summary>True once the patron has driven the car away (it is about to despawn); its icons are gone from then on.</summary>
+        public bool Departed;
+
+        /// <summary>Service icons follow the car from the moment it spawns (not only once it has arrived) until the patron takes it.</summary>
+        public bool ShowsServiceIcons => !Departed;
+
         /// <summary>The car's service modifiers (a list: a car may hold several), each with its own progress.</summary>
         public readonly List<RowModifier> Modifiers = new List<RowModifier>();
 
