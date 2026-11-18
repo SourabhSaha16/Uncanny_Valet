@@ -199,3 +199,9 @@ Date: 2026-11-18
 Files: Scripts/Lot/LotConfig.cs (default), Data/Lot/LotConfig.asset, Tests/PlayMode/BayEntryTests.cs (pitch read from config); rebaked by RunBatch: Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining,Sandbox}.unity, Data/Run/{VanaheimCrazyLot,VanaheimMudPatches,VanaheimTrainingLot,VanaheimWheatMud}.asset
 Why: Issue #183, design.md section 4. Bay pitch goes 3.2 to 3.8, so the frame is 1.8 wider (three gaps); walls, strip, roads, props and mud patches follow LotGeometry. CameraFit floors at the lot width, so the lot still fits at 16:9 and 4:3 (zoom-out, no art shrunk).
 Tests: EditMode 2069/2069 pass; PlayMode filtered (BayEntry, Bootstrap smoke, CameraFraming, Midgard, Sandbox, Vanaheim, PropArt, MudPatch, PedestrianHit) 45/45 pass.
+
+## lot: pure authored geometry, validator rules and walk graph for hand-made lots, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/Handmade/*.cs (HandmadeLotData and its part types, LotIssue, LotRule, HandmadeLotRules + LotPieceRules/LotRoadRules/LotWalkRules, WalkGraph, RouteRounder, RouteMath, OrientedRect, LotBounds, AuthoredRoadLayout, AuthoredPedestrianPaths); Tests/EditMode/Lot/{HandmadeLotFixture,DinerLotData,HandmadePieceRulesTests,HandmadeRoadRulesTests,HandmadeWalkRulesTests,HandmadeGeometryTests,HandmadeDinerParityTests}.cs
+Why: Task 1 of docs/redesign/handmade_lots_plan.md (design.md sections 4, 9, 10). Authored lots supply IRoadLayout and IPedestrianPaths implementations from plain data; the validator rules (plan numbering, rule 25 left to the run integration) are pure. Queue slot indices are 0-based.
+Tests: one test per rule, Diner parity (slots, lanes, turn and merge distances, queue and curb-exit routes, doors, curb spots), WalkGraph/RouteRounder/OrientedRect, allocation-free pathing; EditMode 2167/2167 pass.
