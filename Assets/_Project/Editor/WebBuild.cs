@@ -13,22 +13,26 @@ namespace UncannyValet.EditorTools
     public static class WebBuild
     {
         private const string DefaultOutput = "build/WebGL/WebGL";
+        // tools/build-web.ps1 -Sandbox passes this: the sandbox scene alone becomes the player (see SandboxSceneBuilder).
+        private const string SandboxFlag = "-sandboxBuild";
 
         [MenuItem("Uncanny Valet/Build Web Player")]
-        public static void BuildFromMenu() => Build(DefaultOutput);
+        public static void BuildFromMenu() => Build(DefaultOutput, BuildSettingsScenes());
 
         // Called by CI. GameCI passes -customBuildPath; we fall back to the default folder.
         public static void BuildFromCommandLine()
         {
             var output = ReadArg("-customBuildPath") ?? DefaultOutput;
-            var report = Build(output);
+            var scenes = HasFlag(SandboxFlag) ? new[] { SandboxSceneBuilder.ScenePath } : BuildSettingsScenes();
+            var report = Build(output, scenes);
             EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
 
-        private static BuildReport Build(string outputPath)
+        private static string[] BuildSettingsScenes() => EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+
+        private static BuildReport Build(string outputPath, string[] scenes)
         {
             ApplyWebSettings();
-            var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
             if (scenes.Length == 0) throw new InvalidOperationException("No scenes in Build Settings.");
 
             var options = new BuildPlayerOptions
@@ -50,6 +54,8 @@ namespace UncannyValet.EditorTools
             PlayerSettings.WebGL.decompressionFallback = false;
             PlayerSettings.runInBackground = true;
         }
+
+        private static bool HasFlag(string name) => Array.IndexOf(Environment.GetCommandLineArgs(), name) >= 0;
 
         private static string ReadArg(string name)
         {
