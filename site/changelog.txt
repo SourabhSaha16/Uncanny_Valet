@@ -1,4 +1,11 @@
 === Last 50 commits ===
+747970f  2026-11-17  lead: merge agent skid strokes on bends, Refs #181 [Claude]
+60883d4  2026-11-17  cars: cut skid strokes sooner on bends, Refs #181 [Claude]
+026c7e8  2026-11-17  lead: handling defaults from sandbox play-testing [Claude]
+c072bae  2026-11-17  lead: add site-sandbox/ build for the sandbox endpoint, Refs #180 [Claude]
+f67a5b3  2026-11-17  lead: merge agent sandbox scene and endpoint, Refs #180 [Claude]
+4599c37  2026-11-17  integration: sandbox scene, world picker and sandbox build wiring, Refs #180 [Claude]
+955b066  2026-11-17  lead: rebuild site/ with playtest batch 10 for beta [Claude]
 7d563fe  2026-11-17  lead: design log and changelog for playtest batch 10, Refs #176 #177 #178 #179 [Claude]
 7317e59  2026-11-17  lead: merge agent arrival pacing and return spacing, Refs #177 #178 #179 [Claude]
 9e5ce7e  2026-11-17  lead: merge agent/valet Thunder Stride speeds, Refs #176 [Claude]
@@ -42,13 +49,6 @@ f119c00  2026-11-17  ui: green PERFECT cues, clock tab under score panel, Refs #
 95a0971  2026-11-17  lead: rebuild site/ with power pops for beta [Claude]
 2497d5b  2026-11-17  lead: design log and changelog for power pops, Refs #160 [Claude]
 16321bd  2026-11-17  lead: merge agent/integration +X bolt pops, Refs #160 [Claude]
-d754590  2026-11-17  lead: merge agent/powers PowerFilled publishing, Refs #160 [Claude]
-fcdb639  2026-11-17  ui: +X bolt pop beside the power bar on PowerFilled, Refs #160 [Claude]
-190415c  2026-11-17  powers: publish PowerFilled when the bar gains [Claude]
-39a00fe  2026-11-17  lead: add PowerFilled event and PowerFillSource to Core, Refs #160 [Claude]
-e60c9d5  2026-11-16  lead: exempt lot wip commit from changelog check, Refs #157 [Claude]
-838adbc  2026-11-16  lead: rebuild site/ with park feedback for beta [Claude]
-aa0258a  2026-11-16  lead: design log and changelog for park feedback, Refs #157 #158 #159 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -259,6 +259,18 @@ Date: 2026-11-17
 Files: Cars/CarHandlingConfig.cs, Cars/Fx/{SkidConfig,DecalLedger,DecalPool,SkidEmitter}.cs, Data/Cars/CarHandlingConfig.asset, tests (EditMode Cars/CarHandlingTuningTests, DecalLedgerTests)
 Why: issue 174 (play-test: car should feel responsive from the get go) and issue 175 (tyre marks stay 30 s). Defaults changed (old to new): AccelerationScale 1 to 1.7; BrakingScale 1 to 1.3; CoastDragScale 1 to 1.7; SkidConfig MarkFadeSeconds 6 to 30; DecalCap 40 to 640; new SkidConfig MarkFadeOutSeconds 8 (marks hold full opacity, then fade linearly over their last 8 s; never longer than the life, so the F2 fade row still works down to 1 s). Drift, steering and Thunder boost numbers are unchanged: steady-state slip and turn radius do not depend on acceleration (measured identical, radius 2.23 at 3 u/s, 4.06 at 8 u/s, slip 17.9 deg at 8 u/s full lock), and the boost multiplies the input afterwards. The asset holds the same values; ProjectSetup only syncs the aisle width, so it does not reset them. Pool: both tyres at 8 u/s with 1 u spacing drop 16 marks/s, so 30 s of non-stop drifting needs 480; 640 covers that, creating the renderers once (no per-frame allocation) and Tick skips hidden decals without a native call. Measured with a throwaway simulation (not committed), 0.02 s steps, Sedan (top 8, acc 6, brake 12, coast 3), before to after: time to 95% top speed 1.28 s to 0.76 s; 1 to 4 u/s 0.52 s to 0.30 s; brake from top 2.59 u (0.68 s) to 1.97 u (0.52 s); coast from top 10.6 u (2.68 s) to 6.2 u (1.58 s); 0.15 s throttle tap rolls 0.23 u to 0.39 u. Refs #174 #175.
 Tests: EditMode 2036/2036 passed (new: hold-then-fade, tail clamp, pool holds 30 s of non-stop drifting; drive-scale and skid defaults updated); PlayMode 89/89 passed incl. BayEntryTests (regular bays and EV from the aisle at 2 u/s). Not felt by hand in play.
+
+## lead: handling defaults from play-testing in the sandbox [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on with the F2 panel: grip while holding Shift 0.7 (was 0.2), tightest turn radius 1 (was 2.2), top speed scale 1.35 (was 1), turning while drifting 1.5 (was 1.3).
+Tests: EditMode 2063/2063.
+
+## cars: cut skid strokes sooner on bends, smooth circles [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/Fx/TyreTrail.cs, SkidConfig.cs, SkidEmitter.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, Assets/_Project/Tests/EditMode/Cars/TyreMarkTests.cs, TyreBendTests.cs
+Why: issue #181, tight turns showed polygon corners because strokes were only cut every 1 unit. TyreTrail now also cuts when the path bends by _maxBendDegrees (10) after at least _minStrokeLength (0.2); config fields only, no F2 row.
+Tests: new TyreBendTests (straight, circle, min length, Break); full EditMode suite run before commit.
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -692,6 +704,12 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/Hud/BlessingPopTracker.cs, PendingBlessingPops.cs, Scripts/Economy/OvertimeCurseRule.cs; Tests/EditMode/Integration/LateCursePopFlowTests.cs (new), Tests/EditMode/Economy/OvertimeCurseTests.cs, Tests/PlayMode/LatePickupCursePlayModeTests.cs (new, + .meta)
 Why: the late-pickup curse was applied on delivery, but nothing showed it (CursePopTracker skips ticket curses; the pickup pop only read the closed blessing, 0) and the total cannot drop below 0. BlessingPopTracker now keeps the ticket's CurseApplied amount until TicketClosed and pops a red "-N" (existing Curse look) where the blessing pop would be. OvertimeCurseRule.Take now costs at least 1 even when delivery shares the expiry's instant. A voided ticket (no delivery) still costs 0 and pops nothing.
 Tests: EditMode full suite 2033 passed; PlayMode LatePickupCursePlayModeTests 3 passed (real ShiftClock, TicketRegistry, ShiftBlessings on Time.time, seeded tuning). Not checked visually.
+
+## integration: sandbox scene, world picker and sandbox build wiring, Refs #180 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Bootstrap/Sandbox/* (SandboxBootstrap, SandboxWorldHost, SandboxWorldSlot, SandboxWorldsConfig, SandboxWorldSelection, SandboxWorldTuning, SetThroughTuning, NoMudPatches, SandboxBoundary, SandboxSeedAssets), Scripts/UI/Sandbox/* (SandboxPicker, ISandboxControl), Editor/SandboxSceneBuilder.cs (new), Editor/WebBuild.cs (-sandboxBuild flag), Editor/ProjectSetup.cs (RunBatch also builds the sandbox scene), Editor/BootstrapSceneBuilder.cs (helpers made internal), Scenes/Sandbox.unity, Data/Sandbox/SandboxWorldsConfig.asset, Tests/EditMode/Integration/SandboxWorldTests.cs, Tests/PlayMode/SandboxSceneTests.cs, Tests/PlayMode asmdef (+Unity.InputSystem), tools/build-web.ps1 (-Sandbox), tools/README-unity.md, .github/workflows/ci-cd.yml (publish site-sandbox/ at /sandbox/)
+Why: a third site that boots into an empty lot to test driving per world (issue #180). The sandbox reuses the game services, car factory, valet, camera, F2 panel and the lots own builders; a world switch clones the lot template so its mud, props and lighting build as in a real lot, and applies the lot mud numbers live. No shift, patrons, director, pedestrians, traffic, clock, scoring, story or title. Default build-web.ps1 behaviour is unchanged; the workflow fails with a clear error until site-sandbox/index.html is committed on pivot/chaos.
+Tests: EditMode full suite 2063 passed; PlayMode SandboxSceneTests 3 passed (start without errors, car drives under input, world switch with Vanaheim mud and reset). RunBatch ran; its unrelated scene and CarHandlingConfig rewrites were reverted. Web build not run (lead builds site-sandbox/).
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -1942,6 +1960,24 @@ Date: 2026-11-17
 Files: docs/design.md, docs/changelogs/lead.md, site/ (rebuild), merged agent branches (valet, pacing)
 Why: playtest notes 1 to 4 (design.md log 2026-11-17).
 Tests: EditMode 2055/2055, PlayMode 89/89 on the combined tree.
+
+## lead: rebuild site/ with playtest batch 10 for beta [Claude]
+Date: 2026-11-17
+Files: site/, docs/changelogs/lead.md
+Why: player-visible changes #176 to #179 (design.md log 2026-11-17).
+Tests: EditMode 2055/2055, PlayMode 89/89, web build exit 0 (build-info commit 7d563fe); local smoke test: shift starts with no console errors, first car seen entering from the road about 7 s in (arrival timing itself is unit-tested at 0.5 s; not measured in the browser).
+
+## lead: merge agent sandbox scene and endpoint, Refs #180 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-ad4cba4cc5ce8e233 (Sandbox scene, SandboxBootstrap, world picker, WebBuild -sandboxBuild, build-web.ps1 -Sandbox, ci-cd.yml)
+Why: third site /sandbox/ for testing driving per world (#180).
+Tests: EditMode 2063/2063, PlayMode SandboxSceneTests 3/3 (agent); local browser smoke test of the sandbox build, no console errors.
+
+## lead: add site-sandbox/ build for the sandbox endpoint, Refs #180 [Claude]
+Date: 2026-11-17
+Files: site-sandbox/ (built with tools/build-web.ps1 -Sandbox, commit f67a5b3), docs/changelogs/lead.md
+Why: the workflow publishes site-sandbox/ at /sandbox/.
+Tests: loaded in the browser, world picker shown, no console errors.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog

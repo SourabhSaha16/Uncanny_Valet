@@ -1264,3 +1264,15 @@ Date: 2026-11-17
 Files: site-sandbox/ (built with tools/build-web.ps1 -Sandbox, commit f67a5b3), docs/changelogs/lead.md
 Why: the workflow publishes site-sandbox/ at /sandbox/.
 Tests: loaded in the browser, world picker shown, no console errors.
+
+## lead: merge agent skid strokes on bends, Refs #181 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-a8871acba03b95dc2 (TyreTrail, SkidConfig, SkidEmitter, TyreBendTests)
+Why: skid marks looked like polygons on tight turns (#181).
+Tests: EditMode 2067/2067, PlayMode SkidMarkTests 3/3 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with new handling defaults and smooth skid marks [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: new handling defaults (Shift grip 0.7, radius 1, top speed 1.35, drift turn 1.5) and smoother marks, Refs #181.
+Tests: sandbox build loads with no console errors.
