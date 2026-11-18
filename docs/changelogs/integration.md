@@ -331,3 +331,9 @@ Date: 2026-11-18
 Files: Assets/_Project/Scripts/Lot/CurbArrowTracker.cs, CurbZone.cs, StopZone.cs, Assets/_Project/Tests/EditMode/Lot/CurbArrowTests.cs
 Why: #190. The arrow counted any car whose collider touched the curb zone, but the curb only accepts a car whose centre is inside it (StopZone.CentreInside, now shared by both). The arrow also kept its colour after the ticket closed; it now re-evaluates on TicketClosed. Facing uses the same CurbFacingRule and patron check (IPickupAcceptance) as before.
 Tests: CurbArrowTests gains edge-overlap, drift-out and facing-agreement cases.
+
+## integration: slice the Valhalla Drive art for the sandbox, Refs #193 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/ (Lot, Thor, Npc sprites and manifest.json), Assets/_Project/Editor/Import/ValhallaImport.cs, Assets/_Project/Editor/Import/ArtPostprocessor.cs
+Why: #193 asks for the sandbox to use the new Midgard art. The repeatable slicer cuts the tileset by alpha components, drops the red and yellow halo, and splits the Thor and NPC walk sheets into aligned frames; the importer gives them point filter and per-folder pixels per unit.
+Tests: slicer run and every output viewed on a contact sheet; Unity import and tests follow in later commits.
