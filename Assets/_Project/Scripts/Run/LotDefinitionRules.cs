@@ -22,6 +22,8 @@ namespace UncannyValet.Run
             if (string.IsNullOrEmpty(lot.SceneName)) return name + ": no scene name";
             if (string.IsNullOrEmpty(lot.DisplayName)) return name + ": no display name";
             if (lot.Layout == LotLayoutKind.None) return name + ": no layout";
+            if (lot.Layout == LotLayoutKind.Handmade && lot.HandmadePrefab == null) return name + ": the Handmade layout needs its lot prefab";
+            if (lot.Layout != LotLayoutKind.Handmade && lot.HandmadePrefab != null) return name + ": it has a hand-made lot prefab but its layout is not Handmade";
             if (lot.QueueSlots < 1 || lot.QueueSlots > LotDefinition.MaxQueueSlots)
                 return name + ": the queue slot count must be 1 to " + LotDefinition.MaxQueueSlots;
             if (lot.BlessingThreshold < 1) return name + ": the blessing threshold must be at least 1";

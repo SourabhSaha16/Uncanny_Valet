@@ -10,6 +10,7 @@ using UncannyValet.Core.Modifiers;
 using UncannyValet.Director;
 using UncannyValet.Economy;
 using UncannyValet.Lot;
+using UncannyValet.Lot.Handmade;
 using UncannyValet.Night;
 using UncannyValet.Patrons;
 using UncannyValet.Pedestrians;
@@ -34,6 +35,8 @@ namespace UncannyValet.Bootstrap
         [SerializeField, FormerlySerializedAs("_tipConfig")] private BlessingConfig _blessingConfig;
         [SerializeField] private CarFactory _carFactory;
         [SerializeField] private LotLayoutBuilder _lot;
+        [SerializeField, Tooltip("A hand-made lot (#194) instead of the generated one; when set, the lot builder and the decor are not used.")]
+        private HandmadeLot _handmadeLot;
         [SerializeField] private ShiftClock _clock;
         [SerializeField] private GameObject _valet;
         [SerializeField] private PatronConfig _patronConfig;
@@ -86,7 +89,7 @@ namespace UncannyValet.Bootstrap
 
         private void Awake()
         {
-            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null || _lot == null)
+            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null || (_lot == null && _handmadeLot == null))
             {
                 Debug.LogError("GameBootstrap has no ShiftConfig, LotDefinition, RunDefinition or Lot: rebuild with Uncanny Valet/Setup/Build Everything.", this);
                 enabled = false;
@@ -94,7 +97,7 @@ namespace UncannyValet.Bootstrap
             }
             if (!_lotDefinition.TryValidate(out var problem)) Debug.LogError("Invalid lot definition: " + problem, _lotDefinition);
             Services.Reset();
-            _source = LotSources.Parametric(_lot, _decor);
+            _source = LotSources.Of(_handmadeLot, _lot, _decor);
             var bus = new EventBus();
             _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();

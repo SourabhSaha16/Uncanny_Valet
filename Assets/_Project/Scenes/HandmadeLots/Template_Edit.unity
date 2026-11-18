@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 50099697}
   - component: {fileID: 50099699}
   - component: {fileID: 50099698}
+  - component: {fileID: 50099700}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -245,6 +246,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &50099700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50099696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 0
 --- !u!1 &274866369
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,6 +273,7 @@ GameObject:
   - component: {fileID: 274866373}
   - component: {fileID: 274866372}
   - component: {fileID: 274866371}
+  - component: {fileID: 274866376}
   m_Layer: 0
   m_Name: Building
   m_TagString: Untagged
@@ -486,6 +501,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &274866376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274866369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 3
 --- !u!1 &492472162
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +578,7 @@ GameObject:
   - component: {fileID: 555950795}
   - component: {fileID: 555950794}
   - component: {fileID: 555950793}
+  - component: {fileID: 555950798}
   m_Layer: 0
   m_Name: Hedge
   m_TagString: Untagged
@@ -777,6 +806,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &555950798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555950791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 4
 --- !u!1 &789158456
 GameObject:
   m_ObjectHideFlags: 0
@@ -788,6 +830,7 @@ GameObject:
   - component: {fileID: 789158457}
   - component: {fileID: 789158459}
   - component: {fileID: 789158458}
+  - component: {fileID: 789158460}
   m_Layer: 0
   m_Name: Overhead
   m_TagString: Untagged
@@ -903,6 +946,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &789158460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789158456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 5
 --- !u!1 &980503907
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,6 +970,7 @@ GameObject:
   - component: {fileID: 980503908}
   - component: {fileID: 980503910}
   - component: {fileID: 980503909}
+  - component: {fileID: 980503911}
   m_Layer: 0
   m_Name: Sidewalk
   m_TagString: Untagged
@@ -1029,6 +1086,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &980503911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980503907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 1
 --- !u!1 &1506464824
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,6 +1110,7 @@ GameObject:
   - component: {fileID: 1506464825}
   - component: {fileID: 1506464827}
   - component: {fileID: 1506464826}
+  - component: {fileID: 1506464828}
   m_Layer: 0
   m_Name: Markings
   m_TagString: Untagged
@@ -1155,6 +1226,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1506464828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506464824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6878f3faa6f291499b136aa95976849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.LotTileLayer
+  _kind: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -10,5 +10,7 @@ namespace UncannyValet.Run
         None = 0,
         /// <summary>Today's diner lot: two rows of four bays, a curb, a 3-slot queue, a wash slot and an EV bay.</summary>
         Diner = 1,
+        /// <summary>A lot an artist authored by hand as a prefab (tilemaps, scenery and gameplay markers); see <see cref="LotDefinition.HandmadePrefab"/>.</summary>
+        Handmade = 2,
     }
 }

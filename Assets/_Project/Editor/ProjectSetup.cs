@@ -70,6 +70,7 @@ namespace UncannyValet.EditorTools
             CreateConfigs();
             AssetDatabase.Refresh(); // new assets must be imported before the scenes reference them
             HandmadeTileSetup.CreateIfMissing();
+            HandmadeRunAssets.CreateIfMissing(); // needs the test lot prefab
             BootstrapSceneBuilder.Build();
             SandboxSceneBuilder.Build(); // not in Build Settings: only the sandbox web build lists it
         }

@@ -5,7 +5,7 @@ namespace UncannyValet.EditorTools.HandmadeLots
 {
     /// <summary>
     /// The authoring kit of the hand-made lots (#194): Tile assets from the square Valhalla tiles (tools/slice-valhalla-tiles.py), a Tile Palette
-    /// prefab grouped by name prefix, scenery prefabs from the sliced props, and the lot authoring scene template. Safe to run again: existing assets are
+    /// prefab grouped by name prefix, scenery prefabs from the sliced props, the 19 gameplay marker prefabs, the lot authoring scene template and the test lot prefab. Safe to run again: existing assets are
     /// refreshed in place, an existing scene template is never overwritten (it may hold someone's work). Menu: Uncanny Valet/Setup/Hand-made Lot Kit;
     /// also part of Build Everything.
     /// </summary>
@@ -30,8 +30,10 @@ namespace UncannyValet.EditorTools.HandmadeLots
             var tiles = HandmadeTileAssets.Build();
             HandmadePalette.Build(tiles);
             HandmadeSceneryPrefabs.Build();
+            HandmadeMarkerPrefabs.Build();
             AssetDatabase.SaveAssets();
             HandmadeTemplateScene.CreateIfMissing();
+            HandmadeTestLot.Build();
         }
     }
 }

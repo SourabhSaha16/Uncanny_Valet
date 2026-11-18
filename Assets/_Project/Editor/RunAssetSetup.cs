@@ -16,6 +16,12 @@ namespace UncannyValet.EditorTools
         public const string MidgardTrainingPath = "Assets/_Project/Data/Run/MidgardTrainingLot.asset";
         public const string MidgardCrazyPath = "Assets/_Project/Data/Run/MidgardCrazyLot.asset";
 
+        /// <summary>The DEV hand-made Midgard test lot (#194): the real training lot's numbers on the generated test prefab. Not part of the real run.</summary>
+        public const string MidgardHandmadePath = "Assets/_Project/Data/Run/MidgardHandmadeTrainingLot.asset";
+        /// <summary>The DEV run: the real run with the hand-made lot standing in for Midgard Training.</summary>
+        public const string DevHandmadeRunPath = "Assets/_Project/Data/Run/DevHandmadeRunDefinition.asset";
+        public const string MidgardHandmadeScene = "Lot_MidgardHandmade";
+
         public const string VanaheimTrainingPath = "Assets/_Project/Data/Run/VanaheimTrainingLot.asset";
         public const string VanaheimCrazyPath = "Assets/_Project/Data/Run/VanaheimCrazyLot.asset";
 

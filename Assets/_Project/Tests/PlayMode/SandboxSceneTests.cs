@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UncannyValet.Core;
 using UncannyValet.Core.Contracts;
+using UncannyValet.Lot.Handmade;
 using UncannyValet.UI.Sandbox;
 using UncannyValet.Valet;
 using UnityEngine;
@@ -21,6 +22,10 @@ namespace UncannyValet.Tests.PlayMode
         private const float DriveSeconds = 1.5f;
         private const float MinDistance = 1f;
         private const string VanaheimMudWorld = "Storm-Soaked Harvest Feast";
+        private const string HandmadeWorld = "Grandma's Diner (hand-made)";
+        private const int FirstHandmadeKey = 5;
+        private const float ArrivalTolerance = 1.5f;
+        private const float WideAspect = 16f / 9f;
 
         private readonly List<string> _problems = new List<string>();
         private Keyboard _keyboard;
@@ -109,6 +114,42 @@ namespace UncannyValet.Tests.PlayMode
             Assert.IsFalse(HasAnyMud(Services.Get<IMudPatches>()), "going back leaves no mud behind");
             Application.logMessageReceived -= OnLog;
             Assert.IsEmpty(_problems, string.Join("\n---\n", _problems));
+        }
+
+        [UnityTest]
+        public IEnumerator HandmadeWorld_IsSelectable_SpawnsTheCarAtTheArrivalPoint_AndTheCameraShowsTheWholeLot()
+        {
+            Application.logMessageReceived += OnLog;
+            yield return LoadScene();
+            var control = Services.Get<ISandboxControl>();
+            var index = IndexOf(control, HandmadeWorld);
+            Assert.GreaterOrEqual(index + 1, FirstHandmadeKey, "the hand-made world is picker key 5 or later");
+            Assert.IsTrue(control.TrySelectWorld(index));
+            for (var i = 0; i < SettleFrames; i++) yield return null;
+
+            Assert.AreEqual(index, control.CurrentWorld);
+            var lot = Object.FindFirstObjectByType<HandmadeLot>();
+            Assert.IsNotNull(lot, "the hand-made lot is on screen");
+            Assert.IsTrue(lot.IsBuilt, "it passed the validator and built");
+            Assert.AreSame(lot, Services.Get<ILotLayout>(), "the sandbox registered the hand-made lot as the layout");
+            var seat = Object.FindFirstObjectByType<SeatController>();
+            Assert.IsTrue(seat.IsDriving, "the valet is in the car");
+            Assert.Less(Vector2.Distance(seat.Car.Transform.position, lot.ArrivalPoint), ArrivalTolerance, "the car spawns at the arrival point");
+            AssertCameraShows(lot.ViewRect);
+            Application.logMessageReceived -= OnLog;
+            Assert.IsEmpty(_problems, string.Join("\n---\n", _problems));
+        }
+
+        private static void AssertCameraShows(Rect view)
+        {
+            var cam = Camera.main;
+            cam.aspect = WideAspect;
+            var half = new Vector2(cam.orthographicSize * cam.aspect, cam.orthographicSize);
+            var centre = (Vector2)cam.transform.position;
+            Assert.LessOrEqual(centre.x - half.x, view.xMin, "left edge of the lot view is on screen");
+            Assert.GreaterOrEqual(centre.x + half.x, view.xMax, "right edge of the lot view is on screen");
+            Assert.LessOrEqual(centre.y - half.y, view.yMin, "bottom edge of the lot view is on screen");
+            Assert.GreaterOrEqual(centre.y + half.y, view.yMax, "top edge of the lot view is on screen");
         }
 
         private static int IndexOf(ISandboxControl control, string name)
