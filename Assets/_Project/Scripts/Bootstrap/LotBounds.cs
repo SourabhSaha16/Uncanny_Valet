@@ -1,4 +1,3 @@
-using UncannyValet.Lot;
 using UnityEngine;
 
 namespace UncannyValet.Bootstrap
@@ -18,11 +17,11 @@ namespace UncannyValet.Bootstrap
             return true;
         }
 
-        /// <summary>Points the camera at the lot (widened by the decor, when there is one). False when the lot has no renderers.</summary>
-        public static bool TryFrame(GameObject lot, LotDecor decor, CameraFollow camera)
+        /// <summary>Points the camera at the lot (widened by the source's extended view). False when the lot has no renderers.</summary>
+        public static bool TryFrame(ILotSource source, CameraFollow camera)
         {
-            if (!TryMeasure(lot, out var rect)) return false;
-            camera.SetWorldBounds(decor != null ? decor.ExtendView(rect) : rect, rect);
+            if (!TryMeasure(source.Root, out var rect)) return false;
+            camera.SetWorldBounds(source.ExtendView(rect), rect);
             return true;
         }
     }

@@ -343,3 +343,21 @@ Date: 2026-11-18
 Files: Assets/_Project/Scripts/Bootstrap/Sandbox/Valhalla*.cs, SandboxCrowd.cs, Assets/_Project/Editor/ValhallaAssetSetup.cs, SandboxSceneBuilder.cs, Assets/_Project/Data/Sandbox/Valhalla*.asset, Assets/_Project/Scenes/Sandbox.unity, sprite .meta files
 Why: #193. The sandbox Midgard lots are re-skinned over the unchanged lot geometry (colliders, bays, curb, queue), Thor uses a 4x4 walk-cycle ValetArtConfig, and the two Midgard worlds get the real pedestrian crowd with the eight NPC looks (PedestrianConfig copy). Beta and the normal game are untouched.
 Tests: EditMode 2099 passed; SandboxSceneTests 3 passed; RunBatch ran clean; scenes other than Sandbox reverted; screenshots of both Midgard lots and a Vanaheim lot checked.
+
+## integration: square 88x88 Valhalla tile set for Tilemap painting, Refs #194 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla-tiles.py, Assets/_Project/Art/ValhallaMidgard/Tiles/ (52 tiles and metas)
+Why: #194 plan task 5 and the owner decision to re-slice to square 4x4-unit tiles. The sandbox sprites (Lot/) and ValhallaPiece are untouched; the companion script crops the outline and bevel off flat tiles, resamples to 88x88 (nearest) and fits pilasters and awnings on a transparent tile, so neighbours meet without a seam.
+Tests: script run, contact sheet and 3x3 seam tests viewed (asphalt, sidewalk and roof floor tile cleanly; hedge repeats its lit top edge); tile size asserted by HandmadeTileAssetTests (6 passed).
+
+## integration: ILotSource seam and LotRegistration, behaviour-preserving, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Bootstrap/{ILotSource,ParametricLotSource,LotSources,LotRegistration}.cs, GameBootstrap.cs, LotBounds.cs, PedestrianBootstrap.cs, Sandbox/{SandboxBootstrap,SandboxWorldHost,SandboxWorldSlot,SandboxCrowd}.cs, Assets/_Project/Tests/EditMode/Integration/LotSourceTests.cs
+Why: #194 plan task 4. The bootstrap reads a lot through ILotSource (layout, bays, road, pedestrian paths, Perfect settings, root, extended view); ParametricLotSource wraps LotLayoutBuilder and LotDecor and the registration block left GameBootstrap (191 lines, was 190 incl. the new null check). LotSources is the single extension point where the hand-made source will be added; scene fields are unchanged so no scene was rebuilt. TuningSeeder and WatcherBootstrap already took plain values (PerfectSettings, a Transform), so only their callers changed.
+Tests: EditMode 2116 passed (LotSourceTests 4); PlayMode BootstrapSceneSmokeTests, SandboxSceneTests and CameraFramingPlayModeTests 16 passed; RunBatch ran clean, its unrelated scene churn (#62) was reverted.
+
+## integration: hand-made lot kit (tiles, palette, scenery prefabs, template scene), Refs #194 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Editor/HandmadeLots/*.cs, ProjectSetup.cs, UncannyValet.Editor.asmdef, Assets/_Project/Data/HandmadeLots/Tiles/, Assets/_Project/Prefabs/HandmadeLots/ (Valhalla palette, 28 scenery prefabs), Assets/_Project/Scenes/HandmadeLots/Template_Edit.unity, Assets/_Project/Tests/EditMode/Integration/HandmadeTileAssetTests.cs
+Why: #194 plan task 5 (the part not needing HandmadeLot). HandmadeTileSetup builds a Tile asset per square tile, a Tile Palette prefab (4x4 unit cells, one row per name prefix), scenery prefabs from the sliced props and, when missing, the authoring scene template with Ground(-30), Sidewalk(-28), Markings(-27), Building(-5) and Hedge(0) with tilemap plus composite colliders on a static body, and Overhead(5). It runs idempotently inside Setup/Build Everything and from Setup/Hand-made Lot Kit; the template is never overwritten. The Editor asmdef references Unity.2D.Tilemap.Editor for GridPaletteUtility.
+Tests: HandmadeTileAssetTests 6 passed (tiles 88x88 at 22 ppu, every tile in the palette, scenery prefabs, template layers); EditMode 2116 passed; RunBatch run twice.

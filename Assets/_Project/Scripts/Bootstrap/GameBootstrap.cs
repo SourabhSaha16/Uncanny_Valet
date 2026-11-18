@@ -82,17 +82,19 @@ namespace UncannyValet.Bootstrap
         private DifficultyDialsLink _dialsLink;
         private RunBootstrap _runBoot;
         private IEventBus _bus;
+        private ILotSource _source;
 
         private void Awake()
         {
-            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null)
+            if (_shiftConfig == null || _lotDefinition == null || _runDefinition == null || _lot == null)
             {
-                Debug.LogError("GameBootstrap has no ShiftConfig, LotDefinition or RunDefinition: rebuild with Uncanny Valet/Setup/Build Everything.", this);
+                Debug.LogError("GameBootstrap has no ShiftConfig, LotDefinition, RunDefinition or Lot: rebuild with Uncanny Valet/Setup/Build Everything.", this);
                 enabled = false;
                 return;
             }
             if (!_lotDefinition.TryValidate(out var problem)) Debug.LogError("Invalid lot definition: " + problem, _lotDefinition);
             Services.Reset();
+            _source = LotSources.Parametric(_lot, _decor);
             var bus = new EventBus();
             _bus = bus;
             var keyboard = _valet.GetComponent<KeyboardInputSource>();
@@ -107,8 +109,7 @@ namespace UncannyValet.Bootstrap
             var modifiers = ModifierBootstrap.Register(_lotDefinition);
             SeedTuning(tuning, 0);
             Services.Register<ICarFactory>(_carFactory);
-            Services.Register<ILotLayout>(_lot);
-            if (_lot is ISpotGeometry geometry) Services.Register<ISpotGeometry>(geometry);
+            LotRegistration.RegisterLayout(_source);
             Services.Register<IInputSource>(input);
             Services.Register<IPowerInput>(new KeyboardPowerInput(inputBlocked));
             Services.Register<IGameClock>(_clock);
@@ -118,13 +119,13 @@ namespace UncannyValet.Bootstrap
             AudioBootstrap.Register(_lotDefinition);
 
             _carFactory.gameObject.SetActive(true);
-            _lot.gameObject.SetActive(true);
-            Services.Register<IRoadLayout>(_lot.Road);
-            QueueSlotCheck.Verify(_lotDefinition, _lot, this);
-            SeedTuning(tuning, _lot.RegularSpotCount);
+            _source.Root.SetActive(true);
+            LotRegistration.RegisterRoad(_source);
+            QueueSlotCheck.Verify(_lotDefinition, _source.Layout, this);
+            SeedTuning(tuning, _source.Layout.RegularSpotCount);
             _trafficLink = TrafficBootstrap.Start(bus, _traffic, this); // after the lot registered the road
-            if (!LotBounds.TryFrame(_lot.gameObject, _decor, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
-            PedestrianBootstrap.Start(_pedestrians, _decor);
+            if (!LotBounds.TryFrame(_source, _camera)) Debug.LogError("Lot has no renderers; the camera cannot frame it.", this);
+            PedestrianBootstrap.Start(_pedestrians, _source.Paths);
             _powers.gameObject.SetActive(true);
             _clock.gameObject.SetActive(true);
             _clock.Initialize(bus, _shiftConfig);
@@ -134,9 +135,9 @@ namespace UncannyValet.Bootstrap
             StartDirector(bus, tuning);
             _spawner.gameObject.SetActive(true);
             _runBoot = RunBootstrap.Start(bus, _runDefinition, _lotDefinition); // before the UI, which reads the lot picker
-            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _lot, _camera));
+            _flow = new ShiftFlow(bus, new ClockShiftStarter(_clock), new ValetPlacer(_valet, _source.Layout, _camera));
             StartUi(bus);
-            WatcherBootstrap.Start(_lotDefinition, _watcherConfig, _pedestrians, _lot.transform);
+            WatcherBootstrap.Start(_lotDefinition, _watcherConfig, _pedestrians, _source.Root.transform);
             _tuningPanel.gameObject.SetActive(true);
             _audio.gameObject.SetActive(true);
         }
@@ -149,7 +150,7 @@ namespace UncannyValet.Bootstrap
             _dialsLink = TuningSeeder.Seed(tuning, _shiftConfig, _patronConfig, _blessingConfig,
                 spotCount > 0 ? spotCount : DefaultSpotSeed, _directorConfig, _directorProfile,
                 _pedestrians != null ? _pedestrians.StartCount : 0, _trafficConfig, Services.Get<IEventBus>(), _carFactory.HandlingConfig,
-                _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _lot.Perfect,
+                _audio != null ? _audio.Config : null, powers: _powerConfig, perfect: _source.Perfect,
                 emotions: _ui.Emotions, lot: _lotDefinition, modifiers: Services.Get<IModifierCatalog>());
         }
 
@@ -161,7 +162,7 @@ namespace UncannyValet.Bootstrap
                 tuning.Seed(TuningKey.DirEnabled, 0f);
                 return;
             }
-            _directorBoot = DirectorBootstrap.Start(bus, tuning, _clock, _lot, _director, _directorProfile, _random,
+            _directorBoot = DirectorBootstrap.Start(bus, tuning, _clock, _source.Layout, _director, _directorProfile, _random,
                 _shiftConfig.MaxFavourMultiplier);
             if (_directorOverlay != null) _directorOverlay.gameObject.SetActive(true);
         }

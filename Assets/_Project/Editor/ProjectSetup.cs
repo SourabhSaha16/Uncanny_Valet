@@ -4,6 +4,7 @@ using UncannyValet.Cars;
 using UncannyValet.Core.Config;
 using UncannyValet.Director;
 using UncannyValet.EditorTools.Art;
+using UncannyValet.EditorTools.HandmadeLots;
 using UncannyValet.EditorTools.Watchers;
 using UncannyValet.Lot;
 using UncannyValet.Patrons;
@@ -68,6 +69,7 @@ namespace UncannyValet.EditorTools
         {
             CreateConfigs();
             AssetDatabase.Refresh(); // new assets must be imported before the scenes reference them
+            HandmadeTileSetup.CreateIfMissing();
             BootstrapSceneBuilder.Build();
             SandboxSceneBuilder.Build(); // not in Build Settings: only the sandbox web build lists it
         }

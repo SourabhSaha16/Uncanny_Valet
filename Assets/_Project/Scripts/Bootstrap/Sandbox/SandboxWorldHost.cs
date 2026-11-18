@@ -45,19 +45,17 @@ namespace UncannyValet.Bootstrap.Sandbox
             Services.Register<IMudPatches>(new NoMudPatches()); // a lot with mud replaces this while it builds
             _shown = Object.Instantiate(_slots[index], _parent);
             _shown.gameObject.SetActive(true);
-            var lot = _shown.Lot;
-            Services.Register<ILotLayout>(lot);
-            Services.Register<ISpotGeometry>(lot);
-            Services.Register<IRoadLayout>(lot.Road);
-            if (!LotBounds.TryMeasure(lot.gameObject, out var area)) Debug.LogError("The sandbox lot " + lot.name + " has no renderers; the camera cannot frame it.", lot);
+            var source = _shown.Source;
+            LotRegistration.RegisterAll(source);
+            if (!LotBounds.TryMeasure(source.Root, out var area)) Debug.LogError("The sandbox lot " + source.Root.name + " has no renderers; the camera cannot frame it.", source.Root);
             else
             {
                 SandboxBoundary.Build(_shown.transform, area, BoundaryThickness);
-                _camera.SetWorldBounds(_shown.Decor != null ? _shown.Decor.ExtendView(area) : area, area);
+                _camera.SetWorldBounds(source.ExtendView(area), area);
             }
-            Layout = lot;
+            Layout = source.Layout;
             ShownIndex = index;
-            return lot;
+            return Layout;
         }
     }
 }

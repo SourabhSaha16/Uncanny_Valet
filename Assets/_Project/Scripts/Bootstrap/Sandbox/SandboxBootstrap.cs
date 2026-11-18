@@ -135,7 +135,7 @@ namespace UncannyValet.Bootstrap.Sandbox
             if (_carFactory == null || _valet == null || _camera == null || _tuningPanel == null || _picker == null) return false;
             if (_seed == null || !_seed.IsComplete || _worlds.Count == 0) return false;
             for (var i = 0; i < _worlds.Count; i++)
-                if (_worlds[i] == null || _worlds[i].Definition == null || _worlds[i].Lot == null) return false;
+                if (_worlds[i] == null || _worlds[i].Definition == null || _worlds[i].Source == null) return false;
             return true;
         }
 
@@ -144,7 +144,7 @@ namespace UncannyValet.Bootstrap.Sandbox
         {
             _dialsLink = TuningSeeder.Seed(_tuning, _seed.Shift, _seed.Patrons, _seed.Blessings, SeedSpotCount,
                 _seed.Director, _seed.Profile, 0, _seed.Traffic, _bus, _carFactory.HandlingConfig, _seed.Audio,
-                powers: _seed.Powers, perfect: _worlds[0].Lot.Perfect, emotions: _seed.Emotions, lot: first, modifiers: modifiers);
+                powers: _seed.Powers, perfect: _worlds[0].Source.Perfect, emotions: _seed.Emotions, lot: first, modifiers: modifiers);
         }
 
         private void OnDestroy()
