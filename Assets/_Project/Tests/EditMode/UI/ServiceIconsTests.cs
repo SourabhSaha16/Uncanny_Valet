@@ -26,12 +26,12 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void ArrivedMuddyCar_ShowsMudSplat()
+        public void ArrivedMuddyCar_ShowsTheWaterDroplet()
         {
             var row = ArrivedRow(true, false);
             Assert.AreEqual(1, ServiceIcons.Count(row));
             Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
-            Assert.AreEqual(PixelIcon.Mud, icon);
+            Assert.AreEqual(PixelIcon.Drop, icon);
             Assert.IsFalse(ServiceIcons.TryGet(row, 1, out _));
         }
 
@@ -46,30 +46,30 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void MuddyEv_ShowsMudThenPlug_AndWashedDropsTheMud()
+        public void MuddyEv_ShowsDropletThenPlug_AndWashedSwapsTheDropletForThumbsUp()
         {
             var row = ArrivedRow(true, true);
             Assert.AreEqual(2, ServiceIcons.Count(row));
             ServiceIcons.TryGet(row, 0, out var first);
             ServiceIcons.TryGet(row, 1, out var second);
-            Assert.AreEqual(PixelIcon.Mud, first);
+            Assert.AreEqual(PixelIcon.Drop, first);
             Assert.AreEqual(PixelIcon.Plug, second);
             row.Clear(ModifierId.Muddy);
             ServiceIcons.TryGet(row, 0, out var washed);
             ServiceIcons.TryGet(row, 1, out var left);
-            Assert.AreEqual(PixelIcon.Drop, washed);
+            Assert.AreEqual(PixelIcon.ThumbsUp, washed);
             Assert.AreEqual(PixelIcon.Plug, left);
         }
 
         [Test]
-        public void WashedCar_ShowsTheBlueDrop_ChargedCarShowsNothing()
+        public void WashedCar_ShowsTheThumbsUp_ChargedCarShowsNothing()
         {
             var row = ArrivedRow(true, true);
             row.Clear(ModifierId.Muddy);
             row.Clear(ModifierId.NeedsCharge);
             Assert.AreEqual(1, ServiceIcons.Count(row));
             Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
-            Assert.AreEqual(PixelIcon.Drop, icon);
+            Assert.AreEqual(PixelIcon.ThumbsUp, icon);
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void InTheWashStation_TheWashPieReplacesTheMudSplat()
+        public void InTheWashStation_TheWashPieReplacesTheDroplet()
         {
             var row = ArrivedRow(true, false);
             row.HasStation = true;

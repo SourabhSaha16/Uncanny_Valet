@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
+using UncannyValet.UI.Hud;
 using UnityEngine;
 
 namespace UncannyValet.UI.Pie
 {
     /// <summary>
-    /// Keeps one blue pie over every car being washed in the wash station, draining as the wash progresses. Released the frame the car
-    /// leaves the station, the wash completes (a drop symbol takes over, see ServiceIcons), the ticket closes or the car is gone.
+    /// Keeps one blue pie, at the spot of the dirty droplet icon, on every car being washed in the wash station, draining as the wash
+    /// progresses. Released the frame the car leaves the station, the wash completes (a thumbs up takes over, see ServiceIcons), the ticket closes or the car is gone.
     /// </summary>
     public sealed class WashPieLayer : IDisposable
     {
@@ -47,8 +48,8 @@ namespace UncannyValet.UI.Pie
         {
             if (!_cars.TryGet(new CarId(row.Car), out var car) || car.Transform == null) return;
             var step = WashPieRule.Step(WashPieRule.Washing(row).Progress01, _settings.Steps);
-            var shift = PieSlots.WashShift(row, _settings.Steps, _settings.SideGap);
-            _pies.Show(row.Car, car.Transform.position + (Vector3)_settings.Offset + Vector3.right * shift, step, _sprites.Wedge(step), _settings.WashColor);
+            var spot = car.Transform.position + Vector3.down * WorldTicketLayout.IconCentreDropWorldUnits;
+            _pies.Show(row.Car, spot, step, _sprites.Wedge(step), _settings.WashColor);
         }
     }
 }

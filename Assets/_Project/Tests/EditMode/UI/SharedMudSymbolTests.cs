@@ -1,23 +1,14 @@
 using NUnit.Framework;
 using UncannyValet.Core.Contracts;
-using UncannyValet.Core.Modifiers;
 using UncannyValet.UI.Kit;
 
 namespace UncannyValet.Tests.UI
 {
-    /// <summary>A muddy car and its wash station show one symbol: the HUD icon of the Muddy modifier and the station decal share a single bitmap.</summary>
+    /// <summary>The wash station decal (the mud splat) only uses colours of the HUD pixel palette.</summary>
     public sealed class SharedMudSymbolTests
     {
         [Test]
-        public void TheMuddyCarIcon_AndTheWashStationDecal_ResolveToTheSameBitmap()
-        {
-            var carIcon = PixelIconData.Rows(ModifierIcons.ToPixel(ModifierIcon.Mud));
-            Assert.AreSame(carIcon, WashIconArt.Rows, "one bitmap, not two copies");
-            Assert.AreSame(MudIconArt.Rows, WashIconArt.Rows);
-        }
-
-        [Test]
-        public void EveryKeyOfTheSymbol_HasTheSameColour_OnTheCarIconAndTheStationDecal()
+        public void EveryKeyOfTheStationDecal_HasTheSameColourAsThePixelPalette()
         {
             foreach (var row in WashIconArt.Rows)
                 foreach (var key in row)

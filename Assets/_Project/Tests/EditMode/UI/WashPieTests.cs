@@ -5,6 +5,7 @@ using UncannyValet.Core.Ids;
 using UncannyValet.Core.Modifiers;
 using UncannyValet.Tests.Integration;
 using UncannyValet.UI;
+using UncannyValet.UI.Hud;
 using UncannyValet.UI.Kit;
 using UncannyValet.UI.Pie;
 using UnityEngine;
@@ -14,7 +15,6 @@ namespace UncannyValet.Tests.UI
     public class WashPieTests
     {
         private const int Steps = 24;
-        private const float Gap = 0.8f;
 
         private static TicketRow Muddy(bool inWash, float progress, int car = 1)
         {
@@ -49,22 +49,10 @@ namespace UncannyValet.Tests.UI
         }
 
         [Test]
-        public void TwoPies_SitSideBySideWithoutOverlap_OnePieStaysCentred()
+        public void WashPie_SitsAtTheDropletSpotBelowTheCar_NotWherePickupPieSits()
         {
-            var both = Muddy(true, 0.2f);
-            both.StartTimer(TimerKind.Pickup, 0.3f);
-            both.State = TicketRowState.PickupRequested;
-            var left = PieSlots.PickupShift(both, Steps, Gap);
-            var right = PieSlots.WashShift(both, Steps, Gap);
-            Assert.AreEqual(Gap, right - left, 1e-4f);
-            Assert.Less(left, 0f);
-            Assert.Greater(right, 0f);
-            var diameterUnits = new PickupPieSettings().DiameterPixels / PickupPieSprites.PixelsPerUnit;
-            Assert.Greater(right - left, diameterUnits, "default gap clears the pie diameter");
-
-            var washOnly = Muddy(true, 0.2f);
-            Assert.AreEqual(0f, PieSlots.WashShift(washOnly, Steps, Gap));
-            Assert.AreEqual(0f, PieSlots.PickupShift(washOnly, Steps, Gap));
+            Assert.Greater(WorldTicketLayout.IconCentreDropWorldUnits, WorldTicketLayout.IconDropWorldUnits);
+            Assert.Greater(new PickupPieSettings().Offset.y, 0f, "pickup pie stays above the car");
         }
 
         [Test]
@@ -96,13 +84,17 @@ namespace UncannyValet.Tests.UI
             layer.Dispose();
         }
 
-        [Test]
-        public void TheDropIconHasABitmapWithKnownKeys()
+        [TestCase(PixelIcon.Drop)]
+        [TestCase(PixelIcon.ThumbsUp)]
+        public void TheStatusIconsHaveABitmapWithKnownKeys(PixelIcon icon)
         {
-            Assert.AreEqual(9, PixelIconData.Rows(PixelIcon.Drop).Length);
-            foreach (var row in PixelIconData.Rows(PixelIcon.Drop))
+            Assert.AreEqual(9, PixelIconData.Rows(icon).Length);
+            foreach (var row in PixelIconData.Rows(icon))
+            {
+                Assert.AreEqual(9, row.Length);
                 foreach (var key in row)
                     Assert.IsTrue(key == '.' || PixelIconData.Keys.IndexOf(key) >= 0, "unknown icon key " + key);
+            }
             Assert.AreEqual(PixelIconData.Keys.Length, PixelIconData.Colors.Length);
         }
     }

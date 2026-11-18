@@ -24,7 +24,7 @@ namespace UncannyValet.Tests
         /// <summary>A board row modifier for Muddy, as the tracker would describe it.</summary>
         public static RowModifier MuddyRow() => new RowModifier
         {
-            Id = ModifierId.Muddy, ClearedAt = StationKind.Wash, Icon = PixelIcon.Mud, ActiveWord = "Washing", DoneWord = "Washed",
+            Id = ModifierId.Muddy, ClearedAt = StationKind.Wash, Icon = PixelIcon.Drop, ActiveWord = "Washing", DoneWord = "Washed",
         };
 
         /// <summary>A board row modifier for NeedsCharge, as the tracker would describe it.</summary>

@@ -96,14 +96,14 @@ namespace UncannyValet.Tests.Core
                 Assert.IsTrue(seen.Add(icon), def.DisplayName + " shares its icon");
                 Assert.Greater(PixelIconData.Rows(icon).Length, 0, def.DisplayName);
             }
-            Assert.AreEqual(PixelIcon.Mud, ModifierIcons.ToPixel(ModifierIcon.Mud));
+            Assert.AreEqual(PixelIcon.Drop, ModifierIcons.ToPixel(ModifierIcon.Mud));
             Assert.AreEqual(PixelIcon.Plug, ModifierIcons.ToPixel(ModifierIcon.Plug));
         }
 
         [Test]
         public void TheIconKeysAreAllInThePixelPalette()
         {
-            foreach (var row in PixelIconData.Rows(PixelIcon.Mud))
+            foreach (var row in PixelIconData.Rows(PixelIcon.Drop))
                 foreach (var key in row)
                     Assert.IsTrue(key == '.' || PixelIconData.Keys.IndexOf(key) >= 0, "unknown icon key " + key);
         }

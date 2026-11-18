@@ -7,10 +7,10 @@ namespace UncannyValet.UI.Kit
         Bell,
         KeyTag,
         Car,
-        Mud,
         Tyre,
         Plug,
         PrayerHands,
-        Drop
+        Drop,
+        ThumbsUp
     }
 }
