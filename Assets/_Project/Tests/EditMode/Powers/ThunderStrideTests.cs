@@ -34,7 +34,7 @@ namespace UncannyValet.Tests.Powers
             Assert.AreEqual(0f, v.Distance, "the old dash distance is unused");
             Assert.AreEqual(4f, v.Cooldown);
             Assert.AreEqual(boost, v.Duration, 0.0001f);
-            Assert.AreEqual(1.5f, v.PushStrength, "car top speed x1.5");
+            Assert.AreEqual(1.8f, v.PushStrength, "car top speed x1.8");
             Assert.AreEqual(2f, v.Width, "car acceleration x2");
         }
 

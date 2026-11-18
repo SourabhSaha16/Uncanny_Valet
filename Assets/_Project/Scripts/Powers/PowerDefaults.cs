@@ -30,9 +30,9 @@ namespace UncannyValet.Powers
         }
 
         // Cooldown 4 s (after the boost ends); the boost time (5 s level 1, 7 s level 2, issue 150) and the on-foot walking speed multiplier (Secondary) differ per level (issue 176: 5x and 6x the 4 walking speed, so 20 and 24 per second against the 15 per second Shift dash);
-        // car boost top speed x1.5 and acceleration x2 (issue 88). Distance is unused (the old on-foot dash, issue 146).
+        // car boost top speed x1.8 (was 1.5) and acceleration x2 (issue 88). Distance is unused (the old on-foot dash, issue 146).
         private static PowerLevelValues ThunderStrideNumbers(float boostSeconds, float walkSpeedTimes) =>
-            new PowerLevelValues(4f, boostSeconds, 0f, 1.5f, 2f, walkSpeedTimes);
+            new PowerLevelValues(4f, boostSeconds, 0f, 1.8f, 2f, walkSpeedTimes);
 
         /// <summary>The display name of a power.</summary>
         public static string DisplayName(StoryPower power) => PowerLevelRows.GroupOf(power);

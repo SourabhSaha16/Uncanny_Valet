@@ -57,8 +57,8 @@ namespace UncannyValet.Cars
         private float _reverseScale = 1f;
 
         [Header("Thunder stride boost handling (issue 167)")]
-        [SerializeField, Range(0f, 1f), Tooltip("Share of the speed-based grip loss kept while the Thunder stride boost runs (1 = unchanged, 0.4 = 40% of the loss).")]
-        private float _thunderGripLossKept = 0.4f;
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the speed-based grip loss kept while the Thunder stride boost runs (1 = unchanged, 0 = perfect grip).")]
+        private float _thunderGripLossKept = 0f;
         [SerializeField, Range(0f, 1f), Tooltip("Share of the turn-rate fall-off with speed kept while the boost runs (0 = off, the car turns as at low speed; 1 = unchanged).")]
         private float _thunderTurnFalloffKept = 0f;
 

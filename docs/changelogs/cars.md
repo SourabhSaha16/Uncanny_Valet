@@ -150,3 +150,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
 Why: values the human settled on in the F2 panel: tyre bite 15.5 (was 11), top speed 1.2 (was 1.35), acceleration 1.3 (was 1.7), braking 1.75 (was 1.6), coasting 2.65 (was 2.45).
 Tests: EditMode 2069/2069.
+
+## lead: Thunder Stride in a car is faster and grips perfectly [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Powers/ThunderStrideDefinition.asset, Assets/_Project/Scripts/Powers/PowerDefaults.cs, Assets/_Project/Scripts/Cars/CarHandlingConfig.cs, Assets/_Project/Tests/EditMode/Powers/ThunderStrideTests.cs, docs/changelogs/cars.md
+Why: human asked for more speed and perfect handling while 1 T runs: car boost top speed x1.8 (was x1.5), share of the grip loss kept 0 (was 0.4, so no sliding at all); the turn fall-off was already off.
+Tests: EditMode 2069/2069 (ThunderStrideTests expects x1.8).
