@@ -17,7 +17,8 @@
         "UncannyValet.Run",
         "UncannyValet.UI",
         "UncannyValet.Watchers",
-        "UncannyValet.Bootstrap"
+        "UncannyValet.Bootstrap",
+        "Unity.2D.Tilemap.Editor"
     ],
     "includePlatforms": ["Editor"],
     "autoReferenced": false
