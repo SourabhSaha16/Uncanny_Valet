@@ -41,6 +41,18 @@ namespace UncannyValet.Tests.Integration
             Assert.AreEqual(30f, CameraFit.Size(new Rect(0, 0, 4, 4), new Rect(0, 0, 4, 4), Aspect, 1f, 1f, 30f, 12.5f), 1e-4f);
         }
 
+        [TestCase(21f / 9f)]
+        [TestCase(16f / 9f)]
+        [TestCase(4f / 3f)]
+        [TestCase(9f / 16f)]
+        [TestCase(1f)]
+        public void WholeLotIsVisibleAtAnyWindowShape(float aspect)
+        {
+            var size = CameraFit.Size(View, Lot, aspect, 1f, 0.78f, 1f, 50f);
+            Assert.GreaterOrEqual(size, Lot.height * 0.5f - 1e-4f);
+            Assert.GreaterOrEqual(size * aspect, Lot.width * 0.5f - 1e-4f);
+        }
+
         [Test]
         public void LotTallerThanTheCapStillFits()
         {
