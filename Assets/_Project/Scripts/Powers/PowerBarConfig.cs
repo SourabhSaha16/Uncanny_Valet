@@ -17,7 +17,7 @@ namespace UncannyValet.Powers
         [SerializeField, Range(0f, 100f), Tooltip("Bar gained when a car is parked inside a bay. A Perfect Park adds this too.")]
         private float _fillParkedInside = 0f;
 
-        [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one perfect drop-off.")]
+        [SerializeField, Range(0f, 100f), Tooltip("Bar gained for one perfect pickup.")]
         private float _fillPerfectDropOff = 10f;
 
         [SerializeField, Range(0f, 5f), Tooltip("Bar gained per second of sliding.")]

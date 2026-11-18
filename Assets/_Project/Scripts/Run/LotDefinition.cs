@@ -23,14 +23,14 @@ namespace UncannyValet.Run
         private string _sceneName;
         [SerializeField, Tooltip("Which parametric layout the lot is built from.")]
         private LotLayoutKind _layout = LotLayoutKind.Diner;
-        [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Every lot has 4: the valet pickup spot plus 3 queue slots. The lot grows taller for more.")]
+        [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Every lot has 4: the valet drop-off spot plus 3 queue slots. The lot grows taller for more.")]
         private int _queueSlots = DefaultQueueSlots;
         [SerializeField] private LotPacing _pacing = new LotPacing();
         [SerializeField, Tooltip("The service modifiers cars of this lot arrive with and the chance of each; the list order is the roll order.")]
         private List<ModifierChance> _modifierChances = new List<ModifierChance>();
         [SerializeField, Tooltip("Dials that start somewhere other than the global baseline in this lot.")]
         private List<DialPosition> _dials = new List<DialPosition>();
-        [SerializeField, Tooltip("Power bar gained per Perfect Park, perfect drop-off and drift in this lot.")]
+        [SerializeField, Tooltip("Power bar gained per Perfect Park, perfect pickup and drift in this lot.")]
         private LotPowerFill _powerFill = new LotPowerFill();
         [SerializeField, Tooltip("Show the power bar on the HUD. Off in Midgard (it confuses there); the bar rules still run.")]
         private bool _showPowerBar = true;
@@ -73,7 +73,7 @@ namespace UncannyValet.Run
 
         /// <summary>Most queue slots a layout is built for.</summary>
         public const int MaxQueueSlots = 6;
-        /// <summary>Slots of a new lot: the valet pickup spot plus three queue slots.</summary>
+        /// <summary>Slots of a new lot: the valet drop-off spot plus three queue slots.</summary>
         public const int DefaultQueueSlots = 4;
         /// <summary>Most ambient pedestrians a lot can have (the size of the pedestrian pool).</summary>
         public const int MaxAmbientPedestrians = 10;

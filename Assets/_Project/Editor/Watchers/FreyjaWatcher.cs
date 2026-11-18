@@ -41,7 +41,7 @@ namespace UncannyValet.EditorTools.Watchers
             {
                 [WatcherEvent.Curse] = new[] { "CURSES ARE SO UNBECOMING, DARLING.", "SOMEONE'S SULKING. HOW DRAMATIC.", "I FELT THAT ONE FROM HERE." },
                 [WatcherEvent.PerfectPark] = new[] { "GORGEOUS PARKING, DARLING!", "PERFECTLY PLACED. I ADORE IT.", "NOW THAT IS ELEGANCE." },
-                [WatcherEvent.PerfectDropOff] = new[] { "A DROP-OFF FIT FOR A GODDESS!", "THEY'RE SMITTEN. WELL DONE, LOVE.", "SMOOTH AS HONEY. DELIGHTFUL." },
+                [WatcherEvent.PerfectDropOff] = new[] { "A PICKUP FIT FOR A GODDESS!", "THEY'RE SMITTEN. WELL DONE, LOVE.", "SMOOTH AS HONEY. DELIGHTFUL." },
                 [WatcherEvent.BigCrash] = new[] { "THE BARN FELT THAT, DARLING.", "WHAT A CRUNCH. DREADFUL!", "MY FARM! HAVE SOME DECENCY!" },
                 [WatcherEvent.HalfwayToGoal] = new[] { "HALFWAY BLESSED. HOW DELIGHTFUL!", "THE HARVEST IS HALF IN, LOVE.", "KEEP GOING. THE FIELDS ARE WATCHING." },
                 [WatcherEvent.GoalReached] = new[] { "THE FIELDS ARE BLESSED. WELL DONE!", "ENOUGH BLESSINGS. I'M DELIGHTED.", "A BOUNTIFUL HARVEST, VALET!" },

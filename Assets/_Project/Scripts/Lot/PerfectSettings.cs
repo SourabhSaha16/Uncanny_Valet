@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace UncannyValet.Lot
 {
-    /// <summary>Starting values of the Perfect Park and Perfect drop-off thresholds (part of <see cref="LotConfig"/>; read-only at runtime).</summary>
+    /// <summary>Starting values of the Perfect Park and Perfect pickup thresholds (part of <see cref="LotConfig"/>; read-only at runtime).</summary>
     [Serializable]
     public sealed class PerfectSettings
     {
-        [Header("Perfect drop-off")]
-        [SerializeField, Range(1f, 80f), Tooltip("Largest angle off straight down for a perfect drop-off (the normal rule allows 80).")]
+        [Header("Perfect pickup")]
+        [SerializeField, Range(1f, 80f), Tooltip("Largest angle off straight down for a perfect pickup (the normal rule allows 80).")]
         private float _dropOffAngleDegrees = 15f;
         [SerializeField, Range(0.05f, 1f), Tooltip("The car must arrive before this share of the patron's pickup timer is gone.")]
         private float _dropOffTimerShare = 0.5f;

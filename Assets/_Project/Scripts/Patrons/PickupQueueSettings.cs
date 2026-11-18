@@ -4,13 +4,13 @@ using UnityEngine;
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Tunables of the valet pickup spot and the queue behind it (issue 127). Slot 0 of the lot's arrival queue is the pickup
+    /// Tunables of the valet drop-off spot and the queue behind it (issue 127). Slot 0 of the lot's arrival queue is the pickup
     /// spot; the other slots are the queue. Lives inside <see cref="PatronConfig"/>.
     /// </summary>
     [Serializable]
     public sealed class PickupQueueSettings
     {
-        [SerializeField, Range(1, 8), Tooltip("Cars that may wait at once, the pickup spot included (1 pickup spot + 3 queue slots = 4). The lot's queue slots limit it too. A full queue holds the next arrival.")]
+        [SerializeField, Range(1, 8), Tooltip("Cars that may wait at once, the pickup spot included (1 drop-off spot + 3 queue slots = 4). The lot's queue slots limit it too. A full queue holds the next arrival.")]
         private int _maxQueuedCars = 4;
         [SerializeField, Min(0.5f), Tooltip("World units from the valet (on foot or driving) to the car in the pickup spot at which its patron gets out and walks to the diner.")]
         private float _approachRange = 4f;
