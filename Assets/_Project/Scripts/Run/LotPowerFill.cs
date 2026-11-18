@@ -13,7 +13,7 @@ namespace UncannyValet.Run
         private float _perfectPark = 16.7f;
         [SerializeField, Range(0f, 100f), Tooltip("Power bar gained when a car is parked inside a bay (a Perfect Park adds this too).")]
         private float _parkedInside = 0f;
-        [SerializeField, Range(0f, 100f), Tooltip("Power bar gained for one perfect drop-off.")]
+        [SerializeField, Range(0f, 100f), Tooltip("Power bar gained for one perfect pickup.")]
         private float _perfectDropOff = 10f;
         [SerializeField, Range(0f, 5f), Tooltip("Power bar gained per second of sliding.")]
         private float _driftPerSecond = 0.6f;

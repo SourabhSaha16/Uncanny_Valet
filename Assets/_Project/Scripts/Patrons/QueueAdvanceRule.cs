@@ -4,7 +4,7 @@ using UncannyValet.Core.Ids;
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Pure rule for the queue moving up (issue 127). Slot 0 is the valet pickup spot; later slots lie behind it. A standing
+    /// Pure rule for the queue moving up (issue 127). Slot 0 is the valet drop-off spot; later slots lie behind it. A standing
     /// car drives up one slot when the slot ahead of it is free, so when the pickup car is driven away the car behind moves
     /// into the pickup spot and the rest follow one by one as each slot clears.
     /// </summary>

@@ -63,6 +63,40 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void CarOverlappingTheEdgeButCentredOutsideNeverLightsTheArrow()
+        {
+            var t = new CurbArrowTracker();
+            var accept = new FakeAccept { Yes = true };
+            t.Update(new CarId(1), centreInside: false, facingRight: true);
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(accept));
+        }
+
+        [Test]
+        public void CarThatDriftsOutOfTheZoneCentreTurnsTheArrowOffAgain()
+        {
+            var t = new CurbArrowTracker();
+            var accept = new FakeAccept { Yes = true };
+            Assert.IsTrue(t.Update(new CarId(1), true, true));
+            Assert.AreEqual(CurbArrowState.Right, t.Evaluate(accept));
+            Assert.IsTrue(t.Update(new CarId(1), false, true));
+            Assert.AreEqual(CurbArrowState.Idle, t.Evaluate(accept));
+        }
+
+        [Test]
+        public void ArrowFacingIsTheSameRuleTheCurbAcceptsWith()
+        {
+            var rule = new CurbFacingRule(80f);
+            var t = new CurbArrowTracker();
+            foreach (var degrees in new[] { 0f, 79f, -79f, 81f, 180f, 359f })
+            {
+                var id = new CarId(7);
+                t.Update(id, true, rule.IsAcceptable(degrees));
+                var arrow = t.Evaluate(new FakeAccept { Yes = true });
+                Assert.AreEqual(rule.IsAcceptable(degrees) ? CurbArrowState.Right : CurbArrowState.Wrong, arrow, "rotation " + degrees);
+            }
+        }
+
+        [Test]
         public void RequiredDirectionPointsUpTheScreen()
         {
             var d = CurbFacingRule.RequiredDirection;

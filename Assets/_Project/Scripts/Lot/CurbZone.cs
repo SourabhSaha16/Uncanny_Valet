@@ -10,7 +10,7 @@ namespace UncannyValet.Lot
     /// The drop-off zone. Publishes CarAtCurb once an empty car settles inside it facing up the screen (within the
     /// configured tolerance). A resting car that faces the wrong way is not accepted; CurbFacingChanged tells the UI to
     /// show a hint until the car is turned or leaves. The pickup arrows turn green only when a correctly facing car's
-    /// patron will take it (IPickupAcceptance), and re-evaluate when a PickupRequested arrives.
+    /// patron will take it (IPickupAcceptance), and re-evaluate when a PickupRequested arrives or a ticket closes (the patron no longer waits).
     /// </summary>
     public class CurbZone : StopZone
     {
@@ -25,19 +25,26 @@ namespace UncannyValet.Lot
         {
             _bus = Bus;
             _bus.Subscribe<PickupRequested>(OnPickupRequested);
+            _bus.Subscribe<TicketClosed>(OnTicketClosed);
         }
 
         private void OnEnable()
         {
-            if (_bus != null) _bus.Subscribe<PickupRequested>(OnPickupRequested);
+            if (_bus == null) return;
+            _bus.Subscribe<PickupRequested>(OnPickupRequested);
+            _bus.Subscribe<TicketClosed>(OnTicketClosed);
         }
 
         private void OnDisable()
         {
-            if (_bus != null) _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
+            if (_bus == null) return;
+            _bus.Unsubscribe<PickupRequested>(OnPickupRequested);
+            _bus.Unsubscribe<TicketClosed>(OnTicketClosed);
         }
 
         private void OnPickupRequested(PickupRequested e) => ShowArrow();
+
+        private void OnTicketClosed(TicketClosed e) => ShowArrow();
 
         /// <summary>Sets the zone up; <paramref name="arrow"/> (optional) is tinted by how the cars inside face.</summary>
         public void Init(LotConfig config, CurbArrow arrow = null)
@@ -73,7 +80,7 @@ namespace UncannyValet.Lot
         {
             var facing = _facing.IsAcceptable(car.Transform.eulerAngles.z);
             SetWrong(car.Id, resting && !facing);
-            TrackFacing(car.Id, facing);
+            if (_tracker.Update(car.Id, CentreInside(car), facing)) ShowArrow();
             return facing;
         }
 
@@ -85,11 +92,6 @@ namespace UncannyValet.Lot
         {
             SetWrong(car, false);
             if (_tracker.Remove(car)) ShowArrow();
-        }
-
-        private void TrackFacing(CarId car, bool facing)
-        {
-            if (_tracker.Set(car, facing)) ShowArrow();
         }
 
         private void ShowArrow()

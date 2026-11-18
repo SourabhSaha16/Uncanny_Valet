@@ -48,7 +48,7 @@ namespace UncannyValet.EditorTools.Watchers
             {
                 [WatcherEvent.Curse] = new[] { "THAT'S A CURSE ON THE HOUSE, VALET.", "I SAW THAT. SHAMEFUL.", "ANGRY PATRONS ARE BAD FOR BUSINESS." },
                 [WatcherEvent.PerfectPark] = new[] { "NOT A LINE OUT OF PLACE. HMM.", "NEAT. I'VE SEEN WORSE. MUCH WORSE.", "NICE PARKING. I SUPPOSE." },
-                [WatcherEvent.PerfectDropOff] = new[] { "SWIFT, SMOOTH, AT THE CURB. GOOD.", "THE PATRON IS PLEASED. SO AM I.", "THAT'S HOW A DROP-OFF IS DONE." },
+                [WatcherEvent.PerfectDropOff] = new[] { "SWIFT, SMOOTH, AT THE CURB. GOOD.", "THE PATRON IS PLEASED. SO AM I.", "THAT'S HOW A PICKUP IS DONE." },
                 [WatcherEvent.BigCrash] = new[] { "MY INSURANCE WILL HEAR ABOUT THIS.", "A CAR OR A BATTERING RAM?", "OH, THE NOISE. THE PAPERWORK!" },
                 [WatcherEvent.HalfwayToGoal] = new[] { "HALF THE BLESSINGS ARE IN. WELL DONE.", "HALFWAY. DON'T GET COMFY.", "HALFWAY. I'M ALMOST IMPRESSED." },
                 [WatcherEvent.GoalReached] = new[] { "ENOUGH BLESSINGS. SPLENDID.", "GOAL MET. I HAD MY DOUBTS.", "THAT'LL DO, VALET. THAT'LL DO." },

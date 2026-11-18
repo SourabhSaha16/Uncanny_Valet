@@ -319,3 +319,15 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketBoard.cs, Hud/ServiceIcons.cs, Hud/WorldTicketPainter.cs, Assets/_Project/Tests/EditMode/UI/ServiceIconsTests.cs
 Why: #187. The droplet and plug icons were gated on TicketRow.Arrived; the ticket and its modifiers are announced at spawn, so the gate is now "not Departed" (set on CarDeparted). The info box still waits for arrival.
 Tests: ServiceIconsTests updated (spawned-not-arrived shows icons, departed shows none, board row from spawn).
+
+## integration: swap player-facing Drop off and Pickup wording, Refs #189 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/LotConfig.cs, LotCurbArt.cs, CurbArrowLayout.cs, PerfectSettings.cs, Scripts/Core/Contracts/PerfectRows.cs, PowerRows.cs, Scripts/Powers/PowerBarConfig.cs, Scripts/Run/LotDefinition.cs, LotPowerFill.cs, Scripts/Patrons/PickupQueueSettings.cs, QueueAdvanceRule.cs, QueueAdvancer.cs, Editor/Watchers/FreyjaWatcher.cs, OkaforWatcher.cs, Data/Watchers/FreyjaText.asset, MrsOkaforText.asset, Tests/EditMode/UI/PlayerWordingTests.cs (all under Assets/_Project)
+Why: #189. Drop off is now the first queue slot (patron leaves the car) and Pickup the curb (valet returns it). Curb text reads VALET PICKUP, slot text VALET DROP-OFF (label size 0.45 so 8 letters fit the 4.5 slot), perfect-delivery F2 rows and watcher lines say pickup. HowToPlayText already used the new meaning. No identifiers, events or enums renamed.
+Tests: PlayerWordingTests (curb and slot words, F2 Perfect rows).
+
+## integration: curb arrows turn green only for a delivery the curb accepts, Refs #190 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Lot/CurbArrowTracker.cs, CurbZone.cs, StopZone.cs, Assets/_Project/Tests/EditMode/Lot/CurbArrowTests.cs
+Why: #190. The arrow counted any car whose collider touched the curb zone, but the curb only accepts a car whose centre is inside it (StopZone.CentreInside, now shared by both). The arrow also kept its colour after the ticket closed; it now re-evaluates on TicketClosed. Facing uses the same CurbFacingRule and patron check (IPickupAcceptance) as before.
+Tests: CurbArrowTests gains edge-overlap, drift-out and facing-agreement cases.

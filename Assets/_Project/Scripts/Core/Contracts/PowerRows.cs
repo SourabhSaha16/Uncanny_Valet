@@ -38,7 +38,7 @@ namespace UncannyValet.Core.Contracts
                     "How much of the power bar (0 to 100) one Perfect Park fills. A third of the bar is one bolt."),
                 new TuningInfo(TuningKey.PowerFillParkedInside, BarGroup, "Power bar: parked inside adds", 0f, 100f, 1f,
                     "How much of the power bar a car parked inside a bay fills. A Perfect Park adds this too."),
-                new TuningInfo(TuningKey.PowerFillPerfectDropOff, BarGroup, "Power bar: perfect drop-off adds", 0f, 100f, 1f,
+                new TuningInfo(TuningKey.PowerFillPerfectDropOff, BarGroup, "Power bar: perfect pickup adds", 0f, 100f, 1f,
                     "How much of the power bar a perfect delivery at the curb fills."),
                 new TuningInfo(TuningKey.PowerFillDriftPerSecond, BarGroup, "Power bar: drifting adds per second", 0f, 5f, 0.1f,
                     "Power bar gained for every second the car slides."),

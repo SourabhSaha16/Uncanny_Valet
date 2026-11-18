@@ -46,7 +46,7 @@ namespace UncannyValet.Lot
         [SerializeField] private float _valetStartOffset = 1.5f;
 
         [Header("Arrival queue")]
-        [Range(1, 8), Tooltip("Number of waiting slots stacked in a column under the curb; slot 0 is the arrival point and the valet pickup spot, nearest the curb. The lot definition sets the real count (4).")]
+        [Range(1, 8), Tooltip("Number of waiting slots stacked in a column under the curb; slot 0 is the arrival point and the valet drop-off spot, nearest the curb. The lot definition sets the real count (4).")]
         [SerializeField] private int _queueSlotCount = 4;
         [Tooltip("Footprint of a waiting car (width, length) at rotation 0.")]
         [SerializeField] private Vector2 _queueCarSize = new Vector2(2.2f, 4.5f);
@@ -89,16 +89,16 @@ namespace UncannyValet.Lot
         [Min(0.1f), Tooltip("Size of the vertical curb text; the longest word's letters must fit inside the curb height (about 1.15 lines per size).")]
         [SerializeField] private float _curbLabelSize = 0.52f;
         [Tooltip("Words written vertically (one column each, left to right) on the curb zone.")]
-        [SerializeField] private string[] _curbLabelWords = { "VALET", "DROP-OFF" };
+        [SerializeField] private string[] _curbLabelWords = { "VALET", "PICKUP" };
         [Min(0.1f), Tooltip("Distance between the columns of the curb text.")]
         [SerializeField] private float _curbLabelColumnSpacing = 0.95f;
-        [Min(0.1f), Tooltip("Size of the vertical text on the valet pickup spot (the first queue slot).")]
-        [SerializeField] private float _pickupLabelSize = 0.5f;
-        [Tooltip("Words written vertically (one column each) on the valet pickup spot.")]
-        [SerializeField] private string[] _pickupLabelWords = { "VALET", "PICKUP" };
-        [Min(0.1f), Tooltip("Distance between the columns of the pickup spot text.")]
+        [Min(0.1f), Tooltip("Size of the vertical text on the valet drop-off spot (the first queue slot).")]
+        [SerializeField] private float _pickupLabelSize = 0.45f;
+        [Tooltip("Words written vertically (one column each) on the valet drop-off spot.")]
+        [SerializeField] private string[] _pickupLabelWords = { "VALET", "DROP-OFF" };
+        [Min(0.1f), Tooltip("Distance between the columns of the drop-off spot text.")]
         [SerializeField] private float _pickupLabelColumnSpacing = 0.8f;
-        [Tooltip("Colour of the dashed outline of the valet pickup spot (the other queue slots use the crosswalk colour).")]
+        [Tooltip("Colour of the dashed outline of the valet drop-off spot (the other queue slots use the crosswalk colour).")]
         [SerializeField] private Color _pickupSlotColor = new Color(1f, 0.85f, 0.2f, 1f);
         [SerializeField] private float _labelSize = 1.6f;
         [SerializeField] private Color _labelColor = new Color(1f, 1f, 1f, 0.55f);

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace UncannyValet.Patrons
 {
     /// <summary>
-    /// Runs the valet pickup spot and the queue behind it (issue 127). Every arrived car stands in a queue slot (slot 0 is the
+    /// Runs the valet drop-off spot and the queue behind it (issue 127). Every arrived car stands in a queue slot (slot 0 is the
     /// pickup spot). When the valet comes up to the car in the pickup spot its patron is told to step out
     /// (<see cref="PatronStepsOut"/>); when a slot is clear the car behind drives up into it (<see cref="QueueAdvanceRule"/>).
     /// Call <see cref="Tick"/> every frame; it never allocates.

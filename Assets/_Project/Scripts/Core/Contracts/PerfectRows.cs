@@ -3,18 +3,18 @@ using UncannyValet.Core.Events;
 namespace UncannyValet.Core.Contracts
 {
     /// <summary>
-    /// Panel rows of Perfect Park and Perfect drop-off judging (Lot owns the values), in designer language. The three
+    /// Panel rows of Perfect Park and Perfect pickup judging (Lot owns the values), in designer language. The three
     /// Perfect Park judging rows show without the Advanced toggle; the rest are Advanced.
     /// </summary>
     public static class PerfectRows
     {
-        public const string Group = "Perfect park and drop-off";
+        public const string Group = "Perfect park and pickup";
 
         public static readonly TuningInfo[] Rows =
         {
-            new TuningInfo(TuningKey.PerfectDropOffAngle, Group, "Perfect drop-off: how straight at the curb (degrees)", 1f, 80f, 1f,
+            new TuningInfo(TuningKey.PerfectDropOffAngle, Group, "Perfect pickup: how straight at the curb (degrees)", 1f, 80f, 1f,
                 "How far off straight the car may point at the curb and still count as perfect; 15 is fairly strict, 80 accepts any normal hand-back."),
-            new TuningInfo(TuningKey.PerfectDropOffTimerShare, Group, "Perfect drop-off: deliver within this share of the patron's patience", 0.05f, 1f, 0.05f,
+            new TuningInfo(TuningKey.PerfectDropOffTimerShare, Group, "Perfect pickup: deliver within this share of the patron's patience", 0.05f, 1f, 0.05f,
                 "The car must reach the curb before this share of the patron's waiting time has run out; 0.5 means in the first half."),
             new TuningInfo(TuningKey.PerfectParkAngle, Group, "Perfect Park: how straight (degrees off the bay lines)", 1f, 90f, 0.5f,
                 "How far the car may be twisted from the bay's lines and still be perfect; 90 accepts any angle (the setting for now), 12 is forgiving, 5 is strict.",

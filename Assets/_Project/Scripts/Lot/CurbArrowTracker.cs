@@ -17,6 +17,13 @@ namespace UncannyValet.Lot
             return true;
         }
 
+        /// <summary>
+        /// Records a car the way the curb judges it: only a car whose centre is inside the zone can be delivered, so one
+        /// merely overlapping the edge is forgotten and never lights the arrow. True when the known state changed.
+        /// </summary>
+        public bool Update(CarId car, bool centreInside, bool facingRight)
+            => centreInside ? Set(car, facingRight) : Remove(car);
+
         /// <summary>Forgets a car that left; true when it was known.</summary>
         public bool Remove(CarId car) => _facingByCar.Remove(car);
 

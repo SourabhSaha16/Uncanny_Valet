@@ -42,6 +42,9 @@ namespace UncannyValet.Lot
         /// <summary>The live car with this id inside the zone, if it is still tracked.</summary>
         protected bool TryGetCar(CarId id, out IDrivable car) => _cars.TryGetValue(id, out car);
 
+        /// <summary>True when the car's centre is inside the zone, the position a car must have to settle here.</summary>
+        protected bool CentreInside(IDrivable car) => _box.OverlapPoint(car.Transform.position);
+
         /// <summary>Extra condition for a car to count as stopped; <paramref name="resting"/> is true while it is empty, slow and inside.</summary>
         protected virtual bool Accepts(IDrivable car, bool resting) => true;
 
@@ -85,8 +88,7 @@ namespace UncannyValet.Lot
         {
             var car = _cars[id];
             if (car is Object unityObject && unityObject == null) return CarReading.Gone;
-            var resting = !car.HasDriver && car.Speed < _config.StoppedSpeed
-                          && _box.OverlapPoint(car.Transform.position);
+            var resting = !car.HasDriver && car.Speed < _config.StoppedSpeed && CentreInside(car);
             var accepted = Accepts(car, resting);
             return resting && accepted ? CarReading.Stopped : CarReading.Active;
         }
