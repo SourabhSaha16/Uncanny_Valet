@@ -55,6 +55,8 @@ MonoBehaviour:
     _faintShare: 0.3
     _hardBrakeSpeed: 4
     _markSpacing: 1
+    _maxBendDegrees: 10
+    _minStrokeLength: 0.2
     _markThickness: 0.07
     _tyreSideShare: 0.38
     _tyreRearShare: 0.32

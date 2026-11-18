@@ -32,6 +32,10 @@ namespace UncannyValet.Cars.Fx
 
         [SerializeField, Min(0.1f), Tooltip("Distance (units) the tyre travels between two marks. Larger = longer strokes, so the 40 decals last longer.")]
         private float _markSpacing = 1f;
+        [SerializeField, Range(2f, 45f), Tooltip("A mark is cut sooner when the tyre path has turned by this many degrees, so curves are smooth chords, not corners.")]
+        private float _maxBendDegrees = 10f;
+        [SerializeField, Min(0.05f), Tooltip("Shortest mark (units) a bend may cut, so tiny wobbles do not use up decals.")]
+        private float _minStrokeLength = 0.2f;
         [SerializeField, Min(0.01f), Tooltip("Width of a mark in world units (one art pixel is 0.07).")]
         private float _markThickness = 0.07f;
         [SerializeField, Range(0f, 0.5f), Tooltip("Rear tyre distance from the car centre line as a share of the car width.")]
@@ -55,6 +59,8 @@ namespace UncannyValet.Cars.Fx
         public float FaintShare => _faintShare;
         public float HardBrakeSpeed => _hardBrakeSpeed;
         public float MarkSpacing => _markSpacing;
+        public float MaxBendDegrees => _maxBendDegrees;
+        public float MinStrokeLength => _minStrokeLength;
         public float MarkThickness => _markThickness;
         public float TyreSideShare => _tyreSideShare;
         public float TyreRearShare => _tyreRearShare;

@@ -126,3 +126,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
 Why: values the human settled on with the F2 panel: grip while holding Shift 0.7 (was 0.2), tightest turn radius 1 (was 2.2), top speed scale 1.35 (was 1), turning while drifting 1.5 (was 1.3).
 Tests: EditMode 2063/2063.
+
+## cars: cut skid strokes sooner on bends, smooth circles [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/Cars/Fx/TyreTrail.cs, SkidConfig.cs, SkidEmitter.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, Assets/_Project/Tests/EditMode/Cars/TyreMarkTests.cs, TyreBendTests.cs
+Why: issue #181, tight turns showed polygon corners because strokes were only cut every 1 unit. TyreTrail now also cuts when the path bends by _maxBendDegrees (10) after at least _minStrokeLength (0.2); config fields only, no F2 row.
+Tests: new TyreBendTests (straight, circle, min length, Break); full EditMode suite run before commit.
