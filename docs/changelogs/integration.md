@@ -343,3 +343,9 @@ Date: 2026-11-18
 Files: Assets/_Project/Scripts/Bootstrap/Sandbox/Valhalla*.cs, SandboxCrowd.cs, Assets/_Project/Editor/ValhallaAssetSetup.cs, SandboxSceneBuilder.cs, Assets/_Project/Data/Sandbox/Valhalla*.asset, Assets/_Project/Scenes/Sandbox.unity, sprite .meta files
 Why: #193. The sandbox Midgard lots are re-skinned over the unchanged lot geometry (colliders, bays, curb, queue), Thor uses a 4x4 walk-cycle ValetArtConfig, and the two Midgard worlds get the real pedestrian crowd with the eight NPC looks (PedestrianConfig copy). Beta and the normal game are untouched.
 Tests: EditMode 2099 passed; SandboxSceneTests 3 passed; RunBatch ran clean; scenes other than Sandbox reverted; screenshots of both Midgard lots and a Vanaheim lot checked.
+
+## integration: square 88x88 Valhalla tile set for Tilemap painting, Refs #194 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla-tiles.py, Assets/_Project/Art/ValhallaMidgard/Tiles/ (52 tiles and metas)
+Why: #194 plan task 5 and the owner decision to re-slice to square 4x4-unit tiles. The sandbox sprites (Lot/) and ValhallaPiece are untouched; the companion script crops the outline and bevel off flat tiles, resamples to 88x88 (nearest) and fits pilasters and awnings on a transparent tile, so neighbours meet without a seam.
+Tests: script run, contact sheet and 3x3 seam tests viewed (asphalt, sidewalk and roof floor tile cleanly; hedge repeats its lit top edge); tile size asserted by HandmadeTileAssetTests (6 passed).
