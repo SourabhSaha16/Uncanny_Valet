@@ -34,11 +34,12 @@ namespace UncannyValet.EditorTools
         private const int FerrisOrder = 5;
         private const int WheelLight = 14; // the string light of the bottom row that sits under the wheel
         private static readonly string[] StallPaths = MidgardArt.StallPaths;
+        private static readonly Vector2 StallSize = new Vector2(2.7f, 1.7f);
 
         public static void CreateIfMissing()
         {
             var config = AssetDatabase.LoadAssetAtPath<LotConfig>(ProjectSetup.LotConfigPath);
-            SoftenStalls();
+            SolidifyStalls();
             SetCrowdPool();
             Fill(RunAssetSetup.MidgardTrainingPath, TrainingGagPath, MidgardGagLines.TrainingAsset, config, false);
             Fill(RunAssetSetup.MidgardCrazyPath, CrazyGagPath, MidgardGagLines.CrazyAsset, config, true);
@@ -134,18 +135,10 @@ namespace UncannyValet.EditorTools
             EditorUtility.SetDirty(night);
         }
 
-        // Stalls are decor: only the diner and the wheel are solid.
-        private static void SoftenStalls()
+        // The fair stalls are solid like the wheel and the diner: cars bump off them. The block covers the stall's counter and awning.
+        private static void SolidifyStalls()
         {
-            foreach (var path in StallPaths)
-            {
-                var stall = AssetDatabase.LoadAssetAtPath<PropRecipe>(path);
-                if (stall == null || !stall.Solid) continue;
-                var so = new SerializedObject(stall);
-                so.FindProperty("_solid").boolValue = false;
-                so.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(stall);
-            }
+            foreach (var path in StallPaths) PropSolidity.MakeSolid(path, StallSize);
         }
 
         // The crowd pool holds the biggest crowd any lot asks for; each lot then activates its own number of them.

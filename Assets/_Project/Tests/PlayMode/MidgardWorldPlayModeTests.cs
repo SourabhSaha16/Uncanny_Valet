@@ -97,7 +97,7 @@ namespace UncannyValet.Tests.PlayMode
             var wheel = GameObject.Find("MidgardFerrisWheel");
             Assert.IsNotNull(wheel, "the wheel is in the crazy lot");
             Assert.IsNotNull(wheel.GetComponent<BoxCollider2D>(), "the wheel is solid");
-            Assert.IsNull(GameObject.Find("MidgardStallRed")?.GetComponent<Collider2D>(), "stalls are decor");
+            Assert.IsNotNull(GameObject.Find("MidgardStallRed")?.GetComponent<BoxCollider2D>(), "the stalls are solid");
             var damaged = new List<CarDamaged>();
             Services.Get<IEventBus>().Subscribe<CarDamaged>(damaged.Add);
             var at = (Vector2)wheel.transform.position;

@@ -39,7 +39,7 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheBarn_IsPlaced_TheFarmSceneryIsDecor()
+        public void TheBarn_IsPlaced_TheFarmSceneryIsSolid_ExceptTheWheat()
         {
             Assert.AreEqual(1, Count(LotAt(TrainingPath), "VanaheimBarn"));
             Assert.Greater(Count(LotAt(TrainingPath), "VanaheimWheat"), 20);
@@ -49,7 +49,7 @@ namespace UncannyValet.Tests.Run
             Assert.GreaterOrEqual(Count(LotAt(CrazyPath), "VanaheimBanner"), 3);
             foreach (var path in new[] { TrainingPath, CrazyPath })
                 foreach (var prop in LotAt(path).Props)
-                    Assert.AreEqual(prop.Recipe.name == "VanaheimBarn", prop.Recipe.Solid, prop.Recipe.name + " solid");
+                    Assert.AreEqual(prop.Recipe.name != "VanaheimWheat", prop.Recipe.Solid, prop.Recipe.name + " solid");
         }
 
         [Test]

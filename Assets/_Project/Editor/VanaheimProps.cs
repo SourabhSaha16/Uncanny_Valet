@@ -36,7 +36,7 @@ namespace UncannyValet.EditorTools
             var list = new List<PropPlacement> { Barn(g) };
             var wheat = Load(VanaheimArt.WheatPath);
             var x0 = g.CrossingX + WheatFromCrossing;
-            var columns = Mathf.FloorToInt(g.Strip.xMin - WheatToStrip - x0) + 1;
+            var columns = WheatColumns(g);
             var top = g.Curb.yMax;
             for (var row = 0; row < WheatRows; row++)
                 for (var column = 0; column < columns; column++)
@@ -49,6 +49,17 @@ namespace UncannyValet.EditorTools
             list.Add(new PropPlacement(hay, new Vector2(bay.center.x + 0.6f, top + HayY)));
             return list;
         }
+
+        /// <summary>The ground the wheat tiles cover, in lot space: a rectangle that the field's mud patch matches.</summary>
+        internal static Rect WheatField(LotGeometry g)
+        {
+            var x0 = g.CrossingX + WheatFromCrossing;
+            var y0 = g.Curb.yMax + WheatRowsStart;
+            return Rect.MinMaxRect(x0 - 0.5f, y0 - 0.5f, x0 + WheatColumns(g) - 0.5f, y0 + WheatRows - 0.5f);
+        }
+
+        private static int WheatColumns(LotGeometry g)
+            => Mathf.FloorToInt(g.Strip.xMin - WheatToStrip - (g.CrossingX + WheatFromCrossing)) + 1;
 
         public static List<PropPlacement> Crazy(LotGeometry g)
         {

@@ -21,6 +21,7 @@ namespace UncannyValet.EditorTools
                 var entry = list.GetArrayElementAtIndex(i);
                 entry.FindPropertyRelative("_center").vector2Value = patches[i].Center;
                 entry.FindPropertyRelative("_size").floatValue = patches[i].Size;
+                entry.FindPropertyRelative("_height").floatValue = patches[i].Height;
             }
             so.ApplyModifiedPropertiesWithoutUndo();
         }

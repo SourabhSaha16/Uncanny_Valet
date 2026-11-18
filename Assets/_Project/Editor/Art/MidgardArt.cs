@@ -64,7 +64,7 @@ namespace UncannyValet.EditorTools.Art
             return PropRecipe.Create("MidgardTree", new Vector2Int(2, 2), new[] { PropLayer.Create("Tree", shapes) });
         }
 
-        // A fair stall: posts, striped awning, counter with goods. Decor on the sidewalk, not solid (only the diner and the Ferris wheel are).
+        // A fair stall: posts, striped awning, counter with goods. Solid (made so by MidgardWorldSetup).
         private static PropRecipe Stall(string name, PaletteSlot stripeA, PaletteSlot stripeB, PaletteSlot goods)
         {
             var shapes = new List<PropShape>

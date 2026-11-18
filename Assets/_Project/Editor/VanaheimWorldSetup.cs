@@ -23,6 +23,7 @@ namespace UncannyValet.EditorTools
         public const string TrainingGagPath = WatcherAssetSetup.Folder + "/VanaheimTrainingGagLines.asset";
         public const string CrazyGagPath = WatcherAssetSetup.Folder + "/VanaheimCrazyGagLines.asset";
         public const string MudPath = "Assets/_Project/Data/Run/VanaheimMudPatches.asset";
+        public const string WheatMudPath = "Assets/_Project/Data/Run/VanaheimWheatMud.asset";
 
         private const int TrainingPedestrians = 4;
         private const int CrazyPedestrians = 8;
@@ -33,12 +34,15 @@ namespace UncannyValet.EditorTools
         private const string BuildingSign = "BARN";
         private static readonly Color TrainingGround = new Color(0.63f, 0.48f, 0.29f);
         private static readonly Color CrazyGround = new Color(0.4f, 0.3f, 0.21f);
-        private static readonly string[] DecorPaths = { VanaheimArt.HayPath, VanaheimArt.FencePath, VanaheimArt.StallPath, VanaheimArt.BannerPath };
+        private static readonly Vector2 HaySize = new Vector2(0.9f, 0.7f);
+        private static readonly Vector2 FenceSize = new Vector2(2f, 0.5f);
+        private static readonly Vector2 StallSize = new Vector2(2.7f, 1.7f);
+        private static readonly Vector2 BannerSize = new Vector2(0.8f, 1.8f);
 
         public static void CreateIfMissing()
         {
             var config = AssetDatabase.LoadAssetAtPath<LotConfig>(ProjectSetup.LotConfigPath);
-            SoftenDecor();
+            SolidifyDecor();
             Fill(RunAssetSetup.VanaheimTrainingPath, TrainingGagPath, VanaheimGagLines.TrainingAsset, config, false);
             Fill(RunAssetSetup.VanaheimCrazyPath, CrazyGagPath, VanaheimGagLines.CrazyAsset, config, true);
             AssetDatabase.SaveAssets();
@@ -84,7 +88,7 @@ namespace UncannyValet.EditorTools
             SetOptions(so, options);
             so.FindProperty("_props").arraySize = 0;
             MidgardWorldSetup.AddProps(so, crazy ? VanaheimProps.Crazy(geometry) : VanaheimProps.Training(geometry));
-            if (crazy) AddMud(so, geometry);
+            AddMud(so, crazy ? MudPath : WheatMudPath, crazy ? VanaheimMud.Create(geometry) : VanaheimMud.CreateWheat(geometry));
             so.ApplyModifiedPropertiesWithoutUndo();
             if (crazy) VanaheimLanterns.Hang(geometry);
             EditorUtility.SetDirty(lot);
@@ -111,28 +115,23 @@ namespace UncannyValet.EditorTools
             }
         }
 
-        private static void AddMud(SerializedObject so, LotGeometry g)
+        private static void AddMud(SerializedObject so, string path, MudPatchModifier made)
         {
-            AssetDatabase.DeleteAsset(MudPath); // the patches follow the wash bays, so they are rebuilt from the geometry every time
-            AssetDatabase.CreateAsset(VanaheimMud.Create(g), MudPath);
-            var mud = AssetDatabase.LoadAssetAtPath<MudPatchModifier>(MudPath);
+            AssetDatabase.DeleteAsset(path); // the patches follow the wash bays and the props, so they are rebuilt from the geometry every time
+            AssetDatabase.CreateAsset(made, path);
+            var mud = AssetDatabase.LoadAssetAtPath<MudPatchModifier>(path);
             var list = so.FindProperty("_modifiers");
             list.arraySize = 1;
             list.GetArrayElementAtIndex(0).objectReferenceValue = mud;
         }
 
-        // Hay bales, fences, stalls and banners are decor (only the barn is solid; the wash bay is a wash slot a car drives into).
-        private static void SoftenDecor()
+        // Hay bales, fences, stalls and banners are solid like the barn: cars bump off them. Each block is fitted to the sprite's footprint.
+        private static void SolidifyDecor()
         {
-            foreach (var path in DecorPaths)
-            {
-                var recipe = AssetDatabase.LoadAssetAtPath<PropRecipe>(path);
-                if (recipe == null || !recipe.Solid) continue;
-                var so = new SerializedObject(recipe);
-                so.FindProperty("_solid").boolValue = false;
-                so.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(recipe);
-            }
+            PropSolidity.MakeSolid(VanaheimArt.HayPath, HaySize);
+            PropSolidity.MakeSolid(VanaheimArt.FencePath, FenceSize);
+            PropSolidity.MakeSolid(VanaheimArt.StallPath, StallSize);
+            PropSolidity.MakeSolid(VanaheimArt.BannerPath, BannerSize);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace UncannyValet.Lot
                 var go = new GameObject("Mud Patch " + i);
                 go.transform.SetParent(group, false);
                 go.transform.localPosition = patches[i].Center;
-                go.transform.localScale = new Vector3(patches[i].Size, patches[i].Size, 1f);
+                go.transform.localScale = new Vector3(patches[i].Size, patches[i].ExtentY, 1f);
                 var renderer = go.AddComponent<SpriteRenderer>();
                 renderer.sprite = art.Get(i);
                 renderer.sortingOrder = SortingOrder;
