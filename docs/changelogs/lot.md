@@ -193,3 +193,9 @@ Date: 2026-11-17
 Files: Scripts/Lot/{ParkJudge,ParkVerdict,ParkingSpot,PerfectRunner,PerfectSettings,PerfectTuning}.cs; Tests/EditMode/Lot/PerfectJudgeTests.cs
 Why: Issue #161, design.md section 4 (play-test note). Perfect Park now needs the car completely inside the bay box (the BayFitRule result that also drives CarParkedInside, same tolerance) and a heading within the park angle; side and length offsets are gone from PerfectSettings, PerfectTuning and ParkJudge. ParkVerdict: OffCentreSide and OffCentreLength replaced by OutsideBay. Cooldown, min-travel and touching gates unchanged; both CarParkedInside and PerfectPark still fire. TuningKeys PerfectParkSideOffset/LengthOffset and their Core F2 rows are kept but unread; PerfectTuning still seeds fixed values for them because the catalog requires every row seeded (lead can retire the rows).
 Tests: ParkJudgeChecksAngleBoxAndContact (off-centre at 5 degrees inside the box is Perfect; outside the box or off-angle is not); EditMode 1974/1974 and PlayMode 85/85 pass.
+
+## lot: widen the gap between bays in a row from 0.6 to 1.2, Refs #183 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/LotConfig.cs (default), Data/Lot/LotConfig.asset, Tests/PlayMode/BayEntryTests.cs (pitch read from config); rebaked by RunBatch: Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining,Sandbox}.unity, Data/Run/{VanaheimCrazyLot,VanaheimMudPatches,VanaheimTrainingLot,VanaheimWheatMud}.asset
+Why: Issue #183, design.md section 4. Bay pitch goes 3.2 to 3.8, so the frame is 1.8 wider (three gaps); walls, strip, roads, props and mud patches follow LotGeometry. CameraFit floors at the lot width, so the lot still fits at 16:9 and 4:3 (zoom-out, no art shrunk).
+Tests: EditMode 2069/2069 pass; PlayMode filtered (BayEntry, Bootstrap smoke, CameraFraming, Midgard, Sandbox, Vanaheim, PropArt, MudPatch, PedestrianHit) 45/45 pass.

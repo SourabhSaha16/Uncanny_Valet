@@ -64,6 +64,9 @@ MonoBehaviour:
   - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
     _position: {x: 9.65, y: 7.2}
     _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: a9c4b4549dde0de48a6ff599786aa125, type: 2}
+    _position: {x: 13.25, y: 7.2}
+    _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
     _position: {x: 0.64999986, y: 4.6}
     _sortingOrder: 3
@@ -72,6 +75,9 @@ MonoBehaviour:
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
     _position: {x: 7.8499994, y: 4.6}
+    _sortingOrder: 3
+  - _recipe: {fileID: 11400000, guid: 53c80c324071c84489d4db7481a10208, type: 2}
+    _position: {x: 11.45, y: 4.6}
     _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: f578e7b872709cf4d9fcf846f9468968, type: 2}
   _layoutOptions:
