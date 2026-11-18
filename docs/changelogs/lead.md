@@ -1252,3 +1252,15 @@ Date: 2026-11-17
 Files: site/, docs/changelogs/lead.md
 Why: player-visible changes #176 to #179 (design.md log 2026-11-17).
 Tests: EditMode 2055/2055, PlayMode 89/89, web build exit 0 (build-info commit 7d563fe); local smoke test: shift starts with no console errors, first car seen entering from the road about 7 s in (arrival timing itself is unit-tested at 0.5 s; not measured in the browser).
+
+## lead: merge agent sandbox scene and endpoint, Refs #180 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-ad4cba4cc5ce8e233 (Sandbox scene, SandboxBootstrap, world picker, WebBuild -sandboxBuild, build-web.ps1 -Sandbox, ci-cd.yml)
+Why: third site /sandbox/ for testing driving per world (#180).
+Tests: EditMode 2063/2063, PlayMode SandboxSceneTests 3/3 (agent); local browser smoke test of the sandbox build, no console errors.
+
+## lead: add site-sandbox/ build for the sandbox endpoint, Refs #180 [Claude]
+Date: 2026-11-17
+Files: site-sandbox/ (built with tools/build-web.ps1 -Sandbox, commit f67a5b3), docs/changelogs/lead.md
+Why: the workflow publishes site-sandbox/ at /sandbox/.
+Tests: loaded in the browser, world picker shown, no console errors.
