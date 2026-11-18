@@ -109,15 +109,13 @@ namespace UncannyValet.Pedestrians
             _single.Clear(); _single.Add(position);
             _path.Begin(_single);
             _hasLookAt = _moving = false;
-            _body.Teleport(position); _body.SetSolid(_config.StandingSolid);
-            Show();
+            _body.Teleport(position); _body.SetSolid(_config.StandingSolid); Show();
         }
 
         /// <summary>Makes a standing person turn to face <paramref name="point"/> (cleared by the next walk or placement).</summary>
         public void FaceToward(Vector2 point)
         {
-            _lookAt = point; _hasLookAt = true;
-            Show();
+            _lookAt = point; _hasLookAt = true; Show();
         }
 
         /// <summary>Starts walking a route, <paramref name="startFraction"/> (0..1) of the way in.</summary>
@@ -126,20 +124,21 @@ namespace UncannyValet.Pedestrians
             _path.Begin(route, startFraction);
             _hasLookAt = false; _moving = _path.Walking;
             _block.Reset();
-            _body.Teleport(_path.Position); _body.SetSolid(true);
-            Show();
+            _body.Teleport(_path.Position); _body.SetSolid(true); Show();
         }
 
-        // A car or the valet (a dynamic body) ran into this person: a tiny rubber-ball bounce away from it.
+        // The valet on foot, or the car the valet drives (a dynamic body), ran into this person. A driven car knocks them away; the valet
+        // gives a tiny rubber-ball bounce; every other car (parked, queued, arriving, leaving, ambient) does nothing (PedestrianHitRule).
         private void OnCollisionEnter2D(Collision2D hit)
         {
             var other = hit.rigidbody;
             if (other == null || other.bodyType != RigidbodyType2D.Dynamic) return;
             var car = hit.collider.GetComponentInParent<IDrivable>();
-            if (car != null && OwnCarRule.IsOwn(Car, car.Id)) return;
+            if (car != null && (OwnCarRule.IsOwn(Car, car.Id) || !PedestrianHitRule.MayKnock(car.HasDriver))) return;
             var speed = hit.relativeVelocity.magnitude;
             if (car != null)
             {
+                speed = PedestrianHitRule.HitSpeed(speed, _moving ? _speed : 0f);
                 if (WalkerKnockback.TryApply(this, other.position, speed, _config.BounceMinSpeed)) CarHit?.Invoke(this, car, other.position, speed);
                 return;
             }
@@ -152,8 +151,7 @@ namespace UncannyValet.Pedestrians
         private void Update()
         {
             if (!_moving) return;
-            _walkSeconds += Time.deltaTime * _world.Scale; // freeze time stops the stride too
-            Show();
+            _walkSeconds += Time.deltaTime * _world.Scale; Show(); // freeze time stops the stride too
         }
 
         private void FixedUpdate()
@@ -165,7 +163,8 @@ namespace UncannyValet.Pedestrians
             if (!_path.Walking) return;
             var walkDt = _world.Scaled(dt); // bumps and stumbles stay real time: the player can still push people
             var step = _speed * walkDt;
-            var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlocked(_path.Heading, step + _config.LookAhead, Car);
+            var ahead = _path.PointAhead(step + _config.LookAhead); // follows route corners, so a car round the bend is seen too
+            var blocked = _path.Remaining > _config.ArrivalRadius && _body.IsBlockedToward(_path.Position, ahead, Car);
             var state = _block.Evaluate(walkDt, blocked);
             _body.SetSolid(state != PedestrianBlockState.Passing);
             _moving = state != PedestrianBlockState.Waiting;
@@ -174,8 +173,7 @@ namespace UncannyValet.Pedestrians
             _body.MoveTo(_path.Position);
             if (!finished) return;
             _moving = false;
-            _body.SetSolid(_config.StandingSolid);
-            Show();
+            _body.SetSolid(_config.StandingSolid); Show();
             RouteFinished?.Invoke(this);
         }
 
@@ -193,10 +191,8 @@ namespace UncannyValet.Pedestrians
                 : WalkAnimMath.Facing(_path.Heading, _facing);
             var frame = _moving ? WalkAnimMath.Frame(_walkSeconds, _config.FramesPerSecond, _config.FramesPerGroup) : 0;
             var column = _config.GroupStart(_facing) + frame;
-            var flip = _config.Flip(_facing);
-            if (column == _shownColumn && flip == _shownFlip) return;
-            _shownColumn = column; _shownFlip = flip;
-            _sprites.Show(_look, column, flip);
+            var flip = _config.Flip(_facing); if (column == _shownColumn && flip == _shownFlip) return;
+            _shownColumn = column; _shownFlip = flip; _sprites.Show(_look, column, flip);
         }
     }
 }

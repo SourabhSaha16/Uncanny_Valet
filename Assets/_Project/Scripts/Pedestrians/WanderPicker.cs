@@ -12,13 +12,13 @@ namespace UncannyValet.Pedestrians
     {
         private readonly float _minLegShare;
         private readonly int _attempts;
-        private readonly KeepOutAreas _keepOut;
+        private readonly ILegBlocker _keepOut;
         private readonly List<Vector2> _leg = new List<Vector2>(12);
         private int _serial;
 
         /// <param name="minLegShare">Shortest leg, as a share of the route (0..1).</param>
         /// <param name="attempts">How many random spots to try before giving up.</param>
-        public WanderPicker(float minLegShare, int attempts, KeepOutAreas keepOut, int seed)
+        public WanderPicker(float minLegShare, int attempts, ILegBlocker keepOut, int seed)
         {
             _minLegShare = Mathf.Clamp01(minLegShare);
             _attempts = Mathf.Max(1, attempts);

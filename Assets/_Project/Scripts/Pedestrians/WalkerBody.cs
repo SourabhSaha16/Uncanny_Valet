@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UncannyValet.Core;
+using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Ids;
 using UnityEngine;
 
@@ -12,6 +13,9 @@ namespace UncannyValet.Pedestrians
         private readonly CircleCollider2D _collider;
         private readonly WalkerSensor _sensor;
         private readonly List<Collider2D> _scratch = new List<Collider2D>(4);
+        private readonly Collider2D[] _overlaps = new Collider2D[8];
+        private readonly float _radius;
+        private ContactFilter2D _filter = new ContactFilter2D { useTriggers = false };
         private Transform _ownCar;
 
         public WalkerBody(GameObject go, PedestrianConfig config)
@@ -24,15 +28,40 @@ namespace UncannyValet.Pedestrians
             _body.interpolation = RigidbodyInterpolation2D.Interpolate;
             _collider = go.GetComponent<CircleCollider2D>();
             _collider.radius = config.ColliderRadius / config.Scale;
+            _radius = config.ColliderRadius;
             _sensor = new WalkerSensor(_body);
         }
 
-        /// <summary>Turns the collider on or off (off while passing through a blocker or when standing). Switching on re-applies the own-car exemption.</summary>
+        /// <summary>
+        /// Turns the collider on or off (off while passing through a blocker or when standing). Switching on re-applies the own-car
+        /// exemption and never happens while the person stands inside a car: it stays off until they are clear (<see cref="WalkerSolidRule"/>).
+        /// </summary>
         public void SetSolid(bool solid)
         {
             if (_collider.enabled == solid) return;
+            if (solid && !WalkerSolidRule.Resolve(true, TouchesCar())) return;
             _collider.enabled = solid;
             if (solid) ApplyIgnore(true);
+        }
+
+        /// <summary>True when something solid other than <paramref name="ownCar"/> lies between <paramref name="from"/> and <paramref name="point"/> (a look-ahead that follows route corners).</summary>
+        public bool IsBlockedToward(Vector2 from, Vector2 point, CarId ownCar)
+        {
+            var ahead = point - from;
+            var length = ahead.magnitude;
+            return length > Mathf.Epsilon && _sensor.IsBlocked(ahead / length, length, ownCar);
+        }
+
+        // Any car other than the own one overlapping the body's circle right now (the collider is off when this runs).
+        private bool TouchesCar()
+        {
+            var count = Physics2D.OverlapCircle(_body.position, _radius, _filter, _overlaps);
+            for (var i = 0; i < count; i++)
+            {
+                if (_overlaps[i].GetComponentInParent<IDrivable>() == null) continue;
+                if (_ownCar == null || !_overlaps[i].transform.IsChildOf(_ownCar)) return true;
+            }
+            return false;
         }
 
         /// <summary>Makes this person pass through <paramref name="car"/> (their own car) until <see cref="ReleaseCar"/>.</summary>
@@ -62,9 +91,6 @@ namespace UncannyValet.Pedestrians
 
         /// <summary>Moves the body to a point during the physics step.</summary>
         public void MoveTo(Vector2 position) => _body.MovePosition(position);
-
-        /// <summary>True when something solid other than <paramref name="ownCar"/> lies within <paramref name="distance"/> along <paramref name="heading"/>.</summary>
-        public bool IsBlocked(Vector2 heading, float distance, CarId ownCar) => _sensor.IsBlocked(heading, distance, ownCar);
 
         private void ApplyIgnore(bool ignore)
         {

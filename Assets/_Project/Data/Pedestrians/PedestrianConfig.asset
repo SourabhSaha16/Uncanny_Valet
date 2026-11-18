@@ -26,7 +26,7 @@ MonoBehaviour:
   _patronPoolSize: 6
   _patronSpeed: 1.7
   _colliderRadius: 0.22
-  _lookAhead: 0.35
+  _lookAhead: 0.55
   _waitSeconds: {x: 1.5, y: 3}
   _passSeconds: 1.5
   _arrivalRadius: 1.4

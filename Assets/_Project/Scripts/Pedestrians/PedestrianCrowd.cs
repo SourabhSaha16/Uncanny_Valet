@@ -54,7 +54,10 @@ namespace UncannyValet.Pedestrians
             _tuning = Services.Get<ITuning>();
             _bus = Services.Get<IEventBus>();
             _paths = Services.Get<IPedestrianPaths>();
-            _wander = new WanderPicker(_config.RoamMinLegShare, WanderAttempts, KeepOut, WanderSeed);
+            var blockers = new LegBlockers();
+            blockers.Add(KeepOut);
+            blockers.Add(new CarLegProbe(_config.ColliderRadius)); // a roam leg never runs through a car standing in a bay or queue
+            _wander = new WanderPicker(_config.RoamMinLegShare, WanderAttempts, blockers, WanderSeed);
             _router = new WalkerRouter(_paths, Services.Get<ICarFactory>(), _tuning, _wander);
             for (var i = 0; i < _config.Count; i++) _ambient.Add(CreateAmbient(i));
             var poolSize = PatronPoolSizeFor();
