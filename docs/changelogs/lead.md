@@ -1336,3 +1336,9 @@ Date: 2026-11-18
 Files: Assets/_Project/Art/ValhallaMidgard/Tiles/*.meta, Assets/_Project/Prefabs.meta (kept the lot agent's folder GUID)
 Why: merge of the tile kit and Bootstrap seam (#194); Unity added sprite name tables to the tile metas after import.
 Tests: EditMode 2191/2191.
+
+## lead: PlayMode power-bar test follows the 16.7 perfect-park fill [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Tests/PlayMode/PowerBarPlayModeTests.cs
+Why: #191 changed a Perfect Park to 16.7; the freeze-time PlayMode test still expected 3 parks = 45.
+Tests: full PlayMode 103/103 passed, EditMode 2211/2211.

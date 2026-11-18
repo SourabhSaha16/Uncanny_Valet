@@ -77,7 +77,7 @@ namespace UncannyValet.Tests.PlayMode
             yield return null;
             key.Pressed = false;
             Assert.AreEqual(0f, world.Scale, "freeze time runs");
-            Assert.AreEqual(45f - PowerBar.BucketSize, bar.Bar.Value, 0.01f);
+            Assert.AreEqual(3 * 16.7f - PowerBar.BucketSize, bar.Bar.Value, 0.01f);
 
             Services.Get<ITuning>().Set(TuningKey.DevOwnFreezeTime, 0f);
             Assert.IsFalse(Services.Get<IRunProgress>().EarnedPowers.Count > 0);
