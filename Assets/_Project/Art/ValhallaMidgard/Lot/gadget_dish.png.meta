@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gadget_dish_0: -5795545132214833297
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

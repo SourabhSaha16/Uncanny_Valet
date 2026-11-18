@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      roof_vent_double_0: -1062907463423145235
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

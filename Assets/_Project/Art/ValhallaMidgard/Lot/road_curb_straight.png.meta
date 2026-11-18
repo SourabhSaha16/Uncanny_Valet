@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      road_curb_straight_0: -4285942387675944659
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

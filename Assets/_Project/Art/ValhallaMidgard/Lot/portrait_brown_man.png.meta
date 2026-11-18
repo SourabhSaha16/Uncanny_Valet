@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      portrait_brown_man_0: -2553595658082006656
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

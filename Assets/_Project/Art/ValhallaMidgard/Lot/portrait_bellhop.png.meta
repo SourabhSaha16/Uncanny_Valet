@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      portrait_bellhop_0: 737005323825128422
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

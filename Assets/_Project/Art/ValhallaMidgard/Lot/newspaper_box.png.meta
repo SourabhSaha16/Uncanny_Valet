@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      newspaper_box_0: -6318564517806538486
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

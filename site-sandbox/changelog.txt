@@ -1,5 +1,17 @@
 === Last 50 commits ===
+71124f6  2026-11-18  lead: merge agent for #193, Refs #193 [Claude]
+19bbf7e  2026-11-18  integration: sandbox uses the Valhalla Midgard art, Thor and NPC walks, Refs #193 [Claude]
+99ec7db  2026-11-18  integration: slice the Valhalla Drive art for the sandbox, Refs #193 [Claude]
+7a4d3c3  2026-11-18  lead: merge agent for #192, Refs #192 [Claude]
+41f7726  2026-11-18  pedestrians: only the driven car knocks people, walkers keep clear of cars, Refs #192 [Claude]
+d2f4f9c  2026-11-18  lead: add Valhalla Drive source art (tileset, Thor, NPCs, lot reference), Refs #193 [Claude]
+3e4d203  2026-11-18  lead: merge agent for #189 #190, Refs #189 #190 [Claude]
+d695fbc  2026-11-18  integration: curb arrows green only for an accepted delivery, Refs #190 [Claude]
+cfb9ec3  2026-11-18  integration: swap player-facing Drop off and Pickup wording, Refs #189 [Claude]
+43b00d8  2026-11-18  lead: Thunder car accel x10, 2 perfect parks per bolt, harsher curse, Refs #188 #191 #166 [Claude]
+4dd19b9  2026-11-17  lead: merge agent for #187, Refs #187 [Claude]
 2df8bb7  2026-11-17  lead: merge agent for #186, Refs #186 [Claude]
+281f2c4  2026-11-17  integration: service icons show from spawn, hide after departure, Refs #187 [Claude]
 e4ba5e4  2026-11-17  lead: rebuild site/ and site-sandbox/ with bolt HUD and wash icons [Claude]
 dcc80e5  2026-11-17  integration: full-window web template, panel width fit, Refs #186 [Claude]
 a91fda0  2026-11-17  lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
@@ -37,18 +49,6 @@ d86f05d  2026-11-17  lead: design log and changelog for playtest batch 9, Refs #
 d8c85dd  2026-11-17  lead: merge agent late-pickup -N pop, Refs #173 [Claude]
 1178ea4  2026-11-17  lead: merge agent/integration plain title background and text fixes, Refs #171 #172 [Claude]
 c232999  2026-11-17  ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
-d77caa8  2026-11-17  ui: plain background for title and how-to, text fixes (Refs #171 #172) [Claude]
-8d26adb  2026-11-17  lead: rebuild site/ with playtest batch 7 for beta [Claude]
-cfa8c43  2026-11-17  lead: design log and changelog for playtest batch 7, Refs #164 #165 #166 #167 #168 #169 #170 #50 [Claude]
-73da7ad  2026-11-17  lead: merge agent wash pie and shift-end despawn, Refs #169 #170 [Claude]
-6e0c835  2026-11-17  cars: despawn every car at once on ShiftEnded [Claude]
-3a0e3c0  2026-11-17  wash: wash pie beside the pickup pie, blue drop when washed [Claude]
-f033147  2026-11-17  lead: merge agent/integration cleaner font and title rename, Refs #168 #50 [Claude]
-bedff1d  2026-11-17  ui: JetBrains Mono UI font, title is Valet to Valhalla, Refs #168 #50 [Claude]
-468d22e  2026-11-17  lead: merge agent/economy-night late-pickup curse, Refs #166 [Claude]
-c8857bd  2026-11-17  economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
-82faf68  2026-11-17  lead: merge agent/valet Thunder Stride handling, Refs #167 [Claude]
-125b8ab  2026-11-17  lead: merge agent/patrons EV filter and dirty spacing, Refs #164 #165 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -753,19 +753,41 @@ Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp adde
 Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
 Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.
 
-<<<<<<< HEAD
 ## integration: full-window web template, panel width fit, Refs #186 [Claude]
 Date: 2026-11-17
 Files: Assets/WebGLTemplates/UncannyValet/ (index.html, TemplateData/*), Editor/WebBuild.cs (sets PlayerSettings.WebGL.template = PROJECT:UncannyValet for game and sandbox builds), ProjectSettings/ProjectSettings.asset (webGLTemplate), Scripts/UI/Kit/PanelFit.cs, Scripts/UI/TuningPanel.cs, Tests/EditMode/UI/WindowShapeTests.cs, Tests/EditMode/Integration/CameraFitTests.cs, tools/README-unity.md
 Why: issue #186. The player fills the browser window from the start (no 960x600 canvas, no footer), pixel ratio capped at 2. CameraFit and the integer PixelGrid already handle any aspect (checked by tests at 21:9, 16:9, 4:3, 1:1, phone); the F2 tuning panel was a fixed 820 px and now shrinks on narrow windows.
 Tests: EditMode full suite 2092 passed (12 new: CameraFit shapes, PixelGrid shapes, PanelFit). Web build and browser check left to the lead.
-=======
+
 ## integration: service icons show from spawn, hide after departure, Refs #187 [Claude]
 Date: 2026-11-17
 Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketBoard.cs, Hud/ServiceIcons.cs, Hud/WorldTicketPainter.cs, Assets/_Project/Tests/EditMode/UI/ServiceIconsTests.cs
 Why: #187. The droplet and plug icons were gated on TicketRow.Arrived; the ticket and its modifiers are announced at spawn, so the gate is now "not Departed" (set on CarDeparted). The info box still waits for arrival.
 Tests: ServiceIconsTests updated (spawned-not-arrived shows icons, departed shows none, board row from spawn).
->>>>>>> worktree-agent-ae23a6ea363ed6b07
+
+## integration: swap player-facing Drop off and Pickup wording, Refs #189 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/LotConfig.cs, LotCurbArt.cs, CurbArrowLayout.cs, PerfectSettings.cs, Scripts/Core/Contracts/PerfectRows.cs, PowerRows.cs, Scripts/Powers/PowerBarConfig.cs, Scripts/Run/LotDefinition.cs, LotPowerFill.cs, Scripts/Patrons/PickupQueueSettings.cs, QueueAdvanceRule.cs, QueueAdvancer.cs, Editor/Watchers/FreyjaWatcher.cs, OkaforWatcher.cs, Data/Watchers/FreyjaText.asset, MrsOkaforText.asset, Tests/EditMode/UI/PlayerWordingTests.cs (all under Assets/_Project)
+Why: #189. Drop off is now the first queue slot (patron leaves the car) and Pickup the curb (valet returns it). Curb text reads VALET PICKUP, slot text VALET DROP-OFF (label size 0.45 so 8 letters fit the 4.5 slot), perfect-delivery F2 rows and watcher lines say pickup. HowToPlayText already used the new meaning. No identifiers, events or enums renamed.
+Tests: PlayerWordingTests (curb and slot words, F2 Perfect rows).
+
+## integration: curb arrows turn green only for a delivery the curb accepts, Refs #190 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Lot/CurbArrowTracker.cs, CurbZone.cs, StopZone.cs, Assets/_Project/Tests/EditMode/Lot/CurbArrowTests.cs
+Why: #190. The arrow counted any car whose collider touched the curb zone, but the curb only accepts a car whose centre is inside it (StopZone.CentreInside, now shared by both). The arrow also kept its colour after the ticket closed; it now re-evaluates on TicketClosed. Facing uses the same CurbFacingRule and patron check (IPickupAcceptance) as before.
+Tests: CurbArrowTests gains edge-overlap, drift-out and facing-agreement cases.
+
+## integration: slice the Valhalla Drive art for the sandbox, Refs #193 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/ (Lot, Thor, Npc sprites and manifest.json), Assets/_Project/Editor/Import/ValhallaImport.cs, Assets/_Project/Editor/Import/ArtPostprocessor.cs
+Why: #193 asks for the sandbox to use the new Midgard art. The repeatable slicer cuts the tileset by alpha components, drops the red and yellow halo, and splits the Thor and NPC walk sheets into aligned frames; the importer gives them point filter and per-folder pixels per unit.
+Tests: slicer run and every output viewed on a contact sheet; Unity import and tests follow in later commits.
+
+## integration: sandbox uses the Valhalla Midgard lot art, Thor and NPC walk cycles, Refs #193 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Bootstrap/Sandbox/Valhalla*.cs, SandboxCrowd.cs, Assets/_Project/Editor/ValhallaAssetSetup.cs, SandboxSceneBuilder.cs, Assets/_Project/Data/Sandbox/Valhalla*.asset, Assets/_Project/Scenes/Sandbox.unity, sprite .meta files
+Why: #193. The sandbox Midgard lots are re-skinned over the unchanged lot geometry (colliders, bays, curb, queue), Thor uses a 4x4 walk-cycle ValetArtConfig, and the two Midgard worlds get the real pedestrian crowd with the eight NPC looks (PedestrianConfig copy). Beta and the normal game are untouched.
+Tests: EditMode 2099 passed; SandboxSceneTests 3 passed; RunBatch ran clean; scenes other than Sandbox reverted; screenshots of both Midgard lots and a Vanaheim lot checked.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -2077,6 +2099,24 @@ Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: player-visible batch: #184, #185, Thunder Stride x1.8 with perfect grip, handling defaults round 3.
 Tests: beta build loads to the title with no console errors; EditMode 2080/2080.
 
+## lead: merge agent for #186 and #187, Refs #186 #187 [Claude]
+Date: 2026-11-17
+Files: merges of the full-window web template (Assets/WebGLTemplates/UncannyValet, WebBuild, PanelFit) and the service icons from spawn (TicketRow, TicketBoard, ServiceIcons)
+Why: #186 the player fills the browser window; #187 droplet and plug show from spawn.
+Tests: EditMode 2094/2094 (rerun by the lead), PlayMode 5/5 (#187 agent).
+
+## lead: rebuild site/ and site-sandbox/ with the full-window template and spawn icons [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible: #186, #187.
+Tests: sandbox build loaded in the browser: canvas equals the window at 1888x1213 and at 700x900, lot fully visible, no console errors; EditMode 2094/2094.
+
+## lead: car boost accel x10, 2 perfect parks per bolt, harsher late curse [Claude]
+Date: 2026-11-18
+Files: Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, Powers/PowerBarConfig.cs + asset, Run/LotPowerFill.cs + 4 lot assets, Core/Contracts/OvertimeCurseRows.cs, EditMode tests (ThunderStride, PowerFramework, PowerBarController, OvertimeCurse, ShiftBlessings, FullShift)
+Why: play-test notes: Thunder in a car should reach top speed almost instantly (#188), a Perfect Park adds 16.7 so two fill a bolt (#191), late-pickup curse 1 per 4 s, cap 6 (#166).
+Tests: EditMode 2094/2094 passed.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2597,6 +2637,12 @@ Tests: PatronPoolTests (sizing rule, every open ticket gets a person, deferred o
 # Pedestrians changelog
 
 Entries are added by the pedestrians agent, one per commit. Format in docs/changelogs/README.md.
+
+## pedestrians: only the driven car knocks people, walkers keep clear of cars, Refs #192 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Pedestrians/{PedestrianWalker,WalkerBody,PathFollower,PedestrianCrowd,PedestrianConfig,WanderPicker,KeepOutAreas}.cs, new {PedestrianHitRule,WalkerSolidRule,ILegBlocker,LegBlockers,CarLegProbe}.cs, Data/Pedestrians/PedestrianConfig.asset (_lookAhead 0.35 to 0.55), Tests/EditMode/Pedestrians/PedestrianCarContactTests.cs, Tests/PlayMode/PedestrianHitTests.cs
+Why: issue #192. Causes: (1) OnCollisionEnter2D knocked a person for any dynamic car, and the walker's own walking speed counted in the hit speed; now only a car with HasDriver knocks or bounces (PedestrianHitRule), speed minus own walking speed. (2) KeepOutAreas was never filled, so roam legs crossed bays; roam legs are now also rejected by a body-wide CarLegProbe sweep (ILegBlocker, LegBlockers). (3) The look-ahead cast only along the current heading; it now aims at PathFollower.PointAhead so it sees round route corners, and LookAhead is 0.55. (4) After passing through a blocker the collider turned solid inside the car; WalkerBody.SetSolid now stays off until clear of cars (WalkerSolidRule).
+Tests: PedestrianCarContactTests (7 EditMode), PlayMode UndrivenCar_NeverKnocksOrBouncesAWalker; EditMode 2106 passed, PedestrianHitTests PlayMode 4 passed.
 
 ## pedestrians: collision, wait-and-resume, rubber bounce and bump sound
 Date: 2026-11-10

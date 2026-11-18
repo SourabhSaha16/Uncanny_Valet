@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      awning_right_0: -4775635201665794039
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

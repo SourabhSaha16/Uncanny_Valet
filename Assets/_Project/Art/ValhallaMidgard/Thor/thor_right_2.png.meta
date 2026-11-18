@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      thor_right_2_0: 4209312438884016960
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

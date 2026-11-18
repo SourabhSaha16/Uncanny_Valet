@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      npc_grandma_down_1_0: -2456618774821658305
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      bay_dashed_b_0: -6203263798242384547
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

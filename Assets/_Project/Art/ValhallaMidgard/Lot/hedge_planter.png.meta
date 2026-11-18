@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hedge_planter_0: 4170040461995519791
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

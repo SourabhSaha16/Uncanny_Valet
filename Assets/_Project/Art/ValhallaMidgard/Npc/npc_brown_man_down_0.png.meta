@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      npc_brown_man_down_0_0: -8943243279270036336
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

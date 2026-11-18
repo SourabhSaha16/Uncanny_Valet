@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      thor_down_1_0: -4691376453942664861
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

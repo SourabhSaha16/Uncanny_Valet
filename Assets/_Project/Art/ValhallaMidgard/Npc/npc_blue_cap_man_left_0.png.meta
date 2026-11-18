@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      npc_blue_cap_man_left_0_0: -6751756971168271123
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

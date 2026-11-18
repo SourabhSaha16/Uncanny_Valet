@@ -1324,3 +1324,9 @@ Date: 2026-11-18
 Files: Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, Powers/PowerBarConfig.cs + asset, Run/LotPowerFill.cs + 4 lot assets, Core/Contracts/OvertimeCurseRows.cs, EditMode tests (ThunderStride, PowerFramework, PowerBarController, OvertimeCurse, ShiftBlessings, FullShift)
 Why: play-test notes: Thunder in a car should reach top speed almost instantly (#188), a Perfect Park adds 16.7 so two fill a bolt (#191), late-pickup curse 1 per 4 s, cap 6 (#166).
 Tests: EditMode 2094/2094 passed.
+
+## lead: rebuild site/ and site-sandbox/ with sandbox Valhalla art and pedestrian fixes [Claude]
+Date: 2026-11-18
+Files: site/, site-sandbox/, Assets/_Project/Art/ValhallaMidgard/**/*.meta (Unity added sprite name tables)
+Why: publish #188 to #193 (Thunder car accel, wording swap, arrow rule, 2 perfect parks per bolt, harsher curse, pedestrians vs non-player cars, Midgard sandbox art). Build 71124f6.
+Tests: EditMode 2106/2106; both web builds exit 0.

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      pad_valet_pickup_right_0: -7012232263959129748
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

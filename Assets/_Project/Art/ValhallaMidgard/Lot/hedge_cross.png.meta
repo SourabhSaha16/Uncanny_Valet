@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hedge_cross_0: 2041454176251825761
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

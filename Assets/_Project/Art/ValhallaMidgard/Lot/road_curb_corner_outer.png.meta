@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      road_curb_corner_outer_0: 8086324842405188630
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      portrait_black_girl_0: -422713497693910843
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

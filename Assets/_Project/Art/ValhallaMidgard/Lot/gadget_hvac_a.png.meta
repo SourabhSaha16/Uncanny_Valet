@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gadget_hvac_a_0: 7861534912970138695
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

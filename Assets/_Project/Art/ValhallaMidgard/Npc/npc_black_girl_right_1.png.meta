@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      npc_black_girl_right_1_0: -1140221678710433342
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
