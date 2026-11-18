@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      overhead_awning_mid_b_0: 8144413069815871711
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

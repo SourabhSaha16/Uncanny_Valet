@@ -1330,3 +1330,9 @@ Date: 2026-11-18
 Files: site/, site-sandbox/, Assets/_Project/Art/ValhallaMidgard/**/*.meta (Unity added sprite name tables)
 Why: publish #188 to #193 (Thunder car accel, wording swap, arrow rule, 2 perfect parks per bolt, harsher curse, pedestrians vs non-player cars, Midgard sandbox art). Build 71124f6.
 Tests: EditMode 2106/2106; both web builds exit 0.
+
+## lead: merge #194 kit, Unity meta updates for new tiles [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Art/ValhallaMidgard/Tiles/*.meta, Assets/_Project/Prefabs.meta (kept the lot agent's folder GUID)
+Why: merge of the tile kit and Bootstrap seam (#194); Unity added sprite name tables to the tile metas after import.
+Tests: EditMode 2191/2191.

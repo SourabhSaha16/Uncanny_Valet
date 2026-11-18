@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ground_asphalt_speckle_0: -7762477709597528738
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

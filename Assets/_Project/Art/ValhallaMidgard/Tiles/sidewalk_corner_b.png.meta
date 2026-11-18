@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      sidewalk_corner_b_0: -7384933584428353661
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
