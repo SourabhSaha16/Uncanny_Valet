@@ -18,10 +18,32 @@ namespace UncannyValet.Tests.UI
         private static TicketRow ArrivedRow(bool muddy, bool ev) => new TicketRow { Arrived = true }.Give(ev, muddy);
 
         [Test]
-        public void CarNotArrivedYet_ShowsNothing()
+        public void SpawnedCarNotArrivedYet_ShowsItsIcons()
         {
             var row = ArrivedRow(true, true);
             row.Arrived = false;
+            Assert.AreEqual(2, ServiceIcons.Count(row));
+            Assert.IsTrue(ServiceIcons.TryGet(row, 0, out var icon));
+            Assert.AreEqual(PixelIcon.Drop, icon);
+        }
+
+        [Test]
+        public void DepartedCar_ShowsNothing()
+        {
+            var row = ArrivedRow(true, true);
+            row.Departed = true;
+            Assert.AreEqual(0, ServiceIcons.Count(row));
+            Assert.IsFalse(ServiceIcons.TryGet(row, 0, out _));
+        }
+
+        [Test]
+        public void BoardRow_ShowsIconsFromSpawn_AndNotAfterDeparture()
+        {
+            _bus.Publish(new TicketOpened(T, C, 5f));
+            _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(false, true)));
+            var row = Only();
+            Assert.AreEqual(1, ServiceIcons.Count(row));
+            _bus.Publish(new CarDeparted(C));
             Assert.AreEqual(0, ServiceIcons.Count(row));
         }
 
@@ -120,7 +142,7 @@ namespace UncannyValet.Tests.UI
         {
             _bus.Publish(new TicketOpened(T, C, 60f));
             _bus.Publish(new TicketModifiersAssigned(T, C, ModifierTestKit.Of(false, true)));
-            Assert.AreEqual(0, ServiceIcons.Count(Only()));
+            Assert.AreEqual(1, ServiceIcons.Count(Only()), "icons show from spawn");
             _bus.Publish(new CarArrived(C));
             Assert.AreEqual(1, ServiceIcons.Count(Only()));
             _bus.Publish(new CarEnteredStation(C, StationKind.Wash));

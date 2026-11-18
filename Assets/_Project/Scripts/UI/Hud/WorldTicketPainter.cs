@@ -7,7 +7,7 @@ using UnityEngine;
 namespace UncannyValet.UI.Hud
 {
     /// <summary>
-    /// Once a car has arrived, small modifier icons (droplet, plug, thumbs up) just under it say what it still needs. Projected from the
+    /// From the moment a car spawns, small modifier icons (droplet, plug, thumbs up) just under it say what it still needs. Projected from the
     /// car's world position so they share the pixel scale.
     /// </summary>
     public sealed class WorldTicketPainter

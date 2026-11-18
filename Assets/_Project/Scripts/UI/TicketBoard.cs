@@ -85,7 +85,9 @@ namespace UncannyValet.UI
         {
             _arrived.Remove(e.Car.Value);
             var row = FindByCar(e.Car.Value);
-            if (row != null) row.Arrived = false;
+            if (row == null) return;
+            row.Arrived = false;
+            row.Departed = true;
         }
 
         private void OnTag(CarTagAssigned e)

@@ -1306,3 +1306,15 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: player-visible batch: #184, #185, Thunder Stride x1.8 with perfect grip, handling defaults round 3.
 Tests: beta build loads to the title with no console errors; EditMode 2080/2080.
+
+## lead: merge agent for #186 and #187, Refs #186 #187 [Claude]
+Date: 2026-11-17
+Files: merges of the full-window web template (Assets/WebGLTemplates/UncannyValet, WebBuild, PanelFit) and the service icons from spawn (TicketRow, TicketBoard, ServiceIcons)
+Why: #186 the player fills the browser window; #187 droplet and plug show from spawn.
+Tests: EditMode 2094/2094 (rerun by the lead), PlayMode 5/5 (#187 agent).
+
+## lead: rebuild site/ and site-sandbox/ with the full-window template and spawn icons [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible: #186, #187.
+Tests: sandbox build loaded in the browser: canvas equals the window at 1888x1213 and at 700x900, lot fully visible, no console errors; EditMode 2094/2094.

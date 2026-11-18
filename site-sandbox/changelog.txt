@@ -1,4 +1,7 @@
 === Last 50 commits ===
+2df8bb7  2026-11-17  lead: merge agent for #186, Refs #186 [Claude]
+e4ba5e4  2026-11-17  lead: rebuild site/ and site-sandbox/ with bolt HUD and wash icons [Claude]
+dcc80e5  2026-11-17  integration: full-window web template, panel width fit, Refs #186 [Claude]
 a91fda0  2026-11-17  lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
 155d7bd  2026-11-17  integration: wash icons on cars (droplet, timer, thumbs up), Refs #185 [Claude]
 64695ae  2026-11-17  integration: power bar becomes three lightning bolts, Refs #184 [Claude]
@@ -46,9 +49,6 @@ bedff1d  2026-11-17  ui: JetBrains Mono UI font, title is Valet to Valhalla, Ref
 c8857bd  2026-11-17  economy: late pickup replaces the flat expiry curse, tunable, Refs #166 [Claude]
 82faf68  2026-11-17  lead: merge agent/valet Thunder Stride handling, Refs #167 [Claude]
 125b8ab  2026-11-17  lead: merge agent/patrons EV filter and dirty spacing, Refs #164 #165 [Claude]
-5cdb924  2026-11-17  Merge branch 'pivot/chaos' into worktree-agent-a5b8016a754c68f00
-ae5e8af  2026-11-17  lead: add late-pickup curse tuning keys and rows, Refs #166 [Claude]
-3ef37e6  2026-11-17  patrons: no EV without charging bay, space dirty cars apart [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -752,6 +752,20 @@ Date: 2026-11-17
 Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp added), ModifierIcons.cs (Muddy maps to the Drop), Hud/ServiceIcons.cs, WorldTicketLayout.cs, WorldTicketPainter.cs, Pie/WashPieLayer.cs, PickupPieLayer.cs, PickupPieSettings.cs (side gap removed), Pie/PieSlots.cs (deleted, removed in the #184 commit), Tests/EditMode/UI ServiceIconsTests, WashPieTests, SharedMudSymbolTests, Core/ModifierTests.cs, ModifierTestKit.cs
 Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
 Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.
+
+<<<<<<< HEAD
+## integration: full-window web template, panel width fit, Refs #186 [Claude]
+Date: 2026-11-17
+Files: Assets/WebGLTemplates/UncannyValet/ (index.html, TemplateData/*), Editor/WebBuild.cs (sets PlayerSettings.WebGL.template = PROJECT:UncannyValet for game and sandbox builds), ProjectSettings/ProjectSettings.asset (webGLTemplate), Scripts/UI/Kit/PanelFit.cs, Scripts/UI/TuningPanel.cs, Tests/EditMode/UI/WindowShapeTests.cs, Tests/EditMode/Integration/CameraFitTests.cs, tools/README-unity.md
+Why: issue #186. The player fills the browser window from the start (no 960x600 canvas, no footer), pixel ratio capped at 2. CameraFit and the integer PixelGrid already handle any aspect (checked by tests at 21:9, 16:9, 4:3, 1:1, phone); the F2 tuning panel was a fixed 820 px and now shrinks on narrow windows.
+Tests: EditMode full suite 2092 passed (12 new: CameraFit shapes, PixelGrid shapes, PanelFit). Web build and browser check left to the lead.
+=======
+## integration: service icons show from spawn, hide after departure, Refs #187 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketBoard.cs, Hud/ServiceIcons.cs, Hud/WorldTicketPainter.cs, Assets/_Project/Tests/EditMode/UI/ServiceIconsTests.cs
+Why: #187. The droplet and plug icons were gated on TicketRow.Arrived; the ticket and its modifiers are announced at spawn, so the gate is now "not Departed" (set on CarDeparted). The info box still waits for arrival.
+Tests: ServiceIconsTests updated (spawned-not-arrived shows icons, departed shows none, board row from spawn).
+>>>>>>> worktree-agent-ae23a6ea363ed6b07
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -2050,6 +2064,18 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: player-visible batch: handling defaults, #182, #183.
 Tests: beta build loads to the title with no console errors; EditMode 2069/2069.
+
+## lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
+Date: 2026-11-17
+Files: merge of the integration worktree branch (bolt HUD, wash icons)
+Why: #184, #185.
+Tests: EditMode 2080/2080 (rerun by the lead), PlayMode 12/12 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with bolt HUD and wash icons [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible batch: #184, #185, Thunder Stride x1.8 with perfect grip, handling defaults round 3.
+Tests: beta build loads to the title with no console errors; EditMode 2080/2080.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog

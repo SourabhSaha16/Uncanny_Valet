@@ -313,3 +313,9 @@ Date: 2026-11-17
 Files: Assets/WebGLTemplates/UncannyValet/ (index.html, TemplateData/*), Editor/WebBuild.cs (sets PlayerSettings.WebGL.template = PROJECT:UncannyValet for game and sandbox builds), ProjectSettings/ProjectSettings.asset (webGLTemplate), Scripts/UI/Kit/PanelFit.cs, Scripts/UI/TuningPanel.cs, Tests/EditMode/UI/WindowShapeTests.cs, Tests/EditMode/Integration/CameraFitTests.cs, tools/README-unity.md
 Why: issue #186. The player fills the browser window from the start (no 960x600 canvas, no footer), pixel ratio capped at 2. CameraFit and the integer PixelGrid already handle any aspect (checked by tests at 21:9, 16:9, 4:3, 1:1, phone); the F2 tuning panel was a fixed 820 px and now shrinks on narrow windows.
 Tests: EditMode full suite 2092 passed (12 new: CameraFit shapes, PixelGrid shapes, PanelFit). Web build and browser check left to the lead.
+
+## integration: service icons show from spawn, hide after departure, Refs #187 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Scripts/UI/TicketRow.cs, TicketBoard.cs, Hud/ServiceIcons.cs, Hud/WorldTicketPainter.cs, Assets/_Project/Tests/EditMode/UI/ServiceIconsTests.cs
+Why: #187. The droplet and plug icons were gated on TicketRow.Arrived; the ticket and its modifiers are announced at spawn, so the gate is now "not Departed" (set on CarDeparted). The info box still waits for arrival.
+Tests: ServiceIconsTests updated (spawned-not-arrived shows icons, departed shows none, board row from spawn).
