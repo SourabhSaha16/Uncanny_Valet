@@ -13,10 +13,13 @@ namespace UncannyValet.Lot
 
         public StationKind Kind { get; private set; }
 
-        public void Init(StationKind kind, LotConfig config)
+        public void Init(StationKind kind, LotConfig config) => Init(kind, config, config.SpotSize);
+
+        /// <summary>Same, for a station of its own <paramref name="size"/> instead of the config's spot size.</summary>
+        public void Init(StationKind kind, LotConfig config, UnityEngine.Vector2 size)
         {
             Kind = kind;
-            Setup(config, config.SpotSize);
+            Setup(config, size);
         }
 
         /// <summary>Makes the station single-occupancy: while a car holds it, other cars are kept out.</summary>

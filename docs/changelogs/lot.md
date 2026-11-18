@@ -199,3 +199,21 @@ Date: 2026-11-18
 Files: Scripts/Lot/LotConfig.cs (default), Data/Lot/LotConfig.asset, Tests/PlayMode/BayEntryTests.cs (pitch read from config); rebaked by RunBatch: Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining,Sandbox}.unity, Data/Run/{VanaheimCrazyLot,VanaheimMudPatches,VanaheimTrainingLot,VanaheimWheatMud}.asset
 Why: Issue #183, design.md section 4. Bay pitch goes 3.2 to 3.8, so the frame is 1.8 wider (three gaps); walls, strip, roads, props and mud patches follow LotGeometry. CameraFit floors at the lot width, so the lot still fits at 16:9 and 4:3 (zoom-out, no art shrunk).
 Tests: EditMode 2069/2069 pass; PlayMode filtered (BayEntry, Bootstrap smoke, CameraFraming, Midgard, Sandbox, Vanaheim, PropArt, MudPatch, PedestrianHit) 45/45 pass.
+
+## lot: pure authored geometry, validator rules and walk graph for hand-made lots, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/Handmade/*.cs (HandmadeLotData and its part types, LotIssue, LotRule, HandmadeLotRules + LotPieceRules/LotRoadRules/LotWalkRules, WalkGraph, RouteRounder, RouteMath, OrientedRect, LotBounds, AuthoredRoadLayout, AuthoredPedestrianPaths); Tests/EditMode/Lot/{HandmadeLotFixture,DinerLotData,HandmadePieceRulesTests,HandmadeRoadRulesTests,HandmadeWalkRulesTests,HandmadeGeometryTests,HandmadeDinerParityTests}.cs
+Why: Task 1 of docs/redesign/handmade_lots_plan.md (design.md sections 4, 9, 10). Authored lots supply IRoadLayout and IPedestrianPaths implementations from plain data; the validator rules (plan numbering, rule 25 left to the run integration) are pure. Queue slot indices are 0-based.
+Tests: one test per rule, Diner parity (slots, lanes, turn and merge distances, queue and curb-exit routes, doors, curb spots), WalkGraph/RouteRounder/OrientedRect, allocation-free pathing; EditMode 2167/2167 pass.
+
+## lot: bays, wash station and curb take their own size and rotation, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/{ParkingSpot,SpotBuilder,StationZone,StationBuilder,CurbZone,LotCurbArrows}.cs; Tests/EditMode/Lot/PlaceableBayTests.cs
+Why: Task 2 of docs/redesign/handmade_lots_plan.md. Each piece gets an overload with explicit centre, size and rotation (trigger, painted inner rectangle, wash blocker and curb arrow span follow the size); the old signatures delegate with the config's values, so the parametric lots build exactly as before. CurbArrowLayout needed no change.
+Tests: PlaceableBayTests (rotated bay centre test, non-default bay size, old signature unchanged, wash station and blocker size, curb zone and arrow span); EditMode 2173/2173 pass.
+
+## lot: hand-made lot markers, reader and HandmadeLot runtime, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/Handmade/{HandmadeLot,HandmadeLotBuilder,HandmadeLotReader,HandmadeSceneryReader}.cs; Scripts/Lot/Handmade/Markers/*.cs (LotBay, CurbZoneMarker, QueueSlot, CarEntryRoad, CarExitRoad, AmbientLane, LotDoor, PatronWaitPoint, AmbientSpawnPoint, WalkNode, WalkLink, SolidBlock, HazardPatch, ValetStart, ScenerySolid, LotTileLayer); Prefabs/Lot/*.prefab (bay regular, EV and wash, curb, queue slot, entry road, exit road, ambient lanes, doors, wait and spawn points, walk node and link, solid, hazard, valet start, lot root); Tests/EditMode/Lot/{HandmadeSceneKit,HandmadeLotReaderTests}.cs; Tests/PlayMode/{HandmadePlayKit,HandmadeLotPlayModeTests}.cs
+Why: Task 3 of docs/redesign/handmade_lots_plan.md. HandmadeLot reads the markers (the reader is the only code touching scene objects), runs the rules, logs every error naming the object and builds nothing on an error, otherwise builds the curb with arrows, numbered bays, wash stations and mud and serves ILotLayout and ISpotGeometry, Road, Paths, Perfect and ViewRect. Markers are dumb serialized data with gizmos.
+Tests: reader tests (world positions, wait order, rotation, scenery and tile layer colliders, hazards); PlayMode: a 2-bay lot builds, a car parks (CarParked once), is accepted at the curb with arrows, and a missing curb blocks Awake. EditMode 2181/2181 and PlayMode BayEntryTests + HandmadeLotPlayModeTests 12/12 pass.

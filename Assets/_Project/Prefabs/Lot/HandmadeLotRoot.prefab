@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8717885654802362868
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6979958595405938627}
+  - component: {fileID: 7766912714852579626}
+  m_Layer: 0
+  m_Name: HandmadeLotRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6979958595405938627
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8717885654802362868}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7766912714852579626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8717885654802362868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73349ae2de8d48f46a7ce349ed806e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.Handmade.HandmadeLot
+  _config: {fileID: 11400000, guid: b8cc3528ed7fe7640bbf60931e01af90, type: 2}
+  _requirements:
+    _minQueueSlots: 1
+    _maxQueueSlots: 8
+    _needsCharging: 0
+    _needsWash: 0
+    _ambientTraffic: 0
+    _ambientPedestrians: 0
+    _minBaySize: {x: 1.4, y: 2.6}
+    _maxCurbGap: 1.5
+    _laneTolerance: 0.3
+    _turnRadius: 2
+  _hasView: 0
+  _view:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0

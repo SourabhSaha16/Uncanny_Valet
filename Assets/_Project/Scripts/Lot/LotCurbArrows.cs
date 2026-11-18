@@ -13,27 +13,34 @@ namespace UncannyValet.Lot
 
         /// <summary>Builds both arrows under <paramref name="parent"/> and returns the component that tints them.</summary>
         public static CurbArrow Build(RectFactory rects, Transform parent, LotConfig config)
+            => Build(rects, parent, config, config.CurbPosition, config.CurbSize);
+
+        /// <summary>Builds both arrows for a curb zone centred on <paramref name="centre"/> (parent space) with its own <paramref name="size"/>.</summary>
+        public static CurbArrow Build(RectFactory rects, Transform parent, LotConfig config, Vector2 centre, Vector2 size)
         {
             var style = config.CurbArrow;
             var root = new GameObject("Curb Arrows");
             root.transform.SetParent(parent, false);
             var arrow = root.AddComponent<CurbArrow>();
             arrow.Init(style);
-            var x = SideX(config);
-            Paint(rects, root.transform, arrow, style, config.CurbPosition + new Vector2(-x, 0f), "W");
-            Paint(rects, root.transform, arrow, style, config.CurbPosition + new Vector2(x, 0f), "E");
+            var x = SideX(config, size);
+            Paint(rects, root.transform, arrow, style, centre + new Vector2(-x, 0f), "W");
+            Paint(rects, root.transform, arrow, style, centre + new Vector2(x, 0f), "E");
             return arrow;
         }
 
         /// <summary>The strip between the two arrows Build paints for this config (the same maths, so the rule matches the paint).</summary>
-        public static CurbArrowSpan SpanOf(LotConfig config) => new CurbArrowSpan(SideX(config));
+        public static CurbArrowSpan SpanOf(LotConfig config) => SpanOf(config, config.CurbSize);
 
-        private static float SideX(LotConfig config)
+        /// <summary>The same for a curb zone of its own size.</summary>
+        public static CurbArrowSpan SpanOf(LotConfig config, Vector2 size) => new CurbArrowSpan(SideX(config, size));
+
+        private static float SideX(LotConfig config, Vector2 size)
         {
             var words = config.CurbLabelWords.Length;
             var letter = config.LabelCharWidth * config.CurbLabelSize;
             var half = CurbArrowLayout.TextHalfExtent(words, config.CurbLabelColumnSpacing, letter);
-            return CurbArrowLayout.SideX(config.CurbSize.x, half, config.CurbArrow.EdgeInset);
+            return CurbArrowLayout.SideX(size.x, half, config.CurbArrow.EdgeInset);
         }
 
         private static void Paint(RectFactory rects, Transform parent, CurbArrow owner, CurbArrowStyle s, Vector2 centre, string side)

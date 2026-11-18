@@ -13,33 +13,39 @@ namespace UncannyValet.Lot
 
         /// <param name="number">1-based number of the station among the lot's wash stations; only the name shows it (when the lot has several).</param>
         public static StationZone BuildWash(RectFactory rects, Transform parent, LotConfig c, Rect area, int number = 1)
+            => BuildWash(rects, parent, c, area.center, area.size, 0f, number);
+
+        /// <summary>Builds a wash station of its own size, centred on <paramref name="centre"/> (lot space) and turned by <paramref name="rotationDegrees"/>.</summary>
+        public static StationZone BuildWash(RectFactory rects, Transform parent, LotConfig c, Vector2 centre, Vector2 size,
+            float rotationDegrees, int number = 1)
         {
             var root = new GameObject(StationKind.Wash + " Station" + (number > 1 ? " " + number : string.Empty));
             root.transform.SetParent(parent, false);
-            root.transform.localPosition = area.center;
-            rects.Make(root.transform, "Line", Vector2.zero, area.size, WashLine, -7);
-            var fill = rects.Make(root.transform, "Fill", Vector2.zero, area.size - Vector2.one * 0.3f, WashFill, -6);
-            var size = LabelFit.Size(WashText.Length, area.width, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
-            SpotLabel.Create(root.transform, WashText, Vector2.zero, c, -5, size);
-            PixelDecal.Build(rects, root.transform, new Vector2(0f, area.height * PixelDecal.YOffsetShare),
+            root.transform.localPosition = centre;
+            root.transform.localRotation = Quaternion.Euler(0f, 0f, rotationDegrees);
+            rects.Make(root.transform, "Line", Vector2.zero, size, WashLine, -7);
+            var fill = rects.Make(root.transform, "Fill", Vector2.zero, size - Vector2.one * 0.3f, WashFill, -6);
+            var labelSize = LabelFit.Size(WashText.Length, size.x, c.StationLabelSize, c.LabelCharWidth, c.StationLabelFill);
+            SpotLabel.Create(root.transform, WashText, Vector2.zero, c, -5, labelSize);
+            PixelDecal.Build(rects, root.transform, new Vector2(0f, size.y * PixelDecal.YOffsetShare),
                 WashIconArt.Rows, WashIconArt.TryColor);
             root.AddComponent<BoxCollider2D>();
             var zone = root.AddComponent<StationZone>();
-            zone.Init(StationKind.Wash, c);
+            zone.Init(StationKind.Wash, c, size);
             root.AddComponent<SlotTint>().Init(zone, StationKind.Wash, fill.GetComponent<SpriteRenderer>(), c.WashLitColor, c);
-            zone.UseBlocker(BuildBlocker(root.transform, c));
+            zone.UseBlocker(BuildBlocker(root.transform, c, size));
             root.SetActive(false);
             return zone;
         }
 
         // A solid box (off until a car holds the slot) that keeps a second car out of the single wash slot.
-        private static StationBlocker BuildBlocker(Transform parent, LotConfig c)
+        private static StationBlocker BuildBlocker(Transform parent, LotConfig c, Vector2 size)
         {
             var go = new GameObject("Wash Blocker");
             go.transform.SetParent(parent, false);
             go.AddComponent<BoxCollider2D>();
             var blocker = go.AddComponent<StationBlocker>();
-            blocker.Init(StationKind.Wash, c.SpotSize, c.RefusalRepeatSeconds);
+            blocker.Init(StationKind.Wash, size, c.RefusalRepeatSeconds);
             return blocker;
         }
     }

@@ -47,12 +47,15 @@ namespace UncannyValet.Lot
         private void OnTicketClosed(TicketClosed e) => ShowArrow();
 
         /// <summary>Sets the zone up; <paramref name="arrow"/> (optional) is tinted by how the cars inside face.</summary>
-        public void Init(LotConfig config, CurbArrow arrow = null)
+        public void Init(LotConfig config, CurbArrow arrow = null) => Init(config, config.CurbSize, arrow);
+
+        /// <summary>Same, for a curb zone of its own <paramref name="size"/> instead of the config's curb size.</summary>
+        public void Init(LotConfig config, UnityEngine.Vector2 size, CurbArrow arrow = null)
         {
-            Setup(config, config.CurbSize);
+            Setup(config, size);
             _facing = new CurbFacingRule(config.CurbFacingToleranceDegrees);
             _arrow = arrow;
-            Span = arrow == null ? CurbArrowSpan.None : LotCurbArrows.SpanOf(config);
+            Span = arrow == null ? CurbArrowSpan.None : LotCurbArrows.SpanOf(config, size);
         }
 
         /// <summary>The strip between the painted arrows; none when the zone has no arrows (then perfect never waits on them).</summary>

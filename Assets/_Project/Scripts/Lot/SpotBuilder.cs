@@ -14,26 +14,35 @@ namespace UncannyValet.Lot
         private const float LineWidth = 0.1f;
 
         /// <summary>The painted inside of a bay (the spot size less the line on each side); what "parked inside" is judged against.</summary>
-        public static Vector2 InnerSize(LotConfig c) => c.SpotSize - Vector2.one * LineWidth * 2f;
+        public static Vector2 InnerSize(LotConfig c) => InnerSize(c.SpotSize);
+
+        /// <summary>The painted inside of a bay of the given size.</summary>
+        public static Vector2 InnerSize(Vector2 size) => size - Vector2.one * LineWidth * 2f;
 
         /// <summary>Creates the spot inactive; the caller switches it on when it opens.</summary>
         /// <param name="regularPad">Fill of a regular bay; pass the asphalt colour for painted lines on the asphalt.</param>
         public static ParkingSpot Build(RectFactory rects, Transform parent, LotConfig c, int id, Rect area,
             bool charging, SpotOccupancy occupancy, Color? regularPad = null, PerfectRunner judge = null)
+            => Build(rects, parent, c, id, area.center, c.SpotSize, 0f, charging, occupancy, regularPad, judge);
+
+        /// <summary>Creates a spot of its own size, centred on <paramref name="centre"/> (lot space) and turned by <paramref name="rotationDegrees"/>.</summary>
+        public static ParkingSpot Build(RectFactory rects, Transform parent, LotConfig c, int id, Vector2 centre, Vector2 size,
+            float rotationDegrees, bool charging, SpotOccupancy occupancy, Color? regularPad = null, PerfectRunner judge = null)
         {
             var root = new GameObject((charging ? "Charging Spot " : "Spot ") + id);
             root.transform.SetParent(parent, false);
-            root.transform.localPosition = area.center;
-            rects.Make(root.transform, "Line", Vector2.zero, c.SpotSize, charging ? ChargeLine : Line, -7);
-            var pad = rects.Make(root.transform, "Pad", Vector2.zero, InnerSize(c),
+            root.transform.localPosition = centre;
+            root.transform.localRotation = Quaternion.Euler(0f, 0f, rotationDegrees);
+            rects.Make(root.transform, "Line", Vector2.zero, size, charging ? ChargeLine : Line, -7);
+            var pad = rects.Make(root.transform, "Pad", Vector2.zero, InnerSize(size),
                 charging ? ChargePad : regularPad ?? Pad, -6);
             SpotLabel.Create(root.transform, id.ToString(), Vector2.zero, c, -5);
             if (charging)
-                PixelDecal.Build(rects, root.transform, new Vector2(0f, c.SpotSize.y * PixelDecal.YOffsetShare),
+                PixelDecal.Build(rects, root.transform, new Vector2(0f, size.y * PixelDecal.YOffsetShare),
                     PlugIconArt.Rows, PlugIconArt.TryColor);
             root.AddComponent<BoxCollider2D>();
             var spot = root.AddComponent<ParkingSpot>();
-            spot.Init(id, c, occupancy, charging, judge);
+            spot.Init(id, size, c, occupancy, charging, judge);
             if (charging)
                 root.AddComponent<SlotTint>().Init(spot, StationKind.Charging, pad.GetComponent<SpriteRenderer>(), c.ChargeLitColor, c);
             root.SetActive(false);
