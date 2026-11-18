@@ -1,6 +1,7 @@
 using UncannyValet.Core.Contracts;
 using UncannyValet.Core.Events;
 using UncannyValet.Core.Ids;
+using UnityEngine;
 
 namespace UncannyValet.Lot
 {
@@ -20,13 +21,17 @@ namespace UncannyValet.Lot
 
         /// <param name="judge">Told when a car comes to rest here so it can judge a Perfect Park; null for none.</param>
         public void Init(int spotId, LotConfig config, SpotOccupancy occupancy, bool charging, PerfectRunner judge = null)
+            => Init(spotId, config.SpotSize, config, occupancy, charging, judge);
+
+        /// <summary>Same, for a bay of its own <paramref name="size"/> (width, length before rotation) instead of the config's spot size.</summary>
+        public void Init(int spotId, Vector2 size, LotConfig config, SpotOccupancy occupancy, bool charging, PerfectRunner judge = null)
         {
             _judge = judge;
             SpotId = spotId;
             _occupancy = occupancy;
             _charging = charging;
-            _fit = new BayFitRule(SpotBuilder.InnerSize(config) * 0.5f, config.Perfect.ParkedInsideTolerance);
-            Setup(config, config.SpotSize);
+            _fit = new BayFitRule(SpotBuilder.InnerSize(size) * 0.5f, config.Perfect.ParkedInsideTolerance);
+            Setup(config, size);
         }
 
         protected override void OnSettled(CarId car)

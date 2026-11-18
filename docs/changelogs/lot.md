@@ -205,3 +205,9 @@ Date: 2026-11-18
 Files: Scripts/Lot/Handmade/*.cs (HandmadeLotData and its part types, LotIssue, LotRule, HandmadeLotRules + LotPieceRules/LotRoadRules/LotWalkRules, WalkGraph, RouteRounder, RouteMath, OrientedRect, LotBounds, AuthoredRoadLayout, AuthoredPedestrianPaths); Tests/EditMode/Lot/{HandmadeLotFixture,DinerLotData,HandmadePieceRulesTests,HandmadeRoadRulesTests,HandmadeWalkRulesTests,HandmadeGeometryTests,HandmadeDinerParityTests}.cs
 Why: Task 1 of docs/redesign/handmade_lots_plan.md (design.md sections 4, 9, 10). Authored lots supply IRoadLayout and IPedestrianPaths implementations from plain data; the validator rules (plan numbering, rule 25 left to the run integration) are pure. Queue slot indices are 0-based.
 Tests: one test per rule, Diner parity (slots, lanes, turn and merge distances, queue and curb-exit routes, doors, curb spots), WalkGraph/RouteRounder/OrientedRect, allocation-free pathing; EditMode 2167/2167 pass.
+
+## lot: bays, wash station and curb take their own size and rotation, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/{ParkingSpot,SpotBuilder,StationZone,StationBuilder,CurbZone,LotCurbArrows}.cs; Tests/EditMode/Lot/PlaceableBayTests.cs
+Why: Task 2 of docs/redesign/handmade_lots_plan.md. Each piece gets an overload with explicit centre, size and rotation (trigger, painted inner rectangle, wash blocker and curb arrow span follow the size); the old signatures delegate with the config's values, so the parametric lots build exactly as before. CurbArrowLayout needed no change.
+Tests: PlaceableBayTests (rotated bay centre test, non-default bay size, old signature unchanged, wash station and blocker size, curb zone and arrow span); EditMode 2173/2173 pass.
