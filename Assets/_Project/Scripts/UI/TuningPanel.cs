@@ -88,7 +88,8 @@ namespace UncannyValet.UI
             if (_closeRequested) { GUI.FocusControl(string.Empty); _closeRequested = false; IsTyping = false; }
             if (!_open) return;
             EnsureStyles();
-            var panel = new Rect(Screen.width - _width - _margin, _margin, _width, Screen.height - _margin * 2f);
+            var width = Kit.PanelFit.Width(Screen.width, _width, _margin);
+            var panel = new Rect(Screen.width - width - _margin, _margin, width, Screen.height - _margin * 2f);
             GUI.Box(panel, GUIContent.none, _panelBox);
             GUI.Label(new Rect(panel.x + 8f, panel.y + 4f, 300f, 26f), "Tuning (F2 closes)", _title);
             if (GUI.Button(new Rect(panel.xMax - 108f, panel.y + 4f, 100f, 24f), "Reset all")) ResetAll();

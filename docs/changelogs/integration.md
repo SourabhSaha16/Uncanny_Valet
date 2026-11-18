@@ -307,3 +307,9 @@ Date: 2026-11-17
 Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp added), ModifierIcons.cs (Muddy maps to the Drop), Hud/ServiceIcons.cs, WorldTicketLayout.cs, WorldTicketPainter.cs, Pie/WashPieLayer.cs, PickupPieLayer.cs, PickupPieSettings.cs (side gap removed), Pie/PieSlots.cs (deleted, removed in the #184 commit), Tests/EditMode/UI ServiceIconsTests, WashPieTests, SharedMudSymbolTests, Core/ModifierTests.cs, ModifierTestKit.cs
 Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
 Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.
+
+## integration: full-window web template, panel width fit, Refs #186 [Claude]
+Date: 2026-11-17
+Files: Assets/WebGLTemplates/UncannyValet/ (index.html, TemplateData/*), Editor/WebBuild.cs (sets PlayerSettings.WebGL.template = PROJECT:UncannyValet for game and sandbox builds), ProjectSettings/ProjectSettings.asset (webGLTemplate), Scripts/UI/Kit/PanelFit.cs, Scripts/UI/TuningPanel.cs, Tests/EditMode/UI/WindowShapeTests.cs, Tests/EditMode/Integration/CameraFitTests.cs, tools/README-unity.md
+Why: issue #186. The player fills the browser window from the start (no 960x600 canvas, no footer), pixel ratio capped at 2. CameraFit and the integer PixelGrid already handle any aspect (checked by tests at 21:9, 16:9, 4:3, 1:1, phone); the F2 tuning panel was a fixed 820 px and now shrinks on narrow windows.
+Tests: EditMode full suite 2092 passed (12 new: CameraFit shapes, PixelGrid shapes, PanelFit). Web build and browser check left to the lead.

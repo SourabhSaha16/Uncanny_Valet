@@ -22,6 +22,9 @@ wrapper) is not covered by the lock. Self-test (no Unity): `powershell -NoProfil
 
 ## The sandbox site (issue #180)
 
+Web page template: `Assets/WebGLTemplates/UncannyValet` (set by `WebBuild`, so the game and `-Sandbox` builds both use it). The canvas fills
+the whole browser window (100vw x 100vh, no footer, pixel ratio capped at 2); file names stay `Build/<name>.*`, compression stays off.
+
 A third site beside stable (`site/`, root) and beta (`site/` of `pivot/chaos`, `/beta/`): an empty lot for testing how the car drives in each
 world, with a world picker (keys 1 to 9), R to reset the car and the F2 tuning panel. No shift, patrons or scoring.
 

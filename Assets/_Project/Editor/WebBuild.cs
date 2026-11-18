@@ -14,6 +14,8 @@ namespace UncannyValet.EditorTools
     {
         private const string DefaultOutput = "build/WebGL/WebGL";
         // tools/build-web.ps1 -Sandbox passes this: the sandbox scene alone becomes the player (see SandboxSceneBuilder).
+        // Project template under Assets/WebGLTemplates: the canvas fills the whole window (issue 186).
+        private const string TemplateName = "PROJECT:UncannyValet";
         private const string SandboxFlag = "-sandboxBuild";
 
         [MenuItem("Uncanny Valet/Build Web Player")]
@@ -50,6 +52,7 @@ namespace UncannyValet.EditorTools
         // GitHub Pages can't send Content-Encoding headers, so compressed builds fail to load there.
         private static void ApplyWebSettings()
         {
+            PlayerSettings.WebGL.template = TemplateName;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.decompressionFallback = false;
             PlayerSettings.runInBackground = true;
