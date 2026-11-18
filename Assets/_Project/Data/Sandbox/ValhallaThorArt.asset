@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 676c7d237025df64b9a4e961a7409c28, type: 3}
+  m_Name: ValhallaThorArt
+  m_EditorClassIdentifier: UncannyValet.Valet::UncannyValet.Valet.ValetArtConfig
+  _model:
+  - {fileID: 21300000, guid: 00d12786468d2da4e837d31dea94c222, type: 3}
+  - {fileID: 21300000, guid: 234622dc596852345ac377097a184a1c, type: 3}
+  - {fileID: 21300000, guid: 092ae2bdf82d2b14889d19949b2ae172, type: 3}
+  - {fileID: 21300000, guid: fc3fa7baef8551542a37c67d4ec5ea29, type: 3}
+  - {fileID: 21300000, guid: bf16433b94573214f9454b8785420f64, type: 3}
+  - {fileID: 21300000, guid: 6ae545796fb34e34ca1370b4fb3401aa, type: 3}
+  - {fileID: 21300000, guid: 111a4042e5e2e6d4b98450e245049001, type: 3}
+  - {fileID: 21300000, guid: 8ded28b7afbccab48b88dc0527ada08f, type: 3}
+  - {fileID: 21300000, guid: 318f7c7d1938879458e5c8f506531b46, type: 3}
+  - {fileID: 21300000, guid: a41ade0334080be41b63085c7c808199, type: 3}
+  - {fileID: 21300000, guid: fd631bb0364de114a84b7fac46be8605, type: 3}
+  - {fileID: 21300000, guid: ea3ec24a89758d54fa9ca1c23a5c0527, type: 3}
+  - {fileID: 21300000, guid: 414287ce521c7d14ea93d2c4faf25e81, type: 3}
+  - {fileID: 21300000, guid: 6837d6447e0d73546a9d153963805249, type: 3}
+  - {fileID: 21300000, guid: 63523115b1d02484fa3aa2d4bf4569e5, type: 3}
+  - {fileID: 21300000, guid: 7fb325c9b0f5afe4099ad373081c3e2d, type: 3}
+  _outfit:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _hair:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _framesPerGroup: 4
+  _framesPerSecond: 9
+  _idleFrame: 0
+  _moveThreshold: 0.1
+  _downStart: 0
+  _rightStart: 8
+  _upStart: 12
+  _leftStart: 4
+  _flipRight: 0
+  _flipLeft: 0
