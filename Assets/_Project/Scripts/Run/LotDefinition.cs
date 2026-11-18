@@ -23,6 +23,8 @@ namespace UncannyValet.Run
         private string _sceneName;
         [SerializeField, Tooltip("Which parametric layout the lot is built from.")]
         private LotLayoutKind _layout = LotLayoutKind.Diner;
+        [SerializeField, Tooltip("The lot prefab (its root carries a HandmadeLot component). Required for the Handmade layout, unused otherwise.")]
+        private GameObject _handmadePrefab;
         [SerializeField, Range(1, MaxQueueSlots), Tooltip("Arrival queue slots below the curb. Every lot has 4: the valet drop-off spot plus 3 queue slots. The lot grows taller for more.")]
         private int _queueSlots = DefaultQueueSlots;
         [SerializeField] private LotPacing _pacing = new LotPacing();
@@ -87,6 +89,9 @@ namespace UncannyValet.Run
         public string SceneName => _sceneName;
         public LotLayoutKind Layout => _layout;
         public int QueueSlots => _queueSlots;
+
+        /// <summary>The hand-made lot prefab; null for a generated lot.</summary>
+        public GameObject HandmadePrefab => _handmadePrefab;
         public LotPacing Pacing => _pacing;
         public IReadOnlyList<ModifierChance> ModifierChances => _modifierChances;
         public IReadOnlyList<DialPosition> Dials => _dials;

@@ -26,6 +26,7 @@ namespace UncannyValet.Tests.PlayMode
         private const string CrazySceneName = "Lot_MidgardCrazy";
         private const string VanaheimTrainingPath = "Assets/_Project/Scenes/Lot_VanaheimTraining.unity";
         private const string VanaheimCrazyPath = "Assets/_Project/Scenes/Lot_VanaheimCrazy.unity";
+        private const string HandmadePath = "Assets/_Project/Scenes/Lot_MidgardHandmade.unity";
         private const float PlaySeconds = 4f;
         private const int SwitchFrames = 10;
         private const string StartPlaying = "StartPlaying";
@@ -65,6 +66,13 @@ namespace UncannyValet.Tests.PlayMode
         [UnityTest]
         public IEnumerator VanaheimCrazyScene_StartsAndPlaysWithoutErrors() =>
             PlayScene(VanaheimCrazyPath, new LotId(World.Vanaheim, LotKind.Crazy));
+
+        [UnityTest]
+        public IEnumerator HandmadeMidgardScene_StartsAndPlaysWithoutErrors() =>
+            PlayScene(HandmadePath, new LotId(World.Midgard, LotKind.Training));
+
+        [UnityTest]
+        public IEnumerator HandmadeLot_HasTwoQueueSlots_AndTheDirectorPacesTwoWaiting() => CheckQueue(HandmadePath, 2, 2, 2, 1);
 
         [UnityTest]
         public IEnumerator VanaheimTrainingLot_HasFourQueueSlots_AndTheDirectorPacesTwoWaiting() => CheckQueue(VanaheimTrainingPath, 4, 2, 4, 8);
