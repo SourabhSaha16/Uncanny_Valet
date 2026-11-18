@@ -1,4 +1,23 @@
 === Last 50 commits ===
+aa8d8f6  2026-11-18  lead: align NPC walk frames on the head, fixes the walk jitter [Claude]
+9eff57e  2026-11-18  lead: PlayMode power-bar test follows 16.7 perfect-park fill, Refs #191 [Claude]
+4965cc6  2026-11-18  lead: merge agent for #194 validator, sandbox and run kind, Refs #194 [Claude]
+d8b97b6  2026-11-18  integration: sandbox hand-made world and test, Refs #194 [Claude]
+0fc46fe  2026-11-18  integration: Handmade layout kind, hand-made lot source and DEV run, Refs #194 [Claude]
+3e8a587  2026-11-18  integration: hand-made lot editor tooling, validator window and play guard, Refs #194 [Claude]
+9fa3976  2026-11-18  lead: unity meta updates for hand-made tiles, Refs #194 [Claude]
+ee43c82  2026-11-18  lead: merge agent for #194 tile kit and bootstrap seam, Refs #194 [Claude]
+6d67f40  2026-11-18  integration: hand-made lot kit (tiles, palette, scenery prefabs, template scene), Refs #194 [Claude]
+7569f06  2026-11-18  integration: ILotSource seam and LotRegistration, behaviour-preserving, Refs #194 [Claude]
+d974f00  2026-11-18  integration: square 88x88 Valhalla tile set for Tilemap painting, Refs #194 [Claude]
+a89c3aa  2026-11-18  lead: merge agent for #194 tasks 1-3, Refs #194 [Claude]
+c944e5e  2026-11-18  lot: hand-made lot markers, reader, HandmadeLot runtime and prefabs, Refs #194 [Claude]
+1888b72  2026-11-18  lot: bays, wash station and curb take their own size and rotation, Refs #194 [Claude]
+aa46a4e  2026-11-18  lot: pure authored geometry, validator rules and walk graph, Refs #194 [Claude]
+3b9f666  2026-11-18  lead: hand-made lots plan detail and owner decisions, Refs #194 [Claude]
+22d1a3f  2026-11-18  lead: hand-made lots implementation plan, Refs #194 [Claude]
+ddf3350  2026-11-18  lead: log hand-made lot decisions, Refs #194 [Claude]
+d01a96b  2026-11-18  lead: rebuild site/ and site-sandbox/ with Valhalla sandbox art and fixes [Claude]
 71124f6  2026-11-18  lead: merge agent for #193, Refs #193 [Claude]
 19bbf7e  2026-11-18  integration: sandbox uses the Valhalla Midgard art, Thor and NPC walks, Refs #193 [Claude]
 99ec7db  2026-11-18  integration: slice the Valhalla Drive art for the sandbox, Refs #193 [Claude]
@@ -30,25 +49,6 @@ ff03b3c  2026-11-17  integration: solid stalls, banners, fences, hay; wheat slow
 747970f  2026-11-17  lead: merge agent skid strokes on bends, Refs #181 [Claude]
 60883d4  2026-11-17  cars: cut skid strokes sooner on bends, Refs #181 [Claude]
 026c7e8  2026-11-17  lead: handling defaults from sandbox play-testing [Claude]
-c072bae  2026-11-17  lead: add site-sandbox/ build for the sandbox endpoint, Refs #180 [Claude]
-f67a5b3  2026-11-17  lead: merge agent sandbox scene and endpoint, Refs #180 [Claude]
-4599c37  2026-11-17  integration: sandbox scene, world picker and sandbox build wiring, Refs #180 [Claude]
-955b066  2026-11-17  lead: rebuild site/ with playtest batch 10 for beta [Claude]
-7d563fe  2026-11-17  lead: design log and changelog for playtest batch 10, Refs #176 #177 #178 #179 [Claude]
-7317e59  2026-11-17  lead: merge agent arrival pacing and return spacing, Refs #177 #178 #179 [Claude]
-9e5ce7e  2026-11-17  lead: merge agent/valet Thunder Stride speeds, Refs #176 [Claude]
-0e21086  2026-11-17  patrons: first car at once, queue minimum, peak spacing [Claude]
-6f3a581  2026-11-17  valet: Thunder stride faster than dash and driving, Refs #176 [Claude]
-44643b7  2026-11-17  lead: rebuild site/ with playtest batch 9 for beta [Claude]
-d86f05d  2026-11-17  lead: design log and changelog for playtest batch 9, Refs #174 #175 [Claude]
-3ad8565  2026-11-17  lead: merge agent/cars acceleration 1.7 and 30 s tyre marks, Refs #174 #175 [Claude]
-214686c  2026-11-17  cars: 1.7x acceleration with matching brake and drag, tyre marks last 30 s [Claude]
-21b4fe6  2026-11-17  lead: raise skid mark fade F2 range to 60 s, Refs #175 [Claude]
-78fac71  2026-11-17  lead: rebuild site/ with playtest batch 8 for beta [Claude]
-9b9c526  2026-11-17  lead: design log and changelog for playtest batch 8, Refs #171 #172 #173 [Claude]
-d8c85dd  2026-11-17  lead: merge agent late-pickup -N pop, Refs #173 [Claude]
-1178ea4  2026-11-17  lead: merge agent/integration plain title background and text fixes, Refs #171 #172 [Claude]
-c232999  2026-11-17  ui: late delivery shows a red -N pop at the pickup, Refs #173 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -788,6 +788,42 @@ Date: 2026-11-18
 Files: Assets/_Project/Scripts/Bootstrap/Sandbox/Valhalla*.cs, SandboxCrowd.cs, Assets/_Project/Editor/ValhallaAssetSetup.cs, SandboxSceneBuilder.cs, Assets/_Project/Data/Sandbox/Valhalla*.asset, Assets/_Project/Scenes/Sandbox.unity, sprite .meta files
 Why: #193. The sandbox Midgard lots are re-skinned over the unchanged lot geometry (colliders, bays, curb, queue), Thor uses a 4x4 walk-cycle ValetArtConfig, and the two Midgard worlds get the real pedestrian crowd with the eight NPC looks (PedestrianConfig copy). Beta and the normal game are untouched.
 Tests: EditMode 2099 passed; SandboxSceneTests 3 passed; RunBatch ran clean; scenes other than Sandbox reverted; screenshots of both Midgard lots and a Vanaheim lot checked.
+
+## integration: square 88x88 Valhalla tile set for Tilemap painting, Refs #194 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla-tiles.py, Assets/_Project/Art/ValhallaMidgard/Tiles/ (52 tiles and metas)
+Why: #194 plan task 5 and the owner decision to re-slice to square 4x4-unit tiles. The sandbox sprites (Lot/) and ValhallaPiece are untouched; the companion script crops the outline and bevel off flat tiles, resamples to 88x88 (nearest) and fits pilasters and awnings on a transparent tile, so neighbours meet without a seam.
+Tests: script run, contact sheet and 3x3 seam tests viewed (asphalt, sidewalk and roof floor tile cleanly; hedge repeats its lit top edge); tile size asserted by HandmadeTileAssetTests (6 passed).
+
+## integration: ILotSource seam and LotRegistration, behaviour-preserving, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Bootstrap/{ILotSource,ParametricLotSource,LotSources,LotRegistration}.cs, GameBootstrap.cs, LotBounds.cs, PedestrianBootstrap.cs, Sandbox/{SandboxBootstrap,SandboxWorldHost,SandboxWorldSlot,SandboxCrowd}.cs, Assets/_Project/Tests/EditMode/Integration/LotSourceTests.cs
+Why: #194 plan task 4. The bootstrap reads a lot through ILotSource (layout, bays, road, pedestrian paths, Perfect settings, root, extended view); ParametricLotSource wraps LotLayoutBuilder and LotDecor and the registration block left GameBootstrap (191 lines, was 190 incl. the new null check). LotSources is the single extension point where the hand-made source will be added; scene fields are unchanged so no scene was rebuilt. TuningSeeder and WatcherBootstrap already took plain values (PerfectSettings, a Transform), so only their callers changed.
+Tests: EditMode 2116 passed (LotSourceTests 4); PlayMode BootstrapSceneSmokeTests, SandboxSceneTests and CameraFramingPlayModeTests 16 passed; RunBatch ran clean, its unrelated scene churn (#62) was reverted.
+
+## integration: hand-made lot kit (tiles, palette, scenery prefabs, template scene), Refs #194 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Editor/HandmadeLots/*.cs, ProjectSetup.cs, UncannyValet.Editor.asmdef, Assets/_Project/Data/HandmadeLots/Tiles/, Assets/_Project/Prefabs/HandmadeLots/ (Valhalla palette, 28 scenery prefabs), Assets/_Project/Scenes/HandmadeLots/Template_Edit.unity, Assets/_Project/Tests/EditMode/Integration/HandmadeTileAssetTests.cs
+Why: #194 plan task 5 (the part not needing HandmadeLot). HandmadeTileSetup builds a Tile asset per square tile, a Tile Palette prefab (4x4 unit cells, one row per name prefix), scenery prefabs from the sliced props and, when missing, the authoring scene template with Ground(-30), Sidewalk(-28), Markings(-27), Building(-5) and Hedge(0) with tilemap plus composite colliders on a static body, and Overhead(5). It runs idempotently inside Setup/Build Everything and from Setup/Hand-made Lot Kit; the template is never overwritten. The Editor asmdef references Unity.2D.Tilemap.Editor for GridPaletteUtility.
+Tests: HandmadeTileAssetTests 6 passed (tiles 88x88 at 22 ppu, every tile in the palette, scenery prefabs, template layers); EditMode 2116 passed; RunBatch run twice.
+
+## integration: hand-made lot editor tooling, validator window and play guard, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Editor/HandmadeLots/{LotValidation,LotValidatorWindow,HandmadeLotPlayGuard,WalkAutoLinker,WalkLinkCreator,RouteHandles,CarEntryRoadEditor,CarExitRoadEditor,AmbientLaneEditor,HandmadeMarkerPrefabs,HandmadeLotPrefabs,HandmadeTestLot,HandmadeTestTiles,MarkerKit}.cs, HandmadeTemplateScene.cs, HandmadeTileSetup.cs (+ metas), Assets/_Project/Scenes/HandmadeLots/Template_Edit.unity, Assets/_Project/Prefabs/HandmadeLots/Lot_TestDiner.prefab, Assets/_Project/Tests/EditMode/Integration/HandmadeEditorToolsTests.cs
+Why: #194 plan task 5. Window > Uncanny Valet > Lot Validator lists HandmadeLotRules findings for the lots of the open scene or prefab stage (double-click selects and frames, Frame all, Auto-link walk nodes from a pure WalkAutoLinker plan); an InitializeOnLoad guard stops Play on ExitingEditMode and logs "Hand-made lot X cannot play: ..."; entry, exit and ambient lane points have draggable scene handles with add and remove buttons; HandmadeTileSetup (Hand-made Lot Kit, part of Build Everything) now adds LotTileLayer to every tilemap of the template scene (also to the existing one, saved only when something changed) and regenerates the 19 marker prefabs in place (same files, GUIDs and object ids; only kind, side and the lot config are set); menu Uncanny Valet > Lot > Save lot prefab writes the open lot to Prefabs/HandmadeLots/Lot_Name.prefab and refuses on a validator error. Lot_TestDiner.prefab is the generated fixture (curb, 2 queue slots, 4 bays, entry and exit roads with back lanes, doors, wait and spawn points, walk graph, wall, hedge, scenery, painted tiles); it passes the validator with no finding. No Scripts/Lot change.
+Tests: HandmadeEditorToolsTests 10 (auto-link plan, prefab path, 19 prefabs regenerate byte-identical, template markers, every lot prefab has zero errors, validation of a scene lot); EditMode 2201/2201 pass; RunBatch run, unrelated churn (#62) reverted.
+
+## integration: run integration of hand-made lots (Handmade layout kind, HandmadeLotSource, DEV run), Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Run/{LotLayoutKind,LotDefinition,LotDefinitionRules}.cs; Scripts/Bootstrap/{HandmadeLotSource,LotSources,GameBootstrap}.cs; Editor/{BootstrapSceneBuilder,ProjectSetup,RunAssetSetup,HandmadeRunAssets}.cs, Editor/HandmadeLots/HandmadeLotInstance.cs; Data/Run/{MidgardHandmadeTrainingLot,DevHandmadeRunDefinition}.asset; Scenes/Lot_MidgardHandmade.unity; Tests/EditMode/Integration/HandmadeLotSourceTests.cs, Tests/EditMode/Run/HandmadeLotDefinitionTests.cs, Tests/PlayMode/{HandmadeShiftPlayModeTests,BootstrapSceneSmokeTests}.cs (+ metas)
+Why: #194 plan task 7 (design.md sections 9 and 10). LotLayoutKind.Handmade = 2 (append only); LotDefinition holds the lot prefab as a GameObject; rule 25 in LotDefinitionRules (a Handmade layout needs its prefab, a generated one must not carry one). HandmadeLotSource wraps HandmadeLot behind ILotSource (Perfect settings come from the LotConfig on the lot root, so HandmadeLot needed no change; ExtendView unions the lot's ViewRect), LotSources.Of prefers the hand-made lot, and GameBootstrap gets an optional HandmadeLot field (194 lines). BootstrapSceneBuilder instantiates the prefab (inactive, requirements filled from the definition: queue slots, EV and wash from the modifier chances, ambient traffic, crowd size) in place of the lot builder and decor. LotId decision: the DEV lot reuses (Midgard, Training) because the DEV run replaces the real Midgard Training in that run, so ids stay unique per run and no new World or LotKind value is needed; the real run, Midgard Training and every generated scene are untouched. DEV assets: MidgardHandmadeTrainingLot (a copy of the real training lot with 2 queue slots and no service modifiers on the TestDiner prefab), DevHandmadeRunDefinition (the real run with it in the first place) and the scene Lot_MidgardHandmade.unity, built by Build Everything and not in Build Settings (open it in the editor; nothing in the web build links to it). Lighting preset, props and modifier mud of the definition are not applied to a hand-made lot (hazard patches and tilemaps are the lot's own).
+Tests: HandmadeLotDefinitionTests 6 (kind numbers, prefab rule both ways, requirements from the definition, DEV lot and DEV run valid and matching the prefab), HandmadeLotSourceTests 4; PlayMode HandmadeShiftPlayModeTests: a patron drives in along the authored entry road, steps out, walks to the main door, the car is parked in a bay and later put at the curb (the robot valet seats itself with SetDriver and places the car), pickup request, patron at the curb, delivery, car leaves along the authored exit road and despawns, no error logged; BootstrapSceneSmokeTests +2 (hand-made scene plays 4 s clean, 2 queue slots hold). EditMode 2211/2211 pass.
+
+## integration: sandbox hand-made world (key 5), Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Bootstrap/Sandbox/SandboxWorldSlot.cs; Editor/{SandboxSceneBuilder,SandboxHandmadeWorld}.cs; Data/Sandbox/SandboxWorldsConfig.asset; Scenes/Sandbox.unity; Tests/PlayMode/SandboxSceneTests.cs (+ metas)
+Why: #194 plan task 6. SandboxWorldSlot takes an optional HandmadeLot and answers its Source through LotSources.Of; SandboxSceneBuilder.BuildSlot branches on LotLayoutKind.Handmade (SandboxHandmadeWorld instantiates the prefab with PrefabUtility.InstantiatePrefab and fills its LotRequirements from the definition instead of using LotLayoutBuilder and LotDecor). The existing worlds list is never reordered: SandboxHandmadeWorld.EnsureListed appends the DEV hand-made Midgard lot as world 5 (Lot_TestDiner fixture, passes the validator). Sandbox.unity was rebuilt by Build Everything, so its diff is large (slot ordering and ids); other scenes were reverted (#62). site-sandbox/ not rebuilt.
+Tests: SandboxSceneTests +1 (world 5 is selectable, the lot builds, it is the registered layout, the car spawns at ArrivalPoint, the camera at 16:9 shows the lot view rectangle); PlayMode Sandbox, BootstrapSceneSmoke, HandmadeLot, CameraFraming and HandmadeShift suites pass (24 tests in the first run, the shift test after its fix); RunBatch run.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -2117,6 +2153,30 @@ Files: Powers/PowerDefaults.cs, Data/Powers/ThunderStrideDefinition.asset, Power
 Why: play-test notes: Thunder in a car should reach top speed almost instantly (#188), a Perfect Park adds 16.7 so two fill a bolt (#191), late-pickup curse 1 per 4 s, cap 6 (#166).
 Tests: EditMode 2094/2094 passed.
 
+## lead: rebuild site/ and site-sandbox/ with sandbox Valhalla art and pedestrian fixes [Claude]
+Date: 2026-11-18
+Files: site/, site-sandbox/, Assets/_Project/Art/ValhallaMidgard/**/*.meta (Unity added sprite name tables)
+Why: publish #188 to #193 (Thunder car accel, wording swap, arrow rule, 2 perfect parks per bolt, harsher curse, pedestrians vs non-player cars, Midgard sandbox art). Build 71124f6.
+Tests: EditMode 2106/2106; both web builds exit 0.
+
+## lead: merge #194 kit, Unity meta updates for new tiles [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Art/ValhallaMidgard/Tiles/*.meta, Assets/_Project/Prefabs.meta (kept the lot agent's folder GUID)
+Why: merge of the tile kit and Bootstrap seam (#194); Unity added sprite name tables to the tile metas after import.
+Tests: EditMode 2191/2191.
+
+## lead: PlayMode power-bar test follows the 16.7 perfect-park fill [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Tests/PlayMode/PowerBarPlayModeTests.cs
+Why: #191 changed a Perfect Park to 16.7; the freeze-time PlayMode test still expected 3 parks = 45.
+Tests: full PlayMode 103/103 passed, EditMode 2211/2211.
+
+## lead: NPC walk frames aligned on the head so the walk no longer jitters [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/Npc/*.png (128), manifest.json
+Why: the NPC sheet was cut on an equal 111 px grid but the characters sit about 104 px apart, so each frame drifted 5 px left and the next group jumped back (forward, jump back). Sprites are now found by their own pixels and pasted head-centred, feet on one row; head centre varies under 1 px across a cycle. Metas kept (GUIDs unchanged).
+Tests: EditMode 2211/2211. Not seen in motion in the browser.
+
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
 
@@ -2433,6 +2493,24 @@ Date: 2026-11-18
 Files: Scripts/Lot/LotConfig.cs (default), Data/Lot/LotConfig.asset, Tests/PlayMode/BayEntryTests.cs (pitch read from config); rebaked by RunBatch: Scenes/{Bootstrap,Lot_MidgardCrazy,Lot_VanaheimCrazy,Lot_VanaheimTraining,Sandbox}.unity, Data/Run/{VanaheimCrazyLot,VanaheimMudPatches,VanaheimTrainingLot,VanaheimWheatMud}.asset
 Why: Issue #183, design.md section 4. Bay pitch goes 3.2 to 3.8, so the frame is 1.8 wider (three gaps); walls, strip, roads, props and mud patches follow LotGeometry. CameraFit floors at the lot width, so the lot still fits at 16:9 and 4:3 (zoom-out, no art shrunk).
 Tests: EditMode 2069/2069 pass; PlayMode filtered (BayEntry, Bootstrap smoke, CameraFraming, Midgard, Sandbox, Vanaheim, PropArt, MudPatch, PedestrianHit) 45/45 pass.
+
+## lot: pure authored geometry, validator rules and walk graph for hand-made lots, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/Handmade/*.cs (HandmadeLotData and its part types, LotIssue, LotRule, HandmadeLotRules + LotPieceRules/LotRoadRules/LotWalkRules, WalkGraph, RouteRounder, RouteMath, OrientedRect, LotBounds, AuthoredRoadLayout, AuthoredPedestrianPaths); Tests/EditMode/Lot/{HandmadeLotFixture,DinerLotData,HandmadePieceRulesTests,HandmadeRoadRulesTests,HandmadeWalkRulesTests,HandmadeGeometryTests,HandmadeDinerParityTests}.cs
+Why: Task 1 of docs/redesign/handmade_lots_plan.md (design.md sections 4, 9, 10). Authored lots supply IRoadLayout and IPedestrianPaths implementations from plain data; the validator rules (plan numbering, rule 25 left to the run integration) are pure. Queue slot indices are 0-based.
+Tests: one test per rule, Diner parity (slots, lanes, turn and merge distances, queue and curb-exit routes, doors, curb spots), WalkGraph/RouteRounder/OrientedRect, allocation-free pathing; EditMode 2167/2167 pass.
+
+## lot: bays, wash station and curb take their own size and rotation, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/{ParkingSpot,SpotBuilder,StationZone,StationBuilder,CurbZone,LotCurbArrows}.cs; Tests/EditMode/Lot/PlaceableBayTests.cs
+Why: Task 2 of docs/redesign/handmade_lots_plan.md. Each piece gets an overload with explicit centre, size and rotation (trigger, painted inner rectangle, wash blocker and curb arrow span follow the size); the old signatures delegate with the config's values, so the parametric lots build exactly as before. CurbArrowLayout needed no change.
+Tests: PlaceableBayTests (rotated bay centre test, non-default bay size, old signature unchanged, wash station and blocker size, curb zone and arrow span); EditMode 2173/2173 pass.
+
+## lot: hand-made lot markers, reader and HandmadeLot runtime, Refs #194 [Claude]
+Date: 2026-11-18
+Files: Scripts/Lot/Handmade/{HandmadeLot,HandmadeLotBuilder,HandmadeLotReader,HandmadeSceneryReader}.cs; Scripts/Lot/Handmade/Markers/*.cs (LotBay, CurbZoneMarker, QueueSlot, CarEntryRoad, CarExitRoad, AmbientLane, LotDoor, PatronWaitPoint, AmbientSpawnPoint, WalkNode, WalkLink, SolidBlock, HazardPatch, ValetStart, ScenerySolid, LotTileLayer); Prefabs/Lot/*.prefab (bay regular, EV and wash, curb, queue slot, entry road, exit road, ambient lanes, doors, wait and spawn points, walk node and link, solid, hazard, valet start, lot root); Tests/EditMode/Lot/{HandmadeSceneKit,HandmadeLotReaderTests}.cs; Tests/PlayMode/{HandmadePlayKit,HandmadeLotPlayModeTests}.cs
+Why: Task 3 of docs/redesign/handmade_lots_plan.md. HandmadeLot reads the markers (the reader is the only code touching scene objects), runs the rules, logs every error naming the object and builds nothing on an error, otherwise builds the curb with arrows, numbered bays, wash stations and mud and serves ILotLayout and ISpotGeometry, Road, Paths, Perfect and ViewRect. Markers are dumb serialized data with gizmos.
+Tests: reader tests (world positions, wait order, rotation, scenery and tile layer colliders, hazards); PlayMode: a 2-bay lot builds, a car parks (CarParked once), is accepted at the curb with arrows, and a missing curb blocks Awake. EditMode 2181/2181 and PlayMode BayEntryTests + HandmadeLotPlayModeTests 12/12 pass.
 
 === docs/changelogs/orders.md ===
 # Orders changelog

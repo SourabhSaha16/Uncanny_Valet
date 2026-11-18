@@ -1,4 +1,4 @@
 Valet to Valhalla web build
-Commit:  71124f6
-Subject: lead: merge agent for #193, Refs #193 [Claude]
-Date:    2026-11-18 12:28:31 -0800
+Commit:  aa8d8f6
+Subject: lead: align NPC walk frames on the head, fixes the walk jitter [Claude]
+Date:    2026-11-18 14:54:01 -0800

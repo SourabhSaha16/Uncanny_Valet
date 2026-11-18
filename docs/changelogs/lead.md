@@ -1348,3 +1348,9 @@ Date: 2026-11-18
 Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/Npc/*.png (128), manifest.json
 Why: the NPC sheet was cut on an equal 111 px grid but the characters sit about 104 px apart, so each frame drifted 5 px left and the next group jumped back (forward, jump back). Sprites are now found by their own pixels and pasted head-centred, feet on one row; head centre varies under 1 px across a cycle. Metas kept (GUIDs unchanged).
 Tests: EditMode 2211/2211. Not seen in motion in the browser.
+
+## lead: rebuild site/ and site-sandbox/ with hand-made lot system and NPC walk fix [Claude]
+Date: 2026-11-18
+Files: site/, site-sandbox/
+Why: publish #194 (hand-made lots: sandbox world 5, Bootstrap seam) and the NPC walk jitter fix. Build aa8d8f6.
+Tests: EditMode 2211/2211, PlayMode 103/103; both web builds exit 0.
