@@ -132,3 +132,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Scripts/Cars/Fx/TyreTrail.cs, SkidConfig.cs, SkidEmitter.cs, Assets/_Project/Data/Cars/CarHandlingConfig.asset, Assets/_Project/Tests/EditMode/Cars/TyreMarkTests.cs, TyreBendTests.cs
 Why: issue #181, tight turns showed polygon corners because strokes were only cut every 1 unit. TyreTrail now also cuts when the path bends by _maxBendDegrees (10) after at least _minStrokeLength (0.2); config fields only, no F2 row.
 Tests: new TyreBendTests (straight, circle, min length, Break); full EditMode suite run before commit.
+
+## lead: braking 1.65 and coasting slow-down 2.4 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on in the sandbox F2 panel (braking was 1.3, coasting 1.7).
+Tests: EditMode suite run, result above in the report.

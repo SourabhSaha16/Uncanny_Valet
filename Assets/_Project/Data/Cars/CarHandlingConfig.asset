@@ -34,8 +34,8 @@ MonoBehaviour:
   _pullOutClearance: 0.3
   _topSpeedScale: 1.35
   _accelerationScale: 1.7
-  _brakingScale: 1.3
-  _coastDragScale: 1.7
+  _brakingScale: 1.65
+  _coastDragScale: 2.4
   _reverseScale: 1
   _bounciness: 0.4
   _minImpactSpeed: 0.5
