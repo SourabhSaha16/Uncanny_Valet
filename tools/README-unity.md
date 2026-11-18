@@ -19,3 +19,16 @@ Options go before `--`: `-UnityPath`, `-TimeoutMinutes`, `-MinFreeCommitGB`, `-L
 Exit codes: Unity's own, or 2 timed out, 3 gave up waiting for the lock, 4 not enough commit memory.
 `tools/run-tests.ps1` and `tools/build-web.ps1` already use it. The editor opened by hand (not through the
 wrapper) is not covered by the lock. Self-test (no Unity): `powershell -NoProfile -File tools/tests/test-run-unity.ps1`.
+
+## The sandbox site (issue #180)
+
+A third site beside stable (`site/`, root) and beta (`site/` of `pivot/chaos`, `/beta/`): an empty lot for testing how the car drives in each
+world, with a world picker (keys 1 to 9), R to reset the car and the F2 tuning panel. No shift, patrons or scoring.
+
+- Scene: `Assets/_Project/Scenes/Sandbox.unity`, built by `Uncanny Valet/Setup/Build Everything` (not in Build Settings).
+- Worlds: the lot definitions listed in `Assets/_Project/Data/Sandbox/SandboxWorldsConfig.asset`. To add a world, add its lot definition to
+  that list and run Build Everything.
+- Build (Unity editor closed): `powershell -NoProfile -File tools/build-web.ps1 -Sandbox` builds only that scene into `site-sandbox/`
+  (committed, with `build-info.txt`). Without the switch the script builds the game into `site/` as before.
+- Publish: commit `site-sandbox/` on `pivot/chaos` (with a `docs/changelogs/` entry) and push; the workflow copies it to `/sandbox/` and
+  fails with a clear error when `site-sandbox/index.html` is missing.

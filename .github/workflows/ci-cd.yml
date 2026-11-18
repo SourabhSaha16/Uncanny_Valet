@@ -2,7 +2,8 @@ name: CI/CD
 
 # Local-build route: the Web player is built on a developer PC (tools/build-web.ps1), which copies it
 # into the committed site/ folder. CI checks changelogs and publishes to GitHub Pages: the committed site/ of
-# `main` (stable, the playtesters' link) at the root and the site/ of `pivot/chaos` (beta) under /beta/.
+# `main` (stable, the playtesters' link) at the root, the site/ of `pivot/chaos` (beta) under /beta/ and its site-sandbox/
+# (the driving sandbox, built with tools/build-web.ps1 -Sandbox) under /sandbox/.
 # No Unity license or secrets are needed in CI.
 
 on:
@@ -37,7 +38,7 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   deploy:
-    name: Publish stable (main) at / and beta (pivot/chaos) at /beta/
+    name: Publish stable (main) at /, beta (pivot/chaos) at /beta/ and the sandbox at /sandbox/
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/pivot/chaos')
     needs: changelog
     runs-on: ubuntu-latest
@@ -59,7 +60,7 @@ jobs:
         with:
           ref: pivot/chaos
           path: beta
-      - name: Assemble the site (stable at the root, beta under /beta/)
+      - name: Assemble the site (stable at the root, beta under /beta/, sandbox under /sandbox/)
         run: |
           for d in stable beta; do
             if [ ! -f "$d/site/index.html" ]; then
@@ -67,9 +68,14 @@ jobs:
               exit 1
             fi
           done
-          mkdir -p _site/beta
+          if [ ! -f "beta/site-sandbox/index.html" ]; then
+            echo "::error::beta/site-sandbox/index.html is missing. Run tools/build-web.ps1 -Sandbox locally and commit site-sandbox/ on pivot/chaos."
+            exit 1
+          fi
+          mkdir -p _site/beta _site/sandbox
           cp -r stable/site/. _site/
           cp -r beta/site/. _site/beta/
+          cp -r beta/site-sandbox/. _site/sandbox/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

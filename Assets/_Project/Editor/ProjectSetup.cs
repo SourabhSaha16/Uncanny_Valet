@@ -69,6 +69,7 @@ namespace UncannyValet.EditorTools
             CreateConfigs();
             AssetDatabase.Refresh(); // new assets must be imported before the scenes reference them
             BootstrapSceneBuilder.Build();
+            SandboxSceneBuilder.Build(); // not in Build Settings: only the sandbox web build lists it
         }
 
         private static void CreateIfMissing<T>(string path) where T : ScriptableObject

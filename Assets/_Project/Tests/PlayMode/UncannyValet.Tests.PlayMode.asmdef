@@ -17,6 +17,7 @@
         "UncannyValet.Watchers",
         "UncannyValet.Audio",
         "UncannyValet.Bootstrap",
+        "Unity.InputSystem",
         "Unity.RenderPipelines.Universal.2D.Runtime",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

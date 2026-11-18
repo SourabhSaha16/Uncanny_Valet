@@ -136,7 +136,7 @@ namespace UncannyValet.EditorTools
             Debug.Log("Lot scene built: " + scenePath);
         }
 
-        private static T Child<T>(GameObject parent, string name) where T : Component
+        internal static T Child<T>(GameObject parent, string name) where T : Component
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent.transform, false);
@@ -144,7 +144,7 @@ namespace UncannyValet.EditorTools
             return go.AddComponent<T>();
         }
 
-        private static LotDecor BuildDecor(GameObject parent, LotArtConfig art, LotConfig config)
+        internal static LotDecor BuildDecor(GameObject parent, LotArtConfig art, LotConfig config)
         {
             var go = new GameObject("LotDecor"); // active: builds its scenery in Awake, independent of the lot
             go.transform.SetParent(parent.transform, false);
@@ -155,7 +155,7 @@ namespace UncannyValet.EditorTools
         }
 
         // The handling config follows the lot's aisle; the check component reports a later mismatch at start.
-        private static void AddHandling(GameObject root, CarFactory factory, LotConfig lot)
+        internal static void AddHandling(GameObject root, CarFactory factory, LotConfig lot)
         {
             var handling = HandlingAssetSetup.LoadAndSync(lot);
             Set(factory, "_handling", handling);
@@ -164,23 +164,23 @@ namespace UncannyValet.EditorTools
             Set(check, "_handling", handling);
         }
 
-        private static void SetInt(Object target, string field, int value)
+        internal static void SetInt(Object target, string field, int value)
         {
             var so = new SerializedObject(target);
             so.FindProperty(field).intValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void Set(Object target, string field, Object value)
+        internal static void Set(Object target, string field, Object value)
         {
             var so = new SerializedObject(target);
             so.FindProperty(field).objectReferenceValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
+        internal static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
 
-        private static T RequireAsset<T>(string path) where T : Object
+        internal static T RequireAsset<T>(string path) where T : Object
         {
             var asset = Load<T>(path);
             if (asset == null) Debug.LogError("Missing asset " + path + ". Run Uncanny Valet/Setup/Create Config Assets first.");
