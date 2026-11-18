@@ -32,16 +32,29 @@ namespace UncannyValet.EditorTools
                 new MudPatch(new Vector2(g.WashBays[1].center.x, g.AisleY - AisleSide), Sizes[3]),
                 new MudPatch(new Vector2(last.xMin - WestOfLastWashBay, last.center.y), Sizes[4]),
             };
+            return Make("VanaheimMudPatches", "Mud patches", patches);
+        }
+
+        /// <summary>The wheat field of Freyr's Harvest Barn as one rectangular patch: driving through the crop is as slow as mud.</summary>
+        public static MudPatchModifier CreateWheat(LotGeometry g)
+        {
+            var field = VanaheimProps.WheatField(g);
+            return Make("VanaheimWheatMud", "Wheat field", new List<MudPatch> { new MudPatch(field.center, field.width, field.height) });
+        }
+
+        private static MudPatchModifier Make(string assetName, string displayName, List<MudPatch> patches)
+        {
             var mud = ScriptableObject.CreateInstance<MudPatchModifier>();
-            mud.name = "VanaheimMudPatches";
+            mud.name = assetName;
             var so = new SerializedObject(mud);
-            so.FindProperty("_displayName").stringValue = "Mud patches";
+            so.FindProperty("_displayName").stringValue = displayName;
             var list = so.FindProperty("_patches");
             list.arraySize = patches.Count;
             for (var i = 0; i < patches.Count; i++)
             {
                 list.GetArrayElementAtIndex(i).FindPropertyRelative("_center").vector2Value = patches[i].Center;
                 list.GetArrayElementAtIndex(i).FindPropertyRelative("_size").floatValue = patches[i].Size;
+                list.GetArrayElementAtIndex(i).FindPropertyRelative("_height").floatValue = patches[i].Height;
             }
             so.ApplyModifiedPropertiesWithoutUndo();
             return mud;

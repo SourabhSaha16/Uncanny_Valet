@@ -103,10 +103,14 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void OnlyTheWheelIsSolid_AmongTheCrazyLotsProps()
+        public void TheWheelAndTheStalls_AreSolid_AmongTheCrazyLotsProps()
         {
             foreach (var prop in Lot(CrazyPath).Props)
-                Assert.AreEqual(prop.Recipe.name == "MidgardFerrisWheel", prop.Recipe.Solid, prop.Recipe.name);
+            {
+                if (prop.Recipe.name == "MidgardOpenSign") continue; // a sign on the building
+                Assert.IsTrue(prop.Recipe.Solid, prop.Recipe.name);
+                Assert.Greater(prop.Recipe.ColliderSize.x, 0f, prop.Recipe.name);
+            }
         }
 
         [Test]

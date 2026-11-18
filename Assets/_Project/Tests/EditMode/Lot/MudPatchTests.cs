@@ -24,6 +24,30 @@ namespace UncannyValet.Tests.Lot
         }
 
         [Test]
+        public void RectanglePatch_CoversItsWholeBox_RimInside_CornersToo()
+        {
+            var patch = new MudPatch(new Vector2(2f, 1f), 8f, 2f);
+            Assert.IsTrue(patch.IsRectangle);
+            Assert.IsTrue(patch.Contains(new Vector2(5.9f, 1.9f)), "a corner of the box is inside");
+            Assert.IsTrue(patch.Contains(new Vector2(6f, 2f)), "the rim counts as inside");
+            Assert.IsFalse(patch.Contains(new Vector2(6.1f, 1f)));
+            Assert.IsFalse(patch.Contains(new Vector2(2f, 2.1f)));
+            Assert.AreEqual(2f, patch.ExtentY);
+        }
+
+        [Test]
+        public void ARoundPatch_HasNoHeight_AndMovingKeepsTheShape()
+        {
+            var round = new MudPatch(Vector2.zero, 3f);
+            Assert.IsFalse(round.IsRectangle);
+            Assert.AreEqual(3f, round.ExtentY);
+            var moved = new MudPatch(Vector2.zero, 8f, 2f).Moved(new Vector2(10f, 0f));
+            Assert.IsTrue(moved.IsRectangle);
+            Assert.IsTrue(moved.Contains(new Vector2(13.9f, 0.9f)));
+            Assert.AreEqual(2f, moved.Height);
+        }
+
+        [Test]
         public void Field_MovesPatchesToWorldSpace_AndFindsAnyOfThem()
         {
             var field = new MudPatchField(new[] { new MudPatch(Vector2.zero, 2f), new MudPatch(new Vector2(10f, 0f), 2f) }, new Vector2(100f, 50f));

@@ -89,10 +89,17 @@ namespace UncannyValet.Tests.Run
         }
 
         [Test]
-        public void TheTrainingLot_HasNoMudPatches_TheCrazyLotHasFive_BetweenTwoAndAHalfAndFourUnits()
+        public void TheTrainingLotsOnlyMud_IsTheWheatField_TheCrazyLotHasFivePuddles_BetweenTwoAndAHalfAndFourUnits()
         {
-            Assert.AreEqual(0, LotAt(TrainingPath).BuildWorldSpec().MudPatches.Count);
-            Assert.AreEqual(0, LotAt(TrainingPath).Modifiers.Count);
+            var field = LotAt(TrainingPath).BuildWorldSpec().MudPatches;
+            Assert.AreEqual(1, field.Count);
+            Assert.IsTrue(field[0].IsRectangle);
+            var g = Geometry(LotAt(TrainingPath));
+            foreach (var wheat in LotAt(TrainingPath).Props)
+                if (wheat.Recipe.name == "VanaheimWheat") Assert.IsTrue(field[0].Contains(wheat.Position), "wheat tile at " + wheat.Position + " is in the field");
+            Assert.IsFalse(field[0].Contains(g.Curb.center), "the curb is not in the field");
+            foreach (var spot in g.Spots) Assert.IsFalse(field[0].Contains(spot.center), "a bay is not in the field");
+            Assert.AreEqual(1, LotAt(TrainingPath).Modifiers.Count);
             var patches = LotAt(CrazyPath).BuildWorldSpec().MudPatches;
             Assert.AreEqual(5, patches.Count);
             foreach (var patch in patches) Assert.That(patch.Size, Is.InRange(2.5f, 4f));

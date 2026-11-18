@@ -23,16 +23,22 @@ namespace UncannyValet.Tests.PlayMode
         private const int CarIdBase = 700;
         private const float StayMinutes = 600f;
         private const int SpawnAttempts = 120;
+        private const float FenceApproach = 6f;
+        private const float FenceRunSeconds = 3f;
+        private const float FenceSpeed = 8f;
 
         [UnityTest]
-        public IEnumerator TrainingLot_HasEightBays_OneWashBay_NoMud_FourWalkers_AndTodaysTraffic()
+        public IEnumerator TrainingLot_HasEightBays_OneWashBay_AWheatFieldOfMud_FourWalkers_AndTodaysTraffic()
         {
             yield return Play(TrainingPath);
             AssertBays(1);
             var tuning = Services.Get<ITuning>();
             Assert.AreEqual(4f, tuning.Get(TuningKey.PedestrianCount));
             Assert.AreEqual(0f, tuning.Get(TuningKey.PedestrianCurses), "pedestrian curses are off");
-            Assert.IsNull(GameObject.Find("Mud Patches"), "no mud patches in the training lot");
+            var field = GameObject.Find("Mud Patches");
+            Assert.IsNotNull(field, "the wheat field is a mud patch");
+            Assert.AreEqual(1, field.transform.childCount);
+            Assert.IsTrue(Services.Get<IMudPatches>().IsInside(field.transform.GetChild(0).position), "a car in the wheat is slowed");
             Assert.IsNotNull(GameObject.Find("VanaheimBarn")?.GetComponent<BoxCollider2D>(), "the barn is solid");
             Assert.AreEqual(1, Object.FindObjectsByType<StationZone>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length, "the wash bay is open");
             var most = 0;
@@ -47,6 +53,35 @@ namespace UncannyValet.Tests.PlayMode
             Assert.GreaterOrEqual(most, 1, "the villagers are out");
             Assert.Greater(cars, 0, "the road has ambient traffic");
             Assert.IsEmpty(Problems, string.Join("\n", Problems));
+        }
+
+        [UnityTest]
+        public IEnumerator TheFence_IsSolid_AndABumpingCarTakesDamage()
+        {
+            yield return Play(TrainingPath);
+            var fence = GameObject.Find("VanaheimFence");
+            Assert.IsNotNull(fence?.GetComponent<BoxCollider2D>(), "the fence is solid");
+            Assert.IsNotNull(GameObject.Find("VanaheimHayBale")?.GetComponent<BoxCollider2D>(), "the hay bales are solid");
+            Assert.IsNull(GameObject.Find("VanaheimWheat")?.GetComponent<Collider2D>(), "the wheat is not solid");
+            var damaged = new List<CarDamaged>();
+            Services.Get<IEventBus>().Subscribe<CarDamaged>(damaged.Add);
+            var car = Services.Get<ICarFactory>().Spawn(new CarId(CarIdBase), (Vector2)fence.transform.position + Vector2.down * FenceApproach, 0f);
+            var body = car.Transform.GetComponent<Rigidbody2D>(); // not seated: a seated car would be steered by the valet's keyboard
+            for (var t = 0f; t < FenceRunSeconds; t += Time.fixedDeltaTime)
+            {
+                yield return new WaitForFixedUpdate();
+                body.linearVelocity = Vector2.up * FenceSpeed;
+            }
+            Services.Get<IEventBus>().Unsubscribe<CarDamaged>(damaged.Add);
+            Assert.IsTrue(damaged.Exists(d => d.Car == car.Id && d.Damage01 > 0f), "the car took damage from the fence");
+        }
+
+        [UnityTest]
+        public IEnumerator CrazyLot_HasSolidStallsAndBanners()
+        {
+            yield return Play(CrazyPath);
+            Assert.IsNotNull(GameObject.Find("VanaheimStall")?.GetComponent<BoxCollider2D>(), "the stalls are solid");
+            Assert.IsNotNull(GameObject.Find("VanaheimBanner")?.GetComponent<BoxCollider2D>(), "the banners are solid");
         }
 
         [UnityTest]
