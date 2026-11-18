@@ -104,6 +104,12 @@ MonoBehaviour:
     _position: {x: 12.85, y: 5}
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 13.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 14.85, y: 5}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
     _position: {x: -3.15, y: 6}
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
@@ -153,6 +159,12 @@ MonoBehaviour:
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
     _position: {x: 12.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 13.85, y: 6}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 14.85, y: 6}
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
     _position: {x: -3.15, y: 7}
@@ -206,6 +218,12 @@ MonoBehaviour:
     _position: {x: 12.85, y: 7}
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 13.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 14.85, y: 7}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
     _position: {x: -3.15, y: 8}
     _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
@@ -256,6 +274,12 @@ MonoBehaviour:
   - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
     _position: {x: 12.85, y: 8}
     _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 13.85, y: 8}
+    _sortingOrder: 1
+  - _recipe: {fileID: 11400000, guid: 67f572513cb89d844a6c08a00e300268, type: 2}
+    _position: {x: 14.85, y: 8}
+    _sortingOrder: 1
   - _recipe: {fileID: 11400000, guid: 122467d81ce72e24fbfe29481ce939c4, type: 2}
     _position: {x: -2.15, y: 3.9}
     _sortingOrder: 3
@@ -275,10 +299,10 @@ MonoBehaviour:
     _position: {x: 7.85, y: 3.9}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
-    _position: {x: 12, y: 3.5}
+    _position: {x: 13.8, y: 3.5}
     _sortingOrder: 3
   - _recipe: {fileID: 11400000, guid: 8c0a442dc08b7004fa7b3076a12b7d26, type: 2}
-    _position: {x: 13.1, y: 3.5}
+    _position: {x: 14.900001, y: 3.5}
     _sortingOrder: 3
   _lighting: {fileID: 11400000, guid: db5a7dbe51205a54788a7d56dd3d6d74, type: 2}
   _layoutOptions:

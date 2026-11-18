@@ -71,7 +71,7 @@ namespace UncannyValet.Tests.PlayMode
             var bottomRowTop = _geometry.ChargingSpots[0].yMax;
             Assert.AreEqual(6f + _config.BottomRowDrop, topRowBottom - bottomRowTop, 1e-3f, "clear gap between the bay rows");
             Assert.AreEqual(new Vector2(2.6f, 4.4f), _geometry.Spots[0].size);
-            Assert.AreEqual(3.2f, _geometry.Spots[1].x - _geometry.Spots[0].x, 1e-3f, "bay pitch");
+            Assert.AreEqual(_config.SpotSize.x + _config.SpotGap, _geometry.Spots[1].x - _geometry.Spots[0].x, 1e-3f, "bay pitch");
             Assert.IsTrue(_lot.GetComponent<LotLayoutBuilder>().IsChargingSpot(BayCount), "the EV bay is id 7");
             var car = (CarDriver)_factory.Spawn(_definition, new CarId(100), Vector2.zero, 0f, default, false);
             var box = car.GetComponent<BoxCollider2D>();

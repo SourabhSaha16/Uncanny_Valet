@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: UncannyValet.Run::UncannyValet.Run.MudPatchModifier
   _displayName: Wheat field
   _patches:
-  - _center: {x: 4.85, y: 6.5}
-    _size: 17
+  - _center: {x: 5.85, y: 6.5}
+    _size: 19
     _height: 4
   _topSpeedScale: 0.6
   _accelerationScale: 0.6

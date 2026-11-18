@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LotConfig
   m_EditorClassIdentifier: UncannyValet.Lot::UncannyValet.Lot.LotConfig
   _spotSize: {x: 2.6, y: 4.4}
-  _spotGap: 0.6
+  _spotGap: 1.2
   _aisleWidth: 6
   _bottomRowDrop: 1.5
   _curbPosition: {x: -8.25, y: 0}
