@@ -1294,3 +1294,15 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: player-visible batch: handling defaults, #182, #183.
 Tests: beta build loads to the title with no console errors; EditMode 2069/2069.
+
+## lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
+Date: 2026-11-17
+Files: merge of the integration worktree branch (bolt HUD, wash icons)
+Why: #184, #185.
+Tests: EditMode 2080/2080 (rerun by the lead), PlayMode 12/12 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with bolt HUD and wash icons [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible batch: #184, #185, Thunder Stride x1.8 with perfect grip, handling defaults round 3.
+Tests: beta build loads to the title with no console errors; EditMode 2080/2080.

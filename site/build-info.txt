@@ -1,4 +1,4 @@
 Valet to Valhalla web build
-Commit:  f503cda
-Subject: lead: merge agent wider bay gap, Refs #183 [Claude]
-Date:    2026-11-17 20:26:00 -0800
+Commit:  a91fda0
+Subject: lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
+Date:    2026-11-17 21:23:12 -0800

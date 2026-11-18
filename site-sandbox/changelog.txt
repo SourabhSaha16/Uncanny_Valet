@@ -1,4 +1,10 @@
 === Last 50 commits ===
+a91fda0  2026-11-17  lead: merge agent bolt power HUD and wash icons, Refs #184 #185 [Claude]
+155d7bd  2026-11-17  integration: wash icons on cars (droplet, timer, thumbs up), Refs #185 [Claude]
+64695ae  2026-11-17  integration: power bar becomes three lightning bolts, Refs #184 [Claude]
+f2e0885  2026-11-17  lead: Thunder Stride car boost x1.8 with perfect grip [Claude]
+6cd6910  2026-11-17  lead: handling defaults from sandbox tuning round 3 [Claude]
+5ec7885  2026-11-17  lead: rebuild site/ and site-sandbox/ with handling, props, wheat, bays [Claude]
 f503cda  2026-11-17  lead: merge agent wider bay gap, Refs #183 [Claude]
 19294fc  2026-11-17  lot: widen bay gap 0.6 to 1.2, rebake lots, Refs #183 [Claude]
 ecff5d6  2026-11-17  lead: merge agent solid props and wheat mud, Refs #182 [Claude]
@@ -43,12 +49,6 @@ c8857bd  2026-11-17  economy: late pickup replaces the flat expiry curse, tunabl
 5cdb924  2026-11-17  Merge branch 'pivot/chaos' into worktree-agent-a5b8016a754c68f00
 ae5e8af  2026-11-17  lead: add late-pickup curse tuning keys and rows, Refs #166 [Claude]
 3ef37e6  2026-11-17  patrons: no EV without charging bay, space dirty cars apart [Claude]
-de3ea72  2026-11-17  valet: Thunder stride eases grip loss and turn fall-off [Claude]
-19d1f97  2026-11-17  economy: overtime curse for an angry patron on delivery, Refs #166 [Claude]
-cce05b5  2026-11-17  lead: rebuild site/ with simpler Perfect Park reward for beta [Claude]
-2de311c  2026-11-17  lead: Perfect Park is just inside the box for +15 power, Refs #163 [Claude]
-250e826  2026-11-17  lead: rebuild site/ with Perfect Park and clock changes for beta [Claude]
-6f3e916  2026-11-17  lead: retire dead Perfect Park offset rows, Refs #161 [Claude]
 
 === docs/changelogs/audio.md ===
 # Audio changelog
@@ -283,6 +283,18 @@ Date: 2026-11-17
 Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
 Why: values the human settled on in the F2 panel: tyre bite 11 (was 8), full steering from 5.1 (was 6), braking 1.6 (was 1.65), coasting 2.45 (was 2.4).
 Tests: EditMode 2067/2067.
+
+## lead: handling defaults from sandbox tuning round 3 [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on in the F2 panel: tyre bite 15.5 (was 11), top speed 1.2 (was 1.35), acceleration 1.3 (was 1.7), braking 1.75 (was 1.6), coasting 2.65 (was 2.45).
+Tests: EditMode 2069/2069.
+
+## lead: Thunder Stride in a car is faster and grips perfectly [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Powers/ThunderStrideDefinition.asset, Assets/_Project/Scripts/Powers/PowerDefaults.cs, Assets/_Project/Scripts/Cars/CarHandlingConfig.cs, Assets/_Project/Tests/EditMode/Powers/ThunderStrideTests.cs, docs/changelogs/cars.md
+Why: human asked for more speed and perfect handling while 1 T runs: car boost top speed x1.8 (was x1.5), share of the grip loss kept 0 (was 0.4, so no sliding at all); the turn fall-off was already off.
+Tests: EditMode 2069/2069 (ThunderStrideTests expects x1.8).
 
 === docs/changelogs/director-1.md ===
 # Director-1 changelog
@@ -728,6 +740,18 @@ Date: 2026-11-17
 Files: Core/Contracts/MudPatch.cs (optional _height: rectangle), Lot/MudPatchBuilder.cs, Editor/PropSolidity.cs, VanaheimWorldSetup.cs, VanaheimMud.cs, VanaheimProps.cs, MidgardWorldSetup.cs, LotWorldSceneSetup.cs, Art/MidgardArt.cs, Data/Art stall, banner, fence, hay recipes, Data/Run/VanaheimWheatMud.asset (new), VanaheimTrainingLot.asset, VanaheimMudPatches.asset, Scenes/Lot_VanaheimTraining.unity, Scenes/Sandbox.unity, tests
 Why: Playtest #182: decor must be solid like other props, and the wheat field must slow a car like mud. A patch with _height 0 stays a round puddle, so existing assets behave as before.
 Tests: EditMode 2069 passed (rectangle containment, wheat field covers every wheat tile, solid decor); RunBatch ran; PlayMode Vanaheim, Midgard, Mud, Sandbox, BayEntry, PropArt 29 passed (fence bump damages a car).
+
+## integration: power bar becomes three lightning bolts, Refs #184 [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Hud/BoltFillMaths.cs, BoltRowLayout.cs (new), BoltGlyph.cs (DrawFilled), PowerBarPainter.cs, PowerBarSettings.cs (full bolt pulse rate), PowerBarTracker.cs, PowerFillPopPainter.cs (pops anchor left of the bolt row), Tests/EditMode/UI/BoltFillMathsTests.cs, PowerBarMarkerTests.cs
+Why: playtest #184 (design.md A11). Three bolts in a row at the right edge fill one after another from the bar value using PowerBarThresholds; a full bolt pulses on unscaled time, the spent bolt (SpentBucket) empties and flashes white. Power icons stack under the bolts. PowerBar logic and events are untouched; the vertical bar is gone.
+Tests: EditMode full suite 2080 passed; PlayMode PowerBarPlayModeTests and BootstrapSceneSmokeTests 12 passed. Not checked by eye.
+
+## integration: wash icons on cars (droplet, timer, thumbs up), Refs #185 [Claude]
+Date: 2026-11-17
+Files: Scripts/UI/Kit/PixelIcon.cs, PixelIconData.cs (Mud removed, ThumbsUp added), ModifierIcons.cs (Muddy maps to the Drop), Hud/ServiceIcons.cs, WorldTicketLayout.cs, WorldTicketPainter.cs, Pie/WashPieLayer.cs, PickupPieLayer.cs, PickupPieSettings.cs (side gap removed), Pie/PieSlots.cs (deleted, removed in the #184 commit), Tests/EditMode/UI ServiceIconsTests, WashPieTests, SharedMudSymbolTests, Core/ModifierTests.cs, ModifierTestKit.cs
+Why: playtest #185. A dirty car shows a water droplet (was the mud splat), the wash timer pie takes the droplet's spot while the car is in the wash (no longer beside the pickup pie, so the side-by-side slots are gone), and a thumbs up replaces it when washed (was the blue drop). Wash rules and events untouched. The wash station decal keeps the mud splat (Core/Lot art, not changed here).
+Tests: EditMode full suite 2080 passed (icon per dirty, washing, washed state; thumbs up bitmap). Not checked by eye.
 
 === docs/changelogs/lead.md ===
 # Lead changelog
@@ -2008,6 +2032,24 @@ Date: 2026-11-17
 Files: site/, site-sandbox/, docs/changelogs/lead.md
 Why: new handling defaults (Shift grip 0.7, radius 1, top speed 1.35, drift turn 1.5) and smoother marks, Refs #181.
 Tests: sandbox build loads with no console errors.
+
+## lead: merge agent solid props and wheat mud, Refs #182 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-a0fe580cc855650bb (PropSolidity, wheat mud rectangle, solid stalls/banners/fences/hay)
+Why: #182.
+Tests: EditMode 2069/2069, PlayMode filtered 29/29 (agent).
+
+## lead: merge agent wider bay gap, Refs #183 [Claude]
+Date: 2026-11-17
+Files: merge of worktree-agent-aa84b46aae13da8d5 (LotConfig _spotGap 1.2, rebaked lot scenes, BayEntryTests)
+Why: #183.
+Tests: EditMode 2069/2069 (rerun by the lead), PlayMode filtered 45/45 (agent).
+
+## lead: rebuild site/ and site-sandbox/ with handling, solid props, wheat mud, wider bays [Claude]
+Date: 2026-11-17
+Files: site/, site-sandbox/, docs/changelogs/lead.md
+Why: player-visible batch: handling defaults, #182, #183.
+Tests: beta build loads to the title with no console errors; EditMode 2069/2069.
 
 === docs/changelogs/lot-v2.md ===
 # lot-v2 changelog
