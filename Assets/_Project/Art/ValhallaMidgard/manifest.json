@@ -1322,897 +1322,897 @@
    "kind": "npc",
    "name": "npc_grandma_down_0",
    "file": "Npc/npc_grandma_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_down_1",
    "file": "Npc/npc_grandma_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_down_2",
    "file": "Npc/npc_grandma_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_down_3",
    "file": "Npc/npc_grandma_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_left_0",
    "file": "Npc/npc_grandma_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_left_1",
    "file": "Npc/npc_grandma_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_left_2",
    "file": "Npc/npc_grandma_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_left_3",
    "file": "Npc/npc_grandma_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_right_0",
    "file": "Npc/npc_grandma_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_right_1",
    "file": "Npc/npc_grandma_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_right_2",
    "file": "Npc/npc_grandma_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_right_3",
    "file": "Npc/npc_grandma_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_up_0",
    "file": "Npc/npc_grandma_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_up_1",
    "file": "Npc/npc_grandma_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_up_2",
    "file": "Npc/npc_grandma_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_grandma_up_3",
    "file": "Npc/npc_grandma_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_down_0",
    "file": "Npc/npc_chef_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_down_1",
    "file": "Npc/npc_chef_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_down_2",
    "file": "Npc/npc_chef_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_down_3",
    "file": "Npc/npc_chef_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_left_0",
    "file": "Npc/npc_chef_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_left_1",
    "file": "Npc/npc_chef_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_left_2",
    "file": "Npc/npc_chef_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_left_3",
    "file": "Npc/npc_chef_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_right_0",
    "file": "Npc/npc_chef_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_right_1",
    "file": "Npc/npc_chef_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_right_2",
    "file": "Npc/npc_chef_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_right_3",
    "file": "Npc/npc_chef_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_up_0",
    "file": "Npc/npc_chef_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_up_1",
    "file": "Npc/npc_chef_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_up_2",
    "file": "Npc/npc_chef_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_chef_up_3",
    "file": "Npc/npc_chef_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_down_0",
    "file": "Npc/npc_builder_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_down_1",
    "file": "Npc/npc_builder_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_down_2",
    "file": "Npc/npc_builder_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_down_3",
    "file": "Npc/npc_builder_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_left_0",
    "file": "Npc/npc_builder_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_left_1",
    "file": "Npc/npc_builder_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_left_2",
    "file": "Npc/npc_builder_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_left_3",
    "file": "Npc/npc_builder_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_right_0",
    "file": "Npc/npc_builder_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_right_1",
    "file": "Npc/npc_builder_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_right_2",
    "file": "Npc/npc_builder_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_right_3",
    "file": "Npc/npc_builder_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_up_0",
    "file": "Npc/npc_builder_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_up_1",
    "file": "Npc/npc_builder_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_up_2",
    "file": "Npc/npc_builder_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_builder_up_3",
    "file": "Npc/npc_builder_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_down_0",
    "file": "Npc/npc_brown_man_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_down_1",
    "file": "Npc/npc_brown_man_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_down_2",
    "file": "Npc/npc_brown_man_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_down_3",
    "file": "Npc/npc_brown_man_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_left_0",
    "file": "Npc/npc_brown_man_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_left_1",
    "file": "Npc/npc_brown_man_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_left_2",
    "file": "Npc/npc_brown_man_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_left_3",
    "file": "Npc/npc_brown_man_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_right_0",
    "file": "Npc/npc_brown_man_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_right_1",
    "file": "Npc/npc_brown_man_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_right_2",
    "file": "Npc/npc_brown_man_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_right_3",
    "file": "Npc/npc_brown_man_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_up_0",
    "file": "Npc/npc_brown_man_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_up_1",
    "file": "Npc/npc_brown_man_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_up_2",
    "file": "Npc/npc_brown_man_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_brown_man_up_3",
    "file": "Npc/npc_brown_man_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_down_0",
    "file": "Npc/npc_orange_girl_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_down_1",
    "file": "Npc/npc_orange_girl_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_down_2",
    "file": "Npc/npc_orange_girl_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_down_3",
    "file": "Npc/npc_orange_girl_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_left_0",
    "file": "Npc/npc_orange_girl_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_left_1",
    "file": "Npc/npc_orange_girl_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_left_2",
    "file": "Npc/npc_orange_girl_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_left_3",
    "file": "Npc/npc_orange_girl_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_right_0",
    "file": "Npc/npc_orange_girl_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_right_1",
    "file": "Npc/npc_orange_girl_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_right_2",
    "file": "Npc/npc_orange_girl_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_right_3",
    "file": "Npc/npc_orange_girl_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_up_0",
    "file": "Npc/npc_orange_girl_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_up_1",
    "file": "Npc/npc_orange_girl_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_up_2",
    "file": "Npc/npc_orange_girl_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_orange_girl_up_3",
    "file": "Npc/npc_orange_girl_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_down_0",
    "file": "Npc/npc_black_girl_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_down_1",
    "file": "Npc/npc_black_girl_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_down_2",
    "file": "Npc/npc_black_girl_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_down_3",
    "file": "Npc/npc_black_girl_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_left_0",
    "file": "Npc/npc_black_girl_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_left_1",
    "file": "Npc/npc_black_girl_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_left_2",
    "file": "Npc/npc_black_girl_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_left_3",
    "file": "Npc/npc_black_girl_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_right_0",
    "file": "Npc/npc_black_girl_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_right_1",
    "file": "Npc/npc_black_girl_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_right_2",
    "file": "Npc/npc_black_girl_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_right_3",
    "file": "Npc/npc_black_girl_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_up_0",
    "file": "Npc/npc_black_girl_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_up_1",
    "file": "Npc/npc_black_girl_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_up_2",
    "file": "Npc/npc_black_girl_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_black_girl_up_3",
    "file": "Npc/npc_black_girl_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_down_0",
    "file": "Npc/npc_blue_cap_man_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_down_1",
    "file": "Npc/npc_blue_cap_man_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_down_2",
    "file": "Npc/npc_blue_cap_man_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_down_3",
    "file": "Npc/npc_blue_cap_man_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_left_0",
    "file": "Npc/npc_blue_cap_man_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_left_1",
    "file": "Npc/npc_blue_cap_man_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_left_2",
    "file": "Npc/npc_blue_cap_man_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_left_3",
    "file": "Npc/npc_blue_cap_man_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_right_0",
    "file": "Npc/npc_blue_cap_man_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_right_1",
    "file": "Npc/npc_blue_cap_man_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_right_2",
    "file": "Npc/npc_blue_cap_man_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_right_3",
    "file": "Npc/npc_blue_cap_man_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_up_0",
    "file": "Npc/npc_blue_cap_man_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_up_1",
    "file": "Npc/npc_blue_cap_man_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_up_2",
    "file": "Npc/npc_blue_cap_man_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_blue_cap_man_up_3",
    "file": "Npc/npc_blue_cap_man_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_down_0",
    "file": "Npc/npc_flat_cap_man_down_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_down_1",
    "file": "Npc/npc_flat_cap_man_down_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_down_2",
    "file": "Npc/npc_flat_cap_man_down_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_down_3",
    "file": "Npc/npc_flat_cap_man_down_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_left_0",
    "file": "Npc/npc_flat_cap_man_left_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_left_1",
    "file": "Npc/npc_flat_cap_man_left_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_left_2",
    "file": "Npc/npc_flat_cap_man_left_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_left_3",
    "file": "Npc/npc_flat_cap_man_left_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_right_0",
    "file": "Npc/npc_flat_cap_man_right_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_right_1",
    "file": "Npc/npc_flat_cap_man_right_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_right_2",
    "file": "Npc/npc_flat_cap_man_right_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_right_3",
    "file": "Npc/npc_flat_cap_man_right_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_up_0",
    "file": "Npc/npc_flat_cap_man_up_0.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_up_1",
    "file": "Npc/npc_flat_cap_man_up_1.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_up_2",
    "file": "Npc/npc_flat_cap_man_up_2.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   },
   {
    "kind": "npc",
    "name": "npc_flat_cap_man_up_3",
    "file": "Npc/npc_flat_cap_man_up_3.png",
-   "width": 97,
-   "height": 106
+   "width": 67,
+   "height": 99
   }
  ]
 }

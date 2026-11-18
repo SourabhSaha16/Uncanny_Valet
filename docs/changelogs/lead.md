@@ -1342,3 +1342,9 @@ Date: 2026-11-18
 Files: Assets/_Project/Tests/PlayMode/PowerBarPlayModeTests.cs
 Why: #191 changed a Perfect Park to 16.7; the freeze-time PlayMode test still expected 3 parks = 45.
 Tests: full PlayMode 103/103 passed, EditMode 2211/2211.
+
+## lead: NPC walk frames aligned on the head so the walk no longer jitters [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/Npc/*.png (128), manifest.json
+Why: the NPC sheet was cut on an equal 111 px grid but the characters sit about 104 px apart, so each frame drifted 5 px left and the next group jumped back (forward, jump back). Sprites are now found by their own pixels and pasted head-centred, feet on one row; head centre varies under 1 px across a cycle. Metas kept (GUIDs unchanged).
+Tests: EditMode 2211/2211. Not seen in motion in the browser.

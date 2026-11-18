@@ -232,13 +232,67 @@ def slice_thor(image, manifest):
     save_frames(cells, lambda k: "thor_%s_%d" % (DIRECTIONS_THOR[k[0]], k[1]), os.path.join(OUT, "Thor"), manifest, "thor")
 
 
+HEAD_SHARE = 0.35   # the top share of a sprite whose centre anchors the frame (the head does not swing like arms and legs)
+
+
+def row_sprites(band, expected):
+    """The sprites of one sheet row, left to right, found by their own pixels (not by an equal-width grid)."""
+    mask = band[..., 3] > 0
+    pieces = components(dilate(mask, 4))
+    pieces = [q for q in pieces if len(q[4]) > 200]
+    if len(pieces) != expected:
+        sys.exit("expected %d sprites in a row, found %d" % (expected, len(pieces)))
+    sprites = []
+    for q in sorted(pieces, key=lambda q: q[0]):
+        region = np.zeros(mask.shape, bool)
+        region[q[4][:, 0], q[4][:, 1]] = True
+        sprite = band.copy()
+        sprite[~(region & mask)] = 0
+        ys, xs = np.nonzero(sprite[..., 3])
+        sprites.append(sprite[ys.min():ys.max() + 1, xs.min():xs.max() + 1])
+    return sprites
+
+
+def head_centre(sprite):
+    """X of the head's middle: the centre of the opaque pixels in the top rows."""
+    ys, xs = np.nonzero(sprite[..., 3])
+    top = ys <= ys.min() + (ys.max() - ys.min()) * HEAD_SHARE
+    return (xs[top].min() + xs[top].max() + 1) / 2.0
+
+
+def aligned_frames(sprites):
+    """Pastes every sprite on one canvas: head centre on the canvas centre line, feet on the bottom, so a walk cycle does not drift."""
+    half = max(max(head_centre(sp), sp.shape[1] - head_centre(sp)) for sp in sprites)
+    width = int(np.ceil(half * 2)) + 1
+    height = max(sp.shape[0] for sp in sprites)
+    out = []
+    for sp in sprites:
+        canvas = np.zeros((height, width, 4), np.uint8)
+        x0 = int(round(width / 2.0 - head_centre(sp)))
+        x0 = max(0, min(width - sp.shape[1], x0))
+        canvas[height - sp.shape[0]:, x0:x0 + sp.shape[1]] = sp
+        out.append(canvas)
+    return out
+
+
 def slice_npcs(image, manifest):
-    cells = frame_cells(image, FRAMES * len(DIRECTIONS_NPC), len(NPC_LOOKS))
-
-    def name_of(k):
-        return "npc_%s_%s_%d" % (NPC_LOOKS[k[0]], DIRECTIONS_NPC[k[1] // FRAMES], k[1] % FRAMES)
-
-    save_frames(cells, name_of, os.path.join(OUT, "Npc"), manifest, "npc")
+    cleaned = hard_edge(image)
+    h = cleaned.shape[0]
+    rows = []
+    for r in range(len(NPC_LOOKS)):
+        band = cleaned[round(r * h / len(NPC_LOOKS)):round((r + 1) * h / len(NPC_LOOKS))]
+        rows.append(row_sprites(band, FRAMES * len(DIRECTIONS_NPC)))
+    flat = [sp for row in rows for sp in row]
+    frames = aligned_frames(flat)
+    folder = os.path.join(OUT, "Npc")
+    os.makedirs(folder, exist_ok=True)
+    for i, canvas in enumerate(frames):
+        r, c = divmod(i, FRAMES * len(DIRECTIONS_NPC))
+        name = "npc_%s_%s_%d" % (NPC_LOOKS[r], DIRECTIONS_NPC[c // FRAMES], c % FRAMES)
+        path = os.path.join(folder, name + ".png")
+        Image.fromarray(canvas, "RGBA").save(path)
+        manifest.append({"kind": "npc", "name": name, "file": os.path.relpath(path, OUT).replace("\\", "/"),
+                         "width": int(canvas.shape[1]), "height": int(canvas.shape[0])})
 
 
 def main():
