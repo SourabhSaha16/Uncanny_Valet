@@ -1,0 +1,2218 @@
+{
+ "sprites": [
+  {
+   "kind": "lot",
+   "name": "asphalt_plain",
+   "file": "Lot/asphalt_plain.png",
+   "width": 85,
+   "height": 88,
+   "source": [
+    44,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "asphalt_speckle",
+   "file": "Lot/asphalt_speckle.png",
+   "width": 84,
+   "height": 88,
+   "source": [
+    155,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "asphalt_cracked",
+   "file": "Lot/asphalt_cracked.png",
+   "width": 85,
+   "height": 88,
+   "source": [
+    265,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "asphalt_skid",
+   "file": "Lot/asphalt_skid.png",
+   "width": 85,
+   "height": 88,
+   "source": [
+    376,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "edge_line_w",
+   "file": "Lot/edge_line_w.png",
+   "width": 84,
+   "height": 88,
+   "source": [
+    487,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "edge_line_e",
+   "file": "Lot/edge_line_e.png",
+   "width": 84,
+   "height": 88,
+   "source": [
+    597,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "edge_line_n",
+   "file": "Lot/edge_line_n.png",
+   "width": 85,
+   "height": 88,
+   "source": [
+    707,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "edge_line_s",
+   "file": "Lot/edge_line_s.png",
+   "width": 84,
+   "height": 88,
+   "source": [
+    818,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_empty",
+   "file": "Lot/bay_empty.png",
+   "width": 71,
+   "height": 88,
+   "source": [
+    928,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_p",
+   "file": "Lot/bay_p.png",
+   "width": 76,
+   "height": 88,
+   "source": [
+    1025,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_handicap",
+   "file": "Lot/bay_handicap.png",
+   "width": 80,
+   "height": 88,
+   "source": [
+    1127,
+    40
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "crosswalk_h",
+   "file": "Lot/crosswalk_h.png",
+   "width": 86,
+   "height": 90,
+   "source": [
+    44,
+    163
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "crosswalk_v",
+   "file": "Lot/crosswalk_v.png",
+   "width": 84,
+   "height": 90,
+   "source": [
+    155,
+    163
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "crosswalk_v_thin",
+   "file": "Lot/crosswalk_v_thin.png",
+   "width": 85,
+   "height": 90,
+   "source": [
+    265,
+    163
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "crosswalk_stagger",
+   "file": "Lot/crosswalk_stagger.png",
+   "width": 86,
+   "height": 91,
+   "source": [
+    375,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "centre_line_h",
+   "file": "Lot/centre_line_h.png",
+   "width": 85,
+   "height": 91,
+   "source": [
+    486,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "centre_line_v",
+   "file": "Lot/centre_line_v.png",
+   "width": 85,
+   "height": 91,
+   "source": [
+    596,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "road_curb_straight",
+   "file": "Lot/road_curb_straight.png",
+   "width": 81,
+   "height": 91,
+   "source": [
+    705,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "road_curb_corner_outer",
+   "file": "Lot/road_curb_corner_outer.png",
+   "width": 80,
+   "height": 91,
+   "source": [
+    809,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "road_curb_corner_inner",
+   "file": "Lot/road_curb_corner_inner.png",
+   "width": 83,
+   "height": 91,
+   "source": [
+    913,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "road_curb_t",
+   "file": "Lot/road_curb_t.png",
+   "width": 80,
+   "height": 91,
+   "source": [
+    1019,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "road_curb_cross",
+   "file": "Lot/road_curb_cross.png",
+   "width": 83,
+   "height": 91,
+   "source": [
+    1123,
+    162
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sidewalk_plain",
+   "file": "Lot/sidewalk_plain.png",
+   "width": 83,
+   "height": 80,
+   "source": [
+    44,
+    289
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sidewalk_corner_a",
+   "file": "Lot/sidewalk_corner_a.png",
+   "width": 81,
+   "height": 80,
+   "source": [
+    153,
+    289
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sidewalk_corner_b",
+   "file": "Lot/sidewalk_corner_b.png",
+   "width": 82,
+   "height": 80,
+   "source": [
+    260,
+    289
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sidewalk_t",
+   "file": "Lot/sidewalk_t.png",
+   "width": 83,
+   "height": 81,
+   "source": [
+    372,
+    289
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sidewalk_cross",
+   "file": "Lot/sidewalk_cross.png",
+   "width": 84,
+   "height": 80,
+   "source": [
+    481,
+    289
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "grass",
+   "file": "Lot/grass.png",
+   "width": 82,
+   "height": 81,
+   "source": [
+    592,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_block",
+   "file": "Lot/hedge_block.png",
+   "width": 84,
+   "height": 81,
+   "source": [
+    700,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_corner_a",
+   "file": "Lot/hedge_corner_a.png",
+   "width": 82,
+   "height": 81,
+   "source": [
+    810,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_corner_b",
+   "file": "Lot/hedge_corner_b.png",
+   "width": 82,
+   "height": 81,
+   "source": [
+    917,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_t",
+   "file": "Lot/hedge_t.png",
+   "width": 78,
+   "height": 81,
+   "source": [
+    1025,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_cross",
+   "file": "Lot/hedge_cross.png",
+   "width": 79,
+   "height": 81,
+   "source": [
+    1129,
+    288
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_pilaster_left",
+   "file": "Lot/wall_pilaster_left.png",
+   "width": 53,
+   "height": 112,
+   "source": [
+    35,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_window_1",
+   "file": "Lot/wall_window_1.png",
+   "width": 91,
+   "height": 111,
+   "source": [
+    107,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_window_2",
+   "file": "Lot/wall_window_2.png",
+   "width": 93,
+   "height": 111,
+   "source": [
+    216,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_window_3",
+   "file": "Lot/wall_window_3.png",
+   "width": 92,
+   "height": 111,
+   "source": [
+    328,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_window_4",
+   "file": "Lot/wall_window_4.png",
+   "width": 95,
+   "height": 111,
+   "source": [
+    440,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_pilaster_right",
+   "file": "Lot/wall_pilaster_right.png",
+   "width": 54,
+   "height": 112,
+   "source": [
+    554,
+    421
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "roof_plain",
+   "file": "Lot/roof_plain.png",
+   "width": 144,
+   "height": 112,
+   "source": [
+    640,
+    420
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "roof_vent_single",
+   "file": "Lot/roof_vent_single.png",
+   "width": 120,
+   "height": 112,
+   "source": [
+    802,
+    420
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "roof_vent_double",
+   "file": "Lot/roof_vent_double.png",
+   "width": 127,
+   "height": 112,
+   "source": [
+    942,
+    420
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "roof_pipe",
+   "file": "Lot/roof_pipe.png",
+   "width": 126,
+   "height": 112,
+   "source": [
+    1087,
+    420
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_door_double",
+   "file": "Lot/wall_door_double.png",
+   "width": 98,
+   "height": 94,
+   "source": [
+    34,
+    548
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_plain",
+   "file": "Lot/wall_plain.png",
+   "width": 79,
+   "height": 93,
+   "source": [
+    155,
+    549
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_door_single",
+   "file": "Lot/wall_door_single.png",
+   "width": 89,
+   "height": 93,
+   "source": [
+    256,
+    549
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "wall_corner",
+   "file": "Lot/wall_corner.png",
+   "width": 92,
+   "height": 93,
+   "source": [
+    367,
+    549
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "awning_left",
+   "file": "Lot/awning_left.png",
+   "width": 64,
+   "height": 61,
+   "source": [
+    495,
+    561
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "awning_mid_a",
+   "file": "Lot/awning_mid_a.png",
+   "width": 109,
+   "height": 61,
+   "source": [
+    579,
+    561
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "awning_mid_b",
+   "file": "Lot/awning_mid_b.png",
+   "width": 107,
+   "height": 61,
+   "source": [
+    711,
+    561
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "awning_right",
+   "file": "Lot/awning_right.png",
+   "width": 63,
+   "height": 61,
+   "source": [
+    836,
+    561
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "flowerbox_large",
+   "file": "Lot/flowerbox_large.png",
+   "width": 94,
+   "height": 50,
+   "source": [
+    933,
+    572
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "flowerbox_medium",
+   "file": "Lot/flowerbox_medium.png",
+   "width": 80,
+   "height": 50,
+   "source": [
+    1054,
+    572
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "flowerbox_small",
+   "file": "Lot/flowerbox_small.png",
+   "width": 46,
+   "height": 50,
+   "source": [
+    1160,
+    572
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "diner_sign",
+   "file": "Lot/diner_sign.png",
+   "width": 291,
+   "height": 103,
+   "source": [
+    66,
+    669
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "diner_sign_vertical",
+   "file": "Lot/diner_sign_vertical.png",
+   "width": 55,
+   "height": 140,
+   "source": [
+    402,
+    653
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "gadget_dome",
+   "file": "Lot/gadget_dome.png",
+   "width": 106,
+   "height": 71,
+   "source": [
+    508,
+    687
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "gadget_hvac_a",
+   "file": "Lot/gadget_hvac_a.png",
+   "width": 109,
+   "height": 71,
+   "source": [
+    655,
+    687
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "gadget_hvac_b",
+   "file": "Lot/gadget_hvac_b.png",
+   "width": 103,
+   "height": 71,
+   "source": [
+    804,
+    687
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "gadget_panel",
+   "file": "Lot/gadget_panel.png",
+   "width": 100,
+   "height": 71,
+   "source": [
+    948,
+    687
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "gadget_dish",
+   "file": "Lot/gadget_dish.png",
+   "width": 101,
+   "height": 71,
+   "source": [
+    1088,
+    687
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "pad_drop_off",
+   "file": "Lot/pad_drop_off.png",
+   "width": 80,
+   "height": 124,
+   "source": [
+    42,
+    803
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "pad_valet_pickup_left",
+   "file": "Lot/pad_valet_pickup_left.png",
+   "width": 54,
+   "height": 124,
+   "source": [
+    147,
+    805
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "pad_valet_pickup_right",
+   "file": "Lot/pad_valet_pickup_right.png",
+   "width": 53,
+   "height": 124,
+   "source": [
+    214,
+    805
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_dashed_a",
+   "file": "Lot/bay_dashed_a.png",
+   "width": 55,
+   "height": 124,
+   "source": [
+    280,
+    805
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_dashed_b",
+   "file": "Lot/bay_dashed_b.png",
+   "width": 57,
+   "height": 124,
+   "source": [
+    346,
+    805
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_1",
+   "file": "Lot/bay_1.png",
+   "width": 50,
+   "height": 98,
+   "source": [
+    432,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_2",
+   "file": "Lot/bay_2.png",
+   "width": 52,
+   "height": 98,
+   "source": [
+    497,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_3",
+   "file": "Lot/bay_3.png",
+   "width": 49,
+   "height": 98,
+   "source": [
+    563,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_4",
+   "file": "Lot/bay_4.png",
+   "width": 52,
+   "height": 98,
+   "source": [
+    626,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_5",
+   "file": "Lot/bay_5.png",
+   "width": 53,
+   "height": 98,
+   "source": [
+    692,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_6",
+   "file": "Lot/bay_6.png",
+   "width": 52,
+   "height": 98,
+   "source": [
+    761,
+    813
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_7",
+   "file": "Lot/bay_7.png",
+   "width": 49,
+   "height": 99,
+   "source": [
+    828,
+    811
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "boom_barrier",
+   "file": "Lot/boom_barrier.png",
+   "width": 169,
+   "height": 63,
+   "source": [
+    902,
+    836
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "open_sign",
+   "file": "Lot/open_sign.png",
+   "width": 103,
+   "height": 46,
+   "source": [
+    1107,
+    840
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "tree_large",
+   "file": "Lot/tree_large.png",
+   "width": 99,
+   "height": 106,
+   "source": [
+    22,
+    945
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "tree_small",
+   "file": "Lot/tree_small.png",
+   "width": 58,
+   "height": 77,
+   "source": [
+    133,
+    969
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bush",
+   "file": "Lot/bush.png",
+   "width": 52,
+   "height": 47,
+   "source": [
+    206,
+    997
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "planter_flowers",
+   "file": "Lot/planter_flowers.png",
+   "width": 54,
+   "height": 48,
+   "source": [
+    272,
+    997
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hedge_planter",
+   "file": "Lot/hedge_planter.png",
+   "width": 98,
+   "height": 51,
+   "source": [
+    342,
+    994
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bench",
+   "file": "Lot/bench.png",
+   "width": 79,
+   "height": 51,
+   "source": [
+    458,
+    994
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "lamp_post",
+   "file": "Lot/lamp_post.png",
+   "width": 27,
+   "height": 99,
+   "source": [
+    557,
+    948
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bin",
+   "file": "Lot/bin.png",
+   "width": 39,
+   "height": 53,
+   "source": [
+    610,
+    992
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "hydrant",
+   "file": "Lot/hydrant.png",
+   "width": 43,
+   "height": 60,
+   "source": [
+    672,
+    986
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "meter",
+   "file": "Lot/meter.png",
+   "width": 26,
+   "height": 71,
+   "source": [
+    737,
+    976
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "fence",
+   "file": "Lot/fence.png",
+   "width": 89,
+   "height": 48,
+   "source": [
+    788,
+    999
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bollard",
+   "file": "Lot/bollard.png",
+   "width": 17,
+   "height": 58,
+   "source": [
+    897,
+    989
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "cone",
+   "file": "Lot/cone.png",
+   "width": 36,
+   "height": 51,
+   "source": [
+    942,
+    996
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "mailbox",
+   "file": "Lot/mailbox.png",
+   "width": 44,
+   "height": 74,
+   "source": [
+    1002,
+    973
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "newspaper_box",
+   "file": "Lot/newspaper_box.png",
+   "width": 50,
+   "height": 81,
+   "source": [
+    1066,
+    966
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "sign_coffee",
+   "file": "Lot/sign_coffee.png",
+   "width": 78,
+   "height": 74,
+   "source": [
+    1138,
+    973
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_red",
+   "file": "Lot/car_red.png",
+   "width": 76,
+   "height": 135,
+   "source": [
+    34,
+    1089
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_blue",
+   "file": "Lot/car_blue.png",
+   "width": 76,
+   "height": 131,
+   "source": [
+    132,
+    1090
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_yellow",
+   "file": "Lot/car_yellow.png",
+   "width": 75,
+   "height": 134,
+   "source": [
+    229,
+    1090
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_green",
+   "file": "Lot/car_green.png",
+   "width": 73,
+   "height": 133,
+   "source": [
+    322,
+    1090
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_black",
+   "file": "Lot/car_black.png",
+   "width": 72,
+   "height": 134,
+   "source": [
+    415,
+    1090
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "car_white",
+   "file": "Lot/car_white.png",
+   "width": 73,
+   "height": 132,
+   "source": [
+    505,
+    1091
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "van_white",
+   "file": "Lot/van_white.png",
+   "width": 71,
+   "height": 158,
+   "source": [
+    595,
+    1075
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_chef",
+   "file": "Lot/portrait_chef.png",
+   "width": 46,
+   "height": 85,
+   "source": [
+    693,
+    1109
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_bellhop",
+   "file": "Lot/portrait_bellhop.png",
+   "width": 41,
+   "height": 75,
+   "source": [
+    764,
+    1119
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_brown_man",
+   "file": "Lot/portrait_brown_man.png",
+   "width": 43,
+   "height": 75,
+   "source": [
+    832,
+    1119
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_orange_girl",
+   "file": "Lot/portrait_orange_girl.png",
+   "width": 47,
+   "height": 74,
+   "source": [
+    898,
+    1120
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_black_girl",
+   "file": "Lot/portrait_black_girl.png",
+   "width": 41,
+   "height": 74,
+   "source": [
+    970,
+    1120
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_grandma",
+   "file": "Lot/portrait_grandma.png",
+   "width": 47,
+   "height": 75,
+   "source": [
+    1037,
+    1119
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_blue_cap_man",
+   "file": "Lot/portrait_blue_cap_man.png",
+   "width": 46,
+   "height": 75,
+   "source": [
+    1107,
+    1119
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "portrait_blonde_girl",
+   "file": "Lot/portrait_blonde_girl.png",
+   "width": 46,
+   "height": 73,
+   "source": [
+    1174,
+    1121
+   ]
+  },
+  {
+   "kind": "lot",
+   "name": "bay_8",
+   "file": "Lot/bay_8.png",
+   "width": 52,
+   "height": 98,
+   "derived": "bay_6"
+  },
+  {
+   "kind": "lot",
+   "name": "roof_floor",
+   "file": "Lot/roof_floor.png",
+   "width": 130,
+   "height": 81,
+   "derived": "roof_plain"
+  },
+  {
+   "kind": "lot",
+   "name": "roof_frame_top",
+   "file": "Lot/roof_frame_top.png",
+   "width": 130,
+   "height": 10,
+   "derived": "roof_plain"
+  },
+  {
+   "kind": "lot",
+   "name": "roof_frame_bottom",
+   "file": "Lot/roof_frame_bottom.png",
+   "width": 130,
+   "height": 18,
+   "derived": "roof_plain"
+  },
+  {
+   "kind": "lot",
+   "name": "roof_frame_left",
+   "file": "Lot/roof_frame_left.png",
+   "width": 13,
+   "height": 112,
+   "derived": "roof_plain"
+  },
+  {
+   "kind": "thor",
+   "name": "thor_down_0",
+   "file": "Thor/thor_down_0.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_down_1",
+   "file": "Thor/thor_down_1.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_down_2",
+   "file": "Thor/thor_down_2.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_down_3",
+   "file": "Thor/thor_down_3.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_left_0",
+   "file": "Thor/thor_left_0.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_left_1",
+   "file": "Thor/thor_left_1.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_left_2",
+   "file": "Thor/thor_left_2.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_left_3",
+   "file": "Thor/thor_left_3.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_right_0",
+   "file": "Thor/thor_right_0.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_right_1",
+   "file": "Thor/thor_right_1.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_right_2",
+   "file": "Thor/thor_right_2.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_right_3",
+   "file": "Thor/thor_right_3.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_up_0",
+   "file": "Thor/thor_up_0.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_up_1",
+   "file": "Thor/thor_up_1.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_up_2",
+   "file": "Thor/thor_up_2.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "thor",
+   "name": "thor_up_3",
+   "file": "Thor/thor_up_3.png",
+   "width": 151,
+   "height": 228
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_down_0",
+   "file": "Npc/npc_grandma_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_down_1",
+   "file": "Npc/npc_grandma_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_down_2",
+   "file": "Npc/npc_grandma_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_down_3",
+   "file": "Npc/npc_grandma_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_left_0",
+   "file": "Npc/npc_grandma_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_left_1",
+   "file": "Npc/npc_grandma_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_left_2",
+   "file": "Npc/npc_grandma_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_left_3",
+   "file": "Npc/npc_grandma_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_right_0",
+   "file": "Npc/npc_grandma_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_right_1",
+   "file": "Npc/npc_grandma_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_right_2",
+   "file": "Npc/npc_grandma_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_right_3",
+   "file": "Npc/npc_grandma_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_up_0",
+   "file": "Npc/npc_grandma_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_up_1",
+   "file": "Npc/npc_grandma_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_up_2",
+   "file": "Npc/npc_grandma_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_grandma_up_3",
+   "file": "Npc/npc_grandma_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_down_0",
+   "file": "Npc/npc_chef_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_down_1",
+   "file": "Npc/npc_chef_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_down_2",
+   "file": "Npc/npc_chef_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_down_3",
+   "file": "Npc/npc_chef_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_left_0",
+   "file": "Npc/npc_chef_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_left_1",
+   "file": "Npc/npc_chef_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_left_2",
+   "file": "Npc/npc_chef_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_left_3",
+   "file": "Npc/npc_chef_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_right_0",
+   "file": "Npc/npc_chef_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_right_1",
+   "file": "Npc/npc_chef_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_right_2",
+   "file": "Npc/npc_chef_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_right_3",
+   "file": "Npc/npc_chef_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_up_0",
+   "file": "Npc/npc_chef_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_up_1",
+   "file": "Npc/npc_chef_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_up_2",
+   "file": "Npc/npc_chef_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_chef_up_3",
+   "file": "Npc/npc_chef_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_down_0",
+   "file": "Npc/npc_builder_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_down_1",
+   "file": "Npc/npc_builder_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_down_2",
+   "file": "Npc/npc_builder_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_down_3",
+   "file": "Npc/npc_builder_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_left_0",
+   "file": "Npc/npc_builder_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_left_1",
+   "file": "Npc/npc_builder_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_left_2",
+   "file": "Npc/npc_builder_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_left_3",
+   "file": "Npc/npc_builder_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_right_0",
+   "file": "Npc/npc_builder_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_right_1",
+   "file": "Npc/npc_builder_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_right_2",
+   "file": "Npc/npc_builder_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_right_3",
+   "file": "Npc/npc_builder_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_up_0",
+   "file": "Npc/npc_builder_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_up_1",
+   "file": "Npc/npc_builder_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_up_2",
+   "file": "Npc/npc_builder_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_builder_up_3",
+   "file": "Npc/npc_builder_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_down_0",
+   "file": "Npc/npc_brown_man_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_down_1",
+   "file": "Npc/npc_brown_man_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_down_2",
+   "file": "Npc/npc_brown_man_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_down_3",
+   "file": "Npc/npc_brown_man_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_left_0",
+   "file": "Npc/npc_brown_man_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_left_1",
+   "file": "Npc/npc_brown_man_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_left_2",
+   "file": "Npc/npc_brown_man_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_left_3",
+   "file": "Npc/npc_brown_man_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_right_0",
+   "file": "Npc/npc_brown_man_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_right_1",
+   "file": "Npc/npc_brown_man_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_right_2",
+   "file": "Npc/npc_brown_man_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_right_3",
+   "file": "Npc/npc_brown_man_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_up_0",
+   "file": "Npc/npc_brown_man_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_up_1",
+   "file": "Npc/npc_brown_man_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_up_2",
+   "file": "Npc/npc_brown_man_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_brown_man_up_3",
+   "file": "Npc/npc_brown_man_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_down_0",
+   "file": "Npc/npc_orange_girl_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_down_1",
+   "file": "Npc/npc_orange_girl_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_down_2",
+   "file": "Npc/npc_orange_girl_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_down_3",
+   "file": "Npc/npc_orange_girl_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_left_0",
+   "file": "Npc/npc_orange_girl_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_left_1",
+   "file": "Npc/npc_orange_girl_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_left_2",
+   "file": "Npc/npc_orange_girl_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_left_3",
+   "file": "Npc/npc_orange_girl_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_right_0",
+   "file": "Npc/npc_orange_girl_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_right_1",
+   "file": "Npc/npc_orange_girl_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_right_2",
+   "file": "Npc/npc_orange_girl_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_right_3",
+   "file": "Npc/npc_orange_girl_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_up_0",
+   "file": "Npc/npc_orange_girl_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_up_1",
+   "file": "Npc/npc_orange_girl_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_up_2",
+   "file": "Npc/npc_orange_girl_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_orange_girl_up_3",
+   "file": "Npc/npc_orange_girl_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_down_0",
+   "file": "Npc/npc_black_girl_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_down_1",
+   "file": "Npc/npc_black_girl_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_down_2",
+   "file": "Npc/npc_black_girl_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_down_3",
+   "file": "Npc/npc_black_girl_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_left_0",
+   "file": "Npc/npc_black_girl_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_left_1",
+   "file": "Npc/npc_black_girl_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_left_2",
+   "file": "Npc/npc_black_girl_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_left_3",
+   "file": "Npc/npc_black_girl_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_right_0",
+   "file": "Npc/npc_black_girl_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_right_1",
+   "file": "Npc/npc_black_girl_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_right_2",
+   "file": "Npc/npc_black_girl_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_right_3",
+   "file": "Npc/npc_black_girl_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_up_0",
+   "file": "Npc/npc_black_girl_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_up_1",
+   "file": "Npc/npc_black_girl_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_up_2",
+   "file": "Npc/npc_black_girl_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_black_girl_up_3",
+   "file": "Npc/npc_black_girl_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_down_0",
+   "file": "Npc/npc_blue_cap_man_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_down_1",
+   "file": "Npc/npc_blue_cap_man_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_down_2",
+   "file": "Npc/npc_blue_cap_man_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_down_3",
+   "file": "Npc/npc_blue_cap_man_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_left_0",
+   "file": "Npc/npc_blue_cap_man_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_left_1",
+   "file": "Npc/npc_blue_cap_man_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_left_2",
+   "file": "Npc/npc_blue_cap_man_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_left_3",
+   "file": "Npc/npc_blue_cap_man_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_right_0",
+   "file": "Npc/npc_blue_cap_man_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_right_1",
+   "file": "Npc/npc_blue_cap_man_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_right_2",
+   "file": "Npc/npc_blue_cap_man_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_right_3",
+   "file": "Npc/npc_blue_cap_man_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_up_0",
+   "file": "Npc/npc_blue_cap_man_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_up_1",
+   "file": "Npc/npc_blue_cap_man_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_up_2",
+   "file": "Npc/npc_blue_cap_man_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_blue_cap_man_up_3",
+   "file": "Npc/npc_blue_cap_man_up_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_down_0",
+   "file": "Npc/npc_flat_cap_man_down_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_down_1",
+   "file": "Npc/npc_flat_cap_man_down_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_down_2",
+   "file": "Npc/npc_flat_cap_man_down_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_down_3",
+   "file": "Npc/npc_flat_cap_man_down_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_left_0",
+   "file": "Npc/npc_flat_cap_man_left_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_left_1",
+   "file": "Npc/npc_flat_cap_man_left_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_left_2",
+   "file": "Npc/npc_flat_cap_man_left_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_left_3",
+   "file": "Npc/npc_flat_cap_man_left_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_right_0",
+   "file": "Npc/npc_flat_cap_man_right_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_right_1",
+   "file": "Npc/npc_flat_cap_man_right_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_right_2",
+   "file": "Npc/npc_flat_cap_man_right_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_right_3",
+   "file": "Npc/npc_flat_cap_man_right_3.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_up_0",
+   "file": "Npc/npc_flat_cap_man_up_0.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_up_1",
+   "file": "Npc/npc_flat_cap_man_up_1.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_up_2",
+   "file": "Npc/npc_flat_cap_man_up_2.png",
+   "width": 97,
+   "height": 106
+  },
+  {
+   "kind": "npc",
+   "name": "npc_flat_cap_man_up_3",
+   "file": "Npc/npc_flat_cap_man_up_3.png",
+   "width": 97,
+   "height": 106
+  }
+ ]
+}

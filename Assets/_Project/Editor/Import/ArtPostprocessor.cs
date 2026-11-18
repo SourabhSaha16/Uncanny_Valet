@@ -19,6 +19,11 @@ namespace UncannyValet.EditorTools.Import
         {
             if (!assetPath.StartsWith(ArtRoot) || !assetPath.EndsWith(".png")) return;
             var importer = (TextureImporter)assetImporter;
+            if (ValhallaImport.Handles(assetPath))
+            {
+                ValhallaImport.Apply(importer, assetPath);
+                return;
+            }
             if (!TryReadPngSize(assetPath, out int w, out int h))
             {
                 Debug.LogError($"ArtPostprocessor: cannot read PNG size of {assetPath}; settings not applied.");

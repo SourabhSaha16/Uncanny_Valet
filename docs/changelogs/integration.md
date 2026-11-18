@@ -331,3 +331,15 @@ Date: 2026-11-18
 Files: Assets/_Project/Scripts/Lot/CurbArrowTracker.cs, CurbZone.cs, StopZone.cs, Assets/_Project/Tests/EditMode/Lot/CurbArrowTests.cs
 Why: #190. The arrow counted any car whose collider touched the curb zone, but the curb only accepts a car whose centre is inside it (StopZone.CentreInside, now shared by both). The arrow also kept its colour after the ticket closed; it now re-evaluates on TicketClosed. Facing uses the same CurbFacingRule and patron check (IPickupAcceptance) as before.
 Tests: CurbArrowTests gains edge-overlap, drift-out and facing-agreement cases.
+
+## integration: slice the Valhalla Drive art for the sandbox, Refs #193 [Claude]
+Date: 2026-11-18
+Files: tools/slice-valhalla.py, Assets/_Project/Art/ValhallaMidgard/ (Lot, Thor, Npc sprites and manifest.json), Assets/_Project/Editor/Import/ValhallaImport.cs, Assets/_Project/Editor/Import/ArtPostprocessor.cs
+Why: #193 asks for the sandbox to use the new Midgard art. The repeatable slicer cuts the tileset by alpha components, drops the red and yellow halo, and splits the Thor and NPC walk sheets into aligned frames; the importer gives them point filter and per-folder pixels per unit.
+Tests: slicer run and every output viewed on a contact sheet; Unity import and tests follow in later commits.
+
+## integration: sandbox uses the Valhalla Midgard lot art, Thor and NPC walk cycles, Refs #193 [Claude]
+Date: 2026-11-18
+Files: Assets/_Project/Scripts/Bootstrap/Sandbox/Valhalla*.cs, SandboxCrowd.cs, Assets/_Project/Editor/ValhallaAssetSetup.cs, SandboxSceneBuilder.cs, Assets/_Project/Data/Sandbox/Valhalla*.asset, Assets/_Project/Scenes/Sandbox.unity, sprite .meta files
+Why: #193. The sandbox Midgard lots are re-skinned over the unchanged lot geometry (colliders, bays, curb, queue), Thor uses a 4x4 walk-cycle ValetArtConfig, and the two Midgard worlds get the real pedestrian crowd with the eight NPC looks (PedestrianConfig copy). Beta and the normal game are untouched.
+Tests: EditMode 2099 passed; SandboxSceneTests 3 passed; RunBatch ran clean; scenes other than Sandbox reverted; screenshots of both Midgard lots and a Vanaheim lot checked.

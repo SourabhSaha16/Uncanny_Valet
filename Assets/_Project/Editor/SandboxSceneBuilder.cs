@@ -4,6 +4,7 @@ using UncannyValet.Cars;
 using UncannyValet.Economy;
 using UncannyValet.EditorTools.Art;
 using UncannyValet.Lot;
+using UncannyValet.Pedestrians;
 using UncannyValet.Run;
 using UncannyValet.UI;
 using UncannyValet.UI.Mood;
@@ -59,7 +60,7 @@ namespace UncannyValet.EditorTools
             var carArt = CarArtBuilder.Build();
             var lotArt = LotArtBuilder.Build();
             var factory = BootstrapSceneBuilder.Child<CarFactory>(root, "CarFactory");
-            var valet = ValetSceneBuilder.BuildValet(root, ValetArtBuilder.Build());
+            var valet = ValetSceneBuilder.BuildValet(root, ValhallaAssetSetup.Thor());
             var camera = ValetSceneBuilder.BuildCamera();
             var panel = BootstrapSceneBuilder.Child<TuningPanel>(root, "TuningPanel");
             var picker = BootstrapSceneBuilder.Child<SandboxPicker>(root, "SandboxPicker");
@@ -106,7 +107,27 @@ namespace UncannyValet.EditorTools
             so.FindProperty("_lot").objectReferenceValue = lot;
             so.FindProperty("_decor").objectReferenceValue = decor;
             so.ApplyModifiedPropertiesWithoutUndo();
+            DressMidgard(go, definition, lotConfig, lotArt);
             return slot;
+        }
+
+        // The two Midgard worlds get the Valhalla art and its pedestrians; the crazy lot keeps its fair props (stalls and wheel are solid).
+        private static void DressMidgard(GameObject world, LotDefinition definition, LotConfig lotConfig, LotArtConfig lotArt)
+        {
+            var path = AssetDatabase.GetAssetPath(definition);
+            var training = path == RunAssetSetup.MidgardTrainingPath;
+            if (!training && path != RunAssetSetup.MidgardCrazyPath) return;
+            var skin = world.AddComponent<ValhallaLotSkin>();
+            BootstrapSceneBuilder.Set(skin, "_art", ValhallaAssetSetup.LotArt());
+            BootstrapSceneBuilder.Set(skin, "_config", lotConfig);
+            BootstrapSceneBuilder.Set(skin, "_lotArt", lotArt);
+            var so = new SerializedObject(skin);
+            so.FindProperty("_keepProps").boolValue = !training;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var crowd = BootstrapSceneBuilder.Child<PedestrianCrowd>(world, "Pedestrians");
+            crowd.gameObject.SetActive(false);
+            BootstrapSceneBuilder.Set(crowd, "_config", ValhallaAssetSetup.Crowd());
+            BootstrapSceneBuilder.Set(world.AddComponent<SandboxCrowd>(), "_crowd", crowd);
         }
 
         private static void Wire(SandboxBootstrap bootstrap, CarFactory factory, GameObject valet, CameraFollow camera, TuningPanel panel,
