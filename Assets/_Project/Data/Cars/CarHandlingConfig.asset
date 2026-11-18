@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b7a655e8ec2f14dbbee7ebe38bc8c5, type: 3}
   m_Name: CarHandlingConfig
   m_EditorClassIdentifier: UncannyValet.Cars::UncannyValet.Cars.CarHandlingConfig
-  _lateralFriction: 8
+  _lateralFriction: 11
   _forwardGrip: 0.6
   _gripLowSpeed: 3
   _gripHighSpeed: 6
@@ -25,7 +25,7 @@ MonoBehaviour:
     _turnScale: 1.5
     _holdSeconds: 0.25
     _blendSeconds: 0.2
-  _turnFullSpeed: 6
+  _turnFullSpeed: 5.1
   _turnFalloff: 0.12
   _turnMinShare: 0.55
   _tightestRadius: 1
@@ -34,8 +34,8 @@ MonoBehaviour:
   _pullOutClearance: 0.3
   _topSpeedScale: 1.35
   _accelerationScale: 1.7
-  _brakingScale: 1.65
-  _coastDragScale: 2.4
+  _brakingScale: 1.6
+  _coastDragScale: 2.45
   _reverseScale: 1
   _bounciness: 0.4
   _minImpactSpeed: 0.5

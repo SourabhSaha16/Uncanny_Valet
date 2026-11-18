@@ -138,3 +138,9 @@ Date: 2026-11-17
 Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
 Why: values the human settled on in the sandbox F2 panel (braking was 1.3, coasting 1.7).
 Tests: EditMode suite run, result above in the report.
+
+## lead: handling defaults from the latest sandbox tuning [Claude]
+Date: 2026-11-17
+Files: Assets/_Project/Data/Cars/CarHandlingConfig.asset, docs/changelogs/cars.md
+Why: values the human settled on in the F2 panel: tyre bite 11 (was 8), full steering from 5.1 (was 6), braking 1.6 (was 1.65), coasting 2.45 (was 2.4).
+Tests: EditMode 2067/2067.
