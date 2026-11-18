@@ -31,22 +31,22 @@ namespace UncannyValet.Tests.Cars
         public void Trail_FirstPointOnlyStartsAndMarksComeEverySpacing()
         {
             var trail = new TyreTrail();
-            Assert.IsFalse(trail.TryAdvance(Vector2.zero, 1f, 0.05f, out _));
-            Assert.IsFalse(trail.TryAdvance(new Vector2(0f, 0.6f), 1f, 0.05f, out _));
-            Assert.IsTrue(trail.TryAdvance(new Vector2(0f, 1.1f), 1f, 0.05f, out var mark));
+            Assert.IsFalse(trail.TryAdvance(Vector2.zero, 1f, 0.05f, 360f, 0f, out _));
+            Assert.IsFalse(trail.TryAdvance(new Vector2(0f, 0.6f), 1f, 0.05f, 360f, 0f, out _));
+            Assert.IsTrue(trail.TryAdvance(new Vector2(0f, 1.1f), 1f, 0.05f, 360f, 0f, out var mark));
             Assert.AreEqual(0.55f, mark.Center.y, 1e-5f);
             Assert.AreEqual(1.15f, mark.Length, 1e-5f);
-            Assert.IsFalse(trail.TryAdvance(new Vector2(0f, 1.5f), 1f, 0.05f, out _), "distance since the last mark, not frames");
+            Assert.IsFalse(trail.TryAdvance(new Vector2(0f, 1.5f), 1f, 0.05f, 360f, 0f, out _), "distance since the last mark, not frames");
         }
 
         [Test]
         public void Trail_StrokeLiesAlongTheTravelDirection()
         {
             var trail = new TyreTrail();
-            trail.TryAdvance(Vector2.zero, 1f, 0f, out _);
-            trail.TryAdvance(new Vector2(2f, 0f), 1f, 0f, out var east);
+            trail.TryAdvance(Vector2.zero, 1f, 0f, 360f, 0f, out _);
+            trail.TryAdvance(new Vector2(2f, 0f), 1f, 0f, 360f, 0f, out var east);
             Assert.AreEqual(-90f, east.AngleDegrees, 1e-3f, "local up turned to point east");
-            trail.TryAdvance(new Vector2(2f, 2f), 1f, 0f, out var north);
+            trail.TryAdvance(new Vector2(2f, 2f), 1f, 0f, 360f, 0f, out var north);
             Assert.AreEqual(0f, north.AngleDegrees, 1e-3f);
         }
 
@@ -54,9 +54,9 @@ namespace UncannyValet.Tests.Cars
         public void Trail_BreakStartsAFreshTrailWithoutBridgingTheGap()
         {
             var trail = new TyreTrail();
-            trail.TryAdvance(Vector2.zero, 1f, 0f, out _);
+            trail.TryAdvance(Vector2.zero, 1f, 0f, 360f, 0f, out _);
             trail.Break();
-            Assert.IsFalse(trail.TryAdvance(new Vector2(30f, 0f), 1f, 0f, out _));
+            Assert.IsFalse(trail.TryAdvance(new Vector2(30f, 0f), 1f, 0f, 360f, 0f, out _));
         }
 
         [Test]

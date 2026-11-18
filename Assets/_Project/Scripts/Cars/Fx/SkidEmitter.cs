@@ -75,7 +75,8 @@ namespace UncannyValet.Cars.Fx
             var skid = _kit.Config.Skid;
             var tyre = TyreMarkMath.RearTyre(_body.position, _body.rotation, _driver.Definition.Size,
                 skid.TyreSideShare, skid.TyreRearShare, right);
-            if (!trail.TryAdvance(tyre, skid.MarkSpacing, skid.MarkThickness, out var mark)) return;
+            if (!trail.TryAdvance(tyre, skid.MarkSpacing, skid.MarkThickness,
+                skid.MaxBendDegrees, skid.MinStrokeLength, out var mark)) return;
             _pool.Place(mark.Center, mark.AngleDegrees, mark.Length, skid.MarkThickness, skid.MarkColor, opacity,
                 _kit.Live.MarkFadeSeconds, skid.MarkFadeOutSeconds);
         }
